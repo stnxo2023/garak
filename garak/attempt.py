@@ -1,7 +1,7 @@
 """Defines the Attempt class, which encapsulates a prompt with metadata and results"""
 
 from types import GeneratorType
-from typing import Any, List
+from typing import List, Union
 import uuid
 
 (
@@ -11,6 +11,38 @@ import uuid
 ) = range(3)
 
 roles = {"system", "user", "assistant"}
+
+
+class Prompt:
+    """Object to wrap entities that consitute a single turn posed to a target
+
+    While many prompts are text, they may also be images, audio, files, or even a composition
+    of these. The Prompt object encapsulates this flexibility.
+
+    Multi-turn queries should be composed of multiple prompts."""
+
+    def __init__(self, text: Union[None, str] = None) -> None:
+
+        self.text = text
+        self.parts = []
+
+    def add_part(self, data) -> None:
+        self.parts.append(data)
+
+    def __str__(self):
+        if len(self.parts) == 0:
+            return self.text
+        else:
+            return "(" + repr(self.text) + ", " + repr(self.parts) + ")"
+
+    def __eq__(self, other):
+        if not isinstance(other, Prompt):
+            return False  # or raise TypeError
+        if self.text != other.text:
+            return False
+        if self.parts != other.parts:
+            return False
+        return True
 
 
 class Attempt:
@@ -169,6 +201,10 @@ class Attempt:
     def prompt(self, value):
         if value is None:
             raise TypeError("'None' prompts are not valid")
+        if isinstance(value, str):
+            value = Prompt(text=value)
+        if not isinstance(value, Prompt):
+            raise TypeError("prompt must be a Prompt() or string")
         self._add_first_turn("user", value)
 
     @outputs.setter
@@ -203,7 +239,7 @@ class Attempt:
         base_message = dict(self.messages[0])
         self.messages = [[base_message] for i in range(breadth)]
 
-    def _add_first_turn(self, role: str, content: str) -> None:
+    def _add_first_turn(self, role: str, content: Prompt) -> None:
         """add the first turn (after a prompt) to a message history"""
 
         if len(self.messages):
@@ -226,7 +262,7 @@ class Attempt:
             self.messages.append({"role": role, "content": content})
             return
 
-    def _add_turn(self, role: str, contents: List[str]) -> None:
+    def _add_turn(self, role: str, contents: List[Prompt]) -> None:
         """add a 'layer' to a message history.
 
         the contents should be as broad as the established number of
@@ -245,6 +281,7 @@ class Attempt:
             raise ValueError(
                 "Can only add a list of user prompts after at least one system generation, so that generations count is known"
             )
+
         if role in roles:
             for idx, entry in enumerate(contents):
                 self.messages[idx].append({"role": role, "content": entry})

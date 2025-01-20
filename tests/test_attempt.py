@@ -9,26 +9,14 @@ import pytest
 import garak.attempt
 from garak import cli, _config
 
-PREFIX = "_garak_test_attempt_sticky_params"
 
-
-def test_attempt_sticky_params(capsys):
-
-    cli.main(
-        f"-m test.Blank -g 1 -p atkgen,dan.Dan_6_0 --report_prefix {PREFIX}".split()
-    )
-    report_path = _config.transient.data_dir / _config.reporting.report_dir
-    reportlines = (
-        open(report_path / f"{PREFIX}.report.jsonl", "r", encoding="utf-8")
-        .read()
-        .split("\n")
-    )
-    # Note: the line numbers below are based on respecting the `-g 1` options passed
-    complete_atkgen = json.loads(reportlines[3])  # status 2 for the one atkgen attempt
-    complete_dan = json.loads(reportlines[6])  # status 2 for the one dan attempt
-    assert complete_atkgen["notes"] != {}
-    assert complete_dan["notes"] == {}
-    assert complete_atkgen["notes"] != complete_dan["notes"]
+def test_prompt_structure():
+    p = garak.attempt.Prompt()
+    assert len(p.parts) == 0
+    assert p.text == None
+    TEST_STRING = "Do you know what the sad part is, Odo?"
+    p = garak.attempt.Prompt(text=TEST_STRING)
+    assert p.text == TEST_STRING
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -44,16 +32,17 @@ def cleanup(request):
     request.addfinalizer(remove_reports)
 
 
-def test_turn_taking():
+def test_attempt_turn_taking():
     a = garak.attempt.Attempt()
     assert a.messages == [], "Newly constructed attempt should have no message history"
     assert a.outputs == [], "Newly constructed attempt should have empty outputs"
     assert a.prompt is None, "Newly constructed attempt should have no prompt"
-    first_prompt = "what is up"
+    first_prompt_text = "what is up"
+    first_prompt = garak.attempt.Prompt(first_prompt_text)
     a.prompt = first_prompt
     assert (
         a.prompt == first_prompt
-    ), "Setting attempt.prompt on new prompt should lead to attempt.prompt returning that prompt string"
+    ), "Setting attempt.prompt on new prompt should lead to attempt.prompt returning that prompt object"
     assert a.messages == [{"role": "user", "content": first_prompt}]
     assert a.outputs == []
     first_response = ["not much", "as an ai"]
@@ -72,9 +61,9 @@ def test_turn_taking():
     assert a.outputs == first_response
 
 
-def test_history_lengths():
+def test_attempt_history_lengths():
     a = garak.attempt.Attempt()
-    a.prompt = "sup"
+    a.prompt = garak.attempt.Prompt("sup")
     assert len(a.messages) == 1, "Attempt with one prompt should have one history"
     generations = 4
     a.outputs = ["x"] * generations
@@ -84,18 +73,18 @@ def test_history_lengths():
     with pytest.raises(ValueError):
         a.outputs = ["x"] * (generations + 1)
     new_prompt_text = "y"
-    a.latest_prompts = [new_prompt_text] * generations
+    a.latest_prompts = [garak.attempt.Prompt(new_prompt_text)] * generations
     assert len(a.messages) == generations, "History should track all generations"
     assert len(a.messages[0]) == 3, "Three turns so far"
     assert (
         len(a.latest_prompts) == generations
     ), "Should be correct number of latest prompts"
-    assert (
-        a.latest_prompts[0] == new_prompt_text
+    assert a.latest_prompts[0] == garak.attempt.Prompt(
+        new_prompt_text
     ), "latest_prompts should be tracking latest addition"
 
 
-def test_illegal_ops():
+def test_attempt_illegal_ops():
     a = garak.attempt.Attempt()
     with pytest.raises(ValueError):
         a.latest_prompts = [
@@ -157,7 +146,7 @@ def test_illegal_ops():
         a.prompt = None  # "can't have 'None' as a prompting dialogue turn"
 
 
-def test_no_prompt_output_access():
+def test_attempt_no_prompt_output_access():
     a = garak.attempt.Attempt()
     with pytest.raises(TypeError):
         a.outputs = [
@@ -165,13 +154,13 @@ def test_no_prompt_output_access():
         ]  # should raise exception: message history can't be started w/o a prompt
 
 
-def test_reset_prompt():
+def test_attempt_reset_prompt():
     test2 = "obsidian"
 
     a = garak.attempt.Attempt()
     a.prompt = "prompt"
     a.prompt = test2
-    assert a.prompt == test2
+    assert a.prompt == garak.attempt.Prompt(test2)
 
     a = garak.attempt.Attempt()
     a._add_first_turn("user", "whatever")
@@ -179,24 +168,24 @@ def test_reset_prompt():
     assert a.prompt == test2
 
 
-def test_set_prompt_var():
+def test_attempt_set_prompt_var():
     test_text = "Plain Simple Garak"
     direct_attempt = garak.attempt.Attempt()
     direct_attempt.prompt = test_text
-    assert (
-        direct_attempt.prompt == test_text
-    ), "setting attempt.prompt should put the prompt text in attempt.prompt"
+    assert direct_attempt.prompt == garak.attempt.Prompt(
+        test_text
+    ), "setting attempt.prompt should put the a Prompt with the given text in attempt.prompt"
 
 
-def test_constructor_prompt():
+def test_attempt_constructor_prompt():
     test_text = "Plain Simple Garak"
     constructor_attempt = garak.attempt.Attempt(prompt=test_text)
-    assert (
-        constructor_attempt.prompt == test_text
-    ), "instantiating an Attempt with prompt in the constructor should put the prompt text in attempt.prompt"
+    assert constructor_attempt.prompt == garak.attempt.Prompt(
+        test_text
+    ), "instantiating an Attempt with prompt in the constructor should put a Prompt with the prompt text in attempt.prompt"
 
 
-def test_demo_dialogue_accessor_usage():
+def test_demo_attempt_dialogue_accessor_usage():
     test_prompt = "Plain Simple Garak"
     test_sys1 = "sys aa987h0f"
     test_user_reply = "user kjahsdg09"
@@ -205,29 +194,54 @@ def test_demo_dialogue_accessor_usage():
     demo_a = garak.attempt.Attempt()
 
     demo_a.prompt = test_prompt
-    assert demo_a.messages == [{"role": "user", "content": test_prompt}]
-    assert demo_a.prompt == test_prompt
+    assert demo_a.messages == [
+        {"role": "user", "content": garak.attempt.Prompt(test_prompt)}
+    ]
+    assert demo_a.prompt == garak.attempt.Prompt(test_prompt)
 
     demo_a.outputs = [test_sys1]
     assert demo_a.messages == [
         [
-            {"role": "user", "content": test_prompt},
+            {"role": "user", "content": garak.attempt.Prompt(test_prompt)},
             {"role": "assistant", "content": test_sys1},
         ]
     ]
     assert demo_a.outputs == [test_sys1]
 
-    demo_a.latest_prompts = [test_user_reply]
+    demo_a.latest_prompts = [garak.attempt.Prompt(test_user_reply)]
+    """
+    # target structure:
     assert demo_a.messages == [
         [
-            {"role": "user", "content": test_prompt},
+            {"role": "user", "content": garak.attempt.Prompt(test_prompt)},
             {"role": "assistant", "content": test_sys1},
-            {"role": "user", "content": test_user_reply},
+            {"role": "user", "content": garak.attempt.Prompt(test_user_reply)},
         ]
     ]
-    assert demo_a.latest_prompts == [test_user_reply]
+    """
+    assert isinstance(demo_a.messages, list)
+    assert len(demo_a.messages) == 1
+    assert isinstance(demo_a.messages[0], list)
+
+    assert len(demo_a.messages[0]) == 3
+    assert isinstance(demo_a.messages[0][0], dict)
+    assert set(demo_a.messages[0][0].keys()) == {"role", "content"}
+    assert demo_a.messages[0][0]["role"] == "user"
+    assert demo_a.messages[0][0]["content"] == garak.attempt.Prompt(test_prompt)
+
+    assert demo_a.messages[0][1] == {"role": "assistant", "content": test_sys1}
+
+    assert isinstance(demo_a.messages[0][2], dict)
+    assert set(demo_a.messages[0][2].keys()) == {"role", "content"}
+    assert demo_a.messages[0][2]["role"] == "user"
+    assert demo_a.messages[0][2]["content"] == garak.attempt.Prompt(test_user_reply)
+
+    assert demo_a.latest_prompts == [garak.attempt.Prompt(test_user_reply)]
 
     demo_a.outputs = [test_sys2]
+
+    """
+    # target structure:
     assert demo_a.messages == [
         [
             {"role": "user", "content": test_prompt},
@@ -236,10 +250,14 @@ def test_demo_dialogue_accessor_usage():
             {"role": "assistant", "content": test_sys2},
         ]
     ]
+    """
+    assert len(demo_a.messages[0]) == 4
+    assert demo_a.messages[0][3] == {"role": "assistant", "content": test_sys2}
+
     assert demo_a.outputs == [test_sys2]
 
 
-def test_demo_dialogue_method_usage():
+def test_demo_attempt_dialogue_method_usage():
     test_prompt = "Plain Simple Garak"
     test_sys1 = "sys aa987h0f"
     test_user_reply = "user kjahsdg09"
@@ -285,7 +303,7 @@ def test_demo_dialogue_method_usage():
     assert demo_a.outputs == [test_sys2]
 
 
-def test_outputs():
+def test_attempt_outputs():
     test_prompt = "Plain Simple Garak"
     test_sys1 = "sys aa987h0f"
     expansion = 2
@@ -318,7 +336,7 @@ def test_outputs():
     assert output_empty.outputs == []
 
 
-def test_all_outputs():
+def test_attempt_all_outputs():
     test_prompt = "Enabran Tain"
     test_sys1 = "sys Tzenketh"
     test_sys2 = "sys implant"
@@ -330,3 +348,25 @@ def test_all_outputs():
     all_output_a.outputs = [test_sys2] * expansion
 
     assert all_output_a.all_outputs == [test_sys1, test_sys2] * expansion
+
+
+PREFIX = "_garak_test_attempt_sticky_params"
+
+
+def test_attempt_sticky_params(capsys):
+
+    cli.main(
+        f"-m test.Blank -g 1 -p atkgen,dan.Dan_6_0 --report_prefix {PREFIX}".split()
+    )
+    report_path = _config.transient.data_dir / _config.reporting.report_dir
+    reportlines = (
+        open(report_path / f"{PREFIX}.report.jsonl", "r", encoding="utf-8")
+        .read()
+        .split("\n")
+    )
+    # Note: the line numbers below are based on respecting the `-g 1` options passed
+    complete_atkgen = json.loads(reportlines[3])  # status 2 for the one atkgen attempt
+    complete_dan = json.loads(reportlines[6])  # status 2 for the one dan attempt
+    assert complete_atkgen["notes"] != {}
+    assert complete_dan["notes"] == {}
+    assert complete_atkgen["notes"] != complete_dan["notes"]
