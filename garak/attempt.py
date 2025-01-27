@@ -285,7 +285,7 @@ class Attempt:
             self.messages.append({"role": role, "content": content})
             return
 
-    def _add_turn(self, role: str, contents: List[Turn]) -> None:
+    def _add_turn(self, role: str, contents: List[Union[Turn, str]]) -> None:
         """add a 'layer' to a message history.
 
         the contents should be as broad as the established number of
@@ -307,6 +307,8 @@ class Attempt:
 
         if role in roles:
             for idx, entry in enumerate(contents):
+                if isinstance(entry, str):
+                    entry = Turn(entry)
                 if not isinstance(entry, Turn):
                     raise ValueError("turns must be garak.attempt.Turn instances")
                 self.messages[idx].append({"role": role, "content": entry})
