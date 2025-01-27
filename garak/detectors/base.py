@@ -180,11 +180,11 @@ class StringDetector(Detector):
         for output in attempt.all_outputs:
             match = False
             output_text = output.text
-            if output is None:
+            if output_text is None:
                 continue
             for s in self.substrings:
                 if not case_sensitive:
-                    s, output = s.lower(), output_text.lower()
+                    s, output_text = s.lower(), output_text.lower()
 
                 if self.matchtype == "str":
                     if s in output_text:
