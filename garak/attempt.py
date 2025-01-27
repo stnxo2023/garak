@@ -139,7 +139,7 @@ class Attempt:
         }
 
     @property
-    def prompt(self):
+    def prompt(self) -> Turn:
         if len(self.messages) == 0:  # nothing set
             return None
         if isinstance(self.messages[0], dict):  # only initial prompt set
@@ -240,8 +240,11 @@ class Attempt:
         base_message = dict(self.messages[0])
         self.messages = [[base_message] for i in range(breadth)]
 
-    def _add_first_turn(self, role: str, content: Turn) -> None:
+    def _add_first_turn(self, role: str, content: Union[Turn, str]) -> None:
         """add the first turn (after a prompt) to a message history"""
+
+        if isinstance(content, str):
+            content = Turn(content)
 
         if len(self.messages):
             if isinstance(self.messages[0], list):
@@ -286,7 +289,7 @@ class Attempt:
         if role in roles:
             for idx, entry in enumerate(contents):
                 if not isinstance(entry, Turn):
-                    raise ValueError("")
+                    raise ValueError("turns must be garak.attempt.Turn instances")
                 self.messages[idx].append({"role": role, "content": entry})
             return
         raise ValueError(
