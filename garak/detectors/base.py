@@ -259,5 +259,5 @@ class FileDetector(Detector):
                 continue
 
             else:
-                test_result = self._test_file(local_filename)
+                test_result = self._test_file(local_filename.text)
                 yield test_result if test_result is not None else 0.0
