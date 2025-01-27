@@ -23,7 +23,6 @@ class Turn:
     Multi-turn queries should be composed of multiple Turn objects."""
 
     def __init__(self, text: Union[None, str] = None) -> None:
-
         self.text = text
         self.parts = []
 
@@ -48,6 +47,13 @@ class Turn:
         if self.parts != other.parts:
             return False
         return True
+
+    def to_dict(self) -> dict:
+        return {"text": self.text, "parts": self.parts}
+
+    def from_dict(self, turn_dict: dict):
+        self.text = turn_dict["text"]
+        self.parts = turn_dict["parts"]
 
 
 class Attempt:
@@ -134,12 +140,21 @@ class Attempt:
             "probe_classname": self.probe_classname,
             "probe_params": self.probe_params,
             "targets": self.targets,
-            "prompt": self.prompt,
-            "outputs": list(self.outputs),
+            "prompt": self.prompt.to_dict(),
+            "outputs": [o.to_dict() for o in list(self.outputs)],
             "detector_results": {k: list(v) for k, v in self.detector_results.items()},
             "notes": self.notes,
             "goal": self.goal,
-            "messages": self.messages,
+            "messages": [
+                [
+                    {
+                        "role": msg["role"],
+                        "content": msg["content"].to_dict(),
+                    }
+                    for msg in thread
+                ]
+                for thread in self.messages
+            ],
         }
 
     @property
@@ -230,7 +245,7 @@ class Attempt:
         assert isinstance(value, list)
         self._add_turn("user", value)
 
-    def _expand_prompt_to_histories(self, breadth):
+    def _expand_prompt_to_histories(self, breadth: int):
         """expand a prompt-only message history to many threads"""
         if len(self.messages) == 0:
             raise TypeError(

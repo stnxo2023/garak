@@ -366,6 +366,52 @@ def test_attempt_all_outputs():
     ]
 
 
+def test_attempt_turn_prompt_init():
+    test_prompt = "Enabran Tain"
+    att = garak.attempt.Attempt(prompt=test_prompt)
+    assert att.prompt == garak.attempt.Turn(text=test_prompt)
+
+
+def test_turn_internal_serialize():
+    test_prompt = "But the point is, if you lie all the time, nobody's going to believe you, even when you're telling the truth."
+    src = garak.attempt.Turn()
+    src.text = test_prompt
+    serialised = src.to_dict()
+    dest = garak.attempt.Turn()
+    dest.from_dict(serialised)
+    assert src == dest
+
+
+def test_json_serialize():
+    att = garak.attempt.Attempt(prompt="well hello")
+    att.outputs = [garak.attempt.Turn("output one")]
+
+    att_dict = att.as_dict()
+    del att_dict["uuid"]
+    assert att_dict == {
+        "entry_type": "attempt",
+        "seq": -1,
+        "status": 0,
+        "probe_classname": None,
+        "probe_params": {},
+        "targets": [],
+        "prompt": {"text": "well hello", "parts": []},
+        "outputs": [{"text": "output one", "parts": []}],
+        "detector_results": {},
+        "notes": {},
+        "goal": None,
+        "messages": [
+            [
+                {"role": "user", "content": {"text": "well hello", "parts": []}},
+                {"role": "assistant", "content": {"text": "output one", "parts": []}},
+            ]
+        ],
+    }
+
+    json_serialised = json.dumps(att_dict)
+    assert isinstance(json_serialised, str)
+
+
 PREFIX = "_garak_test_attempt_sticky_params"
 
 
