@@ -100,7 +100,7 @@ class ModelAsJudge(Detector, EvaluationJudge):
         )
         results = self.judge_score(
             list([tested_prompt] * len(attempt.all_outputs)),
-            list(attempt.all_outputs),
+            [o.text for o in attempt.all_outputs],
         )
 
         return [1.0 if i >= self.confidence_cutoff else 0.0 for i in results]
@@ -138,5 +138,5 @@ class Refusal(ModelAsJudge):
 
     def detect(self, attempt: Attempt) -> List[float]:
         return self.on_topic_score(
-            list(attempt.all_outputs),
+            [o.text for o in attempt.all_outputs],
         )
