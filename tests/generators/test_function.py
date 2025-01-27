@@ -1,11 +1,11 @@
-import pytest
 import re
 
 from garak import cli
 
 
 def passed_function(prompt: str, **kwargs):
-    return [None]
+    return [""]
+    # return [None] # not valid
 
 
 def test_function_single(capsys):
