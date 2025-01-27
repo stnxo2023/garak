@@ -134,9 +134,8 @@ class HFDetector(Detector, HFCompatible):
         # don't adjust attempt.outputs
 
         non_none_outputs = [
-            v.text for k, v in enumerate(attempt.all_outputs) if v is not None
+            v.text for k, v in enumerate(attempt.all_outputs) if v.text is not None
         ]
-        print(non_none_outputs)
         # non_none_offsets = [k for k,v in enumerate(attempt.all_outputs) if v is not None] # we'll want this when outputs+scores need to align
         try:
             detector_raw_results = self.detector(
