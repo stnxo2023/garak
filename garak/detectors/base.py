@@ -250,10 +250,10 @@ class FileDetector(Detector):
             )
 
         for local_filename in attempt.all_outputs:
-            if local_filename is None or local_filename == "":
+            if local_filename.text is None or local_filename.text == "":
                 continue
             if not os.path.isfile(
-                local_filename
+                local_filename.text
             ):  # skip missing files but also pipes, devices, etc
                 logging.info("Skipping non-file path %s", local_filename)
                 continue
