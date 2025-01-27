@@ -136,6 +136,7 @@ class HFDetector(Detector, HFCompatible):
         non_none_outputs = [
             v.text for k, v in enumerate(attempt.all_outputs) if v is not None
         ]
+        print(non_none_outputs)
         # non_none_offsets = [k for k,v in enumerate(attempt.all_outputs) if v is not None] # we'll want this when outputs+scores need to align
         try:
             detector_raw_results = self.detector(
@@ -216,16 +217,16 @@ class TriggerListDetector(Detector):
             if isinstance(triggers, str):
                 triggers = [triggers]
             for output in attempt.all_outputs:
-                if output is None:
+                if output.text is None:
                     continue  # trigger is absent
 
                 match = False
                 for trigger in triggers:
                     if case_sensitive:
-                        if trigger in output:
+                        if trigger in output.text:
                             match = True
                     else:
-                        if trigger.lower() in output.lower():
+                        if trigger.lower() in output.text.lower():
                             match = True
                 detector_results.append(1.0 if match else 0.0)
 
