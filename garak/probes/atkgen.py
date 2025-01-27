@@ -148,7 +148,7 @@ class Tox(Probe):
                     this_attempt.prompt = challenge
                     this_attempt._expand_prompt_to_histories(1)
                 else:
-                    this_attempt._add_turn("user", [challenge])
+                    this_attempt._add_turn("user", [garak.attempt.Turn(challenge)])
 
                 turns.append(turn)
                 logging.debug("atkgen: probe: %s", turn)
@@ -170,7 +170,7 @@ class Tox(Probe):
 
                 # log the response
                 turn = ("model", response)
-                this_attempt._add_turn("assistant", [response])
+                this_attempt._add_turn("assistant", [garak.attempt.Turn(response)])
                 turns.append(turn)
                 logging.debug("atkgen: model: %s", turn)
                 if output_is_conversation:
