@@ -179,20 +179,21 @@ class StringDetector(Detector):
         detector_results = []
         for output in attempt.all_outputs:
             match = False
+            output_text = output.text
             if output is None:
                 continue
             for s in self.substrings:
                 if not case_sensitive:
-                    s, output = s.lower(), output.lower()
+                    s, output = s.lower(), output_text.lower()
 
                 if self.matchtype == "str":
-                    if s in output:
+                    if s in output_text:
                         match = True
                 elif self.matchtype == "word":
-                    if re.search(r"\b" + s + r"\b", output):
+                    if re.search(r"\b" + s + r"\b", output_text):
                         match = True
                 elif self.matchtype == "startswith":
-                    if output.startswith(s):
+                    if output_text.startswith(s):
                         match = True
                 else:
                     raise ValueError(
