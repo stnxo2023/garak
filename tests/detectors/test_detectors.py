@@ -8,7 +8,7 @@ import re
 import types
 
 from garak import _plugins
-from garak.attempt import Attempt
+from garak.attempt import Attempt, Turn
 from garak.configurable import Configurable
 from garak.detectors.base import Detector
 from garak.exception import APIKeyMissingError
@@ -74,7 +74,7 @@ def test_detector_detect(classname):
 
     a.prompt = ""
     a.notes["format"] = "local filename"
-    a.outputs = ["", None]
+    a.outputs = [Turn(s) for s in ["", None]]
     a.detector_results = {"x": [0.0]}
     try:
         results = di.detect(a)
