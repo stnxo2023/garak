@@ -30,6 +30,10 @@ class Turn:
     def add_part(self, data) -> None:
         self.parts.append(data)
 
+    def add_part_from_file(self, filename: str) -> None:
+        with open(filename, "rb") as f:
+            self.add_part(f.read())
+
     def __str__(self):
         if len(self.parts) == 0:
             return self.text
