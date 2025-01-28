@@ -7,6 +7,7 @@ from typing import List
 
 import lorem
 
+from garak.attempt import Turn
 from garak.generators.base import Generator
 
 
@@ -17,8 +18,8 @@ class Blank(Generator):
     generator_family_name = "Test"
     name = "Blank"
 
-    def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
-        return [""] * generations_this_call
+    def _call_model(self, prompt: Turn, generations_this_call: int = 1) -> List[Turn]:
+        return [Turn("")] * generations_this_call
 
 
 class Repeat(Generator):
@@ -28,7 +29,7 @@ class Repeat(Generator):
     generator_family_name = "Test"
     name = "Repeat"
 
-    def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
+    def _call_model(self, prompt: Turn, generations_this_call: int = 1) -> List[Turn]:
         return [prompt] * generations_this_call
 
 
@@ -40,9 +41,9 @@ class Single(Generator):
     name = "Single"
     test_generation_string = "ELIM"
 
-    def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
+    def _call_model(self, prompt: Turn, generations_this_call: int = 1) -> List[Turn]:
         if generations_this_call == 1:
-            return [self.test_generation_string]
+            return [Turn(self.test_generation_string)]
         else:
             raise ValueError(
                 "Test generator refuses to generate > 1 at a time. Check generation logic"
@@ -57,9 +58,9 @@ class Lipsum(Generator):
     name = "Lorem Ipsum"
 
     def _call_model(
-        self, prompt: str, generations_this_call: int = 1
-    ) -> List[str | None]:
-        return [lorem.sentence() for i in range(generations_this_call)]
+        self, prompt: Turn, generations_this_call: int = 1
+    ) -> List[Turn | None]:
+        return [Turn(lorem.sentence()) for i in range(generations_this_call)]
 
 
 DEFAULT_CLASS = "Lipsum"

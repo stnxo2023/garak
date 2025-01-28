@@ -138,8 +138,8 @@ def test_parallel_requests():
         isinstance(item, Turn) for item in result
     ), "All items in the generate result should be Turns"
     assert all(
-        len(item) > 0 for item in result
-    ), "All generated strings should be non-empty"
+        len(item.text) > 0 for item in result
+    ), "All generated Turn texts should be non-empty"
 
 
 @pytest.mark.parametrize("classname", GENERATORS)
