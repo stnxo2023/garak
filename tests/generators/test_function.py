@@ -1,10 +1,11 @@
 import re
 
 from garak import cli
+from garak.attempt import Turn
 
 
-def passed_function(prompt: str, **kwargs):
-    return [""]
+def passed_function(prompt: Turn, **kwargs):
+    return [Turn("")]
     # return [None] # not valid
 
 
