@@ -6,6 +6,7 @@ from garak.generators.azure import AzureOpenAIGenerator
 
 DEFAULT_DEPLOYMENT_NAME = "gpt-4o-deployment-test"
 
+
 @pytest.fixture
 def set_fake_env(request) -> None:
     stored_env = {
@@ -17,12 +18,14 @@ def set_fake_env(request) -> None:
             AzureOpenAIGenerator.ENDPOINT_ENV_VAR, None
         ),
     }
+
     def restore_env():
         for k, v in stored_env.items():
             if v is not None:
                 os.environ[k] = v
             else:
                 del os.environ[k]
+
     os.environ[AzureOpenAIGenerator.ENV_VAR] = "test_value"
     os.environ[AzureOpenAIGenerator.MODEL_NAME_ENV_VAR] = "gpt-4o"
     os.environ[AzureOpenAIGenerator.ENDPOINT_ENV_VAR] = "https://garak.example.com/"
