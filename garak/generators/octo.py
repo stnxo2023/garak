@@ -94,7 +94,7 @@ class InferenceEndpoint(OctoGenerator):
                 "messages": [
                     {
                         "role": "user",
-                        "content": prompt,
+                        "content": prompt.text,
                     }
                 ],
                 "max_tokens": self.max_tokens,

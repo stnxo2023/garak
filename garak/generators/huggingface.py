@@ -110,8 +110,8 @@ class Pipeline(Generator, HFCompatible):
         return [{"role": "user", "content": prompt}]
 
     def _call_model(
-        self, prompt: str, generations_this_call: int = 1
-    ) -> List[Union[str, None]]:
+        self, prompt: Turn, generations_this_call: int = 1
+    ) -> List[Union[Turn, None]]:
         self._load_client()
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=UserWarning)
@@ -121,9 +121,9 @@ class Pipeline(Generator, HFCompatible):
                     # chat template should be automatically utilized if the pipeline tokenizer has support
                     # and a properly formatted list[dict] is supplied
                     if self.use_chat:
-                        formatted_prompt = self._format_chat_prompt(prompt)
+                        formatted_prompt = self._format_chat_prompt(prompt.text)
                     else:
-                        formatted_prompt = prompt
+                        formatted_prompt = prompt.text
 
                     raw_output = self.generator(
                         formatted_prompt,

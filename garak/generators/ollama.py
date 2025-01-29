@@ -49,7 +49,7 @@ class OllamaGenerator(Generator):
     def _call_model(
         self, prompt: Turn, generations_this_call: int = 1
     ) -> List[Union[Turn, None]]:
-        response = self.client.generate(self.name, prompt)
+        response = self.client.generate(self.name, prompt.text)
         return [Turn(response.get("response", None))]
 
 

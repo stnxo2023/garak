@@ -29,7 +29,6 @@ python -m garak --model_type litellm --model_name "phi" --generator_option_file 
 
 import logging
 
-from os import getenv
 from typing import List, Union
 
 import backoff
