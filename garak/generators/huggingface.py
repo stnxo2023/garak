@@ -107,8 +107,8 @@ class Pipeline(Generator, HFCompatible):
     def _clear_client(self):
         self.generator = None
 
-    def _format_chat_prompt(self, prompt: str) -> List[dict]:
-        return [{"role": "user", "content": prompt}]
+    def _format_chat_prompt(self, chat_prompt_string: str) -> List[dict]:
+        return [{"role": "user", "content": chat_prompt_string}]
 
     def _call_model(
         self, prompt: Turn, generations_this_call: int = 1
@@ -147,10 +147,12 @@ class Pipeline(Generator, HFCompatible):
         else:
             text_outputs = outputs
 
-        if not self.deprefix_prompt:
-            return text_outputs
-        else:
-            return [re.sub("^" + re.escape(prompt.text), "", _o) for _o in text_outputs]
+        if self.deprefix_prompt:
+            text_outputs = [
+                re.sub("^" + re.escape(prompt.text), "", _o) for _o in text_outputs
+            ]
+
+        return [Turn(t) for t in text_outputs]
 
 
 class OptimumPipeline(Pipeline, HFCompatible):
@@ -240,9 +242,7 @@ class InferenceAPI(Generator):
         ),
         max_value=125,
     )
-    def _call_model(
-        self, prompt: str, generations_this_call: int = 1
-    ) -> List[Union[str, None]]:
+    def _call_model(self, prompt: Turn, generations_this_call: int = 1) -> List[Turn]:
         import json
         import requests
 
@@ -315,7 +315,7 @@ class InferenceAPI(Generator):
                     f"Unsure how to parse 🤗 API response dict: {response}, please open an issue at https://github.com/NVIDIA/garak/issues including this message"
                 )
         elif isinstance(response, list):
-            return [g["generated_text"] for g in response]
+            return [Turn(g["generated_text"]) for g in response]
         else:
             raise TypeError(
                 f"Unsure how to parse 🤗 API response type: {response}, please open an issue at https://github.com/NVIDIA/garak/issues including this message"
@@ -350,9 +350,7 @@ class InferenceEndpoint(InferenceAPI):
         ),
         max_value=125,
     )
-    def _call_model(
-        self, prompt: str, generations_this_call: int = 1
-    ) -> List[Union[str, None]]:
+    def _call_model(self, prompt: Turn, generations_this_call: int = 1) -> List[Turn]:
         import requests
 
         payload = {
@@ -380,7 +378,7 @@ class InferenceEndpoint(InferenceAPI):
             raise IOError(
                 "Hugging Face 🤗 endpoint didn't generate a response. Make sure the endpoint is active."
             ) from exc
-        return [output]
+        return [Turn(output)]
 
 
 class Model(Pipeline, HFCompatible):
@@ -442,9 +440,7 @@ class Model(Pipeline, HFCompatible):
         self.tokenizer = None
         self.generation_config = None
 
-    def _call_model(
-        self, prompt: str, generations_this_call: int = 1
-    ) -> List[Union[str, None]]:
+    def _call_model(self, prompt: Turn, generations_this_call: int = 1) -> List[Turn]:
         self._load_client()
         self.generation_config.max_new_tokens = self.max_tokens
         self.generation_config.do_sample = self.hf_args["do_sample"]
@@ -460,12 +456,12 @@ class Model(Pipeline, HFCompatible):
             with torch.no_grad():
                 if self.use_chat:
                     formatted_prompt = self.tokenizer.apply_chat_template(
-                        self._format_chat_prompt(prompt),
+                        self._format_chat_prompt(prompt.text),
                         tokenize=False,
                         add_generation_prompt=True,
                     )
                 else:
-                    formatted_prompt = prompt
+                    formatted_prompt = prompt.text
 
                 inputs = self.tokenizer(
                     formatted_prompt, truncation=True, return_tensors="pt"
@@ -480,7 +476,7 @@ class Model(Pipeline, HFCompatible):
                         **inputs, generation_config=self.generation_config
                     )
                 except Exception as e:
-                    if len(prompt) == 0:
+                    if len(prompt.text) == 0:
                         returnval = [None] * generations_this_call
                         logging.exception("Error calling generate for empty prompt")
                         print(returnval)
@@ -499,10 +495,12 @@ class Model(Pipeline, HFCompatible):
         else:
             text_output = raw_text_output
 
-        if not self.deprefix_prompt:
-            return text_output
-        else:
-            return [re.sub("^" + re.escape(prefix_prompt), "", i) for i in text_output]
+        if self.deprefix_prompt:
+            text_output = [
+                re.sub("^" + re.escape(prefix_prompt), "", i) for i in text_output
+            ]
+
+        return [Turn(t) for t in text_output]
 
 
 class LLaVA(Generator, HFCompatible):
