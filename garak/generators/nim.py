@@ -10,6 +10,7 @@ from typing import List, Union
 import openai
 
 from garak import _config
+from garak.attempt import Turn
 from garak.exception import GarakException
 from garak.generators.openai import OpenAICompatible
 
@@ -67,8 +68,8 @@ class NVOpenAIChat(OpenAICompatible):
         return prompt
 
     def _call_model(
-        self, prompt: str | List[dict], generations_this_call: int = 1
-    ) -> List[Union[str, None]]:
+        self, prompt: Turn, generations_this_call: int = 1
+    ) -> List[Union[Turn, None]]:
         assert (
             generations_this_call == 1
         ), "generations_per_call / n > 1 is not supported"
@@ -146,14 +147,11 @@ class Vision(NVOpenAIChat):
 
     modality = {"in": {"text", "image"}, "out": {"text"}}
 
-    def _prepare_prompt(self, prompt):
+    def _prepare_prompt(self, turn):
         import base64
 
-        if isinstance(prompt, str):
-            prompt = {"text": prompt, "image": None}
-
-        text = prompt["text"]
-        image_filename = prompt["image"]
+        text = turn.text
+        image_filename = turn.parts["image_filename"]
         if image_filename is not None:
             with open(image_filename, "rb") as f:
                 image_b64 = base64.b64encode(f.read()).decode()
@@ -165,13 +163,14 @@ class Vision(NVOpenAIChat):
                 )
                 return None
 
-            image_extension = prompt["image"].split(".")[-1].lower()
+            image_extension = turn.parts["image_filename"].split(".")[-1].lower()
             if image_extension == "jpg":  # image/jpg is not a valid mimetype
                 image_extension = "jpeg"
             text = (
                 text + f' <img src="data:image/{image_extension};base64,{image_b64}" />'
             )
-        return text
+        turn.text = text
+        return turn
 
 
 DEFAULT_CLASS = "NVOpenAIChat"
