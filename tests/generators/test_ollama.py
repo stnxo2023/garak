@@ -2,7 +2,6 @@ import pytest
 import ollama
 import respx
 import httpx
-from httpx import ConnectError
 from garak.generators.ollama import OllamaGeneratorChat, OllamaGenerator
 
 PINGED_OLLAMA_SERVER = (
@@ -19,7 +18,7 @@ def ollama_is_running():
         try:
             ollama.list()  # Gets a list of all pulled models. Used as a ping
             OLLAMA_SERVER_UP = True
-        except ConnectError:
+        except ConnectionError:
             OLLAMA_SERVER_UP = False
         finally:
             PINGED_OLLAMA_SERVER = True
