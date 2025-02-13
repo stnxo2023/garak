@@ -10,6 +10,7 @@ import backoff
 import octoai.errors
 
 from garak import _config
+from garak.attempt import Turn
 from garak.generators.base import Generator
 
 

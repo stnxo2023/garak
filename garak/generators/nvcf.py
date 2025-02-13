@@ -12,6 +12,7 @@ import backoff
 import requests
 
 from garak import _config
+from garak.attempt import Turn
 from garak.exception import ModelNameMissingError, BadGeneratorException
 from garak.generators.base import Generator
 
