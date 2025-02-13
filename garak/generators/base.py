@@ -97,6 +97,8 @@ class Generator(Configurable):
         Avoid overriding this - try to override _call_model or _call_api
         """
 
+        assert isinstance(prompt, Turn), "generate() must take a Turn object"
+
         self._pre_generate_hook()
 
         assert (
