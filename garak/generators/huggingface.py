@@ -24,6 +24,7 @@ import torch
 from PIL import Image
 
 from garak import _config
+from garak.attempt import Turn
 from garak.exception import ModelNameMissingError, GarakException
 from garak.generators.base import Generator
 from garak.resources.api.huggingface import HFCompatible
@@ -149,7 +150,7 @@ class Pipeline(Generator, HFCompatible):
         if not self.deprefix_prompt:
             return text_outputs
         else:
-            return [re.sub("^" + re.escape(prompt), "", _o) for _o in text_outputs]
+            return [re.sub("^" + re.escape(prompt.text), "", _o) for _o in text_outputs]
 
 
 class OptimumPipeline(Pipeline, HFCompatible):
@@ -196,71 +197,6 @@ class OptimumPipeline(Pipeline, HFCompatible):
                 self.deprefix_prompt = True
 
         self._set_hf_context_len(self.generator.model.config)
-
-
-class ConversationalPipeline(Pipeline, HFCompatible):
-    """Conversational text generation using HuggingFace pipelines"""
-
-    generator_family_name = "Hugging Face 🤗 pipeline for conversations"
-    supports_multiple_generations = True
-
-    def _load_client(self):
-        if hasattr(self, "generator") and self.generator is not None:
-            return
-
-        from transformers import pipeline, set_seed, Conversation
-
-        if _config.run.seed is not None:
-            set_seed(_config.run.seed)
-
-        # Note that with pipeline, in order to access the tokenizer, model, or device, you must get the attribute
-        # directly from self.generator instead of from the ConversationalPipeline object itself.
-        pipline_kwargs = self._gather_hf_params(hf_constructor=pipeline)
-        self.generator = pipeline("conversational", **pipline_kwargs)
-        self.conversation = Conversation()
-        if not hasattr(self, "deprefix_prompt"):
-            self.deprefix_prompt = self.name in models_to_deprefix
-        if _config.loaded:
-            if _config.run.deprefix is True:
-                self.deprefix_prompt = True
-
-        self._set_hf_context_len(self.generator.model.config)
-
-    def clear_history(self):
-        from transformers import Conversation
-
-        self.conversation = Conversation()
-
-    def _call_model(
-        self, prompt: Union[str, List[dict]], generations_this_call: int = 1
-    ) -> List[Union[str, None]]:
-        """Take a conversation as a list of dictionaries and feed it to the model"""
-
-        self._load_client()
-        # If conversation is provided as a list of dicts, create the conversation.
-        # Otherwise, maintain state in Generator
-        if isinstance(prompt, str):
-            self.conversation.add_message({"role": "user", "content": prompt})
-            self.conversation = self.generator(self.conversation)
-            generations = [self.conversation[-1]["content"]]  # what is this doing?
-
-        elif isinstance(prompt, list):
-            from transformers import Conversation
-
-            conversation = Conversation()
-            for item in prompt:
-                conversation.add_message(item)
-            with torch.no_grad():
-                conversation = self.generator(conversation)
-
-            outputs = [conversation[-1]["content"]]
-        else:
-            raise TypeError(f"Expected list or str, got {type(prompt)}")
-
-        if not self.deprefix_prompt:
-            return outputs
-        else:
-            return [re.sub("^" + re.escape(prompt), "", _o) for _o in outputs]
 
 
 class InferenceAPI(Generator):
