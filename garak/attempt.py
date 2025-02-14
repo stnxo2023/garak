@@ -20,24 +20,38 @@ class Turn:
     they may also be (or include) images, audio, files, or even a composition of
     these. The Turn object encapsulates this flexibility.
 
-    Multi-turn queries should be composed of multiple Turn objects."""
+    Multi-turn queries should be composed of multiple Turn objects.
+
+
+    Turns must always have a `text` part, which is set to `None` by default."""
+
+    @property
+    def text(self) -> Union[None, str]:
+        if "text" in self.parts:
+            return self.parts["text"]
+        else:
+            return None
+
+    @text.setter
+    def text(self, value: Union[None, str]) -> None:
+        self.parts["text"] = value
 
     def __init__(self, text: Union[None, str] = None) -> None:
+        self.parts = {}
         self.text = text
-        self.parts = []
 
-    def add_part(self, data) -> None:
-        self.parts.append(data)
+    def add_part(self, name, data) -> None:
+        self.parts[name] = data
 
-    def add_part_from_file(self, filename: str) -> None:
+    def add_part_from_file(self, name, filename: str) -> None:
         with open(filename, "rb") as f:
-            self.add_part(f.read())
+            self.parts[name] = f.read()
 
     def __str__(self):
         if len(self.parts) == 0:
             return self.text
         else:
-            return "(" + repr(self.text) + ", " + repr(self.parts) + ")"
+            return "(" + repr(self.parts) + ")"
 
     def __eq__(self, other):
         if not isinstance(other, Turn):
@@ -49,11 +63,10 @@ class Turn:
         return True
 
     def to_dict(self) -> dict:
-        return {"text": self.text, "parts": self.parts}
+        return self.parts
 
     def from_dict(self, turn_dict: dict):
-        self.text = turn_dict["text"]
-        self.parts = turn_dict["parts"]
+        self.parts = turn_dict
 
 
 class Attempt:

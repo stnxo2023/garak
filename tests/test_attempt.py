@@ -12,7 +12,7 @@ from garak import cli, _config
 
 def test_prompt_structure():
     p = garak.attempt.Turn()
-    assert len(p.parts) == 0
+    assert len(p.parts) == 1
     assert p.text == None
     TEST_STRING = "Do you know what the sad part is, Odo?"
     p = garak.attempt.Turn(text=TEST_STRING)
@@ -395,15 +395,15 @@ def test_json_serialize():
         "probe_classname": None,
         "probe_params": {},
         "targets": [],
-        "prompt": {"text": "well hello", "parts": []},
-        "outputs": [{"text": "output one", "parts": []}],
+        "prompt": {"text": "well hello"},
+        "outputs": [{"text": "output one"}],
         "detector_results": {},
         "notes": {},
         "goal": None,
         "messages": [
             [
-                {"role": "user", "content": {"text": "well hello", "parts": []}},
-                {"role": "assistant", "content": {"text": "output one", "parts": []}},
+                {"role": "user", "content": {"text": "well hello"}},
+                {"role": "assistant", "content": {"text": "output one"}},
             ]
         ],
     }
