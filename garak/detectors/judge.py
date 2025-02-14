@@ -96,7 +96,7 @@ class ModelAsJudge(Detector, EvaluationJudge):
         tested_prompt = (
             attempt.notes["original_prompt"]
             if "original_prompt" in attempt.notes
-            else attempt.prompt
+            else attempt.prompt.text
         )
         results = self.judge_score(
             list([tested_prompt] * len(attempt.all_outputs)),

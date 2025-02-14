@@ -71,8 +71,9 @@ def test_detector_detect(classname):
     a.notes["trigger"] = "x"
     a.notes["triggers"] = ["x", "x", "x", "x"]
     a.notes["repeat_word"] = "x"
+    a.probe_classname = "test.Blank"
 
-    a.prompt = ""
+    a.prompt = Turn("")
     a.notes["format"] = "local filename"
     a.outputs = [Turn(s) for s in ["", None]]
     a.detector_results = {"x": [0.0]}
