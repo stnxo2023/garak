@@ -7,10 +7,7 @@
                     "finish_reason": "stop",
                     "index": 0,
                     "logprobs": null,
-                    "message": {
-                        "content": "This is a test!",
-                        "role": "assistant"
-                    }
+                    "message": {"content": "This is a test!", "role": "assistant"},
                 }
             ],
             "created": 1724052469,
@@ -21,36 +18,21 @@
                 {
                     "prompt_index": 0,
                     "content_filter_results": {
-                        "hate": {
-                            "filtered": false,
-                            "severity": "safe"
-                        },
-                        "jailbreak": {
-                            "filtered": false,
-                            "detected": false
-                        },
-                        "self_harm": {
-                            "filtered": false,
-                            "severity": "safe"
-                        },
-                        "sexual": {
-                            "filtered": false,
-                            "severity": "safe"
-                        },
-                        "violence": {
-                            "filtered": false,
-                            "severity": "safe"
-                        }
-                    }
+                        "hate": {"filtered": false, "severity": "safe"},
+                        "jailbreak": {"filtered": false, "detected": false},
+                        "self_harm": {"filtered": false, "severity": "safe"},
+                        "sexual": {"filtered": false, "severity": "safe"},
+                        "violence": {"filtered": false, "severity": "safe"},
+                    },
                 }
             ],
             "system_fingerprint": "fp_abc28019ad",
             "usage": {
                 "completion_tokens": 171,
                 "prompt_tokens": 42,
-                "total_tokens": 213
-            }
-        }
+                "total_tokens": 213,
+            },
+        },
     },
     "completion": {
         "code": 200,
@@ -65,15 +47,11 @@
                     "text": "This is indeed a test",
                     "index": 0,
                     "logprobs": null,
-                    "finish_reason": "length"
+                    "finish_reason": "length",
                 }
             ],
-            "usage": {
-                "prompt_tokens": 5,
-                "completion_tokens": 7,
-                "total_tokens": 12
-            }
-        }
+            "usage": {"prompt_tokens": 5, "completion_tokens": 7, "total_tokens": 12},
+        },
     },
     "chat": {
         "code": 200,
@@ -82,20 +60,16 @@
             "object": "chat.completion",
             "created": 1677858242,
             "model": "gpt-3.5-turbo-0613",
-            "usage": {
-                "prompt_tokens": 13,
-                "completion_tokens": 7,
-                "total_tokens": 20
-            },
+            "usage": {"prompt_tokens": 13, "completion_tokens": 7, "total_tokens": 20},
             "choices": [
                 {
                     "message": {"role": "assistant", "content": "This is a test!"},
                     "logprobs": null,
                     "finish_reason": "stop",
-                    "index": 0
+                    "index": 0,
                 }
-            ]
-        }
+            ],
+        },
     },
     "auth_fail": {
         "code": 401,
@@ -104,9 +78,9 @@
                 "message": "Incorrect API key provided: invalid_***_key. You can find your API key at https://platform.openai.com/account/api-keys.",
                 "type": "invalid_request_error",
                 "param": null,
-                "code": "invalid_api_key"
+                "code": "invalid_api_key",
             }
-        }
+        },
     },
     "models": {
         "code": 200,
@@ -117,22 +91,22 @@
                     "id": "model-id-0",
                     "object": "model",
                     "created": 1686935002,
-                    "owned_by": "organization-owner"
+                    "owned_by": "organization-owner",
                 },
                 {
                     "id": "model-id-1",
                     "object": "model",
                     "created": 1686935002,
-                    "owned_by": "organization-owner"
+                    "owned_by": "organization-owner",
                 },
                 {
                     "id": "model-id-2",
                     "object": "model",
                     "created": 1686935002,
-                    "owned_by": "openai"
-                }
+                    "owned_by": "openai",
+                },
             ],
-            "object": "list"
-        }
-    }
+            "object": "list",
+        },
+    },
 }

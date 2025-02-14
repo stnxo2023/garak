@@ -1,7 +1,8 @@
 import pytest
 import ollama
-import respx
 import httpx
+
+from garak.attempt import Turn
 from garak.generators.ollama import OllamaGeneratorChat, OllamaGenerator
 
 PINGED_OLLAMA_SERVER = (
@@ -34,10 +35,10 @@ def no_models():
     reason=f"Ollama server is not currently running",
 )
 def test_error_on_nonexistant_model_chat():
-    model_name = "non-existant-model"
+    model_name = "non-existent-model"
     gen = OllamaGeneratorChat(model_name)
     with pytest.raises(ollama.ResponseError):
-        gen.generate("This shouldnt work")
+        gen.generate(Turn("This shouldnt work"))
 
 
 @pytest.mark.skipif(
@@ -48,7 +49,7 @@ def test_error_on_nonexistant_model():
     model_name = "non-existant-model"
     gen = OllamaGenerator(model_name)
     with pytest.raises(ollama.ResponseError):
-        gen.generate("This shouldnt work")
+        gen.generate(Turn("This shouldnt work"))
 
 
 @pytest.mark.skipif(
@@ -63,9 +64,9 @@ def test_error_on_nonexistant_model():
 def test_generation_on_pulled_model_chat():
     model_name = ollama.list()["models"][0]["name"]
     gen = OllamaGeneratorChat(model_name)
-    responses = gen.generate('Say "Hello!"')
+    responses = gen.generate(Turn('Say "Hello!"'))
     assert len(responses) == 1
-    assert all(isinstance(response, str) for response in responses)
+    assert all(isinstance(response, Turn) for response in responses)
     assert all(len(response) > 0 for response in responses)
 
 
@@ -81,9 +82,9 @@ def test_generation_on_pulled_model_chat():
 def test_generation_on_pulled_model():
     model_name = ollama.list()["models"][0]["name"]
     gen = OllamaGenerator(model_name)
-    responses = gen.generate('Say "Hello!"')
+    responses = gen.generate(Turn('Say "Hello!"'))
     assert len(responses) == 1
-    assert all(isinstance(response, str) for response in responses)
+    assert all(isinstance(response, Turn) for response in responses)
     assert all(len(response) > 0 for response in responses)
 
 
@@ -94,8 +95,8 @@ def test_ollama_generation_mocked(respx_mock):
         return_value=httpx.Response(200, json=mock_response)
     )
     gen = OllamaGenerator("mistral")
-    generation = gen.generate("Bla bla")
-    assert generation == ["Hello how are you?"]
+    generation = gen.generate(Turn("Bla bla"))
+    assert generation == [Turn("Hello how are you?")]
 
 
 @pytest.mark.respx(base_url="http://" + OllamaGenerator.DEFAULT_PARAMS["host"])
@@ -108,8 +109,8 @@ def test_ollama_generation_chat_mocked(respx_mock):
         return_value=httpx.Response(200, json=mock_response)
     )
     gen = OllamaGeneratorChat("mistral")
-    generation = gen.generate("Bla bla")
-    assert generation == ["Hello how are you?"]
+    generation = gen.generate(Turn("Bla bla"))
+    assert generation == [Turn("Hello how are you?")]
 
 
 @pytest.mark.respx(base_url="http://" + OllamaGenerator.DEFAULT_PARAMS["host"])
@@ -121,7 +122,7 @@ def test_error_on_nonexistant_model_mocked(respx_mock):
     model_name = "non-existant-model"
     gen = OllamaGenerator(model_name)
     with pytest.raises(ollama.ResponseError):
-        gen.generate("This shouldnt work")
+        gen.generate(Turn("This shouldnt work"))
 
 
 @pytest.mark.respx(base_url="http://" + OllamaGenerator.DEFAULT_PARAMS["host"])
@@ -133,4 +134,4 @@ def test_error_on_nonexistant_model_chat_mocked(respx_mock):
     model_name = "non-existant-model"
     gen = OllamaGeneratorChat(model_name)
     with pytest.raises(ollama.ResponseError):
-        gen.generate("This shouldnt work")
+        gen.generate(Turn("This shouldnt work"))
