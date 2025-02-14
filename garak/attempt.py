@@ -48,7 +48,7 @@ class Turn:
             self.parts[name] = f.read()
 
     def __str__(self):
-        if len(self.parts) == 0:
+        if len(self.parts) == 1:
             return self.text
         else:
             return "(" + repr(self.parts) + ")"
