@@ -20,6 +20,7 @@ import openai
 import backoff
 
 from garak import _config
+from garak.attempt import Turn
 import garak.exception
 from garak.generators.base import Generator
 
@@ -207,8 +208,8 @@ class OpenAICompatible(Generator):
         max_value=70,
     )
     def _call_model(
-        self, prompt: Union[str, List[dict]], generations_this_call: int = 1
-    ) -> List[Union[str, None]]:
+        self, prompt: Union[Turn, List[dict]], generations_this_call: int = 1
+    ) -> List[Union[Turn, None]]:
         if self.client is None:
             # reload client once when consuming the generator
             self._load_client()
@@ -224,9 +225,9 @@ class OpenAICompatible(Generator):
                 create_args[arg] = getattr(self, arg)
 
         if self.generator == self.client.completions:
-            if not isinstance(prompt, str):
+            if not isinstance(prompt, Turn):
                 msg = (
-                    f"Expected a string for {self.generator_family_name} completions model {self.name}, but got {type(prompt)}. "
+                    f"Expected a Turn for {self.generator_family_name} completions model {self.name}, but got {type(prompt)}. "
                     f"Returning nothing!"
                 )
                 logging.error(msg)
@@ -235,13 +236,13 @@ class OpenAICompatible(Generator):
             create_args["prompt"] = prompt
 
         elif self.generator == self.client.chat.completions:
-            if isinstance(prompt, str):
-                messages = [{"role": "user", "content": prompt}]
+            if isinstance(prompt, Turn):
+                messages = [{"role": "user", "content": prompt.text}]
             elif isinstance(prompt, list):
                 messages = prompt
             else:
                 msg = (
-                    f"Expected a list of dicts for {self.generator_family_name} Chat model {self.name}, but got {type(prompt)} instead. "
+                    f"Expected a Turn or list of dicts for {self.generator_family_name} Chat model {self.name}, but got {type(prompt)} instead. "
                     f"Returning nothing!"
                 )
                 logging.error(msg)
