@@ -255,7 +255,7 @@ class RestGenerator(Generator):
             raise ConnectionError(error_msg)
 
         if not self.response_json:
-            return [str(resp.text)]
+            return [Turn(str(resp.text))]
 
         response_object = json.loads(resp.content)
 
