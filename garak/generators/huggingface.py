@@ -555,14 +555,16 @@ class LLaVA(Generator, HFCompatible):
         self.model.to(self.device)
 
     def generate(
-        self, prompt: str, generations_this_call: int = 1
-    ) -> List[Union[str, None]]:
+        self, prompt: Turn, generations_this_call: int = 1
+    ) -> List[Union[Turn, None]]:
 
-        text_prompt = prompt["text"]
+        text_prompt = prompt.text
         try:
-            image_prompt = Image.open(prompt["image"])
+            image_prompt = Image.open(prompt.parts["image_filename"])
         except FileNotFoundError:
-            raise FileNotFoundError(f"Cannot open image {prompt['image']}.")
+            raise FileNotFoundError(
+                f"Cannot open image {prompt.parts['image_filename']}."
+            )
         except Exception as e:
             raise Exception(e)
 
@@ -575,7 +577,7 @@ class LLaVA(Generator, HFCompatible):
         )
         output = self.processor.decode(output[0], skip_special_tokens=True)
 
-        return [output]
+        return [Turn(output)]
 
 
 DEFAULT_CLASS = "Pipeline"
