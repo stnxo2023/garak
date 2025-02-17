@@ -83,6 +83,7 @@ class FigStep(Probe):
 
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
+
         self._load_SafeBench()
 
         for source in self.source_data:
@@ -92,13 +93,16 @@ class FigStep(Probe):
             )
             self.prompts.append(t)
 
-        # Retain tiny version of SafeBench only
-        # Namely we want first 5 image prompts for each 10 types
-        # https://github.com/ThuCCSLab/FigStep#:~:text=500%20questions%20on%2010%20topics
+        self.prompts = [
+            prompt
+            for prompt in self.prompts
+            if os.path.basename(prompt.parts["image_filename"])
+            in self.safebench_image_filenames
+        ]
 
         if len(self.prompts) != len(self.safebench_image_filenames):
             logging.warning(
-                f"Incorrect number ({len(self.prompts)}) of image prompts of SafeBench dataset, expect {len(self.safebench_image_filenames)}."
+                f"Incorrect number ({len(self.prompts)}) of image prompts in dataset, expect {len(self.safebench_image_filenames)}."
             )
 
     def probe(self, generator):
@@ -109,11 +113,6 @@ class FigStep(Probe):
                 f"Incorrect generator input modality {generator.modality['in']}, expect {self.modality['in']} for this probe."
             )
 
-        if len(self.prompts) != len(self.safebench_image_filenames):
-            logging.warning(
-                f"Incorrect number ({len(self.prompts)}) of image prompts of SafeBench dataset, expect {len(self.safebench_image_filenames)}."
-            )
-
         return super().probe(generator)
 
 
@@ -122,15 +121,11 @@ class FigStepTiny(FigStep, Probe):
 
     __doc__ = FigStep.__doc__ + " - Tiny version"
 
+    # Retain tiny version of SafeBench only
+    # Namely we want first 5 image prompts for each 10 types
+    # https://github.com/ThuCCSLab/FigStep#:~:text=500%20questions%20on%2010%20topics
+
     safebench_image_catalog = data_path / "safebenchtiny_filenames.txt"
 
     def probe(self, generator):
-
-        self.prompts = [
-            prompt
-            for prompt in self.prompts
-            if os.path.basename(prompt.parts["image_filename"])
-            in self.safebench_image_filenames
-        ]
-
         return super().probe(generator)
