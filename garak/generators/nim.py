@@ -91,11 +91,14 @@ class NVOpenAIChat(OpenAICompatible):
             msg = "Model call didn't match endpoint expectations, see log"
             logging.critical(msg, exc_info=uee)
             raise GarakException(f"🛑 {msg}") from uee
-        #        except openai.NotFoundError as oe:
-        except Exception as oe:
-            msg = "NIM endpoint not found. Is the model name spelled correctly?"
-            logging.critical(msg, exc_info=oe)
-            raise GarakException(f"🛑 {msg}") from oe
+        except openai.NotFoundError as nfe:
+            msg = "NIM endpoint not found. Is the model name spelled correctly and the endpoint URI correct?"
+            logging.critical(msg, exc_info=nfe)
+            raise GarakException(f"🛑 {msg}") from nfe
+        except Exception as e:
+            msg = "NIM API setup failed - verify config and endpoint status"
+            logging.critical(msg, exc_info=e)
+            raise GarakException(f"🛑 {msg}") from nfe
 
         return result
 
