@@ -13,7 +13,7 @@ import uuid
 roles = {"system", "user", "assistant"}
 
 
-class Turn:
+class Turn(dict):
     """Object to represent a single turn posed to or received from a generator
 
     Turns can be prompts, replies, system prompts. While many prompts are text,
