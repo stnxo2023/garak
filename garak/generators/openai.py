@@ -309,8 +309,8 @@ class OpenAIGenerator(OpenAICompatible):
                 f"No {self.generator_family_name} API defined for '{self.name}' in generators/openai.py - please add one!"
             )
 
-        if self.__class__.__name__ == "OpenAIGenerator" and self.name.startswith("o1-"):
-            msg = "'o1'-class models should use openai.OpenAIReasoningGenerator. Try e.g. `-m openai.OpenAIReasoningGenerator` instead of `-m openai`"
+        if self.__class__.__name__ == "OpenAIGenerator" and self.name.startswith("o"):
+            msg = "'o'-class models should use openai.OpenAIReasoningGenerator. Try e.g. `-m openai.OpenAIReasoningGenerator` instead of `-m openai`"
             logging.error(msg)
             raise garak.exception.BadGeneratorException("🛑 " + msg)
 
