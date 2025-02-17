@@ -233,7 +233,7 @@ class OpenAICompatible(Generator):
                 logging.error(msg)
                 return list()
 
-            create_args["prompt"] = prompt
+            create_args["prompt"] = prompt.text
 
         elif self.generator == self.client.chat.completions:
             if isinstance(prompt, Turn):

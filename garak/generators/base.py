@@ -87,7 +87,7 @@ class Generator(Configurable):
         pass
 
     def generate(
-        self, prompt: Turn, generations_this_call: int = 1
+        self, prompt: Turn, generations_this_call: int = 1, typecheck=True
     ) -> List[Union[Turn, None]]:
         """Manages the process of getting generations out from a prompt
 
@@ -97,7 +97,8 @@ class Generator(Configurable):
         Avoid overriding this - try to override _call_model or _call_api
         """
 
-        assert isinstance(prompt, Turn), "generate() must take a Turn object"
+        if typecheck:
+            assert isinstance(prompt, Turn), "generate() must take a Turn object"
 
         self._pre_generate_hook()
 
