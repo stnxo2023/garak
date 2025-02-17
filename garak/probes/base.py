@@ -70,7 +70,6 @@ class Probe(Configurable):
                 f"loading {Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probe: {Style.RESET_ALL}{self.probename}"
             )
 
-        self.prompts = []
         logging.info(f"probe init: {self}")
         if "description" not in dir(self):
             if self.__doc__:
