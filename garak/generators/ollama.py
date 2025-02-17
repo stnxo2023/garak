@@ -81,7 +81,7 @@ class OllamaGeneratorChat(OllamaGenerator):
             ],
         )
         return [
-            response.get("message", {}).get("content", None)
+            Turn(response.get("message", {}).get("content", None))
         ]  # Return the response or None
 
 
