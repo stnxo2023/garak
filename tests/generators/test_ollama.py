@@ -62,12 +62,12 @@ def test_error_on_nonexistant_model():
 )
 # This test might fail if the GPU is busy, and the generation takes more than 30 seconds
 def test_generation_on_pulled_model_chat():
-    model_name = ollama.list()["models"][0]["name"]
+    model_name = ollama.list().models[0].model
     gen = OllamaGeneratorChat(model_name)
     responses = gen.generate(Turn('Say "Hello!"'))
     assert len(responses) == 1
     assert all(isinstance(response, Turn) for response in responses)
-    assert all(len(response) > 0 for response in responses)
+    assert all(len(response.text) > 0 for response in responses)
 
 
 @pytest.mark.skipif(
@@ -80,12 +80,12 @@ def test_generation_on_pulled_model_chat():
 )
 # This test might fail if the GPU is busy, and the generation takes more than 30 seconds
 def test_generation_on_pulled_model():
-    model_name = ollama.list()["models"][0]["name"]
+    model_name = ollama.list().models[0].model
     gen = OllamaGenerator(model_name)
     responses = gen.generate(Turn('Say "Hello!"'))
     assert len(responses) == 1
     assert all(isinstance(response, Turn) for response in responses)
-    assert all(len(response) > 0 for response in responses)
+    assert all(len(response.text) > 0 for response in responses)
 
 
 @pytest.mark.respx(base_url="http://" + OllamaGenerator.DEFAULT_PARAMS["host"])

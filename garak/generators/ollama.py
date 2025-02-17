@@ -69,14 +69,14 @@ class OllamaGeneratorChat(OllamaGenerator):
         backoff.fibo, lambda ans: ans == [None] or len(ans) == 0, max_tries=3
     )  # Ollama sometimes returns empty responses. Only 3 retries to not delay generations expecting empty responses too much
     def _call_model(
-        self, prompt: str, generations_this_call: int = 1
-    ) -> List[Union[str, None]]:
+        self, prompt: Turn, generations_this_call: int = 1
+    ) -> List[Union[Turn, None]]:
         response = self.client.chat(
             model=self.name,
             messages=[
                 {
                     "role": "user",
-                    "content": prompt,
+                    "content": prompt.text,
                 },
             ],
         )
