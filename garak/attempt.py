@@ -62,7 +62,7 @@ class Turn(dict):
         if len(self.parts) == 1:
             return self.text
         else:
-            return "(" + repr(self.parts) + ")"
+            return "<Turn " + repr(self.parts) + ">"
 
     def __eq__(self, other):
         if not isinstance(other, Turn):
