@@ -27,7 +27,7 @@ def ollama_is_running():
 
 
 def no_models():
-    return len(ollama.list()) == 0 or len(ollama.list()["models"]) == 0
+    return len(ollama.list().models) == 0
 
 
 @pytest.mark.skipif(
