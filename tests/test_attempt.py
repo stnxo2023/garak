@@ -382,6 +382,25 @@ def test_turn_internal_serialize():
     assert src == dest
 
 
+def test_turn_setup():
+    test_prompt = "Inter Arma Enim Silent Leges"
+    t = garak.attempt.Turn(test_prompt)
+    assert t.text == test_prompt, "text member of turn should match constructor param"
+    assert (
+        t.parts["text"] == test_prompt
+    ), "Turn parts['text'] should match constructor param"
+    test_prompt_lower = test_prompt.lower()
+    t.parts["text"] = test_prompt_lower
+    assert (
+        t.parts["text"] == t.text
+    ), "text member of turn should match text item of turn.parts"
+
+
+def test_turn_serializable():
+    t = garak.attempt.Turn()
+    json.dumps(t)
+
+
 def test_json_serialize():
     att = garak.attempt.Attempt(prompt="well hello")
     att.outputs = [garak.attempt.Turn("output one")]
