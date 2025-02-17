@@ -63,4 +63,16 @@ class Lipsum(Generator):
         return [Turn(lorem.sentence()) for i in range(generations_this_call)]
 
 
+class BlankVision(Generator):
+    """This generator always returns the empty string."""
+
+    supports_multiple_generations = True
+    generator_family_name = "Test"
+    name = "BlankVision"
+    modality = {"in": {"text", "image"}, "out": {"text"}}
+
+    def _call_model(self, prompt: Turn, generations_this_call: int = 1) -> List[Turn]:
+        return [Turn("")] * generations_this_call
+
+
 DEFAULT_CLASS = "Lipsum"
