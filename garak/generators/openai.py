@@ -265,9 +265,9 @@ class OpenAICompatible(Generator):
                 raise e
 
         if self.generator == self.client.completions:
-            return [c.text for c in response.choices]
+            return [Turn(c.text) for c in response.choices]
         elif self.generator == self.client.chat.completions:
-            return [c.message.content for c in response.choices]
+            return [Turn(c.message.content) for c in response.choices]
 
 
 class OpenAIGenerator(OpenAICompatible):
