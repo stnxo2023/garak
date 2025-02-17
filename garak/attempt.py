@@ -20,10 +20,18 @@ class Turn(dict):
     they may also be (or include) images, audio, files, or even a composition of
     these. The Turn object encapsulates this flexibility.
 
+    `Turn` doesn't yet support multiple attachments of the same type.
+
     Multi-turn queries should be composed of multiple Turn objects.
 
+    Turns must always have a `text` part, which is set to `None` by default.
 
-    Turns must always have a `text` part, which is set to `None` by default."""
+    Expected part names:
+    * `text` -- The prompt. `text` is always present, though may be None
+    * `image_filename` -- Filename of an image to be attached
+    * `image_data` - `bytes` of an image
+
+    """
 
     @property
     def text(self) -> Union[None, str]:
@@ -43,9 +51,12 @@ class Turn(dict):
     def add_part(self, name, data) -> None:
         self.parts[name] = data
 
-    def add_part_from_file(self, name, filename: str) -> None:
+    def add_part_from_filename(self, name, filename: str) -> None:
         with open(filename, "rb") as f:
             self.parts[name] = f.read()
+
+    def load_image(self) -> None:
+        self.add_part_from_filename("image_data", self.parts["image_filename"])
 
     def __str__(self):
         if len(self.parts) == 1:

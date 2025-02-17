@@ -401,6 +401,16 @@ def test_turn_serializable():
     json.dumps(t)
 
 
+def test_turn_image_load():
+    t = garak.attempt.Turn()
+    t.add_part("image_filename", "tests/_assets/tinytrans.gif")
+    t.load_image()
+    assert (
+        t.parts["image_data"]
+        == b"GIF89a\x01\x00\x01\x00\x80\x01\x00\xff\xff\xff\x00\x00\x00!\xf9\x04\x01\n\x00\x01\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02L\x01\x00;"
+    )
+
+
 def test_json_serialize():
     att = garak.attempt.Attempt(prompt="well hello")
     att.outputs = [garak.attempt.Turn("output one")]

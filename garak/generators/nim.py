@@ -64,7 +64,7 @@ class NVOpenAIChat(OpenAICompatible):
             )
         self.generator = self.client.chat.completions
 
-    def _prepare_prompt(self, prompt):
+    def _prepare_prompt(self, prompt: Turn) -> Turn:
         return prompt
 
     def _call_model(
@@ -147,31 +147,36 @@ class Vision(NVOpenAIChat):
 
     modality = {"in": {"text", "image"}, "out": {"text"}}
 
-    def _prepare_prompt(self, turn):
+    def _prepare_prompt(self, turn: Turn) -> Turn:
 
         text = turn.text
-        if "image_filename" in turn.parts:
+
+        image_extension = "jpeg"  # guessing a default in the case of direct data
+
+        if "image_filename" in turn.parts and "image_data" not in turn.parts:
+            turn.load_image()
+            image_extension = turn.parts["image_filename"].split(".")[-1].lower()
+            if image_extension == "jpg":  # image/jpg is not a valid mimetype
+                image_extension = "jpeg"
+
+        if "image_data" in turn.parts:
             import base64
 
-            image_filename = turn.parts["image_filename"]
-            if image_filename is not None:
-                with open(image_filename, "rb") as f:
-                    image_b64 = base64.b64encode(f.read()).decode()
+            image_b64 = base64.b64encode(turn.parts["image_data"]).decode()
 
-                if len(image_b64) > self.max_image_len:
-                    logging.error(
-                        "Image %s exceeds length limit. To upload larger images, use the assets API (not yet supported)",
-                        image_filename,
-                    )
-                    return None
-
-                image_extension = turn.parts["image_filename"].split(".")[-1].lower()
-                if image_extension == "jpg":  # image/jpg is not a valid mimetype
-                    image_extension = "jpeg"
-                text = (
-                    text
-                    + f' <img src="data:image/{image_extension};base64,{image_b64}" />'
+            if len(image_b64) > self.max_image_len:
+                big_img_filename = "<direct data>"
+                if "image_filename" in turn.parts:
+                    big_img_filename = turn.parts["image_filename"]
+                logging.error(
+                    "Image %s exceeds length limit. To upload larger images, use the assets API (not yet supported)",
+                    big_img_filename,
                 )
+                return None
+
+            text = (
+                text + f' <img src="data:image/{image_extension};base64,{image_b64}" />'
+            )
             turn.text = text
         return turn
 

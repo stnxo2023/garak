@@ -4,6 +4,7 @@
 import os
 import pytest
 
+import garak._plugins
 from garak.attempt import Turn
 import garak.cli
 from garak.generators.nim import NVOpenAIChat
@@ -71,3 +72,19 @@ def test_nim_conservative_api():  # extraneous params can throw 422
         len(result) == 1
     ), "NIM generate() result list should have one item using default generations_this_call"
     assert isinstance(result[0], Turn), "NIM generate() should return a list of Turns"
+
+
+def test_nim_vision_prep():
+    test_prompt = "test vision prompt"
+    t = Turn(test_prompt)
+    t.parts["image_filename"] = "tests/_assets/tinytrans.gif"
+    from garak.generators.nim import Vision
+
+    v = Vision  # skip instantiation, not req'd
+    setattr(v, "max_image_len", 100_000)
+    vision_turn = Vision._prepare_prompt(v, t)
+    assert (
+        vision_turn.text
+        == test_prompt
+        + ' <img src="data:image/gif;base64,R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />'
+    )
