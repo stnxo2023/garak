@@ -39,6 +39,7 @@ litellm_logger.setLevel(logging.CRITICAL)
 import litellm
 
 from garak import _config
+from garak.attempt import Turn
 from garak.exception import BadGeneratorException
 from garak.generators.base import Generator
 
@@ -119,15 +120,15 @@ class LiteLLMGenerator(Generator):
 
     @backoff.on_exception(backoff.fibo, litellm.exceptions.APIError, max_value=70)
     def _call_model(
-        self, prompt: str, generations_this_call: int = 1
-    ) -> List[Union[str, None]]:
-        if isinstance(prompt, str):
-            prompt = [{"role": "user", "content": prompt}]
+        self, prompt: Turn, generations_this_call: int = 1
+    ) -> List[Union[Turn, None]]:
+        if isinstance(prompt, Turn):
+            litellm_prompt = [{"role": "user", "content": prompt.text}]
         elif isinstance(prompt, list):
-            prompt = prompt
+            litellm_prompt = prompt
         else:
             msg = (
-                f"Expected a list of dicts for LiteLLM model {self.name}, but got {type(prompt)} instead. "
+                f"Expected list or Turn for LiteLLM model {self.name}, but got {type(prompt)} instead. "
                 f"Returning nothing!"
             )
             logging.error(msg)
@@ -137,7 +138,7 @@ class LiteLLMGenerator(Generator):
         try:
             response = litellm.completion(
                 model=self.name,
-                messages=prompt,
+                messages=litellm_prompt,
                 temperature=self.temperature,
                 top_p=self.top_p,
                 n=generations_this_call,
@@ -158,9 +159,9 @@ class LiteLLMGenerator(Generator):
             ) from e
 
         if self.supports_multiple_generations:
-            return [c.message.content for c in response.choices]
+            return [Turn(c.message.content) for c in response.choices]
         else:
-            return [response.choices[0].message.content]
+            return [Turn(response.choices[0].message.content)]
 
 
 DEFAULT_CLASS = "LiteLLMGenerator"
