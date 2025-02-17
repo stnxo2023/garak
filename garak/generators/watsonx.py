@@ -1,4 +1,5 @@
 from garak import _config
+from garak.attempt import Turn
 from garak.generators.base import Generator
 from typing import List, Union
 import os
@@ -144,7 +145,7 @@ class WatsonXGenerator(Generator):
             output = self._generate_with_project(prompt)
 
         # Parse the output to only contain the output message from the model. Return a list containing that message.
-        return ["".join(output["results"][0]["generated_text"])]
+        return [Turn("".join(output["results"][0]["generated_text"]))]
 
 
 DEFAULT_CLASS = "WatsonXGenerator"
