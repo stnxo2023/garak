@@ -6,6 +6,8 @@ import inspect
 import pytest
 import random
 
+from typing import List, Union
+
 from garak import _plugins
 from garak import _config
 from garak.attempt import Turn
@@ -222,3 +224,31 @@ def test_instantiate_generators(classname):
     m = importlib.import_module("garak." + ".".join(classname.split(".")[:-1]))
     g = getattr(m, classname.split(".")[-1])(config_root=config_root)
     assert isinstance(g, Generator)
+
+
+NON_CONVERSATION_GENERATORS = [
+    classname
+    for classname in GENERATORS
+    if not ("openai" in classname or "groq" in classname or "azure" in classname)
+]
+
+
+@pytest.mark.parametrize("classname", NON_CONVERSATION_GENERATORS)
+def test_generator_signature(classname):
+    _, namespace, klass = classname.split(".")
+    m = importlib.import_module(f"garak.generators.{namespace}")
+    g = getattr(m, klass)
+    generate_signature = inspect.signature(g.generate)
+    assert (
+        generate_signature.parameters.get("prompt").annotation == Turn
+    ), "generate should take a Turn and return list of Turns or Nones"
+    assert (
+        generate_signature.return_annotation == List[Union[None, Turn]]
+    ), "generate should take a Turn and return list of Turns or Nones"
+    _call_model_signature = inspect.signature(g._call_model)
+    assert (
+        _call_model_signature.parameters.get("prompt").annotation == Turn
+    ), "_call_model should take a Turn and return list of Turns or Nones"
+    assert (
+        _call_model_signature.return_annotation == List[Union[None, Turn]]
+    ), "_call_model should take a Turn and return list of Turns or Nones"

@@ -242,7 +242,9 @@ class InferenceAPI(Generator):
         ),
         max_value=125,
     )
-    def _call_model(self, prompt: Turn, generations_this_call: int = 1) -> List[Turn]:
+    def _call_model(
+        self, prompt: Turn, generations_this_call: int = 1
+    ) -> List[Turn | None]:
         import json
         import requests
 
@@ -350,7 +352,9 @@ class InferenceEndpoint(InferenceAPI):
         ),
         max_value=125,
     )
-    def _call_model(self, prompt: Turn, generations_this_call: int = 1) -> List[Turn]:
+    def _call_model(
+        self, prompt: Turn, generations_this_call: int = 1
+    ) -> List[Turn | None]:
         import requests
 
         payload = {
@@ -440,7 +444,9 @@ class Model(Pipeline, HFCompatible):
         self.tokenizer = None
         self.generation_config = None
 
-    def _call_model(self, prompt: Turn, generations_this_call: int = 1) -> List[Turn]:
+    def _call_model(
+        self, prompt: Turn, generations_this_call: int = 1
+    ) -> List[Turn | None]:
         self._load_client()
         self.generation_config.max_new_tokens = self.max_tokens
         self.generation_config.do_sample = self.hf_args["do_sample"]

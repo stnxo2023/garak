@@ -18,7 +18,9 @@ class Blank(Generator):
     generator_family_name = "Test"
     name = "Blank"
 
-    def _call_model(self, prompt: Turn, generations_this_call: int = 1) -> List[Turn]:
+    def _call_model(
+        self, prompt: Turn, generations_this_call: int = 1
+    ) -> List[Turn | None]:
         return [Turn("")] * generations_this_call
 
 
@@ -29,7 +31,9 @@ class Repeat(Generator):
     generator_family_name = "Test"
     name = "Repeat"
 
-    def _call_model(self, prompt: Turn, generations_this_call: int = 1) -> List[Turn]:
+    def _call_model(
+        self, prompt: Turn, generations_this_call: int = 1
+    ) -> List[Turn | None]:
         return [prompt] * generations_this_call
 
 
@@ -41,7 +45,9 @@ class Single(Generator):
     name = "Single"
     test_generation_string = "ELIM"
 
-    def _call_model(self, prompt: Turn, generations_this_call: int = 1) -> List[Turn]:
+    def _call_model(
+        self, prompt: Turn, generations_this_call: int = 1
+    ) -> List[Turn | None]:
         if generations_this_call == 1:
             return [Turn(self.test_generation_string)]
         else:
@@ -71,7 +77,9 @@ class BlankVision(Generator):
     name = "BlankVision"
     modality = {"in": {"text", "image"}, "out": {"text"}}
 
-    def _call_model(self, prompt: Turn, generations_this_call: int = 1) -> List[Turn]:
+    def _call_model(
+        self, prompt: Turn, generations_this_call: int = 1
+    ) -> List[Turn | None]:
         return [Turn("")] * generations_this_call
 
 
