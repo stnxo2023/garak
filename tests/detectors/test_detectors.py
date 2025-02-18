@@ -36,11 +36,13 @@ def test_detector_structure(classname):
     m = importlib.import_module("garak." + ".".join(classname.split(".")[:-1]))
     d = getattr(m, classname.split(".")[-1])
 
+    detect_signature = inspect.signature(d.detect)
+
     # has method detect
     assert "detect" in dir(d), f"detector {classname} must have a method detect"
     # _call_model has a generations_this_call param
     assert (
-        "attempt" in inspect.signature(d.detect).parameters
+        "attempt" in detect_signature.parameters
     ), f"{classname}.detect() must accept parameter attempt"
     # any parameter that has a default must be supported
     unsupported_defaults = []
