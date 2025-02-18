@@ -47,7 +47,7 @@ from garak.generators.base import Generator
 litellm.drop_params = True
 # Suppress log messages from LiteLLM
 litellm.verbose_logger.disabled = True
-# litellm.set_verbose = True
+#litellm.set_verbose = True
 
 # Based on the param support matrix below:
 # https://docs.litellm.ai/docs/completion/input
@@ -152,6 +152,7 @@ class LiteLLMGenerator(Generator):
         except (
             litellm.exceptions.AuthenticationError,  # authentication failed for detected or passed `provider`
             litellm.exceptions.BadRequestError,
+            litellm.exceptions.APIError,  # this seems to be how LiteLLM/OpenAI are doing it on 2025.02.18
         ) as e:
 
             raise BadGeneratorException(
