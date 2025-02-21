@@ -4,6 +4,7 @@ All `garak` generators must inherit from this.
 """
 
 import logging
+import re
 from typing import List, Union
 
 from colorama import Fore, Style
@@ -24,6 +25,8 @@ class Generator(Configurable):
         "temperature": None,
         "top_k": None,
         "context_len": None,
+        "skip_seq_start": None,
+        "skip_seq_end": None,
     }
 
     active = True
@@ -85,6 +88,29 @@ class Generator(Configurable):
 
     def clear_history(self):
         pass
+
+    def _post_generate_hook(self, outputs: List[Turn | None]) -> List[Turn | None]:
+        return outputs
+
+    def _prune_skip_sequences(self, outputs: List[Turn | None]) -> List[Turn | None]:
+        rx_complete = (
+            re.escape(self.skip_seq_start) + ".*?" + re.escape(self.skip_seq_end)
+        )
+        rx_missing_final = re.escape(self.skip_seq_start) + ".*?$"
+
+        for o in outputs:
+            if o is None or o.text is None:
+                continue
+            o.text = re.sub(rx_complete, "", o.text, flags=re.DOTALL | re.MULTILINE)
+
+        for o in outputs:
+            if o is None or o.text is None:
+                continue
+            o.text = re.sub(
+                rx_missing_final, "", o.text, flags=re.DOTALL | re.MULTILINE
+            )
+
+        return outputs
 
     def generate(
         self, prompt: Turn, generations_this_call: int = 1, typecheck=True
@@ -155,5 +181,11 @@ class Generator(Configurable):
                     )  # generate once as `generation_iterator` consumes `generations_this_call`
                     self._verify_model_result(output_one)
                     outputs.append(output_one[0])
+
+        outputs = self._post_generate_hook(outputs)
+
+        if hasattr(self, "skip_seq_start") and hasattr(self, "skip_seq_end"):
+            if self.skip_seq_start is not None and self.skip_seq_end is not None:
+                outputs = self._prune_skip_sequences(outputs)
 
         return outputs

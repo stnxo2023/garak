@@ -10,9 +10,11 @@ from typing import List, Union
 
 from garak import _plugins
 from garak import _config
+
 from garak.attempt import Turn
 from garak.generators.test import Blank, Repeat, Single
 from garak.generators.base import Generator
+
 
 DEFAULT_GENERATOR_NAME = "garak test"
 DEFAULT_PROMPT_TEXT = "especially the lies"
@@ -117,7 +119,7 @@ def test_generators_test_blank_many():
     ), "Blank generator .generate() w/ generations_this_call=2 should return a list of length 2"
     assert isinstance(
         output[0], Turn
-    ), "Blank generator output list should contain Turnd (first position)"
+    ), "Blank generator output list should contain Turns (first position)"
     assert isinstance(
         output[1], Turn
     ), "Blank generator output list should contain Turns (second position)"
@@ -252,3 +254,41 @@ def test_generator_signature(classname):
     assert (
         _call_model_signature.return_annotation == List[Union[None, Turn]]
     ), "_call_model should take a Turn and return list of Turns or Nones"
+
+
+def test_skip_seq():
+    target_string = "TEST TEST 1234"
+    test_string_with_thinking = "TEST TEST <think>not thius tho</think>1234"
+    test_string_with_thinking_complex = '<think></think>TEST TEST <think>not thius tho</think>1234<think>!"(^-&$(!$%*))</think>'
+    test_string_with_newlines = "<think>\n\n</think>" + target_string
+    g = _plugins.load_plugin("generators.test.Repeat")
+    r = g.generate(Turn(test_string_with_thinking))
+    g.skip_seq_start = None
+    g.skip_seq_end = None
+    assert r[0] == Turn(
+        test_string_with_thinking
+    ), "test.Repeat should give same output as input when no think tokens specified"
+    g.skip_seq_start = "<think>"
+    g.skip_seq_end = "</think>"
+    r = g.generate(Turn(test_string_with_thinking))
+    assert r[0] == Turn(
+        target_string
+    ), "content between single skip sequence should be removed"
+    r = g.generate(Turn(test_string_with_thinking_complex))
+    assert r[0] == Turn(
+        target_string
+    ), "content between multiple skip sequences should be removed"
+    r = g.generate(Turn(test_string_with_newlines))
+    assert r[0] == Turn(target_string), "skip seqs full of newlines should be removed"
+
+    test_no_answer = "<think>not sure the output to provide</think>"
+    r = g.generate(Turn(test_no_answer))
+    assert r[0] == Turn(""), "Output of all skip strings should be empty"
+
+    test_truncated_think = f"<think>thinking a bit</think>{target_string}<think>this process required a lot of details that is processed by"
+    r = g.generate(Turn(test_truncated_think))
+    assert r[0] == Turn(target_string), "truncated skip strings should be omitted"
+
+    test_truncated_think_no_answer = "<think>thinking a bit</think><think>this process required a lot of details that is processed by"
+    r = g.generate(Turn(test_truncated_think_no_answer))
+    assert r[0] == Turn(""), "truncated skip strings should be omitted"

@@ -45,7 +45,7 @@ class NVOpenAIChat(OpenAICompatible):
         "uri": "https://integrate.api.nvidia.com/v1/",
         "vary_seed_each_call": True,  # encourage variation when generations>1. not respected by all NIMs
         "vary_temp_each_call": True,  # encourage variation when generations>1. not respected by all NIMs
-        "suppressed_params": {"n", "frequency_penalty", "presence_penalty"},
+        "suppressed_params": {"n", "frequency_penalty", "presence_penalty", "timeout"},
     }
     active = True
     supports_multiple_generations = False
@@ -95,9 +95,9 @@ class NVOpenAIChat(OpenAICompatible):
             msg = "NIM endpoint not found. Is the model name spelled correctly and the endpoint URI correct?"
             logging.critical(msg, exc_info=nfe)
             raise GarakException(f"🛑 {msg}") from nfe
-        except Exception as e:
-            msg = "NIM API setup failed - verify config and endpoint status"
-            logging.critical(msg, exc_info=e)
+        except Exception as oe:
+            msg = "NIM generation failed. Is the model name spelled correctly?"
+            logging.critical(msg, exc_info=oe)
             raise GarakException(f"🛑 {msg}") from nfe
 
         return result

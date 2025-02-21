@@ -5037,7 +5037,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-09-06 20:07:37 +0000"
+      "mod_time": "2025-01-20 13:31:07 +0000"
     },
     "detectors.packagehallucination.PackageHallucinationDetector": {
       "description": "Base class for package hallucination detectors",
@@ -5058,7 +5058,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-09-06 20:07:37 +0000"
+      "mod_time": "2025-01-20 13:31:07 +0000"
     },
     "detectors.packagehallucination.PythonPypi": {
       "description": "Check if the output tries to import a package not listed in stdlib or a pypi archive listing",
@@ -5079,7 +5079,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-09-06 20:07:37 +0000"
+      "mod_time": "2025-01-20 13:31:07 +0000"
     },
     "detectors.packagehallucination.RubyGems": {
       "description": "Check if the output tries to require a gem not listed in the Ruby standard library or RubyGems",
@@ -5100,7 +5100,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-09-06 20:07:37 +0000"
+      "mod_time": "2025-01-20 13:31:07 +0000"
     },
     "detectors.packagehallucination.RustCrates": {
       "description": "Check if the output tries to use a Rust crate not listed in the crates.io registry",
@@ -5121,7 +5121,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-09-06 20:07:37 +0000"
+      "mod_time": "2025-01-20 13:31:07 +0000"
     },
     "detectors.perspective.Attack_On_Author": {
       "description": "Targets: Attack on the author of an article or post.",
@@ -6312,6 +6312,8 @@
         "temperature": 0.7,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "top_p": 1.0,
         "uri": null,
         "frequency_penalty": 0.0,
@@ -6323,6 +6325,7 @@
         ],
         "suppressed_params": [],
         "retry_json": true,
+        "extra_params": {},
         "model_name": null
       },
       "active": true,
@@ -6345,7 +6348,9 @@
         "max_tokens": 150,
         "temperature": null,
         "top_k": null,
-        "context_len": null
+        "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null
       },
       "active": true,
       "generator_family_name": null,
@@ -6359,7 +6364,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-10-25 11:31:50 +0000"
+      "mod_time": "2025-02-18 12:01:36 +0000"
     },
     "generators.cohere.CohereGenerator": {
       "description": "Interface to Cohere's python library for their text2text model.",
@@ -6368,6 +6373,8 @@
         "temperature": 0.75,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "k": 0,
         "p": 0.75,
         "preset": null,
@@ -6434,6 +6441,8 @@
         "temperature": 0.8,
         "top_k": 40,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "repeat_penalty": 1.1,
         "presence_penalty": 0.0,
         "frequency_penalty": 0.0,
@@ -6463,6 +6472,8 @@
         "temperature": 0.7,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "top_p": 1.0,
         "uri": "https://api.groq.com/openai/v1",
         "frequency_penalty": 0.0,
@@ -6481,6 +6492,7 @@
           "top_logprobs"
         ],
         "retry_json": true,
+        "extra_params": {},
         "vary_seed_each_call": true,
         "vary_temp_each_call": true
       },
@@ -6504,7 +6516,9 @@
         "max_tokens": 150,
         "temperature": null,
         "top_k": null,
-        "context_len": null
+        "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null
       },
       "active": true,
       "generator_family_name": "Guardrails",
@@ -6527,6 +6541,8 @@
         "temperature": null,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "deprefix_prompt": true,
         "max_time": 20,
         "wait_for_model": false
@@ -6552,6 +6568,8 @@
         "temperature": null,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "deprefix_prompt": true,
         "max_time": 20,
         "wait_for_model": false
@@ -6577,6 +6595,8 @@
         "temperature": null,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "hf_args": {
           "torch_dtype": "float16",
           "low_cpu_mem_usage": true,
@@ -6605,6 +6625,8 @@
         "temperature": null,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "hf_args": {
           "torch_dtype": "float16",
           "do_sample": true,
@@ -6632,6 +6654,8 @@
         "temperature": null,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "hf_args": {
           "torch_dtype": "float16",
           "do_sample": true,
@@ -6659,6 +6683,8 @@
         "temperature": null,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "hf_args": {
           "torch_dtype": "float16",
           "do_sample": true,
@@ -6686,6 +6712,8 @@
         "temperature": 0.75,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "k": 0,
         "p": 0.75,
         "preset": null,
@@ -6714,6 +6742,8 @@
         "temperature": null,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "config_hash": "default"
       },
       "active": true,
@@ -6737,6 +6767,8 @@
         "temperature": 0.7,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "top_p": 1.0,
         "frequency_penalty": 0.0,
         "presence_penalty": 0.0,
@@ -6757,7 +6789,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-08-29 13:35:37 +0000"
+      "mod_time": "2025-02-03 09:49:33 +0000"
     },
     "generators.nemo.NeMoGenerator": {
       "description": "Wrapper for the NVIDIA NeMo models via NGC. Expects NGC_API_KEY and ORG_ID environment variables.",
@@ -6766,6 +6798,8 @@
         "temperature": 0.9,
         "top_k": 2,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "top_p": 1.0,
         "repetition_penalty": 1.1,
         "beam_search_diversity_rate": 0.0,
@@ -6795,6 +6829,8 @@
         "temperature": 0.1,
         "top_k": 0,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "top_p": 0.7,
         "uri": "https://integrate.api.nvidia.com/v1/",
         "frequency_penalty": 0.0,
@@ -6807,9 +6843,11 @@
         "suppressed_params": [
           "frequency_penalty",
           "n",
-          "presence_penalty"
+          "presence_penalty",
+          "timeout"
         ],
         "retry_json": true,
+        "extra_params": {},
         "vary_seed_each_call": true,
         "vary_temp_each_call": true
       },
@@ -6825,7 +6863,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-11-22 20:20:29 +0000"
+      "mod_time": "2025-02-03 11:31:26 +0000"
     },
     "generators.nim.NVOpenAICompletion": {
       "description": "Wrapper for NVIDIA-hosted NIMs. Expects NIM_API_KEY environment variable.",
@@ -6834,6 +6872,8 @@
         "temperature": 0.1,
         "top_k": 0,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "top_p": 0.7,
         "uri": "https://integrate.api.nvidia.com/v1/",
         "frequency_penalty": 0.0,
@@ -6846,9 +6886,11 @@
         "suppressed_params": [
           "frequency_penalty",
           "n",
-          "presence_penalty"
+          "presence_penalty",
+          "timeout"
         ],
         "retry_json": true,
+        "extra_params": {},
         "vary_seed_each_call": true,
         "vary_temp_each_call": true
       },
@@ -6864,7 +6906,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-11-22 20:20:29 +0000"
+      "mod_time": "2025-02-03 11:31:26 +0000"
     },
     "generators.nim.Vision": {
       "description": "Wrapper for text+image to text NIMs. Expects NIM_API_KEY environment variable.",
@@ -6873,6 +6915,8 @@
         "temperature": 0.1,
         "top_k": 0,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "top_p": 0.7,
         "uri": "https://integrate.api.nvidia.com/v1/",
         "frequency_penalty": 0.0,
@@ -6889,6 +6933,7 @@
           "stop"
         ],
         "retry_json": true,
+        "extra_params": {},
         "vary_seed_each_call": true,
         "vary_temp_each_call": true,
         "max_image_len": 180000
@@ -6906,7 +6951,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-11-22 20:20:29 +0000"
+      "mod_time": "2025-02-03 11:31:26 +0000"
     },
     "generators.nvcf.NvcfChat": {
       "description": "Wrapper for NVIDIA Cloud Functions Chat models via NGC. Expects NVCF_API_KEY environment variable.",
@@ -6915,6 +6960,8 @@
         "temperature": 0.2,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "top_p": 0.7,
         "status_uri_base": "https://api.nvcf.nvidia.com/v2/nvcf/pexec/status/",
         "invoke_uri_base": "https://api.nvcf.nvidia.com/v2/nvcf/pexec/functions/",
@@ -6946,6 +6993,8 @@
         "temperature": 0.2,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "top_p": 0.7,
         "status_uri_base": "https://api.nvcf.nvidia.com/v2/nvcf/pexec/status/",
         "invoke_uri_base": "https://api.nvcf.nvidia.com/v2/nvcf/pexec/functions/",
@@ -6977,6 +7026,8 @@
         "temperature": 0.1,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "presence_penalty": 0,
         "top_p": 1
       },
@@ -7001,6 +7052,8 @@
         "temperature": 0.1,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "presence_penalty": 0,
         "top_p": 1
       },
@@ -7025,6 +7078,8 @@
         "temperature": null,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "timeout": 30,
         "host": "127.0.0.1:11434"
       },
@@ -7049,6 +7104,8 @@
         "temperature": null,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "timeout": 30,
         "host": "127.0.0.1:11434"
       },
@@ -7073,6 +7130,8 @@
         "temperature": 0.7,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "top_p": 1.0,
         "uri": "http://localhost:8000/v1/",
         "frequency_penalty": 0.0,
@@ -7083,7 +7142,8 @@
           ";"
         ],
         "suppressed_params": [],
-        "retry_json": true
+        "retry_json": true,
+        "extra_params": {}
       },
       "active": true,
       "generator_family_name": "OpenAICompatible",
@@ -7097,7 +7157,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-02-05 12:23:36 +0000"
+      "mod_time": "2025-02-20 20:27:07 +0000"
     },
     "generators.openai.OpenAIGenerator": {
       "description": "Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable",
@@ -7106,6 +7166,8 @@
         "temperature": 0.7,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "top_p": 1.0,
         "frequency_penalty": 0.0,
         "presence_penalty": 0.0,
@@ -7115,7 +7177,8 @@
           ";"
         ],
         "suppressed_params": [],
-        "retry_json": true
+        "retry_json": true,
+        "extra_params": {}
       },
       "active": true,
       "generator_family_name": "OpenAI",
@@ -7129,7 +7192,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-02-05 12:23:36 +0000"
+      "mod_time": "2025-02-20 20:27:07 +0000"
     },
     "generators.openai.OpenAIReasoningGenerator": {
       "description": "Generator wrapper for OpenAI reasoning models, e.g. `o1` family.",
@@ -7138,6 +7201,8 @@
         "temperature": null,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "top_p": 1.0,
         "frequency_penalty": 0.0,
         "presence_penalty": 0.0,
@@ -7167,7 +7232,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-02-05 12:23:36 +0000"
+      "mod_time": "2025-02-20 20:27:07 +0000"
     },
     "generators.rasa.RasaRestGenerator": {
       "description": "API interface for RASA models",
@@ -7176,6 +7241,8 @@
         "temperature": null,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "headers": {
           "Content-Type": "application/json",
           "Authorization": "Bearer $KEY"
@@ -7213,6 +7280,8 @@
         "temperature": 1,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "top_p": 1.0,
         "repetition_penalty": 1
       },
@@ -7237,6 +7306,8 @@
         "temperature": 1,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "top_p": 1.0,
         "repetition_penalty": 1
       },
@@ -7261,6 +7332,8 @@
         "temperature": null,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "headers": {},
         "method": "post",
         "ratelimit_codes": [
@@ -7286,7 +7359,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-01-16 23:53:49 +0000"
+      "mod_time": "2025-02-20 20:27:07 +0000"
     },
     "generators.test.Blank": {
       "description": "This generator always returns the empty string.",
@@ -7294,7 +7367,9 @@
         "max_tokens": 150,
         "temperature": null,
         "top_k": null,
-        "context_len": null
+        "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null
       },
       "active": true,
       "generator_family_name": "Test",
@@ -7316,7 +7391,9 @@
         "max_tokens": 150,
         "temperature": null,
         "top_k": null,
-        "context_len": null
+        "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null
       },
       "active": true,
       "generator_family_name": "Test",
@@ -7338,7 +7415,9 @@
         "max_tokens": 150,
         "temperature": null,
         "top_k": null,
-        "context_len": null
+        "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null
       },
       "active": true,
       "generator_family_name": "Test",
@@ -7360,7 +7439,9 @@
         "max_tokens": 150,
         "temperature": null,
         "top_k": null,
-        "context_len": null
+        "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null
       },
       "active": true,
       "generator_family_name": "Test",
@@ -7383,6 +7464,8 @@
         "temperature": null,
         "top_k": null,
         "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
         "uri": null,
         "version": "2023-05-29",
         "project_id": "",
