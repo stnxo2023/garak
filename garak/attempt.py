@@ -86,7 +86,7 @@ class Attempt:
     :param status: The status of this attempt; ``ATTEMPT_NEW``, ``ATTEMPT_STARTED``, or ``ATTEMPT_COMPLETE``
     :type status: int
     :param prompt: The processed prompt that will presented to the generator
-    :type prompt: str
+    :type prompt: Turn
     :param probe_classname: Name of the probe class that originated this ``Attempt``
     :type probe_classname: str
     :param probe_params: Non-default parameters logged by the probe
@@ -94,7 +94,7 @@ class Attempt:
     :param targets: A list of target strings to be searched for in generator responses to this attempt's prompt
     :type targets: List(str), optional
     :param outputs: The outputs from the generator in response to the prompt
-    :type outputs: List(str)
+    :type outputs: List(Turn)
     :param notes: A free-form dictionary of notes accompanying the attempt
     :type notes: dict
     :param detector_results: A dictionary of detector scores, keyed by detector name, where each value is a list of scores corresponding to each of the generator output strings in ``outputs``
@@ -197,7 +197,7 @@ class Attempt:
             )
 
     @property
-    def outputs(self):
+    def outputs(self) -> List[Turn | None]:
         if len(self.messages) and isinstance(self.messages[0], list):
             # work out last_output_turn that was assistant
             assistant_turns = [
@@ -214,7 +214,7 @@ class Attempt:
             return []
 
     @property
-    def latest_prompts(self):
+    def latest_prompts(self) -> Turn | List[Turn | None]:
         if len(self.messages[0]) > 1:
             # work out last_output_turn that was user
             last_output_turn = max(
@@ -242,7 +242,7 @@ class Attempt:
         return all_outputs
 
     @prompt.setter
-    def prompt(self, value):
+    def prompt(self, value: str | Turn):
         if value is None:
             raise TypeError("'None' prompts are not valid")
         if isinstance(value, str):
