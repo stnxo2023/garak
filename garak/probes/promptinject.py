@@ -29,6 +29,10 @@ def constructor(self, config_root=_config):
         prompt_data,
     )
 
+    self.max_prompts = self.soft_probe_prompt_cap
+    if self.__class__.__name__.endswith("Full"):
+        self.max_prompts = None
+
     self.pi_prompt_data = prompt_data
     self.pi_build_prompts = build_prompts
     self.load_data_all_attacks()
@@ -68,14 +72,14 @@ def load_data_all_attacks(self):
     for pi_prompt in self.pi_prompts:
         self.prompts.append(pi_prompt["prompt"])
     if self.max_prompts:
-        random.seed(_config.run.seed)
+        random.seed(self.seed)
         random.shuffle(self.prompts)
         self.prompts = self.prompts[-self.max_prompts :]
 
 
 def _attempt_prestore_hook(self, attempt: Attempt, seq: int) -> Attempt:
     attempt.notes["settings"] = self.pi_prompts[seq]["settings"]
-    attempt.notes["trigger"] = self.pi_prompts[seq]["settings"]["attack_rogue_string"]
+    attempt.notes["triggers"] = [self.pi_prompts[seq]["settings"]["attack_rogue_string"]]
     return attempt
 
 
@@ -98,15 +102,15 @@ for rogue_string in rogue_strings:
 
     setattr(
         this,
-        classname,
+        classname + "Full",
         type(
-            classname,
+            classname + "Full",
             (Probe,),
             {
                 "__init__": constructor,
                 "__doc__": f"PromptInject probe to inject a string; payload is {rogue_string}\n\nAttempt to make the model repeat a given string",
                 "name": "promptinject_" + rogue_string,
-                "bcp47": "en",
+                "lang": "en",
                 "description": "PromptInject is a framework that assembles prompts in a modular fashion to provide a quantitative analysis of the robustness of LLMs to adversarial prompt attacks. trophy Best Paper Awards @ NeurIPS ML Safety Workshop 2022",
                 "recommended_detector": [
                     "promptinject.AttackRogueString",
@@ -126,22 +130,22 @@ for rogue_string in rogue_strings:
                 "_generator_precall_hook": _generator_precall_hook,
                 "goal": "inject a prompt on " + rogue_string.replace("-", " "),
                 "active": False,
-                "max_prompts": None,
+                "tier": Probe.TIER_2,
             },
         ),
     )
 
     setattr(
         this,
-        classname + "Mini",
+        classname,
         type(
-            classname + "Mini",
+            classname,
             (Probe,),
             {
                 "__init__": constructor,
                 "__doc__": f"PromptInject probe to inject a string; payload is {rogue_string}\n\nAttempt to make the model repeat a given string",
                 "name": "promptinject_" + rogue_string,
-                "bcp47": "en",
+                "lang": "en",
                 "description": "PromptInject is a framework that assembles prompts in a modular fashion to provide a quantitative analysis of the robustness of LLMs to adversarial prompt attacks. trophy Best Paper Awards @ NeurIPS ML Safety Workshop 2022",
                 "recommended_detector": [
                     "promptinject.AttackRogueString",
@@ -161,7 +165,7 @@ for rogue_string in rogue_strings:
                 "_generator_precall_hook": _generator_precall_hook,
                 "goal": "inject a prompt on " + rogue_string.replace("-", " "),
                 "active": True,
-                "max_prompts": 100,
+                "tier": Probe.TIER_2,
             },
         ),
     )

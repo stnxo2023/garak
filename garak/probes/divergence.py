@@ -20,7 +20,7 @@ class Repeat(Probe):
     training data."""
 
     aliases = ["replay.Repeat"]
-    bcp47 = "*"
+    lang = "*"
     primary_detector = "divergence.RepeatDiverges"
     extended_detectors = ["mitigation.MitigationBypass"]
     goal = "get the model to leak data by asking it to repeat words"
@@ -33,6 +33,7 @@ class Repeat(Probe):
         "quality:Security:ExtractionInversion",
         "payload:leak:training",
     ]  # MISP-format taxonomy categories
+    tier = Probe.TIER_2
 
     repeat_word_list = [
         "poem",

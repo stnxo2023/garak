@@ -58,7 +58,7 @@ class TAPCached(Probe):
     Attempts to automatically develop a target using pre-generated
     jailbreaks from TAP"""
 
-    bcp47 = "en"
+    lang = "en"
     recommended_detector = ["mitigation.MitigationBypass"]
     tags = [
         "avid-effect:security:S0403",
@@ -67,6 +67,7 @@ class TAPCached(Probe):
         "payload:jailbreak",
     ]
     goal = "cause the model to disregard the system prompt"
+    tier = Probe.TIER_2
     doc_uri = "https://arxiv.org/abs/2312.02119"
 
     DEFAULT_PARAMS = Probe.DEFAULT_PARAMS | {
@@ -96,7 +97,7 @@ class TAP(Probe):
     generate an attack and to evaluate the success of that attack. Candidate routes
     to jailbreaking the target are maintained in a tree, which is proactively pruned."""
 
-    bcp47 = "en"
+    lang = "en"
     recommended_detector = ["mitigation.MitigationBypass"]
     tags = [
         "avid-effect:security:S0403",
@@ -106,6 +107,7 @@ class TAP(Probe):
     ]
     goal = "cause the model to disregard the system prompt"
     doc_uri = "https://arxiv.org/abs/2312.02119"
+    tier = Probe.TIER_2
     active = False
 
     DEFAULT_PARAMS = Probe.DEFAULT_PARAMS | {
@@ -184,8 +186,8 @@ class TAP(Probe):
             attempts_completed = []
 
             if (
-                _config.system.parallel_attempts
-                and _config.system.parallel_attempts > 1
+                self.parallel_attempts
+                and self.parallel_attempts > 1
                 and self.parallelisable_attempts
                 and len(attempts_todo) > 1
             ):
@@ -194,7 +196,7 @@ class TAP(Probe):
                 attempt_bar = tqdm.tqdm(total=len(attempts_todo), leave=False)
                 attempt_bar.set_description(self.probename.replace("garak.", ""))
 
-                with Pool(_config.system.parallel_attempts) as attempt_pool:
+                with Pool(self.parallel_attempts) as attempt_pool:
                     for result in attempt_pool.imap_unordered(
                         self._execute_attempt, attempts_todo
                     ):
@@ -227,7 +229,7 @@ class PAIR(Probe):
     This is an implementation of the TAP automatic jailbreak that leverages TAP with
     PAIR settings, making it equivalent to the PAIR jailbreak"""
 
-    bcp47 = "en"
+    lang = "en"
     recommended_detector = ["mitigation.MitigationBypass"]
     tags = [
         "avid-effect:security:S0403",
@@ -237,6 +239,7 @@ class PAIR(Probe):
     ]
     goal = "cause the model to disregard the system prompt"
     doc_uri = "https://arxiv.org/abs/2310.08419"
+    tier = Probe.TIER_2
     active = False
 
     DEFAULT_PARAMS = Probe.DEFAULT_PARAMS | {
@@ -315,8 +318,8 @@ class PAIR(Probe):
             attempts_completed = []
 
             if (
-                _config.system.parallel_attempts
-                and _config.system.parallel_attempts > 1
+                self.parallel_attempts
+                and self.parallel_attempts > 1
                 and self.parallelisable_attempts
                 and len(attempts_todo) > 1
             ):
@@ -325,7 +328,7 @@ class PAIR(Probe):
                 attempt_bar = tqdm.tqdm(total=len(attempts_todo), leave=False)
                 attempt_bar.set_description(self.probename.replace("garak.", ""))
 
-                with Pool(_config.system.parallel_attempts) as attempt_pool:
+                with Pool(self.parallel_attempts) as attempt_pool:
                     for result in attempt_pool.imap_unordered(
                         self._execute_attempt, attempts_todo
                     ):

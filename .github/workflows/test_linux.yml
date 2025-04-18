@@ -8,6 +8,21 @@ on:
   workflow_dispatch:
   workflow_call:
 
+permissions:
+  actions: none
+  checks: none
+  contents: none
+  deployments: none
+  id-token: none
+  issues: none
+  discussions: none
+  packages: none
+  pages: none
+  pull-requests: none
+  repository-projects: none
+  security-events: none
+  statuses: none
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,6 +39,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          python -m pip cache purge
       - name: Test with pytest
         run: |
           python -m pytest tests/

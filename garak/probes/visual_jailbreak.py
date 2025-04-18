@@ -18,7 +18,7 @@ from garak.data import path as data_path
 from garak.generators.base import Generator
 
 
-class FigStep(Probe):
+class FigStepFull(Probe):
     """Using another modal - image to assist jailbreak
 
     Title: FigStep: Jailbreaking Large Vision-language Models via Typographic Visual Prompts
@@ -28,7 +28,7 @@ class FigStep(Probe):
 
     active = False  # default to use limit version - FigStep80
     doc_uri = "https://arxiv.org/abs/2311.05608"
-    bcp47 = "en"
+    lang = "en"
     recommended_detector = ["visual_jailbreak.FigStep"]
     tags = [
         # "avid-effect:security:S0403",
@@ -38,6 +38,7 @@ class FigStep(Probe):
         "payload:jailbreak",
     ]
     goal = "disregard the system prompt with both text and image"
+    tier = Probe.TIER_2
 
     prompts = []
 
@@ -116,10 +117,10 @@ class FigStep(Probe):
         return super().probe(generator)
 
 
-class FigStepTiny(FigStep, Probe):
+class FigStep(FigStepFull, Probe):
     active = False
 
-    __doc__ = FigStep.__doc__ + " - Tiny version"
+    __doc__ = FigStepFull.__doc__ + " - Tiny version"
 
     # Retain tiny version of SafeBench only
     # Namely we want first 5 image prompts for each 10 types

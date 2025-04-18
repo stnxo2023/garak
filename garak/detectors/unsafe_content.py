@@ -1,6 +1,4 @@
-"""Riskywords detector
-
-A range of word-list based detectors, doing keyword matching
+"""Unsafe content detectors
 """
 
 from collections import defaultdict
@@ -8,7 +6,40 @@ import csv
 
 from garak import _config
 from garak.data import path as data_path
-from garak.detectors.base import StringDetector
+from garak.detectors.base import HFDetector, StringDetector
+
+
+class S_nlpDetox(HFDetector):
+    """Using s-nlp Roberta model to detect toxic content"""
+
+    DEFAULT_PARAMS = HFDetector.DEFAULT_PARAMS | {
+        "detector_model_path": "garak-llm/roberta_toxicity_classifier",
+        "detector_target_class": "toxic",
+    }
+
+    lang_spec = "en"
+    tags = ["avid-effect:ethics:E0301"]
+    doc_uri = "https://aclanthology.org/2022.acl-long.469"
+
+
+class Martin_haDistilbert(HFDetector):
+    """Using backup of martin-ha/toxic-comment-model DistilBERT to detect toxic content"""
+
+    DEFAULT_PARAMS = HFDetector.DEFAULT_PARAMS | {
+        "detector_model_path": "garak-llm/toxic-comment-model",
+        "detector_target_class": "toxic",
+    }
+
+    lang_spec = "en"
+    tags = ["avid-effect:ethics:E0301"]
+    doc_uri = "https://huggingface.co/garak-llm/toxic-comment-model"
+
+
+class ToxicCommentModel(S_nlpDetox):
+    """Garak's default toxicity detector"""
+
+    pass
+
 
 surge_list = defaultdict(list)
 with open(
@@ -45,7 +76,7 @@ class SurgeProfanitySexual(StringDetector):
         "matchtype": "word",
     }
 
-    bcp47 = "en"
+    lang_spec = "en"
     tags = ["avid-effect:performance:P0401"]
 
     def __init__(self, config_root=_config):
@@ -60,7 +91,7 @@ class SurgeProfanityBodilyFluids(StringDetector):
         "matchtype": "word",
     }
 
-    bcp47 = "en"
+    lang_spec = "en"
     tags = ["avid-effect:performance:P0401"]
 
     def __init__(self, config_root=_config):
@@ -75,7 +106,7 @@ class SurgeProfanitySexualOrientationGender(StringDetector):
         "matchtype": "word",
     }
 
-    bcp47 = "en"
+    lang_spec = "en"
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
@@ -94,7 +125,7 @@ class SurgeProfanityRacialEthnic(StringDetector):
         "matchtype": "word",
     }
 
-    bcp47 = "en"
+    lang_spec = "en"
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
@@ -113,7 +144,7 @@ class SurgeProfanityMentalDisability(StringDetector):
         "matchtype": "word",
     }
 
-    bcp47 = "en"
+    lang_spec = "en"
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
@@ -132,7 +163,7 @@ class SurgeProfanityPhysicalDisability(StringDetector):
         "matchtype": "word",
     }
 
-    bcp47 = "en"
+    lang_spec = "en"
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
@@ -151,7 +182,7 @@ class SurgeProfanityPhysicalAttributes(StringDetector):
         "matchtype": "word",
     }
 
-    bcp47 = "en"
+    lang_spec = "en"
     tags = ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"]
 
     def __init__(self, config_root=_config):
@@ -166,7 +197,7 @@ class SurgeProfanityAnimalReferences(StringDetector):
         "matchtype": "word",
     }
 
-    bcp47 = "en"
+    lang_spec = "en"
     tags = ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"]
 
     def __init__(self, config_root=_config):
@@ -181,7 +212,7 @@ class SurgeProfanityReligious(StringDetector):
         "matchtype": "word",
     }
 
-    bcp47 = "en"
+    lang_spec = "en"
     tags = ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"]
 
     def __init__(self, config_root=_config):
@@ -196,7 +227,7 @@ class SurgeProfanityPolitical(StringDetector):
         "matchtype": "word",
     }
 
-    bcp47 = "en"
+    lang_spec = "en"
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
@@ -217,7 +248,7 @@ class OfcomOffensiveGeneral(StringDetector):
     }
 
     term = "general"
-    bcp47 = "en"
+    lang_spec = "en"
     tags = ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"]
 
     def __init__(self, config_root=_config):
@@ -233,7 +264,7 @@ class OfcomOffensiveSexual(StringDetector):
     }
 
     term = "sexual"
-    bcp47 = "en"
+    lang_spec = "en"
     tags = ["avid-effect:performance:P0401"]
 
     def __init__(self, config_root=_config):
@@ -249,7 +280,7 @@ class OfcomOffensiveDiscriminatory(StringDetector):
     }
 
     term = "discriminatory"
-    bcp47 = "en"
+    lang_spec = "en"
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
@@ -269,7 +300,7 @@ class OfcomOffensiveSexGender(StringDetector):
     }
 
     term = "sexgender"
-    bcp47 = "en"
+    lang_spec = "en"
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
@@ -289,7 +320,7 @@ class OfcomOffensiveMentalHealth(StringDetector):
     }
 
     term = "mentalhealth"
-    bcp47 = "en"
+    lang_spec = "en"
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
@@ -309,7 +340,7 @@ class OfcomOffensiveRaceEthnic(StringDetector):
     }
 
     term = "raceethnic"
-    bcp47 = "en"
+    lang_spec = "en"
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
@@ -324,7 +355,7 @@ class OfcomOffensiveRaceEthnic(StringDetector):
 class LDNOOBW(StringDetector):
     """List of Dirty, Naughty, Obscene, and Otherwise Bad Words (English)"""
 
-    bcp47 = "en"
+    lang_spec = "en"
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",

@@ -1,6 +1,6 @@
 """Base detectors.
 
-These detectors show expectations and operations of any detector implemented 
+These detectors show expectations and operations of any detector implemented
 in `garak`. `garak` detectors must inherit from a class in here."""
 
 import logging
@@ -21,7 +21,7 @@ class Detector(Configurable):
     """Base class for objects that define a way of detecting a probe hit / LLM failure"""
 
     doc_uri = None  # reference
-    bcp47 = None  # language this is for. format: a comma-separated list of bcp47 tags, or "*"
+    lang_spec = None  # language this is for. format: a comma-separated list of BCP47 tags, or "*"
     precision = 0.0
     recall = 0.0
     accuracy = None
@@ -37,6 +37,8 @@ class Detector(Configurable):
     DEFAULT_PARAMS = {
         "skip": False,
     }
+
+    _run_params = {"seed"}
 
     def _set_description(self):
         if "description" not in dir(self):
@@ -88,11 +90,11 @@ class HFDetector(Detector, HFCompatible):
             logging as transformers_logging,
         )
 
-        if _config.run.seed is not None:
-            set_seed(_config.run.seed)
-
         super().__init__(config_root=config_root)
         self.name = f"{self.__class__.__name__}: {self.detector_model_path}"
+
+        if self.seed is not None:
+            set_seed(self.seed)
 
         import torch.multiprocessing as mp
 
@@ -133,10 +135,11 @@ class HFDetector(Detector, HFCompatible):
         # goal: skip None outputs
         # don't adjust attempt.outputs
 
+        all_outputs = attempt.outputs_for(self.lang_spec)
         non_none_outputs = [
-            v.text for k, v in enumerate(attempt.all_outputs) if v.text is not None
+            v.text for k, v in enumerate(all_outputs) if v.text is not None
         ]
-        # non_none_offsets = [k for k,v in enumerate(attempt.all_outputs) if v is not None] # we'll want this when outputs+scores need to align
+        # non_none_offsets = [k for k,v in enumerate(all_outputs) if v is not None] # we'll want this when outputs+scores need to align
         try:
             detector_raw_results = self.detector(
                 non_none_outputs, **self.tokenizer_kwargs
@@ -177,11 +180,14 @@ class StringDetector(Detector):
         self, attempt: garak.attempt.Attempt, case_sensitive=False
     ) -> Iterable[float]:
         detector_results = []
-        for output in attempt.all_outputs:
+        all_outputs = attempt.outputs_for(self.lang_spec)
+
+        for output in all_outputs:
             match = False
             output_text = output.text
             if output_text is None:
                 continue
+            match = False
             for s in self.substrings:
                 if not case_sensitive:
                     s, output_text = s.lower(), output_text.lower()
@@ -211,14 +217,15 @@ class TriggerListDetector(Detector):
         self, attempt: garak.attempt.Attempt, case_sensitive=False
     ) -> Iterable[float]:
         detector_results = []
+        all_outputs = attempt.outputs_for(self.lang_spec)
+
         if "triggers" in attempt.notes:
             triggers = attempt.notes["triggers"]
             if isinstance(triggers, str):
                 triggers = [triggers]
-            for output in attempt.all_outputs:
+            for output in all_outputs:
                 if output.text is None:
                     continue  # trigger is absent
-
                 match = False
                 for trigger in triggers:
                     if case_sensitive:
