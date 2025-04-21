@@ -281,34 +281,24 @@ class Attempt:
         assert isinstance(value, list)
         self._add_turn("user", value)
 
-    def prompt_for(self, lang) -> str:
+    def prompt_for(self, lang) -> Turn:
         """prompt for a known language
 
         When "*" or None are passed returns the prompt passed to the model
         """
-        if (
-            lang is not None
-            and self.lang != "*"
-            and lang != "*"
-            and self.lang != lang
-        ):
+        if lang is not None and self.lang != "*" and lang != "*" and self.lang != lang:
             return self.notes.get(
                 "pre_translation_prompt", self.prompt
             )  # update if found in notes
 
         return self.prompt
 
-    def outputs_for(self, lang) -> List[str]:
+    def outputs_for(self, lang) -> List[Turn]:
         """outputs for a known language
 
         When "*" or None are passed returns the original model output
         """
-        if (
-            lang is not None
-            and self.lang != "*"
-            and lang != "*"
-            and self.lang != lang
-        ):
+        if lang is not None and self.lang != "*" and lang != "*" and self.lang != lang:
             return self.reverse_translator_outputs
         return self.all_outputs
 

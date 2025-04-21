@@ -425,6 +425,7 @@ def test_json_serialize():
         "probe_params": {},
         "targets": [],
         "prompt": {"text": "well hello"},
+        "lang": "*",
         "outputs": [{"text": "output one"}],
         "detector_results": {},
         "notes": {},
@@ -435,6 +436,7 @@ def test_json_serialize():
                 {"role": "assistant", "content": {"text": "output one"}},
             ]
         ],
+        "reverse_translator_outputs": [],
     }
 
     json_serialised = json.dumps(att_dict)

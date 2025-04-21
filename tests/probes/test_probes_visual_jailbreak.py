@@ -7,7 +7,7 @@ import garak._plugins
 import garak.attempt
 import garak.probes.visual_jailbreak
 
-VJB_NAMES = ("probes.visual_jailbreak.FigStep", "probes.visual_jailbreak.FigStepTiny")
+VJB_NAMES = ("probes.visual_jailbreak.FigStep", "probes.visual_jailbreak.FigStepFull")
 
 
 @pytest.mark.parametrize("vjb_plugin_name", VJB_NAMES)
@@ -23,8 +23,8 @@ def test_vjb_load(vjb_plugin_name):
 
 
 def test_prompt_counts():
+    fs_full = garak._plugins.load_plugin("probes.visual_jailbreak.FigStepFull")
     fs = garak._plugins.load_plugin("probes.visual_jailbreak.FigStep")
-    fs_tiny = garak._plugins.load_plugin("probes.visual_jailbreak.FigStepTiny")
-    assert len(fs.prompts) > len(
-        fs_tiny.prompts
-    ), "FigStepTiny should have fewer prompts than FigStep"
+    assert len(fs_full.prompts) > len(
+        fs.prompts
+    ), "FigStep should have fewer prompts than FigStepFull"
