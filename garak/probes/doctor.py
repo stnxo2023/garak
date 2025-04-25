@@ -176,7 +176,7 @@ def leetspeak(input: str, transmute_chance: float = 0.6) -> str:
     return output
 
 
-class BypassLeetspeak(Bypass):
+class BypassLeet(Bypass):
     """Implement Policy Puppetry Bypass
 
     Post-instruction hierarchy, universal, and transferable prompt injection

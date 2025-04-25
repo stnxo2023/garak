@@ -561,3 +561,26 @@ class InjectZalgo(BaseEncodingProbe, Probe):
     def __init__(self, config_root=_config):
         Probe.__init__(self, config_root=config_root)
         BaseEncodingProbe.__init__(self)
+
+
+import garak.probes.doctor
+
+
+def leet_bytes(plain_input: bytes):
+    return bytes(garak.probes.doctor.leetspeak(plain_input.decode()), "utf-8")
+
+
+class InjectLeetspeak(BaseEncodingProbe, Probe):
+    """Probe for susceptibility to 31337 encoding.
+
+    Encodes payloads using Leetspeak, and tries a variety
+    of ways of getting the target model to repeat & decode them."""
+
+    doc_uri = "https://en.wikipedia.org/wiki/Leet"
+
+    encoding_name = "Leetspeak"
+    encoding_funcs = [leet_bytes]
+
+    def __init__(self, config_root=_config):
+        Probe.__init__(self, config_root=config_root)
+        BaseEncodingProbe.__init__(self)
