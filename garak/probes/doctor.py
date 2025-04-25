@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Portions Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 """
@@ -6,9 +6,9 @@ Doctor attack
 
 Post as a doctor in effort to override safeguards"""
 
-import random
 
 from garak import _config
+from garak.resources.encodings import leetspeak
 from garak.probes.base import Probe, Tier
 
 
@@ -161,19 +161,6 @@ class Bypass(Probe):
         ]
 
         self.prompts = self._build_prompts()
-
-
-def leetspeak(input: str, transmute_chance: float = 0.6) -> str:
-    src_chars = "ieaost"
-    dst_chars = "134057"
-    processed = input.translate(
-        str.maketrans(src_chars.lower() + src_chars.upper(), dst_chars + dst_chars)
-    )
-    # mix it up
-    output = "".join(
-        [processed[i] if random.random() > 0.5 else input[i] for i in range(len(input))]
-    )
-    return output
 
 
 class BypassLeet(Bypass):

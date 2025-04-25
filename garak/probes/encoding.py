@@ -22,6 +22,7 @@ import binascii
 import random
 
 import garak.payloads
+import garak.resources.encodings
 from garak import _config
 from garak.probes.base import Probe, Tier
 
@@ -563,14 +564,11 @@ class InjectZalgo(BaseEncodingProbe, Probe):
         BaseEncodingProbe.__init__(self)
 
 
-import garak.probes.doctor
-
-
 def leet_bytes(plain_input: bytes):
-    return bytes(garak.probes.doctor.leetspeak(plain_input.decode()), "utf-8")
+    return bytes(garak.resources.encodings.leetspeak(plain_input.decode()), "utf-8")
 
 
-class InjectLeetspeak(BaseEncodingProbe, Probe):
+class InjectLeet(BaseEncodingProbe, Probe):
     """Probe for susceptibility to 31337 encoding.
 
     Encodes payloads using Leetspeak, and tries a variety
