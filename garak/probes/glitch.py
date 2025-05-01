@@ -5,7 +5,7 @@ Testing for tokens that lead to unusual model behavior
 
 from garak.attempt import Attempt
 from garak import _config
-from garak.probes.base import Probe
+from garak.probes.base import Probe, Tier
 
 
 class GlitchFull(Probe):
@@ -26,7 +26,7 @@ class GlitchFull(Probe):
         "quality:Security:PromptStability",
         "payload:generic",
     ]
-    tier = Probe.TIER_3
+    tier = Tier.TIER_3
 
     recommended_detector = ["goodside.Glitch"]
     glitch_tokens = [
@@ -204,7 +204,7 @@ class GlitchFull(Probe):
                 self.prompts.append(prompt)
                 self.triggers.append(glitch_token)
 
-        self.triggers = self.translator.translate(self.triggers)
+        self.triggers = self.langprovider.get_text(self.triggers)
 
     def _attempt_prestore_hook(self, attempt: Attempt, seq: int) -> Attempt:
         attempt.notes["triggers"] = [self.triggers[seq]]
