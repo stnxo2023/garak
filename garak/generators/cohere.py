@@ -10,16 +10,18 @@ import logging
 from typing import List, Union
 
 import backoff
-import cohere
 import tqdm
 
 from garak import _config
+import garak._plugins
 from garak.generators.base import Generator
 
 
 COHERE_GENERATION_LIMIT = (
     5  # c.f. https://docs.cohere.com/reference/generate 18 may 2023
 )
+
+cohere_exception = None
 
 
 class CohereGenerator(Generator):
@@ -43,6 +45,11 @@ class CohereGenerator(Generator):
     generator_family_name = "Cohere"
 
     def __init__(self, name="command", config_root=_config):
+
+        global cohere_exception
+        self.cohere = garak._plugins.load_optional_module("cohere")
+        cohere_exception = self.cohere.error.CohereAPIError
+
         self.name = name
         self.fullname = f"Cohere {self.name}"
 
@@ -51,9 +58,9 @@ class CohereGenerator(Generator):
         logging.debug(
             "Cohere generation request limit capped at %s", COHERE_GENERATION_LIMIT
         )
-        self.generator = cohere.Client(self.api_key)
+        self.generator = self.cohere.Client(self.api_key)
 
-    @backoff.on_exception(backoff.fibo, cohere.error.CohereAPIError, max_value=70)
+    @backoff.on_exception(backoff.fibo, cohere_exception, max_value=70)
     def _call_cohere_api(self, prompt, request_size=COHERE_GENERATION_LIMIT):
         """as of jun 2 2023, empty prompts raise:
         cohere.error.CohereAPIError: invalid request: prompt must be at least 1 token long

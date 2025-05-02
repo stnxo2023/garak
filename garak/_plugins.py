@@ -440,3 +440,20 @@ def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
             return False
 
     return plugin_instance
+
+
+def load_optional_module(module_name: str):
+    try:
+        m = importlib.import_module(module_name)
+    except ModuleNotFoundError:
+        requesting_module = Path(inspect.stack()[1].filename).name.replace(".py", "")
+        _import_failed(module_name, requesting_module)
+    return m
+
+
+def _import_failed(import_module: str, calling_module: str):
+    msg = f"⛔ Plugin '{calling_module}' requires Python module '{import_module}' but this isn't installed/available."
+    hint = f"💡 Try 'pip install {import_module}' to get it."
+    logging.critical(msg)
+    print(msg + "\n" + hint)
+    raise GarakException(msg)

@@ -60,7 +60,6 @@ dependencies = [
   "datasets>=3.0.0",
   "colorama>=0.4.3",
   "tqdm>=4.64.0",
-  "cohere>=4.5.1,<5",
   "openai>=1.45.0,<2",
   "replicate>=0.8.3",
   "google-api-python-client>=2.0",
@@ -114,6 +113,9 @@ lint = [
 ]
 calibration = [
   "scipy>=1.14.0",
+]
+plugin_cohere = [
+  "cohere>=4.5.1,<5"
 ]
 
 [project.urls]

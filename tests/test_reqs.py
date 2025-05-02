@@ -22,9 +22,13 @@ def test_requirements_txt_pyproject_toml():
     with open("pyproject.toml", "rb") as pyproject_file:
         pyproject_toml = tomllib.load(pyproject_file)
         pyproject_reqs = pyproject_toml["project"]["dependencies"]
-        for test_deps in pyproject_toml["project"]["optional-dependencies"].values():
-            for dep in test_deps:
-                pyproject_reqs.append(dep)
+        for test_group in pyproject_toml["project"]["optional-dependencies"]:
+            if not test_group.startswith("plugin_"):
+                test_deps = pyproject_toml["project"]["optional-dependencies"][
+                    test_group
+                ]
+                for dep in test_deps:
+                    pyproject_reqs.append(dep)
         pyproject_reqs.sort()
     # assert len(reqtxt_reqs) == len(pyproject_reqs) # same number of requirements
     assert (
