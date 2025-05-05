@@ -40,20 +40,20 @@ class CohereGenerator(Generator):
         "presence_penalty": 0.0,
         "stop": [],
     }
+    extra_dependency_names = ["cohere"]
 
     supports_multiple_generations = True
     generator_family_name = "Cohere"
 
     def __init__(self, name="command", config_root=_config):
 
-        global cohere_exception
-        self.cohere = garak._plugins.load_optional_module("cohere")
-        cohere_exception = self.cohere.error.CohereAPIError
-
         self.name = name
         self.fullname = f"Cohere {self.name}"
 
         super().__init__(self.name, config_root=config_root)
+
+        global cohere_exception
+        cohere_exception = self.cohere.error.CohereAPIError
 
         logging.debug(
             "Cohere generation request limit capped at %s", COHERE_GENERATION_LIMIT

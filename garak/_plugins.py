@@ -400,6 +400,18 @@ def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
             ) from ve
         else:
             return False
+
+    full_plugin_name = ".".join((category, module_name, plugin_class_name))
+
+    # check cache for optional imports
+    extra_dependency_names = PluginCache.instance()[category][full_plugin_name][
+        "extra_dependency_names"
+    ]
+    if len(extra_dependency_names) > 0:
+        for dependency_module_name in extra_dependency_names:
+            if importlib.util.find_spec(dependency_module_name) is None:
+                _import_failed(dependency_module_name, full_plugin_name)
+
     module_path = f"garak.{category}.{module_name}"
     try:
         mod = importlib.import_module(module_path)
