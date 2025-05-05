@@ -8,9 +8,6 @@
 import logging
 from typing import List, Union
 
-
-import langchain.llms
-
 from garak import _config
 from garak.generators.base import Generator
 
@@ -43,7 +40,7 @@ class LangChainLLMGenerator(Generator):
         "presence_penalty": 0.0,
         "stop": [],
     }
-
+    extra_dependency_names = ["langchain.llms"]
     generator_family_name = "LangChain"
 
     def __init__(self, name="", config_root=_config):
@@ -55,7 +52,7 @@ class LangChainLLMGenerator(Generator):
 
         try:
             # this might need some special handling to allow tests
-            llm = getattr(langchain.llms, self.name)()
+            llm = getattr(self.langchain_llms, self.name)()
         except Exception as e:
             logging.error("Failed to import Langchain module: %s", repr(e))
             raise e

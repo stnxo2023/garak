@@ -1,10 +1,10 @@
 DEFAULT_CLASS = "MistralGenerator"
-import os
+
 import backoff
 from garak.generators.base import Generator
 import garak._config as _config
-from mistralai import Mistral, models
-from garak import exception
+
+mistral_sdkerror = None
 
 
 class MistralGenerator(Generator):
@@ -16,6 +16,8 @@ class MistralGenerator(Generator):
     generator_family_name = "mistral"
     fullname = "Mistral AI"
     supports_multiple_generations = False
+    extra_dependency_names = ["mistralai"]
+
     ENV_VAR = "MISTRAL_API_KEY"
     DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
         "name": "mistral-large-latest",
@@ -32,16 +34,17 @@ class MistralGenerator(Generator):
         self._load_client()
 
     def _load_client(self):
-        self.client = Mistral(api_key=self.api_key)
+        self.client = self.mistralai.Mistral(api_key=self.api_key)
 
     def _clear_client(self):
         self.client = None
 
     def __init__(self, name="", config_root=_config):
         super().__init__(name, config_root)
+        self.mistral_sdkerror = self.mistralai.models.SDKError
         self._load_client()
 
-    @backoff.on_exception(backoff.fibo, models.SDKError, max_value=70)
+    @backoff.on_exception(backoff.fibo, mistral_sdkerror, max_value=70)
     def _call_model(self, prompt, generations_this_call=1):
         print(self.name)
         chat_response = self.client.chat.complete(

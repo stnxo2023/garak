@@ -7,10 +7,11 @@
 from typing import List, Union
 
 import backoff
-import octoai.errors
 
 from garak import _config
 from garak.generators.base import Generator
+
+octoaiservererror = None
 
 
 class OctoGenerator(Generator):
@@ -30,21 +31,24 @@ class OctoGenerator(Generator):
 
     generator_family_name = "OctoAI"
     supports_multiple_generations = False
+    extra_dependency_names = ["octoai"]
 
     def __init__(self, name="", config_root=_config):
-        from octoai.client import Client
 
         self.name = name
         self._load_config(config_root)
         self.fullname = f"{self.generator_family_name} {self.name}"
 
         super().__init__(self.name, config_root=config_root)
+        global octoaiservererror
+        octoaiservererror = self.octoai.errors.OctoAIServerError
+
         if self.seed is None:
             self.seed = 9
 
-        self.client = Client(token=self.api_key)
+        self.client = self.octoai.client.Client(token=self.api_key)
 
-    @backoff.on_exception(backoff.fibo, octoai.errors.OctoAIServerError, max_value=70)
+    @backoff.on_exception(backoff.fibo, octoaiservererror, max_value=70)
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
@@ -78,11 +82,12 @@ class InferenceEndpoint(OctoGenerator):
 
     def __init__(self, name="", config_root=_config):
         super().__init__(name, config_root=config_root)
+
         self.octo_model = "-".join(
             self.name.replace("-demo", "").replace("https://", "").split("-")[:-1]
         )
 
-    @backoff.on_exception(backoff.fibo, octoai.errors.OctoAIServerError, max_value=70)
+    @backoff.on_exception(backoff.fibo, octoaiservererror, max_value=70)
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:

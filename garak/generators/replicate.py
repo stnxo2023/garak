@@ -9,15 +9,15 @@ page, https://replicate.com/account.
 Text-output models are supported.
 """
 
-import importlib
 import os
 from typing import List, Union
 
 import backoff
-import replicate.exceptions
 
 from garak import _config
 from garak.generators.base import Generator
+
+replicate_error = None
 
 
 class ReplicateGenerator(Generator):
@@ -35,9 +35,12 @@ class ReplicateGenerator(Generator):
 
     generator_family_name = "Replicate"
     supports_multiple_generations = False
+    extra_dependency_names = ["replicate"]
 
     def __init__(self, name="", config_root=_config):
         super().__init__(name, config_root=config_root)
+        global replicate_error
+        replicate_error = self.replicate.exceptions.ReplicateError
 
         if hasattr(self, "seed") and self.seed is None:
             self.seed = 9
@@ -45,11 +48,8 @@ class ReplicateGenerator(Generator):
         if self.api_key is not None:
             # ensure the token is in the expected runtime env var
             os.environ[self.ENV_VAR] = self.api_key
-        self.replicate = importlib.import_module("replicate")
 
-    @backoff.on_exception(
-        backoff.fibo, replicate.exceptions.ReplicateError, max_value=70
-    )
+    @backoff.on_exception(backoff.fibo, replicate_error, max_value=70)
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
@@ -73,9 +73,7 @@ class InferenceEndpoint(ReplicateGenerator):
     Expects `name` in the format of `username/deployed-model-name`.
     """
 
-    @backoff.on_exception(
-        backoff.fibo, replicate.exceptions.ReplicateError, max_value=70
-    )
+    @backoff.on_exception(backoff.fibo, replicate_error, max_value=70)
     def _call_model(
         self, prompt, generations_this_call: int = 1
     ) -> List[Union[str, None]]:

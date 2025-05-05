@@ -158,19 +158,14 @@ class OptimumPipeline(Pipeline, HFCompatible):
     generator_family_name = "NVIDIA Optimum Hugging Face 🤗 pipeline"
     supports_multiple_generations = True
     doc_uri = "https://huggingface.co/blog/optimum-nvidia"
+    extra_dependency_names = ["optimum"]
 
     def _load_client(self):
         if hasattr(self, "generator") and self.generator is not None:
             return
 
-        try:
-            from optimum.nvidia.pipelines import pipeline
-            from transformers import set_seed
-        except Exception as e:
-            logging.exception(e)
-            raise GarakException(
-                f"Missing required dependencies for {self.__class__.__name__}"
-            )
+        pipeline = self.optimum.nvidia.pipelines.pipeline
+        from transformers import set_seed
 
         if self.seed is not None:
             set_seed(self.seed)

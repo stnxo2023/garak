@@ -11,11 +11,13 @@ import requests
 from typing import List, Union
 
 import backoff
-import nemollm
 
 from garak import _config
 from garak.exception import APIKeyMissingError
 from garak.generators.base import Generator
+
+nemollm_serversideerror = None
+nemollm_toomanyrequestserror = None
 
 
 class NeMoGenerator(Generator):
@@ -37,6 +39,7 @@ class NeMoGenerator(Generator):
 
     supports_multiple_generations = False
     generator_family_name = "NeMo"
+    extra_dependency_names = ["nemollm"]
 
     def __init__(self, name=None, config_root=_config):
         self.name = name
@@ -46,7 +49,11 @@ class NeMoGenerator(Generator):
 
         super().__init__(self.name, config_root=config_root)
 
-        self.nemo = nemollm.api.NemoLLM(
+        global nemollm_serversideerror, nemollm_toomanyrequestserror
+        nemollm_serversideerror = self.nemollm.error.ServerSideError
+        nemollm_toomanyrequestserror = self.nemollm.error.TooManyRequestsError
+
+        self.nemo = self.nemollm.api.NemoLLM(
             api_host=self.api_uri, api_key=self.api_key, org_id=self.org_id
         )
 
@@ -72,8 +79,8 @@ class NeMoGenerator(Generator):
     @backoff.on_exception(
         backoff.fibo,
         (
-            nemollm.error.ServerSideError,
-            nemollm.error.TooManyRequestsError,
+            nemollm_serversideerror,
+            nemollm_toomanyrequestserror,
             requests.exceptions.ConnectionError,  # hopefully handles SSLV3_ALERT_BAD_RECORD_MAC
         ),
         max_value=70,

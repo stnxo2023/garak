@@ -3,11 +3,12 @@
 from typing import List, Union
 
 import backoff
-import ollama
 
 from garak import _config
 from garak.generators.base import Generator
 from httpx import TimeoutException
+
+ollama_responseerror = None
 
 
 def _give_up(error):
@@ -28,17 +29,21 @@ class OllamaGenerator(Generator):
     active = True
     generator_family_name = "Ollama"
     parallel_capable = False
+    extra_dependency_names = ["ollama"]
 
     def __init__(self, name="", config_root=_config):
         super().__init__(name, config_root)  # Sets the name and generations
 
-        self.client = ollama.Client(
+        global ollama_responseerror
+        ollama_responseerror = self.ollama.ResponseError
+
+        self.client = self.ollama.Client(
             self.host, timeout=self.timeout
         )  # Instantiates the client with the timeout
 
     @backoff.on_exception(
         backoff.fibo,
-        (TimeoutException, ollama.ResponseError),
+        (TimeoutException, ollama_responseerror),
         max_value=70,
         giveup=_give_up,
     )
@@ -60,7 +65,7 @@ class OllamaGeneratorChat(OllamaGenerator):
 
     @backoff.on_exception(
         backoff.fibo,
-        (TimeoutException, ollama.ResponseError),
+        (TimeoutException, ollama_responseerror),
         max_value=70,
         giveup=_give_up,
     )
@@ -79,7 +84,9 @@ class OllamaGeneratorChat(OllamaGenerator):
                 },
             ],
         )
-        return [response.get("message", {}).get("content", None)] # Return the response or None
+        return [
+            response.get("message", {}).get("content", None)
+        ]  # Return the response or None
 
 
 DEFAULT_CLASS = "OllamaGeneratorChat"
