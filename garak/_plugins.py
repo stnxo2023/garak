@@ -448,7 +448,7 @@ def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
             exc_info=e,
         )
         if break_on_fail:
-            raise ModuleNotFoundError(e) from e
+            raise GarakException(e) from e
         else:
             return False
 
@@ -469,4 +469,4 @@ def _import_failed(import_module: str, calling_module: str):
     hint = f"💡 Try 'pip install {import_module}' to get it."
     logging.critical(msg)
     print(msg + "\n" + hint)
-    raise GarakException(msg)
+    raise ModuleNotFoundError(msg)
