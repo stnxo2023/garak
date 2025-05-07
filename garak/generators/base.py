@@ -44,9 +44,8 @@ class Generator(Configurable):
     supports_multiple_generations = (
         False  # can more than one generation be extracted per request?
     )
-    extra_dependency_names = (
-        []
-    )  # list of strings naming modules required but not explicitly in garak by default
+    # list of strings naming modules required but not explicitly in garak by default
+    extra_dependency_names = []
 
     def __init__(self, name="", config_root=_config):
         self._load_config(config_root)
