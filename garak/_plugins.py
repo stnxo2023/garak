@@ -438,14 +438,6 @@ def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
         if plugin_instance is None:
             plugin_instance = klass(config_root=config_root)
             PluginProvider.storeInstance(plugin_instance, config_root)
-        if len(extra_dependency_names) > 0:
-            for dependency_module_name in extra_dependency_names:
-                dependency_module_member = dependency_module_name.replace(".", "_")
-                setattr(
-                    plugin_instance,
-                    dependency_module_member,
-                    load_optional_module(dependency_module_name),
-                )
 
     except Exception as e:
         logging.warning(
