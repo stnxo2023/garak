@@ -15,9 +15,10 @@ from typing import List, Union
 import backoff
 
 from garak import _config
+from garak.exception import GeneratorBackoffExceptionPlaceholder
 from garak.generators.base import Generator
 
-replicate_error = None
+replicate_error = GeneratorBackoffExceptionPlaceholder
 
 
 class ReplicateGenerator(Generator):

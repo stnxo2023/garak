@@ -1,10 +1,11 @@
 DEFAULT_CLASS = "MistralGenerator"
 
 import backoff
+from garak.exception import GeneratorBackoffExceptionPlaceholder
 from garak.generators.base import Generator
 import garak._config as _config
 
-mistral_sdkerror = None
+mistral_sdkerror = GeneratorBackoffExceptionPlaceholder
 
 
 class MistralGenerator(Generator):

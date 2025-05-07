@@ -35,10 +35,10 @@ from typing import List, Union
 import backoff
 
 from garak import _config
-from garak.exception import BadGeneratorException
+from garak.exception import BadGeneratorException, GeneratorBackoffExceptionPlaceholder
 from garak.generators.base import Generator
 
-litellm_apierror = None
+litellm_apierror = GeneratorBackoffExceptionPlaceholder
 
 # Based on the param support matrix below:
 # https://docs.litellm.ai/docs/completion/input
@@ -98,7 +98,7 @@ class LiteLLMGenerator(Generator):
         "skip_seq_start",
         "skip_seq_end",
         "stop",
-        "verbose"
+        "verbose",
     )
 
     def __init__(self, name: str = "", generations: int = 10, config_root=_config):

@@ -14,6 +14,7 @@ import tqdm
 
 from garak import _config
 import garak._plugins
+from garak.exception import GeneratorBackoffExceptionPlaceholder
 from garak.generators.base import Generator
 
 
@@ -21,7 +22,7 @@ COHERE_GENERATION_LIMIT = (
     5  # c.f. https://docs.cohere.com/reference/generate 18 may 2023
 )
 
-cohere_exception = None
+cohere_exception = GeneratorBackoffExceptionPlaceholder
 
 
 class CohereGenerator(Generator):

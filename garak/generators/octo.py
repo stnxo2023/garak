@@ -9,9 +9,10 @@ from typing import List, Union
 import backoff
 
 from garak import _config
+from garak.exception import GeneratorBackoffExceptionPlaceholder
 from garak.generators.base import Generator
 
-octoaiservererror = None
+octoaiservererror = GeneratorBackoffExceptionPlaceholder
 
 
 class OctoGenerator(Generator):

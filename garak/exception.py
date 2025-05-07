@@ -36,3 +36,7 @@ class ConfigFailure(GarakException):
 
 class PayloadFailure(GarakException):
     """Problem instantiating/using payloads"""
+
+
+class GeneratorBackoffExceptionPlaceholder(GarakException):
+    """Placeholder used for lazy-loaded exceptions"""

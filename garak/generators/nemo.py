@@ -13,11 +13,11 @@ from typing import List, Union
 import backoff
 
 from garak import _config
-from garak.exception import APIKeyMissingError
+from garak.exception import APIKeyMissingError, GeneratorBackoffExceptionPlaceholder
 from garak.generators.base import Generator
 
-nemollm_serversideerror = None
-nemollm_toomanyrequestserror = None
+nemollm_serversideerror = GeneratorBackoffExceptionPlaceholder
+nemollm_toomanyrequestserror = GeneratorBackoffExceptionPlaceholder
 
 
 class NeMoGenerator(Generator):

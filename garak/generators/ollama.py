@@ -5,10 +5,11 @@ from typing import List, Union
 import backoff
 
 from garak import _config
+from garak.exception import GeneratorBackoffExceptionPlaceholder
 from garak.generators.base import Generator
 from httpx import TimeoutException
 
-ollama_responseerror = None
+ollama_responseerror = GeneratorBackoffExceptionPlaceholder
 
 
 def _give_up(error):
