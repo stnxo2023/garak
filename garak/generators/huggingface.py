@@ -21,7 +21,6 @@ import warnings
 
 import backoff
 import torch
-from PIL import Image
 
 from garak import _config
 from garak.exception import ModelNameMissingError, GarakException
@@ -570,6 +569,8 @@ class LLaVA(Generator, HFCompatible):
     NB. This should be use with strict modality matching - generate() doesn't
     support text-only prompts."""
 
+    extra_dependency_names = ["PIL"]
+
     DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
         "max_tokens": 4000,
         # "exist_tokens + max_new_tokens < 4K is the golden rule."
@@ -621,7 +622,7 @@ class LLaVA(Generator, HFCompatible):
 
         text_prompt = prompt["text"]
         try:
-            image_prompt = Image.open(prompt["image"])
+            image_prompt = self.PIL.Image.open(prompt["image"])
         except FileNotFoundError:
             raise FileNotFoundError(f"Cannot open image {prompt['image']}.")
         except Exception as e:
