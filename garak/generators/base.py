@@ -71,7 +71,7 @@ class Generator(Configurable):
         # load external dependencies. should be invoked at construction and
         # in _client_load (if used)
         for extra_dependency in self.extra_dependency_names:
-            extra_dep_name = extra_dependency.replace(".", "_")
+            extra_dep_name = extra_dependency.replace(".", "_").replace("-", "_")
             if (
                 not hasattr(self, extra_dep_name)
                 or getattr(self, extra_dep_name) is None

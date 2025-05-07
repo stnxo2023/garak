@@ -32,7 +32,7 @@ class OctoGenerator(Generator):
 
     generator_family_name = "OctoAI"
     supports_multiple_generations = False
-    extra_dependency_names = ["octoai"]
+    extra_dependency_names = ["octoai-sdk"]
 
     def __init__(self, name="", config_root=_config):
 
@@ -42,12 +42,12 @@ class OctoGenerator(Generator):
 
         super().__init__(self.name, config_root=config_root)
         global octoaiservererror
-        octoaiservererror = self.octoai.errors.OctoAIServerError
+        octoaiservererror = self.octoai_sdk.errors.OctoAIServerError
 
         if self.seed is None:
             self.seed = 9
 
-        self.client = self.octoai.client.Client(token=self.api_key)
+        self.client = self.octoai_sdk.client.Client(token=self.api_key)
 
     @backoff.on_exception(backoff.fibo, octoaiservererror, max_value=70)
     def _call_model(
