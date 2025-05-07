@@ -448,7 +448,7 @@ def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
             exc_info=e,
         )
         if break_on_fail:
-            raise GarakException(e) from e
+            raise ModuleNotFoundError(e) from e
         else:
             return False
 
