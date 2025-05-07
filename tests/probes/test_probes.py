@@ -93,6 +93,10 @@ def test_probe_metadata(classname):
     assert hasattr(p, "extra_dependency_names") and isinstance(
         p.extra_dependency_names, list
     ), "extra_dependency_names must be a list"
+    if p.active:
+        assert (
+            p.extra_dependency_names == []
+        ), "active must be False for Probes requiring external modules, so that they're not run by default"
 
 
 @pytest.mark.parametrize("plugin_name", PROBES)
