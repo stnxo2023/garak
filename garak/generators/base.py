@@ -65,13 +65,29 @@ class Generator(Configurable):
             f"🦜 loading {Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: {self.generator_family_name}: {self.name}"
         )
         logging.info("generator init: %s", self)
+        self._load_deps()
 
+    def _load_deps(self):
+        # load external dependencies. should be invoked at construction and
+        # in _client_load (if used)
         for extra_dependency in self.extra_dependency_names:
-            setattr(
-                self,
-                extra_dependency,
-                garak._plugins.load_optional_module(extra_dependency),
-            )
+            extra_dep_name = extra_dependency.replace(".", "_")
+            if (
+                not hasattr(self, extra_dep_name)
+                or getattr(self, extra_dep_name) is None
+            ):
+                setattr(
+                    self,
+                    extra_dep_name,
+                    garak._plugins.load_optional_module(extra_dependency),
+                )
+
+    def _clear_deps(self):
+        # unload external dependencies from class. should be invoked before
+        # serialisation, esp. in _clear_client (if used)
+        for extra_dependency in self.extra_dependency_names:
+            extra_dep_name = extra_dependency.replace(".", "_")
+            setattr(self, extra_dep_name, None)
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1

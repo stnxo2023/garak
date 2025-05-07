@@ -69,6 +69,7 @@ class Pipeline(Generator, HFCompatible):
         self._load_client()
 
     def _load_client(self):
+        self._load_deps()
         if hasattr(self, "generator") and self.generator is not None:
             return
 
@@ -103,6 +104,7 @@ class Pipeline(Generator, HFCompatible):
         self._set_hf_context_len(self.generator.model.config)
 
     def _clear_client(self):
+        self._clear_deps()
         self.generator = None
 
     def _format_chat_prompt(self, prompt: str) -> List[dict]:
@@ -160,6 +162,7 @@ class OptimumPipeline(Pipeline, HFCompatible):
     extra_dependency_names = ["optimum"]
 
     def _load_client(self):
+        self._load_deps()
         if hasattr(self, "generator") and self.generator is not None:
             return
 
@@ -199,6 +202,7 @@ class ConversationalPipeline(Pipeline, HFCompatible):
     supports_multiple_generations = True
 
     def _load_client(self):
+        self._load_deps()
         if hasattr(self, "generator") and self.generator is not None:
             return
 
@@ -448,6 +452,7 @@ class Model(Pipeline, HFCompatible):
     supports_multiple_generations = True
 
     def _load_client(self):
+        self._load_deps()
         if hasattr(self, "model") and self.model is not None:
             return
 
@@ -495,6 +500,7 @@ class Model(Pipeline, HFCompatible):
         self.generation_config.pad_token_id = self.model.config.eos_token_id
 
     def _clear_client(self):
+        self._clear_deps()
         self.model = None
         self.config = None
         self.tokenizer = None

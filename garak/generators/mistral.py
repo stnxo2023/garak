@@ -34,9 +34,11 @@ class MistralGenerator(Generator):
         self._load_client()
 
     def _load_client(self):
+        self._load_deps()
         self.client = self.mistralai.Mistral(api_key=self.api_key)
 
     def _clear_client(self):
+        self._clear_deps()
         self.client = None
 
     def __init__(self, name="", config_root=_config):
