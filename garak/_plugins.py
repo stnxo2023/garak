@@ -409,8 +409,12 @@ def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
     ]
     if len(extra_dependency_names) > 0:
         for dependency_module_name in extra_dependency_names:
-            if importlib.util.find_spec(dependency_module_name) is None:
-                _import_failed(dependency_module_name, full_plugin_name)
+            for dependency_path in [ # support both plain names and also multi-point names e.g. langchain.llms
+                ".".join(dependency_module_name.split(".")[: n + 1])
+                for n in range(dependency_module_name.count(".") + 1)
+            ]:
+                if importlib.util.find_spec(dependency_path) is None:
+                    _import_failed(dependency_path, full_plugin_name)
 
     module_path = f"garak.{category}.{module_name}"
     try:
