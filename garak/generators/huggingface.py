@@ -159,7 +159,7 @@ class OptimumPipeline(Pipeline, HFCompatible):
     generator_family_name = "NVIDIA Optimum Hugging Face 🤗 pipeline"
     supports_multiple_generations = True
     doc_uri = "https://huggingface.co/blog/optimum-nvidia"
-    extra_dependency_names = ["optimum"]
+    extra_dependency_names = ["optimum-nvidia"]
 
     def _load_client(self):
         self._load_deps()
