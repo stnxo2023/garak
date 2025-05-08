@@ -404,17 +404,18 @@ def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
     full_plugin_name = ".".join((category, module_name, plugin_class_name))
 
     # check cache for optional imports
-    extra_dependency_names = PluginCache.instance()[category][full_plugin_name][
-        "extra_dependency_names"
-    ]
-    if len(extra_dependency_names) > 0:
-        for dependency_module_name in extra_dependency_names:
-            for dependency_path in [ # support both plain names and also multi-point names e.g. langchain.llms
-                ".".join(dependency_module_name.split(".")[: n + 1])
-                for n in range(dependency_module_name.count(".") + 1)
-            ]:
-                if importlib.util.find_spec(dependency_path) is None:
-                    _import_failed(dependency_path, full_plugin_name)
+    if category in PLUGIN_TYPES:
+        extra_dependency_names = PluginCache.instance()[category][full_plugin_name][
+            "extra_dependency_names"
+        ]
+        if len(extra_dependency_names) > 0:
+            for dependency_module_name in extra_dependency_names:
+                for dependency_path in [ # support both plain names and also multi-point names e.g. langchain.llms
+                    ".".join(dependency_module_name.split(".")[: n + 1])
+                    for n in range(dependency_module_name.count(".") + 1)
+                ]:
+                    if importlib.util.find_spec(dependency_path) is None:
+                        _import_failed(dependency_path, full_plugin_name)
 
     module_path = f"garak.{category}.{module_name}"
     try:
