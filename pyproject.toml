@@ -135,7 +135,7 @@ plugin_ollama = [
   "ollama>=0.4.7",
 ]
 plugin_optimum = [
-  "optimum",
+  "optimum-nvidia",
 ]
 plugin_replicate = [
   "replicate>=0.8.3",
