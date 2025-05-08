@@ -50,14 +50,7 @@ class LangChainLLMGenerator(Generator):
 
         super().__init__(self.name, config_root=config_root)
 
-        try:
-            # this might need some special handling to allow tests
-            llm = getattr(self.langchain_llms, self.name)()
-        except Exception as e:
-            logging.error("Failed to import Langchain module: %s", repr(e))
-            raise e
-
-        self.generator = llm
+        self.generator = getattr(self.langchain_llms, self.name)()
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
