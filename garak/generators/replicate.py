@@ -15,10 +15,8 @@ from typing import List, Union
 import backoff
 
 from garak import _config
-from garak.exception import GeneratorBackoffExceptionPlaceholder
+from garak.exception import GeneratorBackoffException
 from garak.generators.base import Generator
-
-replicate_error = GeneratorBackoffExceptionPlaceholder
 
 
 class ReplicateGenerator(Generator):
@@ -40,8 +38,6 @@ class ReplicateGenerator(Generator):
 
     def __init__(self, name="", config_root=_config):
         super().__init__(name, config_root=config_root)
-        global replicate_error
-        replicate_error = self.replicate.exceptions.ReplicateError
 
         if hasattr(self, "seed") and self.seed is None:
             self.seed = 9
@@ -69,24 +65,27 @@ class ReplicateGenerator(Generator):
         self._clear_deps()
         self.client = None
 
-    @backoff.on_exception(backoff.fibo, replicate_error, max_value=70)
+    @backoff.on_exception(backoff.fibo, GeneratorBackoffException, max_value=70)
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
         if self.client is None:
             self._load_client()
-        response_iterator = self.client.run(
-            self.name,
-            input={
-                "prompt": prompt,
-                "max_length": self.max_tokens,
-                "temperature": self.temperature,
-                "top_p": self.top_p,
-                "repetition_penalty": self.repetition_penalty,
-                "seed": self.seed,
-            },
-        )
-        return ["".join(response_iterator)]
+        try:
+            response_iterator = self.client.run(
+                self.name,
+                input={
+                    "prompt": prompt,
+                    "max_length": self.max_tokens,
+                    "temperature": self.temperature,
+                    "top_p": self.top_p,
+                    "repetition_penalty": self.repetition_penalty,
+                    "seed": self.seed,
+                },
+            )
+            return ["".join(response_iterator)]
+        except self.replicate.exceptions.ReplicateError as e:
+            raise GeneratorBackoffException from e
 
 
 class InferenceEndpoint(ReplicateGenerator):

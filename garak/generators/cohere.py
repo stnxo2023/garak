@@ -13,16 +13,13 @@ import backoff
 import tqdm
 
 from garak import _config
-import garak._plugins
-from garak.exception import GeneratorBackoffExceptionPlaceholder
+from garak.exception import GeneratorBackoffException
 from garak.generators.base import Generator
 
 
 COHERE_GENERATION_LIMIT = (
     5  # c.f. https://docs.cohere.com/reference/generate 18 may 2023
 )
-
-cohere_exception = GeneratorBackoffExceptionPlaceholder
 
 
 class CohereGenerator(Generator):
@@ -53,9 +50,6 @@ class CohereGenerator(Generator):
 
         super().__init__(self.name, config_root=config_root)
 
-        global cohere_exception
-        cohere_exception = self.cohere.error.CohereAPIError
-
         logging.debug(
             "Cohere generation request limit capped at %s", COHERE_GENERATION_LIMIT
         )
@@ -71,19 +65,22 @@ class CohereGenerator(Generator):
         if prompt == "":
             return [""] * request_size
         else:
-            response = self.generator.generate(
-                model=self.name,
-                prompt=prompt,
-                temperature=self.temperature,
-                num_generations=request_size,
-                max_tokens=self.max_tokens,
-                preset=self.preset,
-                k=self.k,
-                p=self.p,
-                frequency_penalty=self.frequency_penalty,
-                presence_penalty=self.presence_penalty,
-                end_sequences=self.stop,
-            )
+            try:
+                response = self.generator.generate(
+                    model=self.name,
+                    prompt=prompt,
+                    temperature=self.temperature,
+                    num_generations=request_size,
+                    max_tokens=self.max_tokens,
+                    preset=self.preset,
+                    k=self.k,
+                    p=self.p,
+                    frequency_penalty=self.frequency_penalty,
+                    presence_penalty=self.presence_penalty,
+                    end_sequences=self.stop,
+                )
+            except self.cohere.error.CohereAPIError as e:
+                raise GeneratorBackoffException from e
             return [g.text for g in response]
 
     def _call_model(

@@ -35,10 +35,8 @@ from typing import List, Union
 import backoff
 
 from garak import _config
-from garak.exception import BadGeneratorException, GeneratorBackoffExceptionPlaceholder
+from garak.exception import BadGeneratorException, GeneratorBackoffException
 from garak.generators.base import Generator
-
-litellm_apierror = GeneratorBackoffExceptionPlaceholder
 
 # Based on the param support matrix below:
 # https://docs.litellm.ai/docs/completion/input
@@ -118,16 +116,13 @@ class LiteLLMGenerator(Generator):
 
         super().__init__(self.name, config_root=config_root)
 
-        global litellm_apierror
-        litellm_apierror = self.litellm.exceptions.APIError
-
         # Fix issue with Ollama which does not support `presence_penalty`
         self.litellm.drop_params = True
         # Suppress log messages from LiteLLM
         self.litellm.verbose_logger.disabled = True
         self.litellm.set_verbose = self.verbose
 
-    @backoff.on_exception(backoff.fibo, litellm_apierror, max_value=70)
+    @backoff.on_exception(backoff.fibo, GeneratorBackoffException, max_value=70)
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
@@ -166,6 +161,8 @@ class LiteLLMGenerator(Generator):
             raise BadGeneratorException(
                 "Unrecoverable error during litellm completion; see log for details"
             ) from e
+        except elf.litellm.exceptions.APIError as e:
+            raise GeneratorBackoffException from e
 
         if self.supports_multiple_generations:
             return [c.message.content for c in response.choices]

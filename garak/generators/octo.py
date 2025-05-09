@@ -9,10 +9,8 @@ from typing import List, Union
 import backoff
 
 from garak import _config
-from garak.exception import GeneratorBackoffExceptionPlaceholder
+from garak.exception import GeneratorBackoffException
 from garak.generators.base import Generator
-
-octoaiservererror = GeneratorBackoffExceptionPlaceholder
 
 
 class OctoGenerator(Generator):
@@ -41,32 +39,33 @@ class OctoGenerator(Generator):
         self.fullname = f"{self.generator_family_name} {self.name}"
 
         super().__init__(self.name, config_root=config_root)
-        global octoaiservererror
-        octoaiservererror = self.octoai_sdk.errors.OctoAIServerError
 
         if self.seed is None:
             self.seed = 9
 
         self.client = self.octoai_sdk.client.Client(token=self.api_key)
 
-    @backoff.on_exception(backoff.fibo, octoaiservererror, max_value=70)
+    @backoff.on_exception(backoff.fibo, GeneratorBackoffException, max_value=70)
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
-        outputs = self.client.chat.completions.create(
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are a helpful assistant. Keep your responses limited to one short paragraph if possible.",
-                },
-                {"role": "user", "content": prompt},
-            ],
-            model=self.name,
-            max_tokens=self.max_tokens,
-            presence_penalty=self.presence_penalty,
-            temperature=self.temperature,
-            top_p=self.top_p,
-        )
+        try:
+            outputs = self.client.chat.completions.create(
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are a helpful assistant. Keep your responses limited to one short paragraph if possible.",
+                    },
+                    {"role": "user", "content": prompt},
+                ],
+                model=self.name,
+                max_tokens=self.max_tokens,
+                presence_penalty=self.presence_penalty,
+                temperature=self.temperature,
+                top_p=self.top_p,
+            )
+        except self.octoai_sdk.errors.OctoAIServerError as e:
+            raise GeneratorBackoffException from e
 
         return [outputs.choices[0].message.content]
 
@@ -88,24 +87,27 @@ class InferenceEndpoint(OctoGenerator):
             self.name.replace("-demo", "").replace("https://", "").split("-")[:-1]
         )
 
-    @backoff.on_exception(backoff.fibo, octoaiservererror, max_value=70)
+    @backoff.on_exception(backoff.fibo, GeneratorBackoffException, max_value=70)
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
-        outputs = self.client.infer(
-            endpoint_url=self.name,
-            inputs={
-                "model": self.octo_model,
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": prompt,
-                    }
-                ],
-                "max_tokens": self.max_tokens,
-                "stream": False,
-            },
-        )
+        try:
+            outputs = self.client.infer(
+                endpoint_url=self.name,
+                inputs={
+                    "model": self.octo_model,
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": prompt,
+                        }
+                    ],
+                    "max_tokens": self.max_tokens,
+                    "stream": False,
+                },
+            )
+        except self.octoai_sdk.errors.OctoAIServerError as e:
+            raise GeneratorBackoffException from e
         return [outputs.get("choices")[0].get("message").get("content")]
 
 

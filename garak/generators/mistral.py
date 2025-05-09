@@ -1,11 +1,9 @@
 DEFAULT_CLASS = "MistralGenerator"
 
 import backoff
-from garak.exception import GeneratorBackoffExceptionPlaceholder
+from garak.exception import GeneratorBackoffException
 from garak.generators.base import Generator
 import garak._config as _config
-
-mistral_sdkerror = GeneratorBackoffExceptionPlaceholder
 
 
 class MistralGenerator(Generator):
@@ -44,19 +42,21 @@ class MistralGenerator(Generator):
 
     def __init__(self, name="", config_root=_config):
         super().__init__(name, config_root)
-        self.mistral_sdkerror = self.mistralai.models.SDKError
         self._load_client()
 
-    @backoff.on_exception(backoff.fibo, mistral_sdkerror, max_value=70)
+    @backoff.on_exception(backoff.fibo, GeneratorBackoffException, max_value=70)
     def _call_model(self, prompt, generations_this_call=1):
         print(self.name)
-        chat_response = self.client.chat.complete(
-            model=self.name,
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt,
-                },
-            ],
-        )
+        try:
+            chat_response = self.client.chat.complete(
+                model=self.name,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt,
+                    },
+                ],
+            )
+        except self.mistralai.models.SDKError as e:
+            raise GeneratorBackoffException from e
         return [chat_response.choices[0].message.content]

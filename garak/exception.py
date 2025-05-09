@@ -38,5 +38,5 @@ class PayloadFailure(GarakException):
     """Problem instantiating/using payloads"""
 
 
-class GeneratorBackoffExceptionPlaceholder(GarakException):
-    """Placeholder used for lazy-loaded exceptions"""
+class GeneratorBackoffException(GarakException):
+    """Backoff trigger in generators"""

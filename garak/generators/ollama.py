@@ -5,11 +5,9 @@ from typing import List, Union
 import backoff
 
 from garak import _config
-from garak.exception import GeneratorBackoffExceptionPlaceholder
+from garak.exception import GeneratorBackoffException
 from garak.generators.base import Generator
 from httpx import TimeoutException
-
-ollama_responseerror = GeneratorBackoffExceptionPlaceholder
 
 
 def _give_up(error):
@@ -35,16 +33,13 @@ class OllamaGenerator(Generator):
     def __init__(self, name="", config_root=_config):
         super().__init__(name, config_root)  # Sets the name and generations
 
-        global ollama_responseerror
-        ollama_responseerror = self.ollama.ResponseError
-
         self.client = self.ollama.Client(
             self.host, timeout=self.timeout
         )  # Instantiates the client with the timeout
 
     @backoff.on_exception(
         backoff.fibo,
-        (TimeoutException, ollama_responseerror),
+        GeneratorBackoffException,
         max_value=70,
         giveup=_give_up,
     )
@@ -54,7 +49,11 @@ class OllamaGenerator(Generator):
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
-        response = self.client.generate(self.name, prompt)
+        try:
+            response = self.client.generate(self.name, prompt)
+        except (self.ollama.ResponseError, TimeoutException) as e:
+            raise GeneratorBackoffException from e
+
         return [response.get("response", None)]
 
 
@@ -66,7 +65,7 @@ class OllamaGeneratorChat(OllamaGenerator):
 
     @backoff.on_exception(
         backoff.fibo,
-        (TimeoutException, ollama_responseerror),
+        GeneratorBackoffException,
         max_value=70,
         giveup=_give_up,
     )
@@ -76,15 +75,18 @@ class OllamaGeneratorChat(OllamaGenerator):
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
-        response = self.client.chat(
-            model=self.name,
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt,
-                },
-            ],
-        )
+        try:
+            response = self.client.chat(
+                model=self.name,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt,
+                    },
+                ],
+            )
+        except (self.ollama.ResponseError, TimeoutException) as e:
+            raise GeneratorBackoffException from e
         return [
             response.get("message", {}).get("content", None)
         ]  # Return the response or None

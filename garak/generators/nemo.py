@@ -13,11 +13,8 @@ from typing import List, Union
 import backoff
 
 from garak import _config
-from garak.exception import APIKeyMissingError, GeneratorBackoffExceptionPlaceholder
+from garak.exception import APIKeyMissingError, GeneratorBackoffException
 from garak.generators.base import Generator
-
-nemollm_serversideerror = GeneratorBackoffExceptionPlaceholder
-nemollm_toomanyrequestserror = GeneratorBackoffExceptionPlaceholder
 
 
 class NeMoGenerator(Generator):
@@ -49,10 +46,6 @@ class NeMoGenerator(Generator):
 
         super().__init__(self.name, config_root=config_root)
 
-        global nemollm_serversideerror, nemollm_toomanyrequestserror
-        nemollm_serversideerror = self.nemollm.error.ServerSideError
-        nemollm_toomanyrequestserror = self.nemollm.error.TooManyRequestsError
-
         self.nemo = self.nemollm.api.NemoLLM(
             api_host=self.api_uri, api_key=self.api_key, org_id=self.org_id
         )
@@ -78,11 +71,7 @@ class NeMoGenerator(Generator):
 
     @backoff.on_exception(
         backoff.fibo,
-        (
-            nemollm_serversideerror,
-            nemollm_toomanyrequestserror,
-            requests.exceptions.ConnectionError,  # hopefully handles SSLV3_ALERT_BAD_RECORD_MAC
-        ),
+        GeneratorBackoffException,
         max_value=70,
     )
     def _call_model(
@@ -101,22 +90,28 @@ class NeMoGenerator(Generator):
             logging.info(
                 "fixing a seed means nemollm gives the same result every time, recommend setting generations=1"
             )
-
-        response = self.nemo.generate(
-            model=self.name,
-            prompt=prompt,
-            tokens_to_generate=self.max_tokens,
-            temperature=self.temperature,
-            random_seed=self.seed,
-            top_p=self.top_p,
-            top_k=self.top_k,
-            # stop=["\n"],
-            repetition_penalty=self.repetition_penalty,
-            beam_search_diversity_rate=self.beam_search_diversity_rate,
-            beam_width=self.beam_width,
-            length_penalty=self.length_penalty,
-            # guardrail=self.guardrail
-        )
+        try:
+            response = self.nemo.generate(
+                model=self.name,
+                prompt=prompt,
+                tokens_to_generate=self.max_tokens,
+                temperature=self.temperature,
+                random_seed=self.seed,
+                top_p=self.top_p,
+                top_k=self.top_k,
+                # stop=["\n"],
+                repetition_penalty=self.repetition_penalty,
+                beam_search_diversity_rate=self.beam_search_diversity_rate,
+                beam_width=self.beam_width,
+                length_penalty=self.length_penalty,
+                # guardrail=self.guardrail
+            )
+        except (
+            self.nemollm.error.ServerSideError,
+            self.nemollm.error.TooManyRequestsError,
+            requests.exceptions.ConnectionError,  # hopefully handles SSLV3_ALERT_BAD_RECORD_MAC
+        ) as e:
+            raise GeneratorBackoffException from e
 
         if reset_none_seed:
             self.seed = None
