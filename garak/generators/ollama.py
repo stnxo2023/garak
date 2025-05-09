@@ -5,15 +5,13 @@ from typing import List, Union
 import backoff
 
 from garak import _config
-from garak.exception import GeneratorBackoffException
+from garak.exception import GeneratorBackoffTrigger
 from garak.generators.base import Generator
 from httpx import TimeoutException
 
 
 def _give_up(error):
-    import ollama
-
-    return isinstance(error, ollama.ResponseError) and error.status_code == 404
+    return hasattr(error, "status_code") and error.status_code == 404
 
 
 class OllamaGenerator(Generator):
@@ -41,7 +39,7 @@ class OllamaGenerator(Generator):
 
     @backoff.on_exception(
         backoff.fibo,
-        GeneratorBackoffException,
+        GeneratorBackoffTrigger,
         max_value=70,
         giveup=_give_up,
     )
@@ -53,8 +51,12 @@ class OllamaGenerator(Generator):
     ) -> List[Union[str, None]]:
         try:
             response = self.client.generate(self.name, prompt)
-        except (self.ollama.ResponseError, TimeoutException) as e:
-            raise GeneratorBackoffException from e
+        except Exception as e:
+            backoff_exception_types = [self.ollama.ResponseError, TimeoutException]
+            for backoff_exception in backoff_exception_types:
+                if isinstance(e, backoff_exception):
+                    raise GeneratorBackoffTrigger from e
+            raise e
 
         return [response.get("response", None)]
 
@@ -67,7 +69,7 @@ class OllamaGeneratorChat(OllamaGenerator):
 
     @backoff.on_exception(
         backoff.fibo,
-        GeneratorBackoffException,
+        GeneratorBackoffTrigger,
         max_value=70,
         giveup=_give_up,
     )
@@ -88,7 +90,7 @@ class OllamaGeneratorChat(OllamaGenerator):
                 ],
             )
         except (self.ollama.ResponseError, TimeoutException) as e:
-            raise GeneratorBackoffException from e
+            raise GeneratorBackoffTrigger from e
         return [
             response.get("message", {}).get("content", None)
         ]  # Return the response or None

@@ -9,7 +9,7 @@ from typing import List, Union
 import backoff
 
 from garak import _config
-from garak.exception import GeneratorBackoffException
+from garak.exception import GeneratorBackoffTrigger
 from garak.generators.base import Generator
 
 
@@ -45,7 +45,7 @@ class OctoGenerator(Generator):
 
         self.client = self.octoai_sdk.client.Client(token=self.api_key)
 
-    @backoff.on_exception(backoff.fibo, GeneratorBackoffException, max_value=70)
+    @backoff.on_exception(backoff.fibo, GeneratorBackoffTrigger, max_value=70)
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
@@ -64,8 +64,12 @@ class OctoGenerator(Generator):
                 temperature=self.temperature,
                 top_p=self.top_p,
             )
-        except self.octoai_sdk.errors.OctoAIServerError as e:
-            raise GeneratorBackoffException from e
+        except Exception as e:
+            backoff_exception_types = [self.octoai_sdk.errors.OctoAIServerError]
+            for backoff_exception in backoff_exception_types:
+                if isinstance(e, backoff_exception):
+                    raise GeneratorBackoffTrigger from e
+            raise e
 
         return [outputs.choices[0].message.content]
 
@@ -87,7 +91,7 @@ class InferenceEndpoint(OctoGenerator):
             self.name.replace("-demo", "").replace("https://", "").split("-")[:-1]
         )
 
-    @backoff.on_exception(backoff.fibo, GeneratorBackoffException, max_value=70)
+    @backoff.on_exception(backoff.fibo, GeneratorBackoffTrigger, max_value=70)
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
@@ -106,8 +110,12 @@ class InferenceEndpoint(OctoGenerator):
                     "stream": False,
                 },
             )
-        except self.octoai_sdk.errors.OctoAIServerError as e:
-            raise GeneratorBackoffException from e
+        except Exception as e:
+            backoff_exception_types = [self.octoai_sdk.errors.OctoAIServerError]
+            for backoff_exception in backoff_exception_types:
+                if isinstance(e, backoff_exception):
+                    raise GeneratorBackoffTrigger from e
+            raise e
         return [outputs.get("choices")[0].get("message").get("content")]
 
 

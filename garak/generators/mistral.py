@@ -1,7 +1,7 @@
 DEFAULT_CLASS = "MistralGenerator"
 
 import backoff
-from garak.exception import GeneratorBackoffException
+from garak.exception import GeneratorBackoffTrigger
 from garak.generators.base import Generator
 import garak._config as _config
 
@@ -44,7 +44,7 @@ class MistralGenerator(Generator):
         super().__init__(name, config_root)
         self._load_client()
 
-    @backoff.on_exception(backoff.fibo, GeneratorBackoffException, max_value=70)
+    @backoff.on_exception(backoff.fibo, GeneratorBackoffTrigger, max_value=70)
     def _call_model(self, prompt, generations_this_call=1):
         print(self.name)
         try:
@@ -57,6 +57,10 @@ class MistralGenerator(Generator):
                     },
                 ],
             )
-        except self.mistralai.models.SDKError as e:
-            raise GeneratorBackoffException from e
+        except Exception as e:
+            backoff_exception_types = [self.mistralai.models.SDKError]
+            for backoff_exception in backoff_exception_types:
+                if isinstance(e, backoff_exception):
+                    raise GeneratorBackoffTrigger from e
+            raise e
         return [chat_response.choices[0].message.content]

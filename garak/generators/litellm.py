@@ -35,7 +35,7 @@ from typing import List, Union
 import backoff
 
 from garak import _config
-from garak.exception import BadGeneratorException, GeneratorBackoffException
+from garak.exception import BadGeneratorException, GeneratorBackoffTrigger
 from garak.generators.base import Generator
 
 # Based on the param support matrix below:
@@ -122,7 +122,7 @@ class LiteLLMGenerator(Generator):
         self.litellm.verbose_logger.disabled = True
         self.litellm.set_verbose = self.verbose
 
-    @backoff.on_exception(backoff.fibo, GeneratorBackoffException, max_value=70)
+    @backoff.on_exception(backoff.fibo, GeneratorBackoffTrigger, max_value=70)
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
@@ -161,8 +161,12 @@ class LiteLLMGenerator(Generator):
             raise BadGeneratorException(
                 "Unrecoverable error during litellm completion; see log for details"
             ) from e
-        except elf.litellm.exceptions.APIError as e:
-            raise GeneratorBackoffException from e
+        except Exception as e:
+            backoff_exception_types = [self.litellm.exceptions.APIError]
+            for backoff_exception in backoff_exception_types:
+                if isinstance(e, backoff_exception):
+                    raise GeneratorBackoffTrigger from e
+            raise e
 
         if self.supports_multiple_generations:
             return [c.message.content for c in response.choices]

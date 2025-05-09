@@ -13,7 +13,7 @@ import backoff
 import tqdm
 
 from garak import _config
-from garak.exception import GeneratorBackoffException
+from garak.exception import GeneratorBackoffTrigger
 from garak.generators.base import Generator
 
 
@@ -55,7 +55,7 @@ class CohereGenerator(Generator):
         )
         self.generator = self.cohere.Client(self.api_key)
 
-    @backoff.on_exception(backoff.fibo, GeneratorBackoffException, max_value=70)
+    @backoff.on_exception(backoff.fibo, GeneratorBackoffTrigger, max_value=70)
     def _call_cohere_api(self, prompt, request_size=COHERE_GENERATION_LIMIT):
         """as of jun 2 2023, empty prompts raise:
         cohere.error.CohereAPIError: invalid request: prompt must be at least 1 token long
@@ -79,8 +79,12 @@ class CohereGenerator(Generator):
                     presence_penalty=self.presence_penalty,
                     end_sequences=self.stop,
                 )
-            except self.cohere.error.CohereAPIError as e:
-                raise GeneratorBackoffException from e
+            except Exception as e:
+                backoff_exception_types = [self.cohere.error.CohereAPIError]
+                for backoff_exception in backoff_exception_types:
+                    if isinstance(e, backoff_exception):
+                        raise GeneratorBackoffTrigger from e
+                raise e
             return [g.text for g in response]
 
     def _call_model(

@@ -13,7 +13,7 @@ from typing import List, Union
 import backoff
 
 from garak import _config
-from garak.exception import APIKeyMissingError, GeneratorBackoffException
+from garak.exception import APIKeyMissingError, GeneratorBackoffTrigger
 from garak.generators.base import Generator
 
 
@@ -71,7 +71,7 @@ class NeMoGenerator(Generator):
 
     @backoff.on_exception(
         backoff.fibo,
-        GeneratorBackoffException,
+        GeneratorBackoffTrigger,
         max_value=70,
     )
     def _call_model(
@@ -106,12 +106,17 @@ class NeMoGenerator(Generator):
                 length_penalty=self.length_penalty,
                 # guardrail=self.guardrail
             )
-        except (
-            self.nemollm.error.ServerSideError,
-            self.nemollm.error.TooManyRequestsError,
-            requests.exceptions.ConnectionError,  # hopefully handles SSLV3_ALERT_BAD_RECORD_MAC
-        ) as e:
-            raise GeneratorBackoffException from e
+        except Exception as e:
+            backoff_exception_types = [
+                self.nemollm.error.ServerSideError,
+                self.nemollm.error.TooManyRequestsError,
+                requests.exceptions.ConnectionError,  # hopefully handles SSLV3_ALERT_BAD_RECORD_MAC
+            ]
+
+            for backoff_exception in backoff_exception_types:
+                if isinstance(e, backoff_exception):
+                    raise GeneratorBackoffTrigger from e
+            raise e
 
         if reset_none_seed:
             self.seed = None

@@ -205,7 +205,7 @@ class OpenAICompatible(Generator):
             openai.InternalServerError,
             openai.APITimeoutError,
             openai.APIConnectionError,
-            garak.exception.GarakBackoffTrigger,
+            garak.exception.GeneratorBackoffTrigger,
         ),
         max_value=70,
     )
@@ -269,7 +269,7 @@ class OpenAICompatible(Generator):
         except json.decoder.JSONDecodeError as e:
             logging.exception(e)
             if self.retry_json:
-                raise garak.exception.GarakBackoffTrigger from e
+                raise garak.exception.GeneratorBackoffTrigger from e
             else:
                 raise e
 
@@ -280,7 +280,7 @@ class OpenAICompatible(Generator):
             )
             msg = "no .choices member in generator response"
             if self.retry_json:
-                raise garak.exception.GarakBackoffTrigger(msg)
+                raise garak.exception.GeneratorBackoffTrigger(msg)
             else:
                 return [None]
 

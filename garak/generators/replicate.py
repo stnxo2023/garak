@@ -15,7 +15,7 @@ from typing import List, Union
 import backoff
 
 from garak import _config
-from garak.exception import GeneratorBackoffException
+from garak.exception import GeneratorBackoffTrigger
 from garak.generators.base import Generator
 
 
@@ -65,7 +65,7 @@ class ReplicateGenerator(Generator):
         self._clear_deps()
         self.client = None
 
-    @backoff.on_exception(backoff.fibo, GeneratorBackoffException, max_value=70)
+    @backoff.on_exception(backoff.fibo, GeneratorBackoffTrigger, max_value=70)
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
@@ -84,8 +84,12 @@ class ReplicateGenerator(Generator):
                 },
             )
             return ["".join(response_iterator)]
-        except self.replicate.exceptions.ReplicateError as e:
-            raise GeneratorBackoffException from e
+        except Exception as e:
+            backoff_exception_types = [self.replicate.exceptions.ReplicateError]
+            for backoff_exception in backoff_exception_types:
+                if isinstance(e, backoff_exception):
+                    raise GeneratorBackoffTrigger from e
+            raise e
 
 
 class InferenceEndpoint(ReplicateGenerator):
@@ -94,7 +98,7 @@ class InferenceEndpoint(ReplicateGenerator):
     Expects `name` in the format of `username/deployed-model-name`.
     """
 
-    @backoff.on_exception(backoff.fibo, GeneratorBackoffException, max_value=70)
+    @backoff.on_exception(backoff.fibo, GeneratorBackoffTrigger, max_value=70)
     def _call_model(
         self, prompt, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
@@ -111,8 +115,12 @@ class InferenceEndpoint(ReplicateGenerator):
                     "repetition_penalty": self.repetition_penalty,
                 },
             )
-        except self.replicate.exceptions.ReplicateError as e:
-            raise GeneratorBackoffException from e
+        except Exception as e:
+            backoff_exception_types = [self.replicate.exceptions.ReplicateError]
+            for backoff_exception in backoff_exception_types:
+                if isinstance(e, backoff_exception):
+                    raise GeneratorBackoffTrigger from e
+            raise e
 
         prediction.wait()
         try:
