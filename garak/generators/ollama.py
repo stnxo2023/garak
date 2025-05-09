@@ -11,6 +11,8 @@ from httpx import TimeoutException
 
 
 def _give_up(error):
+    import ollama
+
     return isinstance(error, ollama.ResponseError) and error.status_code == 404
 
 

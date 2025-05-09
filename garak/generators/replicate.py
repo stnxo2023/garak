@@ -94,28 +94,32 @@ class InferenceEndpoint(ReplicateGenerator):
     Expects `name` in the format of `username/deployed-model-name`.
     """
 
-    @backoff.on_exception(backoff.fibo, replicate_error, max_value=70)
+    @backoff.on_exception(backoff.fibo, GeneratorBackoffException, max_value=70)
     def _call_model(
         self, prompt, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
         if self.client is None:
             self._load_client()
         deployment = self.client.deployments.get(self.name)
-        prediction = deployment.predictions.create(
-            input={
-                "prompt": prompt,
-                "max_length": self.max_tokens,
-                "temperature": self.temperature,
-                "top_p": self.top_p,
-                "repetition_penalty": self.repetition_penalty,
-            },
-        )
+        try:
+            prediction = deployment.predictions.create(
+                input={
+                    "prompt": prompt,
+                    "max_length": self.max_tokens,
+                    "temperature": self.temperature,
+                    "top_p": self.top_p,
+                    "repetition_penalty": self.repetition_penalty,
+                },
+            )
+        except self.replicate.exceptions.ReplicateError as e:
+            raise GeneratorBackoffException from e
+
         prediction.wait()
         try:
             response = "".join(prediction.output)
         except TypeError as exc:
             raise IOError(
-                "Replicate endpoint didn't generate a response. Make sure the endpoint is active."
+                "Replicate endpoint didn't generate an Iterable[str]-type response. Make sure the endpoint is active."
             ) from exc
         return [response]
 

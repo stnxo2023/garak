@@ -55,7 +55,7 @@ class CohereGenerator(Generator):
         )
         self.generator = self.cohere.Client(self.api_key)
 
-    @backoff.on_exception(backoff.fibo, cohere_exception, max_value=70)
+    @backoff.on_exception(backoff.fibo, GeneratorBackoffException, max_value=70)
     def _call_cohere_api(self, prompt, request_size=COHERE_GENERATION_LIMIT):
         """as of jun 2 2023, empty prompts raise:
         cohere.error.CohereAPIError: invalid request: prompt must be at least 1 token long
