@@ -11,7 +11,11 @@ from httpx import TimeoutException
 
 
 def _give_up(error):
-    return hasattr(error, "status_code") and error.status_code == 404
+    return (
+        str(error.__class__) == "<class 'ollama._types.ResponseError'>"
+        and hasattr(error, "status_code")
+        and error.status_code == 404
+    )
 
 
 class OllamaGenerator(Generator):
@@ -52,6 +56,10 @@ class OllamaGenerator(Generator):
         try:
             response = self.client.generate(self.name, prompt)
         except Exception as e:
+            if (
+                isinstance(e, self.ollama.ResponseError) and e.status_code == 404
+            ):  # send the 404 through
+                raise e
             backoff_exception_types = [self.ollama.ResponseError, TimeoutException]
             for backoff_exception in backoff_exception_types:
                 if isinstance(e, backoff_exception):
@@ -89,8 +97,16 @@ class OllamaGeneratorChat(OllamaGenerator):
                     },
                 ],
             )
-        except (self.ollama.ResponseError, TimeoutException) as e:
-            raise GeneratorBackoffTrigger from e
+        except Exception as e:
+            if (
+                isinstance(e, self.ollama.ResponseError) and e.status_code == 404
+            ):  # send the 404 through
+                raise e
+            backoff_exception_types = [self.ollama.ResponseError, TimeoutException]
+            for backoff_exception in backoff_exception_types:
+                if isinstance(e, backoff_exception):
+                    raise GeneratorBackoffTrigger from e
+            raise e
         return [
             response.get("message", {}).get("content", None)
         ]  # Return the response or None
