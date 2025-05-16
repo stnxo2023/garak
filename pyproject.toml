@@ -104,6 +104,9 @@ lint = [
   "black==24.4.2",
   "pylint>=3.1.0",
 ]
+dev = [
+  "garak[tests,lint]"
+]
 calibration = [
   "scipy>=1.14.0",
 ]
