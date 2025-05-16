@@ -27,7 +27,9 @@ def test_requirements_txt_pyproject_toml():
         pyproject_toml = tomllib.load(pyproject_file)
         pyproject_reqs = pyproject_toml["project"]["dependencies"]
         for test_group in pyproject_toml["project"]["optional-dependencies"]:
-            if not test_group.startswith("plugin_"):
+            if not test_group.startswith("plugin_") and not pyproject_toml["project"][
+                "optional-dependencies"
+            ][test_group][0].startswith("garak["):
                 test_deps = pyproject_toml["project"]["optional-dependencies"][
                     test_group
                 ]
