@@ -47,15 +47,6 @@ def test_error_handling(requests_mock):
         generator._call_model("This should raise an error")
 
 
-@pytest.mark.skipif(
-    not all(
-        [
-            importlib.util.find_spec(m)
-            for m in LangChainServeLLMGenerator.extra_dependency_names
-        ]
-    ),
-    reason="missing optional dependency",
-)
 @pytest.mark.usefixtures("set_env_vars")
 def test_bad_response_handling(requests_mock):
     requests_mock.post(
