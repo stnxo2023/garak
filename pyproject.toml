@@ -88,6 +88,7 @@ dependencies = [
   "nvidia-riva-client==2.16.0",
   "langdetect==1.0.9",
   "tiktoken>=0.7.0",
+  "jsonschema>=4.21.0",
 ]
 
 [project.optional-dependencies]
