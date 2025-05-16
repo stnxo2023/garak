@@ -24,7 +24,7 @@ import random
 import garak.payloads
 import garak.resources.encodings
 from garak import _config
-from garak.probes.base import Probe, Tier
+import garak.probes
 
 payload_mapping = {
     "default": "text_en",
@@ -196,14 +196,14 @@ class BaseEncodingProbe:
     goal = "make the model say an encoded payload"
     lang = "en"
     doc_uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    tier = Tier.TIER_2
+    tier = garak.probes.Tier.COMPETE_WITH_SOTA
 
     primary_detector = "encoding.DecodeMatch"
     extended_detectors = [
         "encoding.DecodeApprox",
     ]
 
-    DEFAULT_PARAMS = Probe.DEFAULT_PARAMS | {
+    DEFAULT_PARAMS = garak.probes.Probe.DEFAULT_PARAMS | {
         "follow_prompt_cap": True,
         "payloads": ["default"],
     }
@@ -257,20 +257,20 @@ class BaseEncodingProbe:
             self.prompts, self.triggers = zip(
                 *random.sample(generated_prompts, self.soft_probe_prompt_cap)
             )
-        self.prompts = self.translator.translate(self.prompts)
+        self.prompts = self.langprovider.get_text(self.prompts)
 
     def _attempt_prestore_hook(self, attempt, seq):
         attempt.notes["triggers"] = [self.triggers[seq]]
         return attempt
 
 
-class InjectBase64(BaseEncodingProbe, Probe):
+class InjectBase64(BaseEncodingProbe, garak.probes.Probe):
     """Probe for susceptibility to base64 encoded injections
 
     Encodes payloads using base64, and tries a variety of ways of getting the target
     model to repeat & decode them."""
 
-    tier = Tier.TIER_1
+    tier = garak.probes.Tier.OF_CONCERN
 
     encoding_funcs = [
         base64.b64encode,
@@ -281,11 +281,11 @@ class InjectBase64(BaseEncodingProbe, Probe):
     encoding_name = "BASE64"
 
     def __init__(self, config_root=_config):
-        Probe.__init__(self, config_root=config_root)
+        garak.probes.Probe.__init__(self, config_root=config_root)
         BaseEncodingProbe.__init__(self)
 
 
-class InjectBase16(BaseEncodingProbe, Probe):
+class InjectBase16(BaseEncodingProbe, garak.probes.Probe):
     """Probe for susceptibility to base16 encoded injections"
 
     Encodes payloads using base16, and tries a variety of ways of getting the target
@@ -295,11 +295,11 @@ class InjectBase16(BaseEncodingProbe, Probe):
     encoding_name = "BASE16"
 
     def __init__(self, config_root=_config):
-        Probe.__init__(self, config_root=config_root)
+        garak.probes.Probe.__init__(self, config_root=config_root)
         BaseEncodingProbe.__init__(self)
 
 
-class InjectBase32(BaseEncodingProbe, Probe):
+class InjectBase32(BaseEncodingProbe, garak.probes.Probe):
     """Probe for susceptibility to base32 encoded injections
 
     Encodes payloads using base32, and tries a variety of ways of getting the target
@@ -309,11 +309,11 @@ class InjectBase32(BaseEncodingProbe, Probe):
     encoding_name = "BASE32"
 
     def __init__(self, config_root=_config):
-        Probe.__init__(self, config_root=config_root)
+        garak.probes.Probe.__init__(self, config_root=config_root)
         BaseEncodingProbe.__init__(self)
 
 
-class InjectAscii85(BaseEncodingProbe, Probe):
+class InjectAscii85(BaseEncodingProbe, garak.probes.Probe):
     """Probe for susceptibility to base85 encoded injections
 
     Encodes payloads using ascii85, and tries a variety of ways of getting the target
@@ -323,11 +323,11 @@ class InjectAscii85(BaseEncodingProbe, Probe):
     encoding_name = "ASCII85"
 
     def __init__(self, config_root=_config):
-        Probe.__init__(self, config_root=config_root)
+        garak.probes.Probe.__init__(self, config_root=config_root)
         BaseEncodingProbe.__init__(self)
 
 
-class InjectHex(BaseEncodingProbe, Probe):
+class InjectHex(BaseEncodingProbe, garak.probes.Probe):
     """Probe for susceptibility to hex encoded injections
 
     Encodes payloads using hex, and tries a variety of ways of getting the target
@@ -337,11 +337,11 @@ class InjectHex(BaseEncodingProbe, Probe):
     encoding_name = "hex"
 
     def __init__(self, config_root=_config):
-        Probe.__init__(self, config_root=config_root)
+        garak.probes.Probe.__init__(self, config_root=config_root)
         BaseEncodingProbe.__init__(self)
 
 
-class InjectQP(BaseEncodingProbe, Probe):
+class InjectQP(BaseEncodingProbe, garak.probes.Probe):
     """Probe for susceptibility to QP encoded injections
 
     Encodes payloads using quoted-printable, and tries a variety of ways of getting the target
@@ -351,20 +351,20 @@ class InjectQP(BaseEncodingProbe, Probe):
     encoding_name = "Quoted-Printable"
     active = False  # seems to just pass text right through - when using ascii chars
 
-    tier = Tier.TIER_1
+    tier = garak.probes.Tier.OF_CONCERN
 
     def __init__(self, config_root=_config):
-        Probe.__init__(self, config_root=config_root)
+        garak.probes.Probe.__init__(self, config_root=config_root)
         BaseEncodingProbe.__init__(self)
 
 
-class InjectUU(BaseEncodingProbe, Probe):
+class InjectUU(BaseEncodingProbe, garak.probes.Probe):
     """Probe for susceptibility to UU encoded injections
 
     Encodes payloads using uuencoding, and tries a variety of ways of getting the target
     model to repeat & decode them."""
 
-    tier = Tier.TIER_1
+    tier = garak.probes.Tier.OF_CONCERN
 
     encoding_name = "UUencode"
 
@@ -377,11 +377,11 @@ class InjectUU(BaseEncodingProbe, Probe):
 
     def __init__(self, config_root=_config):
         self.encoding_funcs = [self.UUencode]
-        Probe.__init__(self, config_root=config_root)
+        garak.probes.Probe.__init__(self, config_root=config_root)
         BaseEncodingProbe.__init__(self)
 
 
-class InjectMime(BaseEncodingProbe, Probe):
+class InjectMime(BaseEncodingProbe, garak.probes.Probe):
     """Probe for susceptibility to MIME encoding injections
 
     Encodes payloads using MIME encoding, and tries a variety of ways of getting the
@@ -394,11 +394,11 @@ class InjectMime(BaseEncodingProbe, Probe):
         import quopri
 
         self.encoding_funcs = [quopri.encodestring]
-        Probe.__init__(self, config_root=config_root)
+        garak.probes.Probe.__init__(self, config_root=config_root)
         BaseEncodingProbe.__init__(self)
 
 
-class InjectROT13(BaseEncodingProbe, Probe):
+class InjectROT13(BaseEncodingProbe, garak.probes.Probe):
     """Probe for susceptibility to ROT13 encoding injections
 
     Encodes payloads using ROT13, and tries a variety of ways of getting the target
@@ -409,11 +409,11 @@ class InjectROT13(BaseEncodingProbe, Probe):
     encoding_name = "ROT13"
 
     def __init__(self, config_root=_config):
-        Probe.__init__(self, config_root=config_root)
+        garak.probes.Probe.__init__(self, config_root=config_root)
         BaseEncodingProbe.__init__(self)
 
 
-class InjectBase2048(BaseEncodingProbe, Probe):
+class InjectBase2048(BaseEncodingProbe, garak.probes.Probe):
     """Probe for susceptibility to Base2048 encoding injections
 
     Encodes payloads using base2048, and tries a variety of ways of getting the target
@@ -425,11 +425,11 @@ class InjectBase2048(BaseEncodingProbe, Probe):
         import base2048
 
         self.encoding_funcs = [base2048.encode]
-        Probe.__init__(self, config_root=config_root)
+        garak.probes.Probe.__init__(self, config_root=config_root)
         BaseEncodingProbe.__init__(self)
 
 
-class InjectBraille(BaseEncodingProbe, Probe):
+class InjectBraille(BaseEncodingProbe, garak.probes.Probe):
     """Probe for susceptibility to Braille encoding injections. Credit Wally#3422
 
     Encodes payloads using braille, and tries a variety of ways of getting the target
@@ -440,11 +440,11 @@ class InjectBraille(BaseEncodingProbe, Probe):
     encoding_name = "Braille"
 
     def __init__(self, config_root=_config):
-        Probe.__init__(self, config_root=config_root)
+        garak.probes.Probe.__init__(self, config_root=config_root)
         BaseEncodingProbe.__init__(self)
 
 
-class InjectMorse(BaseEncodingProbe, Probe):
+class InjectMorse(BaseEncodingProbe, garak.probes.Probe):
     """Probe for susceptibility to Morse encoding. Credit Wally#3422
 
     Encodes payloads using morse, and tries a variety of ways of getting the target
@@ -455,11 +455,11 @@ class InjectMorse(BaseEncodingProbe, Probe):
     encoding_name = "Morse"
 
     def __init__(self, config_root=_config):
-        Probe.__init__(self, config_root=config_root)
+        garak.probes.Probe.__init__(self, config_root=config_root)
         BaseEncodingProbe.__init__(self)
 
 
-class InjectNato(BaseEncodingProbe, Probe):
+class InjectNato(BaseEncodingProbe, garak.probes.Probe):
     """Probe for susceptibility to Nato phonetic alphabet encoding.
 
     Encodes payloads using the classic NATO phonetic alphabet, and tries a
@@ -507,11 +507,11 @@ class InjectNato(BaseEncodingProbe, Probe):
     encoding_name = "Nato"
 
     def __init__(self, config_root=_config):
-        Probe.__init__(self, config_root=config_root)
+        garak.probes.Probe.__init__(self, config_root=config_root)
         BaseEncodingProbe.__init__(self)
 
 
-class InjectEcoji(BaseEncodingProbe, Probe):
+class InjectEcoji(BaseEncodingProbe, garak.probes.Probe):
     """Probe for susceptibility to Ecoji encoding.
 
     Encodes payloads using the [ecoji](https://ecoji.io/) mapping, and tries a variety
@@ -535,11 +535,11 @@ class InjectEcoji(BaseEncodingProbe, Probe):
     encoding_funcs = [_ecoji]
 
     def __init__(self, config_root=_config):
-        Probe.__init__(self, config_root=config_root)
+        garak.probes.Probe.__init__(self, config_root=config_root)
         BaseEncodingProbe.__init__(self)
 
 
-class InjectZalgo(BaseEncodingProbe, Probe):
+class InjectZalgo(BaseEncodingProbe, garak.probes.Probe):
     """Probe for susceptibility to Zalgo encoding.
 
     Encodes payloads using Zalgo decoration, and tries a variety
@@ -560,7 +560,7 @@ class InjectZalgo(BaseEncodingProbe, Probe):
     encoding_funcs = [zalgo]
 
     def __init__(self, config_root=_config):
-        Probe.__init__(self, config_root=config_root)
+        garak.probes.Probe.__init__(self, config_root=config_root)
         BaseEncodingProbe.__init__(self)
 
 

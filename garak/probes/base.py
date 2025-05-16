@@ -10,7 +10,6 @@ import copy
 import json
 import logging
 from collections.abc import Iterable
-from enum import IntEnum
 import random
 from typing import Iterable, Union
 
@@ -20,15 +19,9 @@ import tqdm
 from garak import _config
 from garak.configurable import Configurable
 from garak.exception import GarakException, PluginConfigurationError
+from garak.probes._tier import Tier
 import garak.attempt
 import garak.resources.theme
-
-
-class Tier(IntEnum):
-    TIER_1 = 1
-    TIER_2 = 2
-    TIER_3 = 3
-    TIER_9 = 9
 
 
 class Probe(Configurable):
@@ -59,10 +52,10 @@ class Probe(Configurable):
     # refer to Table 1 in https://arxiv.org/abs/2401.13601
     # we focus on LLM input for probe
     modality: dict = {"in": {"text"}}
-    # what tier is this probe? should be in (TIER_1,TIER_2,TIER_3,TIER_9)
+    # what tier is this probe? should be in (OF_CONCERN,COMPETE_WITH_SOTA,INFORMATIONAL,UNLISTED)
     # let mixins override this
-    # tier: Tier = Tier.TIER_9
-    tier: Tier = Tier.TIER_9
+    # tier: tier = Tier.UNLISTED
+    tier: Tier = Tier.UNLISTED
 
     DEFAULT_PARAMS = {}
 
@@ -89,34 +82,34 @@ class Probe(Configurable):
                 self.description = self.__doc__.split("\n", maxsplit=1)[0]
             else:
                 self.description = ""
-        self.translator = self._get_translator()
-        if self.translator is not None and hasattr(self, "triggers"):
+        self.langprovider = self._get_langprovider()
+        if self.langprovider is not None and hasattr(self, "triggers"):
             # check for triggers that are not type str|list or just call translate_triggers
             if len(self.triggers) > 0:
                 if isinstance(self.triggers[0], str):
-                    self.triggers = self.translator.translate(self.triggers)
+                    self.triggers = self.langprovider.get_text(self.triggers)
                 elif isinstance(self.triggers[0], list):
                     self.triggers = [
-                        self.translator.translate(trigger_list)
+                        self.langprovider.get_text(trigger_list)
                         for trigger_list in self.triggers
                     ]
                 else:
                     raise PluginConfigurationError(
                         f"trigger type: {type(self.triggers[0])} is not supported."
                     )
-        self.reverse_translator = self._get_reverse_translator()
+        self.reverse_langprovider = self._get_reverse_langprovider()
 
-    def _get_translator(self):
-        from garak.langservice import get_translator
+    def _get_langprovider(self):
+        from garak.langservice import get_langprovider
 
-        translator_instance = get_translator(self.lang)
-        return translator_instance
+        langprovider_instance = get_langprovider(self.lang)
+        return langprovider_instance
 
-    def _get_reverse_translator(self):
-        from garak.langservice import get_translator
+    def _get_reverse_langprovider(self):
+        from garak.langservice import get_langprovider
 
-        translator_instance = get_translator(self.lang, reverse=True)
-        return translator_instance
+        langprovider_instance = get_langprovider(self.lang, reverse=True)
+        return langprovider_instance
 
     def _attempt_prestore_hook(
         self, attempt: garak.attempt.Attempt, seq: int
@@ -237,8 +230,8 @@ class Probe(Configurable):
                     ):
                         # reverse translate outputs if required, this is intentionally executed in the core process
                         if result.lang != self.lang:
-                            result.reverse_translator_outputs = (
-                                self.reverse_translator.translate(result.all_outputs)
+                            result.reverse_translation_outputs = (
+                                self.reverse_langprovider.get_text(result.all_outputs)
                             )
 
                         _config.transient.reportfile.write(
@@ -261,10 +254,10 @@ class Probe(Configurable):
             attempt_iterator.set_description(self.probename.replace("garak.", ""))
             for this_attempt in attempt_iterator:
                 result = self._execute_attempt(this_attempt)
-                # reverse translate outputs if required
+                # reverse langprovider outputs if required
                 if result.lang != self.lang:
-                    result.reverse_translator_outputs = (
-                        self.reverse_translator.translate(result.all_outputs)
+                    result.reverse_translation_outputs = (
+                        self.reverse_langprovider.get_text(result.all_outputs)
                     )
 
                 _config.transient.reportfile.write(json.dumps(result.as_dict()) + "\n")
@@ -281,8 +274,8 @@ class Probe(Configurable):
         attempts_todo: Iterable[garak.attempt.Attempt] = []
         prompts = list(self.prompts)
         lang = self.lang
-        prompts = self.translator.translate(prompts)
-        lang = self.translator.target_lang
+        prompts = self.langprovider.get_text(prompts)
+        lang = self.langprovider.target_lang
         for seq, prompt in enumerate(prompts):
             notes = (
                 {"pre_translation_prompt": self.prompts[seq]}

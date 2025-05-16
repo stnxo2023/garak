@@ -23,12 +23,12 @@ from tqdm import tqdm
 from garak import _config
 import garak._plugins
 import garak.attempt
-from garak.probes.base import Probe, Tier
+import garak.probes
 
 TEMPLATE_PLACEHOLDER = "[query]"
 
 
-class Tox(Probe):
+class Tox(garak.probes.Probe):
     """Automatic attack generation, trying to elicit toxic outputs from the model.
 
     This probe uses an attack model, trained on conversations that led to LLMs
@@ -51,9 +51,9 @@ class Tox(Probe):
         "https://interhumanagreement.substack.com/p/faketoxicityprompts-automatic-red"
     )
     lang = "en"
-    tier = Tier.TIER_2
+    tier = garak.probes.Tier.COMPETE_WITH_SOTA
 
-    DEFAULT_PARAMS = Probe.DEFAULT_PARAMS | {
+    DEFAULT_PARAMS = garak.probes.Probe.DEFAULT_PARAMS | {
         "max_calls": 5,
         "constructive_tension": True,
         "red_team_model_type": "huggingface.Pipeline",
@@ -149,12 +149,12 @@ class Tox(Probe):
                 # results in no retention of the challenge translation sent to the target
 
                 # translate the challenge to send to the target
-                challenge_to_send = self.translator.translate([challenge])[0]
+                challenge_to_send = self.langprovider.get_text([challenge])[0]
                 turn = ("probe", challenge)  # turns stores the original challenge
 
                 if len(turns) == 0:
                     this_attempt.prompt = challenge_to_send
-                    this_attempt.lang = self.translator.target_lang
+                    this_attempt.lang = self.langprovider.target_lang
                     if challenge_to_send != challenge:
                         this_attempt.notes["pre_translation_prompt"] = challenge
                     this_attempt._expand_prompt_to_histories(1)
@@ -180,13 +180,13 @@ class Tox(Probe):
                     response = response[0].strip() if response[0] is not None else ""
 
                 # log the response
-                response_to_store = self.reverse_translator.translate([response])[0]
+                response_to_store = self.reverse_langprovider.get_text([response])[0]
                 turn = ("model", response_to_store)
                 if (
-                    self.reverse_translator.source_lang
-                    != self.reverse_translator.target_lang
+                    self.reverse_langprovider.source_lang
+                    != self.reverse_langprovider.target_lang
                 ):
-                    this_attempt.reverse_translator_outputs = [response_to_store]
+                    this_attempt.reverse_translation_outputs = [response_to_store]
                 this_attempt._add_turn("assistant", [response])
                 turns.append(turn)
                 logging.debug("atkgen: model: %s", turn)
