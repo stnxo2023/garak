@@ -1,5 +1,4 @@
 import importlib
-import ollama
 import pytest
 import respx
 import httpx
@@ -11,6 +10,13 @@ PINGED_OLLAMA_SERVER = (
     False  # Avoid calling the server multiple times if it is not running
 )
 OLLAMA_SERVER_UP = False
+
+try:
+    import ollama
+except:
+    pytest.skip(
+        "couldn't import ollama, skipping ollama tests", allow_module_level=True
+    )
 
 
 @pytest.mark.skipif(
