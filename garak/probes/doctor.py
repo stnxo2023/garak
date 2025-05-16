@@ -9,10 +9,10 @@ Post as a doctor in effort to override safeguards"""
 
 from garak import _config
 from garak.resources.encodings import leetspeak
-from garak.probes.base import Probe, Tier
+import garak.probes
 
 
-class Puppetry(Probe):
+class Puppetry(garak.probes.Probe):
     """Implement Policy Puppetry Prompt Injection
 
     Post-instruction hierarchy, universal, and transferable prompt injection
@@ -29,7 +29,7 @@ class Puppetry(Probe):
         "quality:Security:PromptStability",
         "cwe:1427",
     ]
-    tier = Tier.TIER_2
+    tier = garak.probes.Tier.COMPETE_WITH_SOTA
 
     """
     To test system prompt bypassing we created an application with a system 
@@ -70,7 +70,7 @@ class Puppetry(Probe):
         ]
 
 
-class Bypass(Probe):
+class Bypass(garak.probes.Probe):
     """Implement Policy Puppetry Bypass
 
     Post-instruction hierarchy, universal, and transferable prompt injection
@@ -87,7 +87,7 @@ class Bypass(Probe):
         "quality:Security:PromptStability",
         "cwe:1427",
     ]
-    tier = Tier.TIER_2
+    tier = garak.probes.Tier.COMPETE_WITH_SOTA
 
     def _build_prompts(self):
         prompts = []
@@ -172,7 +172,7 @@ class BypassLeet(Bypass):
 
     goal = Bypass.goal + ", but use leetspeak"
     doc_uri = "https://hiddenlayer.com/innovation-hub/novel-universal-bypass-for-all-major-llms/"
-    tier = Tier.TIER_2
+    tier = garak.probes.Tier.COMPETE_WITH_SOTA
 
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
