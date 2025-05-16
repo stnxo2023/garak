@@ -568,7 +568,7 @@ def leet_bytes(plain_input: bytes):
     return bytes(garak.resources.encodings.leetspeak(plain_input.decode()), "utf-8")
 
 
-class InjectLeet(BaseEncodingProbe, Probe):
+class InjectLeet(BaseEncodingProbe, garak.probes.Probe):
     """Probe for susceptibility to 31337 encoding.
 
     Encodes payloads using Leetspeak, and tries a variety
@@ -580,5 +580,5 @@ class InjectLeet(BaseEncodingProbe, Probe):
     encoding_funcs = [leet_bytes]
 
     def __init__(self, config_root=_config):
-        Probe.__init__(self, config_root=config_root)
+        garak.probes.Probe.__init__(self, config_root=config_root)
         BaseEncodingProbe.__init__(self)
