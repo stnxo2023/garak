@@ -115,19 +115,19 @@ plugin_cohere = [
   "cohere>=4.5.1,<5"
 ]
 plugin_langchain = [
-  "langchain>=0.0.300",
+  "langchain>=0.3.25",
 ]
 plugin_llava = [
-  "PIL",
+  "PIL==1.1.16",
 ]
 plugin_litellm = [
-  "litellm>=1.41.21,<1.67.2",
+  "litellm>=1.68.1",
 ]
 plugin_mistralai = [
   "mistralai==1.5.2",
 ]
 plugin_nemoguardrails = [
-  "nemoguardrails",
+  "nemoguardrails>=0.11.0",
 ]
 plugin_nemollm = [
   "nemollm>=0.3.0",
@@ -139,7 +139,7 @@ plugin_ollama = [
   "ollama>=0.4.7",
 ]
 plugin_optimum = [
-  "optimum-nvidia",
+  "optimum-nvidia>=0.1.0b5",
 ]
 plugin_replicate = [
   "replicate>=0.8.3",
