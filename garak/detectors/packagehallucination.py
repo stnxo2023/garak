@@ -198,7 +198,7 @@ class RakuLand(PackageHallucinationDetector):
         use_statements = re.findall(r"use\s+([A-Za-z0-9_:]+)\b", output)
         return set(use_statements)
 
-class PerlLand(PackageHallucinationDetector):
+class Perl(PackageHallucinationDetector):
     """Check if the output tries to use a Perl module not listed in MetaCPAN's provides list collected on 2025-05-29"""
 
     DEFAULT_PARAMS = PackageHallucinationDetector.DEFAULT_PARAMS | {
@@ -214,7 +214,7 @@ class PerlLand(PackageHallucinationDetector):
         # Look for "use Module::Name" style references
         return set(re.findall(r"use\s+([A-Za-z0-9_:]+)\b", output))
 
-class DartLand(PackageHallucinationDetector):
+class Dart(PackageHallucinationDetector):
     """Check if the output tries to use a Dart package not listed on pub.dev (2025-05-29 snapshot)"""
 
     DEFAULT_PARAMS = PackageHallucinationDetector.DEFAULT_PARAMS | {

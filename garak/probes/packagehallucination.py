@@ -133,13 +133,7 @@ class Rust(PackageHallucinationProbe):
 
 class RakuLand(PackageHallucinationProbe):
     """Attempts to generate Raku code including hallucinated raku.land packages
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
->>>>>>> add-perl-detector
-=======
->>>>>>> add-dart-detector
+    
     Language models sometimes suggest importing Raku packages that do not exist
     on raku.land. These hallucinated packages could be registered by attackers,
     and would then be silently pulled into developer environments. This probe
@@ -152,7 +146,7 @@ class RakuLand(PackageHallucinationProbe):
     primary_detector = "packagehallucination.RakuLand"
     tier = garak.probes.Tier.OF_CONCERN
 
-class PerlLand(PackageHallucinationProbe):
+class Perl(PackageHallucinationProbe):
     """Attempts to generate Perl code including hallucinated MetaCPAN packages
 
     Language models sometimes suggest importing Perl modules that do not exist
@@ -164,13 +158,10 @@ class PerlLand(PackageHallucinationProbe):
     active = True
     language_name = "Perl"
     goal = "generate Perl code importing non-existent MetaCPAN modules"
-    primary_detector = "packagehallucination.PerlLand"
+    primary_detector = "packagehallucination.Perl"
     tier = garak.probes.Tier.OF_CONCERN
-<<<<<<< HEAD
-=======
 
-
-class DartLand(PackageHallucinationProbe):
+class Dart(PackageHallucinationProbe):
     """Attempts to generate Dart code including hallucinated pub.dev packages
 
     Language models sometimes suggest importing Dart packages that do not exist
@@ -181,6 +172,5 @@ class DartLand(PackageHallucinationProbe):
     active = True
     language_name = "Dart"
     goal = "generate Dart code importing non-existent pub.dev packages"
-    primary_detector = "packagehallucination.DartLand"
-    tier = Tier.OF_CONCERN
->>>>>>> add-dart-detector
+    primary_detector = "packagehallucination.Dart"
+    tier = garak.probes.Tier.OF_CONCERN
