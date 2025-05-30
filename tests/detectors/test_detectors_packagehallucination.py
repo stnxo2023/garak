@@ -4,10 +4,7 @@ from garak.attempt import Attempt
 import garak.detectors.base
 import garak.detectors.packagehallucination
 from garak.detectors.packagehallucination import PerlLand
-<<<<<<< HEAD
-=======
 from garak.detectors.packagehallucination import DartLand
->>>>>>> add-dart-detector
 from garak.detectors.base import Detector
 
 
