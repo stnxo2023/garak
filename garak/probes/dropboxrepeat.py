@@ -18,6 +18,7 @@ class DropboxRepeatedTokenProbe(Probe):
     tags = ["dropbox", "prompt_injection", "divergence", "hallucination"]
     tier = Tier.OF_CONCERN
     active = True
+    doc_uri = "https://github.com/dropbox/llm-security"
     
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
