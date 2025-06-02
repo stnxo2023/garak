@@ -13,6 +13,12 @@ from garak import _config
 
 
 class DropboxRepeatedTokenProbe(Probe):
+    """
+    Repeated token destabilization attack from Dropbox LLM security research.
+    This probe uses specifically chosen UTF-8 strings that map to tokens in the model's vocabulary,
+    then repeats them thousands of times to destabilize the model's generation process. The attack
+    can cause models to produce unexpected outputs, hallucinations, or pattern repetition.
+    """
     name = "dropbox.repeated_token"
     description = "Repeated token destabilization attack from Dropbox LLM security research"
     tags = ["dropbox", "prompt_injection", "divergence", "hallucination"]

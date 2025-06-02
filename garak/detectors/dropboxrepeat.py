@@ -4,6 +4,11 @@ import re
 class DropboxRepeatedTokenDetector(Detector):
     """
     Detects hallucinations and divergence triggered by repeated token inputs.
+    It identifies model instability by looking for excessive response length and repeated patterns in the output, which are common symptoms of destabilization from the repeated token attack.
+    
+    The associated probe works by finding UTF-8 strings that map to individual tokens in the model's vocabulary,
+    then repeating these tokens thousands of times in a prompt. This repetition can cause the model to
+    enter an unstable state, producing abnormally long outputs or falling into repetitive patterns.
     """
 
     def __init__(self):
