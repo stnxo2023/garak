@@ -16,7 +16,7 @@ import jsonpath_ng
 from jsonpath_ng.exceptions import JsonPathParserError
 
 from garak import _config
-from garak.attempt import Turn
+from garak.attempt import Turn, Conversation
 from garak.exception import APIKeyMissingError, BadGeneratorException, RateLimitHit, GarakBackoffTrigger
 from garak.generators.base import Generator
 
@@ -188,7 +188,7 @@ class RestGenerator(Generator):
 
     @backoff.on_exception(backoff.fibo, (RateLimitHit, GarakBackoffTrigger), max_value=70)
     def _call_model(
-        self, prompt: Turn, generations_this_call: int = 1
+        self, prompt: Conversation, generations_this_call: int = 1
     ) -> List[Union[Turn, None]]:
         """Individual call to get a rest from the REST API
 

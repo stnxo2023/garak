@@ -12,7 +12,7 @@ import requests
 import tqdm
 
 from garak import _config
-from garak.attempt import Turn
+from garak.attempt import Turn, Conversation
 import garak.probes
 from garak.data import path as data_path
 from garak.generators.base import Generator
