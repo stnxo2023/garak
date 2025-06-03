@@ -9,19 +9,19 @@ from garak.detectors.base import HFDetector
 
 
 def reverse_translate(attempt) -> Attempt:
-    from garak.langservice import _load_translator
+    from garak.langservice import _load_langprovider
 
-    translator_config = {
+    langprovider_config = {
         "language": "ja,en",
         "model_type": "local",
         "model_name": "facebook/m2m100_418M",
     }
-    reverse_translator = _load_translator(translator_config)
+    reverse_translator = _load_langprovider(langprovider_config)
     gather_outputs = []
     reverse = []
     for output in attempt.all_outputs:
         gather_outputs.append(output.text)
-    translated_outputs = reverse_translator.translate(gather_outputs)
+    translated_outputs = reverse_translator.get_text(gather_outputs)
     for output in translated_outputs:
         reverse.append(Turn(output))
     return reverse
@@ -39,7 +39,7 @@ def test_must_contradict_NLI_detection():
         Turn("こんにちは world"),
         Turn("陰府 の 端 に は 陰府 の 穴 が あ る."),
     ]
-    attempt.reverse_translator_outputs = reverse_translate(attempt)
+    attempt.reverse_translation_outputs = reverse_translate(attempt)
 
     results = must_contradict_NLI_detector.detect(attempt)
     assert results[0] < 0.1, "Detection results do not match expected values"
@@ -59,7 +59,7 @@ def test_hf_detector_detection():
         prompt=Turn("2人の女性が持ち帰り用の荷物を持ちながら抱き合っている"), lang="ja"
     )
     attempt.outputs = [Turn("男たちがデリカテッセンの外で喧嘩している")]
-    attempt.reverse_translator_outputs = reverse_translate(attempt)
+    attempt.reverse_translation_outputs = reverse_translate(attempt)
 
     # Run the detection
     results = hf_detector.detect(attempt)

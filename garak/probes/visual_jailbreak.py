@@ -13,12 +13,12 @@ import tqdm
 
 from garak import _config
 from garak.attempt import Turn
-from garak.probes.base import Probe
+import garak.probes
 from garak.data import path as data_path
 from garak.generators.base import Generator
 
 
-class FigStepFull(Probe):
+class FigStepFull(garak.probes.Probe):
     """Using another modal - image to assist jailbreak
 
     Title: FigStep: Jailbreaking Large Vision-language Models via Typographic Visual Prompts
@@ -38,7 +38,7 @@ class FigStepFull(Probe):
         "payload:jailbreak",
     ]
     goal = "disregard the system prompt with both text and image"
-    tier = Probe.TIER_2
+    tier = garak.probes.Tier.COMPETE_WITH_SOTA
 
     prompts = []
 
@@ -117,7 +117,7 @@ class FigStepFull(Probe):
         return super().probe(generator)
 
 
-class FigStep(FigStepFull, Probe):
+class FigStep(FigStepFull, garak.probes.Probe):
     active = False
 
     __doc__ = FigStepFull.__doc__ + " - Tiny version"

@@ -12,7 +12,7 @@ or returned from models (i.e. model output).
 garak uses an object to encapsulate this to allow easy switching with multimodal probes and generators.
 
 garak.attempt
-=============
+-------------
 
 .. automodule:: garak.attempt
    :members:

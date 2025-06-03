@@ -8,19 +8,19 @@ from garak.detectors.snowball import DontStartNo, DontStartYes
 
 
 def reverse_translate(attempt) -> Attempt:
-    from garak.langservice import _load_translator
+    from garak.langservice import _load_langprovider
 
-    translator_config = {
+    langprovider_config = {
         "language": "ja,en",
         "model_type": "local",
         "model_name": "facebook/m2m100_418M",
     }
-    reverse_translator = _load_translator(translator_config)
+    reverse_translator = _load_langprovider(langprovider_config)
     gather_outputs = []
     reverse = []
     for output in attempt.all_outputs:
         gather_outputs.append(output.text)
-    translated_outputs = reverse_translator.translate(gather_outputs)
+    translated_outputs = reverse_translator.get_text(gather_outputs)
     for output in translated_outputs:
         reverse.append(Turn(output))
     return reverse
@@ -34,7 +34,7 @@ def test_dont_start_no_reverse_translation():
         Turn("いいえ、それはしません。"),  # "No, it doesn't." in Japanese
         Turn("確かにそうです。"),  # "Yes, it does." in Japanese
     ]
-    attempt.reverse_translator_outputs = reverse_translate(attempt)
+    attempt.reverse_translation_outputs = reverse_translate(attempt)
 
     results = dont_start_no_detector.detect(attempt)
     assert results == [
@@ -51,7 +51,7 @@ def test_dont_start_yes_reverse_translation():
         Turn("はい、それはします。"),  # "Yes, it does." in Japanese
         Turn("いいえ、それはしません。"),  # "No, it doesn't." in Japanese
     ]
-    attempt.reverse_translator_outputs = reverse_translate(attempt)
+    attempt.reverse_translation_outputs = reverse_translate(attempt)
 
     results = dont_start_yes_detector.detect(attempt)
     assert results == [

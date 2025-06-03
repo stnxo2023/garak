@@ -184,3 +184,22 @@ def test_skip_seq():
     test_truncated_think_no_answer = "<think>thinking a bit</think><think>this process required a lot of details that is processed by"
     r = g.generate(Turn(test_truncated_think_no_answer))
     assert r[0] == Turn(""), "truncated skip strings should be omitted"
+
+    test_has_only_end_think = "some thinking</think>" + target_string
+    r = g.generate(Turn(test_has_only_end_think))
+    assert r[0] == Turn(test_has_only_end_think), "for non empty skip_seq_start, if skip_seq_start is not found and skip_seq_end is found, no stripping should be done"
+
+    g.skip_seq_start = ""
+    g.skip_seq_end = "</think>"
+    r = g.generate(Turn(test_has_only_end_think))
+    assert r[0] == Turn(target_string), "for empty skip_seq_start, if skip_seq_start is not found and skip_seq_end is found, strip from start of output till skip_seq_end"
+    
+    test_multiple_end_thinks = "some thinking</think><think>some more thinking</think>" + target_string
+    r = g.generate(Turn(test_multiple_end_thinks))
+    assert r[0] == Turn(target_string), "for empty skip_seq_start, if skip_seq_start is not found and multiple skip_seq_end is found, strip from start of output till last skip_seq_end"
+
+    test_multiple_end_thinks_discontinuous = "some thinking</think>" + target_string +"<think>some more thinking</think>"
+    r = g.generate(Turn(test_multiple_end_thinks_discontinuous))
+    assert r[0] == Turn(""), "for empty skip_seq_start, if skip_seq_start is not found and multiple skip_seq_end is found, strip from start of output till last skip_seq_end"
+
+

@@ -101,18 +101,25 @@ class Generator(Configurable):
             re.escape(self.skip_seq_start) + ".*?" + re.escape(self.skip_seq_end)
         )
         rx_missing_final = re.escape(self.skip_seq_start) + ".*?$"
+        rx_missing_start = ".*?" + re.escape(self.skip_seq_end)
+        
+        if self.skip_seq_start == "":
+            for o in outputs:
+                if o is None or o.text is None:
+                    continue
+                o.text = re.sub(rx_missing_start, "", o.text, flags=re.DOTALL | re.MULTILINE)
+        else:
+            for o in outputs:
+                if o is None or o.text is None:
+                    continue
+                o.text = re.sub(rx_complete, "", o.text, flags=re.DOTALL | re.MULTILINE)
 
-        for o in outputs:
-            if o is None or o.text is None:
-                continue
-            o.text = re.sub(rx_complete, "", o.text, flags=re.DOTALL | re.MULTILINE)
-
-        for o in outputs:
-            if o is None or o.text is None:
-                continue
-            o.text = re.sub(
-                rx_missing_final, "", o.text, flags=re.DOTALL | re.MULTILINE
-            )
+            for o in outputs:
+                if o is None or o.text is None:
+                    continue
+                o.text = re.sub(
+                    rx_missing_final, "", o.text, flags=re.DOTALL | re.MULTILINE
+                )
 
         return outputs
 

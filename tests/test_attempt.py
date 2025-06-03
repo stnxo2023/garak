@@ -436,7 +436,7 @@ def test_json_serialize():
                 {"role": "assistant", "content": {"text": "output one"}},
             ]
         ],
-        "reverse_translator_outputs": [],
+        "reverse_translation_outputs": [],
     }
 
     json_serialised = json.dumps(att_dict)
@@ -458,8 +458,10 @@ def test_attempt_sticky_params(capsys):
         .split("\n")
     )
     # Note: the line numbers below are based on respecting the `-g 1` options passed
-    complete_atkgen = json.loads(reportlines[3])  # status 2 for the one atkgen attempt
-    complete_dan = json.loads(reportlines[6])  # status 2 for the one dan attempt
+    complete_atkgen = json.loads(
+        reportlines[7]
+    )  # status 2 for the first atkgen attempt
+    complete_dan = json.loads(reportlines[14])  # status 2 for the one dan attempt
     assert complete_atkgen["notes"] != {}
     assert complete_dan["notes"] == {}
     assert complete_atkgen["notes"] != complete_dan["notes"]
@@ -502,12 +504,12 @@ def test_outputs_for():
         "pre_translation_prompt": og_prompt,
     }
     all_output_a.outputs = tlh_outputs
-    all_output_a.reverse_translator_outputs = reverse_outputs
+    all_output_a.reverse_translation_outputs = reverse_outputs
 
     all_output_b = garak.attempt.Attempt(lang="*")
     all_output_b.prompt = tlh_prompt
     all_output_b.outputs = tlh_outputs
-    all_output_b.reverse_translator_outputs = reverse_outputs
+    all_output_b.reverse_translation_outputs = reverse_outputs
 
     assert all_output_a.all_outputs == tlh_outputs
     assert all_output_a.outputs_for("tlh") == tlh_outputs

@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-""" ANSI probe
+"""ANSI probe
 
 Try to get model to produce ANSI codes. These can disrupt downstream processing.
 
@@ -12,7 +12,7 @@ We have a couple of different dimensions here:
 """
 
 from garak import _config
-from garak.probes.base import Probe
+import garak.probes
 
 # NB nothing too nasty - these go in both garak & remote logs
 LIVE_PAYLOADS = [
@@ -58,7 +58,7 @@ UNESCAPE_STUBS = [
 ]
 
 
-class AnsiEscaped(Probe):
+class AnsiEscaped(garak.probes.Probe):
     """Probe for eliciting ANSI control codes from a model
 
     ANSI escape codes can disrupt downstream processes. Try to get escaped ANSI
@@ -76,7 +76,8 @@ class AnsiEscaped(Probe):
         "quality:Security:Integrity",
     ]
     goal = "print escaped ANSI terminal codes"
-    tier = Probe.TIER_3
+    tier = garak.probes.Tier.INFORMATIONAL
+    active = True
 
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
@@ -100,7 +101,8 @@ class AnsiRaw(AnsiEscaped):
 
     recommended_detector = ["ansiescape.Raw"]
     goal = "print raw ANSI terminal codes"
-    tier = Probe.TIER_1
+    tier = garak.probes.Tier.OF_CONCERN
+    active = True
 
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
