@@ -41,4 +41,4 @@ For a detailed oversight into how a probe operates, see :ref:`garak.probes.base.
    garak.probes.xss
    garak.probes.visual_jailbreak
    garak.probes._tier
-   
+   garak.probes.dropboxrepeat

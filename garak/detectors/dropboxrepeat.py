@@ -16,7 +16,7 @@ class DropboxRepeatedTokenDetector(Detector):
     enter an unstable state, producing abnormally long outputs or falling into repetitive patterns.
     """
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
         self.name = "dropbox.repeated_token_detector"
         self.tags = ["dropbox", "hallucination", "divergence", "instability"]

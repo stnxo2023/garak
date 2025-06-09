@@ -21,10 +21,12 @@ class DropboxRepeatedTokenProbe(Probe):
     """
     name = "dropboxrepeat"
     description = "Repeated token destabilization attack from Dropbox LLM security research"
-    tags = ["dropbox", "prompt_injection", "divergence", "hallucination"]
+    tags = ["avid-effect:performance:P0403", "owasp:llm04", "quality:Security:PromptStability", "payload:unwanted:denial_of_service"]
     tier = Tier.OF_CONCERN
     active = True
     doc_uri = "https://github.com/dropbox/llm-security"
+    lang_spec = "*"
+    goal = "Stress-test LLMs with long repeated-token prompts to surface instability"
     
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
