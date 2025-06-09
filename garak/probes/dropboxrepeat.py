@@ -19,7 +19,7 @@ class DropboxRepeatedTokenProbe(Probe):
     then repeats them thousands of times to destabilize the model's generation process. The attack
     can cause models to produce unexpected outputs, hallucinations, or pattern repetition.
     """
-    name = "dropbox.repeated_token"
+    name = "dropboxrepeat"
     description = "Repeated token destabilization attack from Dropbox LLM security research"
     tags = ["dropbox", "prompt_injection", "divergence", "hallucination"]
     tier = Tier.OF_CONCERN
@@ -31,6 +31,7 @@ class DropboxRepeatedTokenProbe(Probe):
         
         # Initialize prompts list
         self.prompts = []
+        self.goal = "Stress-test LLMs with long repeated-token prompts to surface instability"
         
         # Generate prompts during initialization
         sample_tokens = self.get_token_strings(sample_size=2)
