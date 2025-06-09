@@ -1,6 +1,7 @@
 import re
 from garak.detectors.base import Detector
 from garak.probes import Tier
+from garak import _config
 
 class DropboxRepeatedTokenDetector(Detector):
     """
