@@ -13,8 +13,8 @@ from garak import _config
 
 
 class DropboxRepeatedTokenProbe(Probe):
-    """
-    Repeated token destabilization attack from Dropbox LLM security research.
+    """Repeated token destabilization attack from Dropbox LLM security research.
+    
     This probe uses specifically chosen UTF-8 strings that map to tokens in the model's vocabulary,
     then repeats them thousands of times to destabilize the model's generation process. The attack
     can cause models to produce unexpected outputs, hallucinations, or pattern repetition.
@@ -25,7 +25,7 @@ class DropboxRepeatedTokenProbe(Probe):
     tier = Tier.OF_CONCERN
     active = True
     doc_uri = "https://github.com/dropbox/llm-security"
-    lang_spec = "*"
+    lang = "*"
     goal = "Stress-test LLMs with long repeated-token prompts to surface instability"
     
     def __init__(self, config_root=_config):

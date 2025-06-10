@@ -18,6 +18,7 @@ For a detailed oversight into how a probe operates, see :ref:`garak.probes.base.
    garak.probes.dan
    garak.probes.divergence
    garak.probes.donotanswer
+   garak.probes.dropboxrepeat
    garak.probes.encoding
    garak.probes.exploitation
    garak.probes.fileformats
@@ -41,4 +42,4 @@ For a detailed oversight into how a probe operates, see :ref:`garak.probes.base.
    garak.probes.xss
    garak.probes.visual_jailbreak
    garak.probes._tier
-   garak.probes.dropboxrepeat
+  
