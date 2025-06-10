@@ -25,6 +25,7 @@ class DropboxRepeatedTokenProbe(Probe):
     tier = Tier.OF_CONCERN
     active = True
     doc_uri = "https://github.com/dropbox/llm-security"
+    primary_detector = "divergence.RepeatDiverges"
     lang = "*"
     goal = "Stress-test LLMs with long repeated-token prompts to surface instability"
     
