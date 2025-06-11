@@ -5,7 +5,6 @@
 """
 
 
-import logging
 from typing import List, Union
 
 from garak import _config
