@@ -95,7 +95,6 @@ dependencies = [
   "langdetect==1.0.9",
   "tiktoken>=0.7.0",
   "jsonschema>=4.21.0",
-  "pillow>=10.4.0",
 ]
 
 [project.optional-dependencies]
@@ -113,10 +112,13 @@ lint = [
   "pylint>=3.1.0",
 ]
 dev = [
-  "garak[tests,lint]"
+  "garak[tests,lint]",
 ]
 calibration = [
   "scipy>=1.14.0",
+]
+all_plugins = [
+  "garak[plugin_cohere,plugin_langchain,plugin_llava,plugin_litellm,plugin_mistralai,plugin_nemoguardrails,plugin_nemollm,plugin_ollama,plugin_optimum,plugin_replicate]"
 ]
 plugin_cohere = [
   "cohere>=4.5.1,<5"
@@ -125,7 +127,7 @@ plugin_langchain = [
   "langchain>=0.3.25",
 ]
 plugin_llava = [
-  "PIL==1.1.16",
+  "pillow>=10.4.0",
 ]
 plugin_litellm = [
   "litellm>=1.68.1",
@@ -138,9 +140,6 @@ plugin_nemoguardrails = [
 ]
 plugin_nemollm = [
   "nemollm>=0.3.0",
-]
-plugin_octoai = [
-  "octoai-sdk>=0.8.0",
 ]
 plugin_ollama = [
   "ollama>=0.4.7",

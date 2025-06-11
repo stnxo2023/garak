@@ -575,7 +575,10 @@ class LLaVA(Generator, HFCompatible):
     NB. This should be use with strict modality matching - generate() doesn't
     support text-only prompts."""
 
-    extra_dependency_names = ["PIL"]
+    extra_dependency_names = ["pillow"]
+
+    def _load_deps(self):
+        return super()._load_deps(["PIL"])
 
     DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
         "max_tokens": 4000,

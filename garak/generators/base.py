@@ -67,10 +67,11 @@ class Generator(Configurable):
         logging.info("generator init: %s", self)
         self._load_deps()
 
-    def _load_deps(self):
+    def _load_deps(self, deps_override=list()):
         # load external dependencies. should be invoked at construction and
         # in _client_load (if used)
-        for extra_dependency in self.extra_dependency_names:
+        dep_names = deps_override if deps_override else self.extra_dependency_names
+        for extra_dependency in dep_names:
             extra_dep_name = extra_dependency.replace(".", "_").replace("-", "_")
             if (
                 not hasattr(self, extra_dep_name)

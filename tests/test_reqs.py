@@ -118,3 +118,21 @@ def test_optional_extras_not_in_pyproject(plugin_name: str):
         "all extra dependences %s must be in optional plugin clause in pyproject.toml"
         % plugin_extra_dep_names
     )
+
+
+@pytest.mark.skipif(
+    tomllib is None, reason="No tomllib found (available from Python 3.11)"
+)
+def test_all_plugins_coverage():
+    with open("pyproject.toml", "rb") as pyproject_file:
+        pyproject_toml = tomllib.load(pyproject_file)
+        assert "all_plugins" in pyproject_toml["project"]["optional-dependencies"]
+        all_plugins = pyproject_toml["project"]["optional-dependencies"]["all_plugins"]
+        plugin_names = [
+            p
+            for p in pyproject_toml["project"]["optional-dependencies"]
+            if p.startswith("plugin_")
+        ]
+        all_plugins_list = re.findall(r"garak\[(.+)\]", all_plugins[0])[0].split(",")
+        assert set(all_plugins_list) - set(plugin_names) == set()
+        assert set(plugin_names) - set(all_plugins_list) == set()
