@@ -81,10 +81,11 @@ def test_nim_vision_prep():
     from garak.generators.nim import Vision
 
     v = Vision  # skip instantiation, not req'd
-    setattr(v, "max_image_len", 100_000)
+    setattr(v, "max_input_len", 100_000)
     vision_turn = Vision._prepare_prompt(v, t)
     assert (
         vision_turn.text
         == test_prompt
         + ' <img src="data:image/gif;base64,R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />'
     )
+    delattr(v, "max_input_len")  # remove to avoid follow on test impacts

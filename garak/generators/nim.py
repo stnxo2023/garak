@@ -137,51 +137,63 @@ class NVOpenAICompletion(NVOpenAIChat):
         self.generator = self.client.completions
 
 
-class Vision(NVOpenAIChat):
+class NVMultimodal(NVOpenAIChat):
+    """Wrapper for text + image / audio to text NIMs. Expects NIM_API_KEY environment variable.
+
+    Expects keys to be a dict with keys 'text' (required), and 'image' or 'audio' (optional).
+    Message is sent with 'role' and 'content' where content is structured as text
+    followed by <img> and/or <audio> tags ala https://build.nvidia.com/microsoft/phi-4-multimodal-instruct
+    """
+
+    DEFAULT_PARAMS = NVOpenAIChat.DEFAULT_PARAMS | {
+        "suppressed_params": {"n", "frequency_penalty", "presence_penalty", "stop"},
+        "max_input_len": 180_000,
+    }
+
+    modality = {"in": {"text", "image", "audio"}, "out": {"text"}}
+
+    def _prepare_prompt(self, turn: Turn) -> Turn:
+        text = turn.text
+        data_len = 0
+        # set an extension default, for now all provided turns have filenames
+        image_extension = "image/jpg"
+
+        if "image_filename" in turn.parts.keys():
+            import mimetypes
+
+            image_extension, _ = mimetypes.guess_type(turn.parts["image_filename"])
+            if "image_data" not in turn.parts.keys():
+                turn.load_image()
+
+        if "image_data" in turn.parts.keys():
+            import base64
+
+            image_b64 = base64.b64encode(turn.parts["image_data"]).decode()
+            data_len = len(image_b64)
+            text = text + f' <img src="data:{image_extension};base64,{image_b64}" />'
+
+        if data_len > self.max_input_len:
+            msg = (
+                f"Data exceeds length limit. `max_input_len` is {self.max_input_len}. "
+                f"Current data size is {data_len}. "
+                f"To upload larger images or audio files, use the assets API (not yet supported)"
+            )
+            if turn["image_filename"] is not None:
+                filename = turn["image_filename"]
+                msg += f" File: {filename}"
+            logging.error(msg)
+            return None
+
+        return Turn(text)
+
+
+class Vision(NVMultimodal):
     """Wrapper for text+image to text NIMs. Expects NIM_API_KEY environment variable.
 
     Following generators.huggingface.LLaVa, expects prompts to be a dict with keys
     "text" and "image"; text holds the text prompt, image holds a path to the image."""
 
-    DEFAULT_PARAMS = NVOpenAIChat.DEFAULT_PARAMS | {
-        "suppressed_params": {"n", "frequency_penalty", "presence_penalty", "stop"},
-        "max_image_len": 180_000,
-    }
-
     modality = {"in": {"text", "image"}, "out": {"text"}}
-
-    def _prepare_prompt(self, turn: Turn) -> Turn:
-
-        text = turn.text
-
-        image_extension = "jpeg"  # guessing a default in the case of direct data
-
-        if "image_filename" in turn.parts and "image_data" not in turn.parts:
-            turn.load_image()
-            image_extension = turn.parts["image_filename"].split(".")[-1].lower()
-            if image_extension == "jpg":  # image/jpg is not a valid mimetype
-                image_extension = "jpeg"
-
-        if "image_data" in turn.parts:
-            import base64
-
-            image_b64 = base64.b64encode(turn.parts["image_data"]).decode()
-
-            if len(image_b64) > self.max_image_len:
-                big_img_filename = "<direct data>"
-                if "image_filename" in turn.parts:
-                    big_img_filename = turn.parts["image_filename"]
-                logging.error(
-                    "Image %s exceeds length limit. To upload larger images, use the assets API (not yet supported)",
-                    big_img_filename,
-                )
-                return None
-
-            text = (
-                text + f' <img src="data:image/{image_extension};base64,{image_b64}" />'
-            )
-            turn.text = text
-        return turn
 
 
 DEFAULT_CLASS = "NVOpenAIChat"

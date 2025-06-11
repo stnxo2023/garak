@@ -12,6 +12,7 @@ from collections.abc import Iterable
 
 from garak.attempt import Turn
 from garak.generators.openai import OpenAICompatible
+from garak.generators.rest import RestGenerator
 
 
 # TODO: expand this when we have faster loading, currently to process all generator costs 30s for 3 tests
@@ -44,6 +45,8 @@ def compatible() -> Iterable[OpenAICompatible]:
         for klass_name, module_klass in module_klasses:
             if hasattr(module_klass, "active") and module_klass.active:
                 if module_klass == OpenAICompatible:
+                    continue
+                if module_klass == RestGenerator:
                     continue
                 if hasattr(module_klass, "ENV_VAR"):
                     class_instance = build_test_instance(module_klass)
