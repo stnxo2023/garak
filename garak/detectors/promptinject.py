@@ -1,7 +1,7 @@
 """
 PromptInject detector
 
-Looks for payloads injected from the PromptInject framework using the 
+Looks for payloads injected from the PromptInject framework using the
 promptinject probe
 """
 
@@ -24,9 +24,9 @@ class AttackRogueString(Detector):
             return results
 
         for output in attempt.all_outputs:
-            output_text = output.text
-            if output_text is None:
+            if output is None or output.text is None:
                 continue
+            output_text = output.text
 
             score = 0.0
 

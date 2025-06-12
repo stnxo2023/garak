@@ -20,7 +20,7 @@ import openai
 import backoff
 
 from garak import _config
-from garak.attempt import Turn, Conversation
+from garak.attempt import Message, Conversation
 import garak.exception
 from garak.generators.base import Generator
 
@@ -209,8 +209,8 @@ class OpenAICompatible(Generator):
         max_value=70,
     )
     def _call_model(
-        self, prompt: Union[Turn, List[dict]], generations_this_call: int = 1
-    ) -> List[Union[Turn, None]]:
+        self, prompt: Union[Conversation, List[dict]], generations_this_call: int = 1
+    ) -> List[Union[Message, None]]:
         if self.client is None:
             # reload client once when consuming the generator
             self._load_client()
@@ -233,24 +233,27 @@ class OpenAICompatible(Generator):
                 create_args[k] = v
 
         if self.generator == self.client.completions:
-            if not isinstance(prompt, Turn):
+            if not isinstance(prompt, Conversation) or len(prompt.turns) > 1:
                 msg = (
-                    f"Expected a Turn for {self.generator_family_name} completions model {self.name}, but got {type(prompt)}. "
+                    f"Expected a Conversation with one Turn for {self.generator_family_name} completions model {self.name}, but got {type(prompt)}. "
                     f"Returning nothing!"
                 )
                 logging.error(msg)
                 return list()
 
-            create_args["prompt"] = prompt.text
+            create_args["prompt"] = prompt.turns[-1].content.text
 
         elif self.generator == self.client.chat.completions:
-            if isinstance(prompt, Turn):
-                messages = [{"role": "user", "content": prompt.text}]
+            if isinstance(prompt, Conversation):
+                messages = []
+                for turn in prompt.turns:
+                    messages.append({"role": turn.role, "content": turn.content.text})
             elif isinstance(prompt, list):
+                # should this still be supported?
                 messages = prompt
             else:
                 msg = (
-                    f"Expected a Turn or list of dicts for {self.generator_family_name} Chat model {self.name}, but got {type(prompt)} instead. "
+                    f"Expected a Conversation or list of dicts for {self.generator_family_name} Chat model {self.name}, but got {type(prompt)} instead. "
                     f"Returning nothing!"
                 )
                 logging.error(msg)
@@ -284,9 +287,9 @@ class OpenAICompatible(Generator):
                 return [None]
 
         if self.generator == self.client.completions:
-            return [Turn(c.text) for c in response.choices]
+            return [Message(c.text) for c in response.choices]
         elif self.generator == self.client.chat.completions:
-            return [Turn(c.message.content) for c in response.choices]
+            return [Message(c.message.content) for c in response.choices]
 
 
 class OpenAIGenerator(OpenAICompatible):

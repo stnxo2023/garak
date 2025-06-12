@@ -10,7 +10,7 @@ import logging
 from typing import Iterable
 
 from garak import _config
-from garak.attempt import Attempt, Turn
+from garak.attempt import Attempt, Message
 import garak.probes
 from garak.exception import GarakException
 
@@ -92,9 +92,7 @@ class AudioAchillesHeel(garak.probes.Probe):
     def probe(self, generator) -> Iterable[Attempt]:
         self.prompts = []
         for file_path in self.audio:
-            t = Turn(self.text_prompt)
-            # the filename concept here is generic this is just binary content
-            t.add_part("image_filename", str(file_path))
-            self.prompts.append(t)
+            m = Message(text=self.text_prompt, lang=self.lang, data_path=str(file_path))
+            self.prompts.append(m)
 
         return super().probe(generator)

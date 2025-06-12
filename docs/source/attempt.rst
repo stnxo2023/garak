@@ -7,7 +7,7 @@ These are passed by the harness to the generator, and the output added to the at
 Then, a detector assesses the outputs from that attempt and the detector's scores are saved in the attempt.
 Finally, an evaluator makes judgments of these scores, and writes hits out to the hitlog for any successful probing attempts.
 
-Within this, ``Turn`` objects encapsulate conversational turns either sent to models (i.e. prompts)
+Within this, ``Converastion``, ``Turn``, and ``Message`` objects encapsulate conversational turns either sent to models (i.e. prompts)
 or returned from models (i.e. model output). 
 garak uses an object to encapsulate this to allow easy switching with multimodal probes and generators.
 

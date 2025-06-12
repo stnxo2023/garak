@@ -4,7 +4,7 @@ from mistralai import Mistral, models
 
 from garak import _config
 from garak.generators.base import Generator
-from garak.attempt import Turn, Conversation
+from garak.attempt import Message, Conversation
 
 
 class MistralGenerator(Generator):
@@ -44,18 +44,16 @@ class MistralGenerator(Generator):
     @backoff.on_exception(backoff.fibo, models.SDKError, max_value=70)
     def _call_model(
         self, prompt: Conversation, generations_this_call=1
-    ) -> List[Turn | None]:
-        print(self.name)
+    ) -> List[Message | None]:
+        # print(self.name) # why would this print `name` every call
+        messages = []
+        for turn in prompt.turns:
+            messages.append({"role": turn.role, "content": turn.content.text})
         chat_response = self.client.chat.complete(
             model=self.name,
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt.text,
-                },
-            ],
+            messages=messages,
         )
-        return [Turn(chat_response.choices[0].message.content)]
+        return [Message(chat_response.choices[0].message.content)]
 
 
 DEFAULT_CLASS = "MistralGenerator"

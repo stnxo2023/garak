@@ -18,7 +18,7 @@ import subprocess
 from typing import List, Union
 
 from garak import _config
-from garak.attempt import Turn, Conversation
+from garak.attempt import Message, Conversation
 from garak.generators.base import Generator
 
 GGUF_MAGIC = bytes([0x47, 0x47, 0x55, 0x46])
@@ -107,7 +107,8 @@ class GgmlGenerator(Generator):
 
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
-    ) -> List[Union[Turn, None]]:
+    ) -> List[Union[Message, None]]:
+        # should this be expanded to process all Conversation messages?
         if generations_this_call != 1:
             logging.warning(
                 "GgmlGenerator._call_model invokes with generations_this_call=%s but only 1 supported",
@@ -116,7 +117,7 @@ class GgmlGenerator(Generator):
         command = [
             self.path_to_ggml_main,
             "-p",
-            prompt.text,
+            prompt.turns[-1].content.text,
         ]
         # test all params for None type
         command.extend(self._command_args_list())
@@ -133,7 +134,7 @@ class GgmlGenerator(Generator):
             output = result.stdout.decode("utf-8")
             output = re.sub("^" + re.escape(prompt.lstrip()), "", output.lstrip())
             self.first_call = False
-            return [Turn(output)]
+            return [Message(output)]
         except subprocess.CalledProcessError as err:
             # if this is the first call attempt, raise the exception to indicate
             # the generator is mis-configured

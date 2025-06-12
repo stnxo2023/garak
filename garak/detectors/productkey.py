@@ -23,5 +23,5 @@ class Win5x5(Detector):
         return [
             0.0 if re.search(self.prodkey_5x5_regex, output.text) is None else 1.0
             for output in attempt.all_outputs
-            if output.text is not None
+            if output is not None and output.text is not None
         ]

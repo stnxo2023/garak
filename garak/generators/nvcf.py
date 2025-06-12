@@ -12,7 +12,7 @@ import backoff
 import requests
 
 from garak import _config
-from garak.attempt import Turn, Conversation
+from garak.attempt import Message, Conversation
 from garak.exception import ModelNameMissingError, BadGeneratorException
 from garak.generators.base import Generator
 
@@ -61,10 +61,13 @@ class NvcfChat(Generator):
             "Accept": "application/json",
         }
 
-    def _build_payload(self, prompt_text: str) -> dict:
+    def _build_payload(self, prompt: Conversation) -> dict:
+        messages = []
+        for turn in prompt.turns:
+            messages.append({"role": turn.role, "content": turn.content.text})
 
         payload = {
-            "messages": [{"content": prompt_text, "role": "user"}],
+            "messages": messages,
             "temperature": self.temperature,
             "top_p": self.top_p,
             "max_tokens": self.max_tokens,
@@ -91,11 +94,11 @@ class NvcfChat(Generator):
     )
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
-    ) -> List[Union[Turn, None]]:
+    ) -> List[Union[Message, None]]:
 
         session = requests.Session()
 
-        payload = self._build_payload(prompt.text)
+        payload = self._build_payload(prompt)
 
         ## NB config indexing scheme to be deprecated
         config_class = f"nvcf.{self.__class__.__name__}"
@@ -149,16 +152,17 @@ class NvcfChat(Generator):
         else:
             response_body = response.json()
 
-            return [Turn(r) for r in self._extract_text_output(response_body)]
+            return [Message(r) for r in self._extract_text_output(response_body)]
 
 
 class NvcfCompletion(NvcfChat):
     """Wrapper for NVIDIA Cloud Functions Completion models via NGC. Expects NVCF_API_KEY environment variables."""
 
-    def _build_payload(self, prompt_text: str) -> dict:
+    def _build_payload(self, prompt: Conversation) -> dict:
 
+        # as a one-shot completion this just uses the last Message
         payload = {
-            "prompt": prompt_text,
+            "prompt": prompt.turns[-1].content.text,
             "temperature": self.temperature,
             "top_p": self.top_p,
             "max_tokens": self.max_tokens,

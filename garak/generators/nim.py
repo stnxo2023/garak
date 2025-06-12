@@ -10,7 +10,7 @@ from typing import List, Union
 import openai
 
 from garak import _config
-from garak.attempt import Turn, Conversation
+from garak.attempt import Message, Turn, Conversation
 from garak.exception import GarakException
 from garak.generators.openai import OpenAICompatible
 
@@ -64,12 +64,12 @@ class NVOpenAIChat(OpenAICompatible):
             )
         self.generator = self.client.chat.completions
 
-    def _prepare_prompt(self, prompt: Turn) -> Turn:
+    def _prepare_prompt(self, prompt: Conversation) -> Conversation:
         return prompt
 
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
-    ) -> List[Union[Turn, None]]:
+    ) -> List[Union[Message, None]]:
         assert (
             generations_this_call == 1
         ), "generations_per_call / n > 1 is not supported"
@@ -98,7 +98,7 @@ class NVOpenAIChat(OpenAICompatible):
         except Exception as oe:
             msg = "NIM generation failed. Is the model name spelled correctly?"
             logging.critical(msg, exc_info=oe)
-            raise GarakException(f"🛑 {msg}") from nfe
+            raise GarakException(f"🛑 {msg}") from oe
 
         return result
 
@@ -152,39 +152,48 @@ class NVMultimodal(NVOpenAIChat):
 
     modality = {"in": {"text", "image", "audio"}, "out": {"text"}}
 
-    def _prepare_prompt(self, turn: Turn) -> Turn:
-        text = turn.text
-        data_len = 0
-        # set an extension default, for now all provided turns have filenames
-        image_extension = "image/jpg"
+    def _prepare_prompt(self, conv: Conversation) -> Conversation:
+        from dataclasses import asdict
 
-        if "image_filename" in turn.parts.keys():
-            import mimetypes
+        prepared_conv = Conversation()
 
-            image_extension, _ = mimetypes.guess_type(turn.parts["image_filename"])
-            if "image_data" not in turn.parts.keys():
-                turn.load_image()
+        for turn in conv.turns:
+            msg = turn.content
+            # only manipulate the copy
+            prepared_msg = Message(**asdict(msg))
 
-        if "image_data" in turn.parts.keys():
-            import base64
+            text = msg.text
 
-            image_b64 = base64.b64encode(turn.parts["image_data"]).decode()
-            data_len = len(image_b64)
-            text = text + f' <img src="data:{image_extension};base64,{image_b64}" />'
+            # guessing a default in the case of direct data
+            image_extension = "image/jpg"
+            # should this use mime/type detection on the actually data vs a default guess?
 
-        if data_len > self.max_input_len:
-            msg = (
-                f"Data exceeds length limit. `max_input_len` is {self.max_input_len}. "
-                f"Current data size is {data_len}. "
-                f"To upload larger images or audio files, use the assets API (not yet supported)"
-            )
-            if turn["image_filename"] is not None:
-                filename = turn["image_filename"]
-                msg += f" File: {filename}"
-            logging.error(msg)
-            return None
+            if msg.data is not None:
+                import base64
 
-        return Turn(text)
+                if msg.data_path is not None:
+                    image_extension, _ = msg.data_type
+
+                image_b64 = base64.b64encode(msg.data).decode()
+
+                if len(image_b64) > self.max_input_len:
+                    big_img_filename = "<direct data>"
+                    if msg.data_path is not None:
+                        big_img_filename = msg.data_path
+                    logging.error(
+                        "Request for %s exceeds length limit. To upload larger files, use the assets API (not yet supported)",
+                        big_img_filename,
+                    )
+                    return None
+
+                text = (
+                    text + f' <img src="data:{image_extension};base64,{image_b64}" />'
+                )
+            prepared_msg.text = text
+
+        prepared_conv.turns.append(Turn(turn.role, prepared_msg))
+
+        return prepared_conv
 
 
 class Vision(NVMultimodal):

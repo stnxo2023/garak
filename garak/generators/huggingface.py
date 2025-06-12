@@ -24,7 +24,7 @@ import torch
 from PIL import Image
 
 from garak import _config
-from garak.attempt import Turn, Conversation
+from garak.attempt import Message, Conversation
 from garak.exception import ModelNameMissingError, GarakException
 from garak.generators.base import Generator
 from garak.resources.api.huggingface import HFCompatible
@@ -107,12 +107,15 @@ class Pipeline(Generator, HFCompatible):
     def _clear_client(self):
         self.generator = None
 
-    def _format_chat_prompt(self, chat_prompt_string: str) -> List[dict]:
-        return [{"role": "user", "content": chat_prompt_string}]
+    def _format_chat_prompt(self, chat_conversation: Conversation) -> List[dict]:
+        return [
+            {"role": turn.role, "content": turn.content.text}
+            for turn in chat_conversation.turns
+        ]
 
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
-    ) -> List[Union[Turn, None]]:
+    ) -> List[Union[Message, None]]:
         self._load_client()
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=UserWarning)
@@ -122,9 +125,9 @@ class Pipeline(Generator, HFCompatible):
                     # chat template should be automatically utilized if the pipeline tokenizer has support
                     # and a properly formatted list[dict] is supplied
                     if self.use_chat:
-                        formatted_prompt = self._format_chat_prompt(prompt.text)
+                        formatted_prompt = self._format_chat_prompt(prompt)
                     else:
-                        formatted_prompt = prompt.text
+                        formatted_prompt = prompt.turns[-1].content.text
 
                     raw_output = self.generator(
                         formatted_prompt,
@@ -148,11 +151,15 @@ class Pipeline(Generator, HFCompatible):
             text_outputs = outputs
 
         if self.deprefix_prompt:
+            # should this be formatted_prompt or prompt.turns[-1].content.text
+            prefix = formatted_prompt
+            if isinstance(formatted_prompt, list):
+                prefix = formatted_prompt[-1]["content"]
             text_outputs = [
-                re.sub("^" + re.escape(prompt.text), "", _o) for _o in text_outputs
+                re.sub("^" + re.escape(prefix), "", _o) for _o in text_outputs
             ]
 
-        return [Turn(t) for t in text_outputs]
+        return [Message(t) for t in text_outputs]
 
 
 class OptimumPipeline(Pipeline, HFCompatible):
@@ -244,7 +251,7 @@ class InferenceAPI(Generator):
     )
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
-    ) -> List[Turn | None]:
+    ) -> List[Message | None]:
         import json
         import requests
 
@@ -317,7 +324,7 @@ class InferenceAPI(Generator):
                     f"Unsure how to parse 🤗 API response dict: {response}, please open an issue at https://github.com/NVIDIA/garak/issues including this message"
                 )
         elif isinstance(response, list):
-            return [Turn(g["generated_text"]) for g in response]
+            return [Message(g["generated_text"]) for g in response]
         else:
             raise TypeError(
                 f"Unsure how to parse 🤗 API response type: {response}, please open an issue at https://github.com/NVIDIA/garak/issues including this message"
@@ -354,7 +361,7 @@ class InferenceEndpoint(InferenceAPI):
     )
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
-    ) -> List[Turn | None]:
+    ) -> List[Message | None]:
         import requests
 
         payload = {
@@ -382,7 +389,7 @@ class InferenceEndpoint(InferenceAPI):
             raise IOError(
                 "Hugging Face 🤗 endpoint didn't generate a response. Make sure the endpoint is active."
             ) from exc
-        return [Turn(output)]
+        return [Message(output)]
 
 
 class Model(Pipeline, HFCompatible):
@@ -446,7 +453,7 @@ class Model(Pipeline, HFCompatible):
 
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
-    ) -> List[Turn | None]:
+    ) -> List[Message | None]:
         self._load_client()
         self.generation_config.max_new_tokens = self.max_tokens
         self.generation_config.do_sample = self.hf_args["do_sample"]
@@ -462,12 +469,12 @@ class Model(Pipeline, HFCompatible):
             with torch.no_grad():
                 if self.use_chat:
                     formatted_prompt = self.tokenizer.apply_chat_template(
-                        self._format_chat_prompt(prompt.text),
+                        self._format_chat_prompt(prompt),
                         tokenize=False,
                         add_generation_prompt=True,
                     )
                 else:
-                    formatted_prompt = prompt.text
+                    formatted_prompt = prompt.turns[-1].content.text
 
                 inputs = self.tokenizer(
                     formatted_prompt, truncation=True, return_tensors="pt"
@@ -482,7 +489,7 @@ class Model(Pipeline, HFCompatible):
                         **inputs, generation_config=self.generation_config
                     )
                 except Exception as e:
-                    if len(prompt.text) == 0:
+                    if len(formatted_prompt) == 0:
                         returnval = [None] * generations_this_call
                         logging.exception("Error calling generate for empty prompt")
                         print(returnval)
@@ -506,7 +513,7 @@ class Model(Pipeline, HFCompatible):
                 re.sub("^" + re.escape(prefix_prompt), "", i) for i in text_output
             ]
 
-        return [Turn(t) for t in text_output]
+        return [Message(t) for t in text_output]
 
 
 class LLaVA(Generator, HFCompatible):
@@ -562,15 +569,14 @@ class LLaVA(Generator, HFCompatible):
 
     def generate(
         self, prompt: Conversation, generations_this_call: int = 1
-    ) -> List[Union[Turn, None]]:
+    ) -> List[Union[Message, None]]:
 
-        text_prompt = prompt.text
+        text_prompt = prompt.turns[-1].content.text
         try:
-            image_prompt = Image.open(prompt.parts["image_filename"])
+            image_prompt = Image.open(prompt.turns[-1].content.data_path)
         except FileNotFoundError:
-            raise FileNotFoundError(
-                f"Cannot open image {prompt.parts['image_filename']}."
-            )
+            file_path = prompt.turns[-1].content.data_path
+            raise FileNotFoundError(f"Cannot open image {file_path}.")
         except Exception as e:
             raise Exception(e)
 
@@ -583,7 +589,7 @@ class LLaVA(Generator, HFCompatible):
         )
         output = self.processor.decode(output[0], skip_special_tokens=True)
 
-        return [Turn(output)]
+        return [Message(output)]
 
 
 DEFAULT_CLASS = "Pipeline"

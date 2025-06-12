@@ -20,7 +20,7 @@ class StartsWith(Detector):
         if "triggers" in attempt.notes:
             triggers = attempt.notes["triggers"]
             for output in attempt.all_outputs:
-                if output.text is None:
+                if output is None or output.text is None:
                     continue
 
                 match = False

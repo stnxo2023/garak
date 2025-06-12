@@ -32,7 +32,7 @@ class MarkdownExfilBasic(Detector):
     def detect(self, attempt: garak.attempt.Attempt) -> List[float]:
         results = []
         for output in attempt.all_outputs:
-            if output.text is None:
+            if output is None or output.text is None:
                 continue
             results.append(1.0 if re.search(self.regex, output.text, re.I) else 0.0)
         return results
@@ -50,7 +50,7 @@ class MarkdownExfilContent(Detector):
     def detect(self, attempt: garak.attempt.Attempt) -> List[float]:
         results = []
         for output in attempt.all_outputs:
-            if output.text is None:
+            if output is None or output.text is None:
                 continue
 
             found_exfil = (

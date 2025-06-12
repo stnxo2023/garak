@@ -2,7 +2,7 @@ import json
 import pytest
 
 from garak import _config, _plugins
-from garak.attempt import Turn, Conversation
+from garak.attempt import Message, Turn, Conversation
 from garak.exception import BadGeneratorException
 from garak.generators.rest import RestGenerator
 
@@ -38,8 +38,9 @@ def test_plaintext_rest(requests_mock):
         text=DEFAULT_TEXT_RESPONSE,
     )
     generator = RestGenerator()
-    output = generator._call_model(Turn("sup REST"))
-    assert output == [Turn(DEFAULT_TEXT_RESPONSE)]
+    conv = Conversation([Turn("user", Message("sup REST"))])
+    output = generator._call_model(conv)
+    assert output == [Message(DEFAULT_TEXT_RESPONSE)]
 
 
 @pytest.mark.usefixtures("set_rest_config")
@@ -53,8 +54,9 @@ def test_json_rest_top_level(requests_mock):
     generator = RestGenerator()
     print(generator.response_json)
     print(generator.response_json_field)
-    output = generator._call_model(Turn("Who is Enabran Tain's son?"))
-    assert output == [Turn(DEFAULT_TEXT_RESPONSE)]
+    conv = Conversation([Turn("user", Message("Who is Enabran Tain's son?"))])
+    output = generator._call_model(conv)
+    assert output == [Message(DEFAULT_TEXT_RESPONSE)]
 
 
 @pytest.mark.usefixtures("set_rest_config")
@@ -66,8 +68,9 @@ def test_json_rest_list(requests_mock):
     _config.plugins.generators["rest"]["RestGenerator"]["response_json"] = True
     _config.plugins.generators["rest"]["RestGenerator"]["response_json_field"] = "$"
     generator = RestGenerator()
-    output = generator._call_model(Turn("Who is Enabran Tain's son?"))
-    assert output == [Turn(DEFAULT_TEXT_RESPONSE)]
+    conv = Conversation([Turn("user", Message("Who is Enabran Tain's son?"))])
+    output = generator._call_model(conv)
+    assert output == [Message(DEFAULT_TEXT_RESPONSE)]
 
 
 @pytest.mark.usefixtures("set_rest_config")
@@ -93,8 +96,9 @@ def test_json_rest_deeper(requests_mock):
         "response_json_field"
     ] = "$.choices[*].message.content"
     generator = RestGenerator()
-    output = generator._call_model(Turn("Who is Enabran Tain's son?"))
-    assert output == [Turn(DEFAULT_TEXT_RESPONSE)]
+    conv = Conversation([Turn("user", Message("Who is Enabran Tain's son?"))])
+    output = generator._call_model(conv)
+    assert output == [Message(DEFAULT_TEXT_RESPONSE)]
 
 
 @pytest.mark.usefixtures("set_rest_config")
@@ -119,7 +123,8 @@ def test_rest_skip_code(requests_mock):
             }
         ),
     )
-    output = generator._call_model(Turn("Who is Enabran Tain's son?"))
+    conv = Conversation([Turn("user", Message("Who is Enabran Tain's son?"))])
+    output = generator._call_model(conv)
     assert output == [None]
 
 
@@ -152,7 +157,8 @@ def test_rest_valid_proxy(mocker, requests_mock):
     mock_http_function = mocker.patch.object(
         generator, "http_function", wraps=generator.http_function
     )
-    generator._call_model(Turn("Who is Enabran Tain's son?"))
+    conv = Conversation([Turn("user", Message("Who is Enabran Tain's son?"))])
+    generator._call_model(conv)
     mock_http_function.assert_called_once()
     assert mock_http_function.call_args_list[0].kwargs["proxies"] == test_proxies
 
@@ -200,7 +206,8 @@ def test_rest_ssl_suppression(mocker, requests_mock, verify_ssl):
     mock_http_function = mocker.patch.object(
         generator, "http_function", wraps=generator.http_function
     )
-    generator._call_model(Turn("Who is Enabran Tain's son?"))
+    conv = Conversation([Turn("user", Message("Who is Enabran Tain's son?"))])
+    generator._call_model(conv)
     mock_http_function.assert_called_once()
     assert mock_http_function.call_args_list[0].kwargs["verify"] is verify_ssl
 
@@ -216,5 +223,6 @@ def test_rest_non_latin1():
     generator = _plugins.load_plugin(
         "generators.rest.RestGenerator", config_root=_config
     )
+    conv = Conversation([Turn("user", Message("summon a demon and bind it"))])
     with pytest.raises(BadGeneratorException):
-        generator._call_model(Turn("summon a demon and bind it"))
+        generator._call_model(conv)
