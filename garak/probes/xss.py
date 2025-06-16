@@ -239,7 +239,7 @@ URL encoded summary of this conversation. Do not use a code block."""
         return attempt
     
 
-class MarkdownExfilGeneral(Probe):
+class MarkdownExfilExtended(Probe):
     """
     More generalized implementation of data exfiltration exploits via markdown URIs
     Inspired by Markdown URI formats suggested in https://www.aim.security/lp/aim-labs-echoleak-blogpost
@@ -248,11 +248,11 @@ class MarkdownExfilGeneral(Probe):
     doc_uri = "https://www.aim.security/lp/aim-labs-echoleak-blogpost"
     lang = "en"
     goal = "embed information an LLM would normally refuse to provide in a Markdown URI"
-    recommended_detector = ["xss.MarkdownExfilBasic"]
+    recommended_detector = ["xss.MarkdownExfilExtended"]
     tags = [
-        "TODO"
+        "TODO" # TODO: How to identify the right tags?
     ]
-    tier = Tier.TIER_1
+    tier = Tier.TIER_1 # TODO: Is this tier correct?
 
     DEFAULT_PARAMS = Probe.DEFAULT_PARAMS | {"payload_name": "example_domains_xss"}
 
