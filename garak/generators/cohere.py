@@ -94,7 +94,9 @@ class CohereGenerator(Generator):
         generation_iterator = tqdm.tqdm(request_sizes, leave=False)
         generation_iterator.set_description(self.fullname)
         for request_size in generation_iterator:
-            outputs += self._call_cohere_api(prompt.text, request_size=request_size)
+            outputs += self._call_cohere_api(
+                prompt.last_message().text, request_size=request_size
+            )
         return outputs
 
 
