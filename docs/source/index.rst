@@ -26,37 +26,31 @@ Check out the :doc:`usage` section for further information, including :ref:`inst
    mail `docs@garak.ai <mailto:docs@garak.ai>`_ or drop us a note on `Discord <https://discord.gg/uVch4puUCs>`_.
    Thank you!
 
-Contents
---------
-
-
-Using garak
-^^^^^^^^^^^
 
 .. toctree::
+   :caption: Using garak
    :maxdepth: 1
+   :hidden:
 
    how
    usage
    reporting
    FAQ <https://github.com/NVIDIA/garak/blob/main/FAQ.md>
 
-Advanced usage
-^^^^^^^^^^^^^^
-
 .. toctree::
+   :caption: Advanced usage
    :maxdepth: 1
+   :hidden:
 
    configurable
    cliref
    translation
    ascii_smuggling
 
-Code reference
-^^^^^^^^^^^^^^
-
 .. toctree::
+   :caption: Reference
    :maxdepth: 1
+   :hidden:
 
    basic
    attempt
@@ -69,13 +63,10 @@ Code reference
    _config
    _plugins
 
-
-
-Plugin structure
-^^^^^^^^^^^^^^^^
-
 .. toctree::
+   :caption: Plugin structure
    :maxdepth: 1
+   :hidden:
 
    buffs
    detectors
@@ -86,11 +77,12 @@ Plugin structure
    report
 
 
-Building further
-^^^^^^^^^^^^^^^^
-
 .. toctree::
+   :caption: Extending and Contributing
    :maxdepth: 1
+   :hidden:
 
    extending
+   extending.generator
+   extending.probe
    contributing
