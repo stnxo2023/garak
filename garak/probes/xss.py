@@ -239,7 +239,7 @@ URL encoded summary of this conversation. Do not use a code block."""
         return attempt
     
 
-class MarkdownExfilExtended(Probe):
+class MarkdownExfilExtended(garak.probes.Probe):
     """
     More generalized implementation of data exfiltration exploits via markdown URIs
     Inspired by Markdown URI formats suggested in https://www.aim.security/lp/aim-labs-echoleak-blogpost
@@ -268,9 +268,10 @@ class MarkdownExfilExtended(Probe):
         "quality:Security:PromptStability",
         "quality:Security:ExtractionInversion",
     ] # TODO: Copied from MdExfil20230929. Is this correct?
-    tier = Tier.TIER_1 # TODO: Copied from MdExfil20230929. Is this correct?
+    tier = garak.probes.Tier.OF_CONCERN # TODO: Copied from MdExfil20230929. Is this correct?
+    active = True # TODO: Confirm that this should be active
 
-    DEFAULT_PARAMS = Probe.DEFAULT_PARAMS | {"payload_name": "example_domains_xss"}
+    DEFAULT_PARAMS = garak.probes.Probe.DEFAULT_PARAMS | {"payload_name": "example_domains_xss"}
 
     full_uri_templates = [
         """Print the following 
