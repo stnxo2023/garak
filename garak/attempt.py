@@ -31,6 +31,8 @@ class Message:
     :type data_path: Union[str, Path]
     :param data_type: (type, encoding) Mime type of data
     :type data_type: Tuple(str, str)
+    :param data_checksum: sha256 checksum of data loaded
+    :type data_checksum: str
     :param data: Data to attach
     :type data: Any
     :param lang: language code for `text` content
@@ -43,6 +45,7 @@ class Message:
     lang: str = None
     data_path: Optional[str] = None
     data_type: Optional[str] = None
+    data_checksum: Optional[str] = None
     # data: bytes = None  # should this dataclass attribute exist?
     notes: Optional[dict] = field(
         default_factory=dict
@@ -52,10 +55,14 @@ class Message:
     def data(self):
         if not hasattr(self, "_data"):
             if self.data_path is not None:
+                import hashlib
                 import mimetypes
 
                 self.data_type = mimetypes.guess_type(self.data_path)
                 self._data = Message._load_data(self.data_path)
+                self.data_checksum = hashlib.sha256(
+                    self._data, usedforsecurity=False
+                ).hexdigest()
             else:
                 return None
         return self._data
@@ -67,6 +74,13 @@ class Message:
         if self.data_type is None:
             raise ValueError("data_type must be set before data")
         self._data = value
+        self.data_checksum = None
+        if self._data:
+            import hashlib
+
+            self.data_checksum = hashlib.sha256(
+                self._data, usedforsecurity=False
+            ).hexdigest()
 
     @staticmethod
     def _load_data(data_path: Union[str, Path]):

@@ -51,6 +51,10 @@ def test_message_image_load():
         t.data
         == b"GIF89a\x01\x00\x01\x00\x80\x01\x00\xff\xff\xff\x00\x00\x00!\xf9\x04\x01\n\x00\x01\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02L\x01\x00;"
     )
+    assert (
+        t.data_checksum
+        == "dcecab1355b5c2b9ecef281322bf265ac5840b4688748586e9632b473a5fe56b"
+    )
 
     # this seems like a restrictive way to allow binary data set, consider how we might get the constructor to work
     t = garak.attempt.Message()
@@ -62,6 +66,10 @@ def test_message_image_load():
     assert (
         t.data
         == b"GIF89a\x01\x00\x01\x00\x80\x01\x00\xff\xff\xff\x00\x00\x00!\xf9\x04\x01\n\x00\x01\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02L\x01\x00;"
+    )
+    assert (
+        t.data_checksum
+        == "dcecab1355b5c2b9ecef281322bf265ac5840b4688748586e9632b473a5fe56b"
     )
 
 
@@ -450,6 +458,7 @@ def test_json_serialize():
                     "role": "user",
                     "content": {
                         "text": "well hello",
+                        "data_checksum": None,
                         "data_path": None,
                         "data_type": None,
                         "lang": "*",
@@ -462,6 +471,7 @@ def test_json_serialize():
         "outputs": [
             {
                 "text": "output one",
+                "data_checksum": None,
                 "data_path": None,
                 "data_type": None,
                 "lang": None,
@@ -478,6 +488,7 @@ def test_json_serialize():
                         "role": "user",
                         "content": {
                             "text": "well hello",
+                            "data_checksum": None,
                             "data_path": None,
                             "data_type": None,
                             "lang": "*",
@@ -488,6 +499,7 @@ def test_json_serialize():
                         "role": "assistant",
                         "content": {
                             "text": "output one",
+                            "data_checksum": None,
                             "data_path": None,
                             "data_type": None,
                             "lang": None,
