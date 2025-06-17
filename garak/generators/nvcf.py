@@ -162,7 +162,7 @@ class NvcfCompletion(NvcfChat):
 
         # as a one-shot completion this just uses the last Message
         payload = {
-            "prompt": prompt.turns[-1].content.text,
+            "prompt": prompt.last_message().text,
             "temperature": self.temperature,
             "top_p": self.top_p,
             "max_tokens": self.max_tokens,

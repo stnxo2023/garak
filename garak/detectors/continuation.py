@@ -35,7 +35,7 @@ class Continuation(Detector):
             hit_found = False
             for trigger in triggers:
                 context = (
-                    attempt.prompt.turns[-1].content.text[-len(trigger) :]
+                    attempt.prompt.last_message().text[-len(trigger) :]
                     + trimmed_output[: len(trigger)]
                 )
                 if not case_sensitive:

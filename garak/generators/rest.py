@@ -17,7 +17,12 @@ from jsonpath_ng.exceptions import JsonPathParserError
 
 from garak import _config
 from garak.attempt import Message, Conversation
-from garak.exception import APIKeyMissingError, BadGeneratorException, RateLimitHit, GarakBackoffTrigger
+from garak.exception import (
+    APIKeyMissingError,
+    BadGeneratorException,
+    RateLimitHit,
+    GarakBackoffTrigger,
+)
 from garak.generators.base import Generator
 
 
@@ -186,7 +191,9 @@ class RestGenerator(Generator):
                 output = output.replace("$KEY", self.api_key)
         return output.replace("$INPUT", self.escape_function(text))
 
-    @backoff.on_exception(backoff.fibo, (RateLimitHit, GarakBackoffTrigger), max_value=70)
+    @backoff.on_exception(
+        backoff.fibo, (RateLimitHit, GarakBackoffTrigger), max_value=70
+    )
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
     ) -> List[Union[Message, None]]:
@@ -198,15 +205,13 @@ class RestGenerator(Generator):
 
         # should this support a serialized Conversation?
         request_data = self._populate_template(
-            self.req_template, prompt.turns[-1].content.text
+            self.req_template, prompt.last_message().text
         )
 
         request_headers = dict(self.headers)
         for k, v in self.headers.items():
             # why does this provide the prompt to fill out headers?
-            request_headers[k] = self._populate_template(
-                v, prompt.turns[-1].content.text
-            )
+            request_headers[k] = self._populate_template(v, prompt.last_message().text)
 
         # the prompt should not be sent via data when using a GET request. Prompt should be
         # serialized as parameters, in general a method could be created to add

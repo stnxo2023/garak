@@ -17,7 +17,7 @@ class Base64(Buff):
         self, attempt: garak.attempt.Attempt
     ) -> Iterable[garak.attempt.Attempt]:
         # transform receives a copy of the attempt should it modify the prompt in place?
-        last_message = attempt.prompt.turns[-1].content
+        last_message = attempt.prompt.last_message()
         delattr(attempt, "_prompt")  # hack to allow prompt set
         b64_attempt = b64encode(str.encode(last_message.text))
         b64_attempt_string = str(b64_attempt, encoding="utf-8")
@@ -35,7 +35,7 @@ class CharCode(Buff):
         self, attempt: garak.attempt.Attempt
     ) -> Iterable[garak.attempt.Attempt]:
         # transform receives a copy of the attempt should it modify the prompt in place?
-        last_message = attempt.prompt.turns[-1].content
+        last_message = attempt.prompt.last_message()
         delattr(attempt, "_prompt")  # hack to allow prompt set
         cc_attempt = " ".join(list(map(str, map(ord, last_message.text))))
         attempt.prompt = garak.attempt.Message(

@@ -17,7 +17,7 @@ class Lowercase(Buff):
     ) -> Iterable[garak.attempt.Attempt]:
         # transform receives a copy of the attempt should it modify the prompt in place?
         # should this modify all `text` in the conversation as lower case?
-        last_message = attempt.prompt.turns[-1].content
+        last_message = attempt.prompt.last_message()
         delattr(attempt, "_prompt")  # hack to allow prompt set
         attempt.prompt = garak.attempt.Message(
             text=last_message.text.lower(), lang=last_message.lang

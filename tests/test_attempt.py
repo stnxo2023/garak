@@ -177,7 +177,7 @@ def test_attempt_history_lengths():
         )
         b.prompt = new_conv
         assert len(b.prompt.turns) == 3, "Three turns so far"
-        assert b.prompt.turns[-1].content == garak.attempt.Message(
+        assert b.prompt.last_message() == garak.attempt.Message(
             new_prompt_text
         ), "last message should be tracking latest addition"
         expand_attempts.append(b)
@@ -331,7 +331,7 @@ def test_demo_attempt_dialogue_method_usage():
             ]
         )
     ]
-    assert demo_a.conversations[-1].turns[-1].content == garak.attempt.Message(
+    assert demo_a.conversations[-1].last_message() == garak.attempt.Message(
         test_user_reply, lang=prompt_lang
     )
 

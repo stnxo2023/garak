@@ -66,7 +66,7 @@ class LangChainServeLLMGenerator(Generator):
     ) -> List[Union[Message, None]]:
         """Makes an HTTP POST request to the LangChain Serve API endpoint to invoke the LLM with a given prompt."""
         # Should this be expanded to process a whole conversation in some way?
-        prompt_text = prompt.turns[-1].content.text
+        prompt_text = prompt.last_message().text
         headers = {"Content-Type": "application/json", "Accept": "application/json"}
         payload = {"input": prompt_text, "config": {}, "kwargs": {}}
 

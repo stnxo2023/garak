@@ -241,7 +241,7 @@ class OpenAICompatible(Generator):
                 logging.error(msg)
                 return list()
 
-            create_args["prompt"] = prompt.turns[-1].content.text
+            create_args["prompt"] = prompt.last_message().text
 
         elif self.generator == self.client.chat.completions:
             if isinstance(prompt, Conversation):

@@ -117,7 +117,7 @@ class GgmlGenerator(Generator):
         command = [
             self.path_to_ggml_main,
             "-p",
-            prompt.turns[-1].content.text,
+            prompt.last_message().text,
         ]
         # test all params for None type
         command.extend(self._command_args_list())

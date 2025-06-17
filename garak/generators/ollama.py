@@ -49,7 +49,7 @@ class OllamaGenerator(Generator):
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
     ) -> List[Union[Message, None]]:
-        response = self.client.generate(self.name, prompt.turns[-1].content.text)
+        response = self.client.generate(self.name, prompt.last_message().text)
         return [Message(response.get("response", None))]
 
 

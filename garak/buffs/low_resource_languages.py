@@ -38,7 +38,7 @@ class LRLBuff(Buff):
         # transform receives a copy of the attempt should it modify the prompt in place?
         deepl_translator = Translator(self.api_key)
         # only process the last message, this may need to be expanded to support all `Messages` in a `Conversation`
-        prompt_text = attempt.prompt.turns[-1].content.text
+        prompt_text = attempt.prompt.last_message().text
         # if extended to all messages this should be a `Message` object
         attempt.notes["original_prompt"] = prompt_text
         for language in LOW_RESOURCE_LANGUAGES:

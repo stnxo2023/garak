@@ -109,6 +109,21 @@ class Conversation:
         default_factory=dict
     )  # is this valid for a dataclass?
 
+    def last_message(self, role=None) -> Message:
+        """The last message exchanged in the conversation
+
+        :param role: Optional, role to search for
+        type: str
+        """
+        if len(self.turns) < 1:
+            raise ValueError("No messages available")
+        if not role:
+            return self.turns[-1].content
+        for idx in range(len(self.turns), 0):
+            if role == self.turns[idx].role:
+                return self.turns[idx].content
+        raise ValueError(f"No messages for role: {role}")
+
     @staticmethod
     def from_dict(value: dict):
         entity = deepcopy(value)

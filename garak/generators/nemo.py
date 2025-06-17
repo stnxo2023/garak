@@ -84,7 +84,7 @@ class NeMoGenerator(Generator):
     ) -> List[Union[Message, None]]:
         # avoid:
         #    doesn't match schema #/components/schemas/CompletionRequestBody: Error at "/prompt": minimum string length is 1
-        if prompt.turns[-1].content.text == "":
+        if prompt.last_message().text == "":
             return [None]
 
         reset_none_seed = False
@@ -99,7 +99,7 @@ class NeMoGenerator(Generator):
         # can this be expanded to take a conversation set of Messages?
         response = self.nemo.generate(
             model=self.name,
-            prompt=prompt.turns[-1].content.text,
+            prompt=prompt.last_message().text,
             tokens_to_generate=self.max_tokens,
             temperature=self.temperature,
             random_seed=self.seed,

@@ -93,7 +93,7 @@ def test_nim_vision_prep():
     setattr(v, "max_input_len", 100_000)
     vision_conv = Vision._prepare_prompt(v, t)
     assert (
-        vision_conv.turns[-1].content.text
+        vision_conv.last_message().text
         == test_prompt
         + ' <img src="data:image/gif;base64,R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />'
     )

@@ -76,7 +76,7 @@ class ReplicateGenerator(Generator):
             self.name,
             # assumes a prompt will always have a Turn
             input={
-                "prompt": prompt.turns[-1].content.text,
+                "prompt": prompt.last_message().text,
                 "max_length": self.max_tokens,
                 "temperature": self.temperature,
                 "top_p": self.top_p,
@@ -105,7 +105,7 @@ class InferenceEndpoint(ReplicateGenerator):
         prediction = deployment.predictions.create(
             # assumes a prompt will always have a Turn
             input={
-                "prompt": prompt.turns[-1].content.text,
+                "prompt": prompt.last_message().text,
                 "max_length": self.max_tokens,
                 "temperature": self.temperature,
                 "top_p": self.top_p,

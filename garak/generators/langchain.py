@@ -72,9 +72,7 @@ class LangChainLLMGenerator(Generator):
         support across LangChain LLM integrations.
         """
         # Should this be expanded to process a whole conversation in some way?
-        return [
-            Message(r) for r in self.generator.invoke(prompt.turns[-1].content.text)
-        ]
+        return [Message(r) for r in self.generator.invoke(prompt.last_message().text)]
 
 
 DEFAULT_CLASS = "LangChainLLMGenerator"

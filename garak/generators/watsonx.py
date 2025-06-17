@@ -132,7 +132,7 @@ class WatsonXGenerator(Generator):
             self._set_bearer_token()
 
         # Check if message is empty. If it is, append null byte.
-        if not prompt or not prompt.turns[-1].content.text:
+        if not prompt or not prompt.last_message().text:
             prompt = Conversation([Turn("user", Message("\x00"))])
             print(
                 "WARNING: Empty prompt was found. Null byte character appended to prevent API failure."
@@ -141,9 +141,9 @@ class WatsonXGenerator(Generator):
         # can this support a Conversation?
         output = ""
         if self.deployment_id:
-            output = self._generate_with_deployment(prompt.turns[-1].content.text)
+            output = self._generate_with_deployment(prompt.last_message().text)
         else:
-            output = self._generate_with_project(prompt.turns[-1].content.text)
+            output = self._generate_with_project(prompt.last_message().text)
 
         # Parse the output to only contain the output message from the model. Return a list containing that message.
         return [Message("".join(output["results"][0]["generated_text"]))]

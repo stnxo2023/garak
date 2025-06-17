@@ -127,7 +127,7 @@ class Pipeline(Generator, HFCompatible):
                     if self.use_chat:
                         formatted_prompt = self._format_chat_prompt(prompt)
                     else:
-                        formatted_prompt = prompt.turns[-1].content.text
+                        formatted_prompt = prompt.last_message().text
 
                     raw_output = self.generator(
                         formatted_prompt,
@@ -151,7 +151,7 @@ class Pipeline(Generator, HFCompatible):
             text_outputs = outputs
 
         if self.deprefix_prompt:
-            # should this be formatted_prompt or prompt.turns[-1].content.text
+            # should this be formatted_prompt or prompt.last_message().text
             prefix = formatted_prompt
             if isinstance(formatted_prompt, list):
                 prefix = formatted_prompt[-1]["content"]
@@ -474,7 +474,7 @@ class Model(Pipeline, HFCompatible):
                         add_generation_prompt=True,
                     )
                 else:
-                    formatted_prompt = prompt.turns[-1].content.text
+                    formatted_prompt = prompt.last_message().text
 
                 inputs = self.tokenizer(
                     formatted_prompt, truncation=True, return_tensors="pt"
@@ -571,11 +571,11 @@ class LLaVA(Generator, HFCompatible):
         self, prompt: Conversation, generations_this_call: int = 1
     ) -> List[Union[Message, None]]:
 
-        text_prompt = prompt.turns[-1].content.text
+        text_prompt = prompt.last_message().text
         try:
-            image_prompt = Image.open(prompt.turns[-1].content.data_path)
+            image_prompt = Image.open(prompt.last_message().data_path)
         except FileNotFoundError:
-            file_path = prompt.turns[-1].content.data_path
+            file_path = prompt.last_message().data_path
             raise FileNotFoundError(f"Cannot open image {file_path}.")
         except Exception as e:
             raise Exception(e)

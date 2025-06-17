@@ -71,7 +71,7 @@ class PegasusT5(Buff, HFCompatible):
         yield self._derive_new_attempt(
             attempt
         )  # why does this yield a copy of the original with no modification?
-        last_message = attempt.prompt.turns[-1].content
+        last_message = attempt.prompt.last_message()
         paraphrases = self._get_response(last_message.text)
         for paraphrase in set(paraphrases):
             paraphrased_attempt = self._derive_new_attempt(attempt)
@@ -154,7 +154,7 @@ class Fast(Buff, HFCompatible):
         yield self._derive_new_attempt(
             attempt
         )  # why does this yield a copy of the original with no modification?
-        last_message = attempt.prompt.turns[-1].content
+        last_message = attempt.prompt.last_message()
         paraphrases = self._get_response(last_message.text)
         for paraphrase in set(paraphrases):
             paraphrased_attempt = self._derive_new_attempt(attempt)
