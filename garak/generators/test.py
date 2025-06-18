@@ -70,7 +70,7 @@ class Lipsum(Generator):
 
 
 class BlankVision(Generator):
-    """This generator always returns the empty string."""
+    """This text+image input generator always returns the empty string."""
 
     supports_multiple_generations = True
     generator_family_name = "Test"

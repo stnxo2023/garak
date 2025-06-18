@@ -258,7 +258,7 @@ class FileDetector(Detector):
             )
 
         for local_filename in attempt.all_outputs:
-            if local_filename.text is None or local_filename.text == "":
+            if not local_filename.text:
                 continue
             if not os.path.isfile(
                 local_filename.text

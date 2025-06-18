@@ -47,9 +47,7 @@ class Message:
     data_type: Optional[str] = None
     data_checksum: Optional[str] = None
     # data: bytes = None  # should this dataclass attribute exist?
-    notes: Optional[dict] = field(
-        default_factory=dict
-    )  # is this valid for a dataclass?
+    notes: Optional[dict] = field(default_factory=dict)
 
     @property
     def data(self):
@@ -119,9 +117,7 @@ class Conversation:
     """
 
     turns: List[Turn] = field(default_factory=list)
-    notes: Optional[dict] = field(
-        default_factory=dict
-    )  # is this valid for a dataclass?
+    notes: Optional[dict] = field(default_factory=dict)
 
     def last_message(self, role=None) -> Message:
         """The last message exchanged in the conversation
@@ -162,7 +158,7 @@ class Attempt:
     :param targets: A list of target strings to be searched for in generator responses to this attempt's prompt
     :type targets: List(str), optional
     :param outputs: The outputs from the generator in response to the prompt
-    :type outputs: List(Turn)
+    :type outputs: List(Message)
     :param notes: A free-form dictionary of notes accompanying the attempt
     :type notes: dict
     :param detector_results: A dictionary of detector scores, keyed by detector name, where each value is a list of scores corresponding to each of the generator output strings in ``outputs``
@@ -171,8 +167,8 @@ class Attempt:
     :type goal: str
     :param seq: Sequence number (starting 0) set in :meth:`garak.probes.base.Probe.probe`, to allow matching individual prompts with lists of answers/targets or other post-hoc ordering and keying
     :type seq: int
-    :param messages: conversation turn histories; list of list of dicts have the format {"role": role, "content": text}, with actor being something like "system", "user", "assistant"
-    :type messages: List(dict)
+    :param conversations: conversation turn histories
+    :type conversations: List(Conversation)
     :param lang: Language code for prompt as sent to the target
     :type lang: str, valid BCP47
     :param reverse_translation_outputs: The reverse translation of output based on the original language of the probe
@@ -188,14 +184,12 @@ class Attempt:
     * to keep alignment, generators need to return aligned lists of length #generations
 
     Patterns/expectations for Attempt access:
-    .prompt - returns the first user prompt
+    .prompt - returns the user prompt
     .outputs - returns the most recent model outputs
-    .latest_prompts - returns a list of the latest user prompts
 
     Patterns/expectations for Attempt setting:
     .prompt - sets the first prompt, or fails if this has already been done
     .outputs - sets a new layer of model responses. silently handles expansion of prompt to multiple histories. prompt must be set
-    .latest_prompts - adds a new set of user prompts
 
 
     """
@@ -223,7 +217,7 @@ class Attempt:
             elif isinstance(prompt, Message):
                 msg = prompt
             else:
-                raise TypeError("prompts must be ")
+                raise TypeError("prompts must be of type str | Message | Conversation")
             if not hasattr(self, "conversations"):
                 self.conversations = [Conversation([Turn("user", msg)])]
             self.prompt = self.conversations[0]
@@ -304,7 +298,6 @@ class Attempt:
                 if not assistant_turns:
                     continue
                 last_output_turn = max(assistant_turns)
-                # return these (via list compr)
                 generated_outputs.append(conversation.turns[last_output_turn].content)
         return generated_outputs
 
