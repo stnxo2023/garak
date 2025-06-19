@@ -144,7 +144,7 @@ class CohereGenerator(Generator):
                             return [str(response)]
                     except Exception as e:
                         logging.error(f"Failed to extract text from Cohere response: {e}")
-                        return ["Error: Could not process Cohere response"] * request_size
+                        return [None] * request_size
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
