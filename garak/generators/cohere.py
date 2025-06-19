@@ -107,11 +107,11 @@ class CohereGenerator(Generator):
                             responses.append(str(response))
                     except Exception as e:
                         logging.error(f"Chat API error: {e}")
-                        responses.append(f"Error: Could not process Cohere chat response: {str(e)}[:100]...")
+                        responses.append(None)
                         
                 # Ensure we return the correct number of responses
                 if len(responses) < request_size:
-                    responses.extend(["Error: Failed to generate response"] * (request_size - len(responses)))
+                    responses.extend([None] * (request_size - len(responses)))
                 return responses
             else:
                 # Use generate API (legacy in v5+)
