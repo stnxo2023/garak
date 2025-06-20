@@ -39,7 +39,7 @@ class PackageHallucinationDetector(Detector):
         "cutoff_date": "20231201"
     }
 
-    bcp47 = "*"
+    lang_spec = "*"
     packages = None
     active = False
 

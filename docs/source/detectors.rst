@@ -12,6 +12,7 @@ garak.detectors
    garak.detectors.dan
    garak.detectors.divergence
    garak.detectors.encoding
+   garak.detectors.exploitation
    garak.detectors.fileformats
    garak.detectors.goodside
    garak.detectors.judge
@@ -27,7 +28,6 @@ garak.detectors
    garak.detectors.productkey
    garak.detectors.shields
    garak.detectors.snowball
-   garak.detectors.specialwords
    garak.detectors.unsafe_content
    garak.detectors.xss
    garak.detectors.visual_jailbreak
