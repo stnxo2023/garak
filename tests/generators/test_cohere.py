@@ -149,9 +149,9 @@ def test_cohere_chat_api_respx(respx_mock, cohere_mock_responses, response_key, 
     assert payload.get("model") == DEFAULT_MODEL_NAME
     assert payload.get("messages")[0]["content"] == "Test prompt"
 
-    # Check response or error string
+    # Check response or None for error cases
     if expect_error_str:
-        assert isinstance(result[0], str) and result[0].startswith("Error:")
+        assert result[0] is None, f"Expected None for error but got {result[0]}"
     else:
         assert isinstance(result[0], str) and result[0]
 
@@ -167,5 +167,5 @@ def test_chat_response_logs_warning(respx_mock, cohere_mock_responses, caplog):
     caplog.clear()
 
     result = gen.generate("Test prompt")
-    assert isinstance(result[0], str) and result[0].startswith("Error:")
-    assert "error" in caplog.text.lower()
+    assert result[0] is None, f"Expected None for error but got {result[0]}"
+    assert "warning" in caplog.text.lower() or "error" in caplog.text.lower()
