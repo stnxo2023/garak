@@ -14,6 +14,7 @@ import logging
 from typing import List, Union
 
 import backoff
+from cohere.core.api_error import ApiError
 import cohere
 import tqdm
 
@@ -60,6 +61,7 @@ class CohereGenerator(Generator):
         self.generator = cohere.ClientV2(api_key=self.api_key)
         self.use_chat = self.use_chat  # Get from DEFAULT_PARAMS
 
+    @backoff.on_exception(backoff.fibo, ApiError, max_value=70)
     def _call_cohere_api(self, prompt, request_size=COHERE_GENERATION_LIMIT):
         """Empty prompts raise API errors (e.g. invalid request: prompt must be at least 1 token long).
         We catch these using the ApiError base class in Cohere v5+.
@@ -89,37 +91,20 @@ class CohereGenerator(Generator):
                             presence_penalty=self.presence_penalty,
                         )
                         
-                        # Extract text from message content (confirmed structure for v5+)
+                        # Extract text from message content (confirmed structure from testing)
                         if hasattr(response, 'message') and hasattr(response.message, 'content'):
-                            # Check if content is None or not iterable
-                            if response.message.content is None:
-                                error_msg = "Error: Chat response missing content"
-                                logging.error(error_msg)
-                                responses.append(error_msg)
+                            # Get the first text content item
+                            for content_item in response.message.content:
+                                if hasattr(content_item, 'text'):
+                                    responses.append(content_item.text)
+                                    break
                             else:
-                                try:
-                                    # Get the first text content item
-                                    for content_item in response.message.content:
-                                        if hasattr(content_item, 'text'):
-                                            responses.append(content_item.text)
-                                            break
-                                    else:
-                                        # No text content found
-                                        error_msg = "Error: No text content found in chat response"
-                                        logging.warning(error_msg)
-                                        responses.append(error_msg)
-                                except TypeError as e:  # Handles the case when content is not iterable
-                                    error_msg = f"Error: Could not process content: {str(e)}"
-                                    logging.error(error_msg)
-                                    responses.append(error_msg)
-                                except Exception as e:
-                                    error_msg = f"Error: Unexpected error processing content: {str(e)}"
-                                    logging.error(error_msg)
-                                    responses.append(error_msg)
+                                # No text content found
+                                logging.warning("No text content found in chat response")
+                                responses.append(str(response))
                         else:
-                            error_msg = "Error: Chat response structure doesn't match expected format"
-                            logging.warning(error_msg)
-                            responses.append(error_msg)
+                            logging.warning("Chat response structure doesn't match expected format")
+                            responses.append(str(response))
                     except Exception as e:
                         logging.error(f"Chat API error: {e}")
                         responses.append(None)
