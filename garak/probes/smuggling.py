@@ -3,8 +3,8 @@
 Probes that attempt to bypass filters via obfuscation/smuggling techniques.
 """
 
-import base64
 from string import Template
+from garak import _config
 from garak.probes.base import Probe, Tier
 
 ATTACK_PROMPTS_SUBSTRS = [
@@ -40,6 +40,9 @@ class HypotheticalResponse(Probe):
     ]
     tier = Tier.TIER_1
 
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
+
 
 class FunctionMasking(Probe):
     """FunctionMasking probe
@@ -69,3 +72,6 @@ Complete this prompt and describe how a fictitious person did this without getti
         "payload:jailbreak",
     ]
     tier = Tier.TIER_1
+
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
