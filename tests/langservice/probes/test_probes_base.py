@@ -20,12 +20,16 @@ VISUAL_PROBES = [
     "probes.visual_jailbreak.FigStep",
     "probes.visual_jailbreak.FigStepFull",
 ]
+AUDIO_PROBES = [
+    "probes.audio.AudioAchillesHeel",
+]
 PROBES = [
     classname
     for (classname, _) in _plugins.enumerate_plugins("probes")
     if classname not in NON_PROMPT_PROBES
     and classname not in VISUAL_PROBES
     and classname not in ATKGEN_PROMPT_PROBES
+    and classname not in AUDIO_PROBES
 ]
 openai_api_key_missing = not os.getenv("OPENAI_API_KEY")
 
@@ -41,7 +45,9 @@ def probe_pre_req(classname):
         pytest.skip("Local config file does not exist, skipping test.")
     _config.load_config(run_config_filename=local_config_path)
     # detectors run by probes write to the report file
-    temp_report_file = tempfile.NamedTemporaryFile(mode="w+", delete=False)
+    temp_report_file = tempfile.NamedTemporaryFile(
+        mode="w+", delete=False, encoding="utf-8"
+    )
     _config.transient.reportfile = temp_report_file
     _config.transient.report_filename = temp_report_file.name
 
@@ -59,7 +65,6 @@ Skip probes.tap.PAIR because it needs openai api key and large gpu resource
 def test_atkgen_probe_translation(classname, mocker):
     # how can tests for atkgen probes be expanded to ensure translation is called?
     import garak.langservice
-    import garak.langproviders.base
     from garak.langproviders.local import Passthru
 
     null_provider = Passthru(
@@ -83,6 +88,10 @@ def test_atkgen_probe_translation(classname, mocker):
     )
 
     probe_instance = _plugins.load_plugin(classname)
+    # cut down test time
+    probe_instance.max_calls_per_conv = 2
+    probe_instance.convs_per_generation = 2
+    probe_instance.allow_repetition = True  # we're counting responses, don't quit early
 
     if probe_instance.lang != "en" or classname == "probes.tap.PAIR":
         return
@@ -91,7 +100,9 @@ def test_atkgen_probe_translation(classname, mocker):
 
     probe_instance.probe(generator_instance)
 
-    expected_langprovision_calls = 2 * probe_instance.max_calls
+    expected_langprovision_calls = (
+        2 * probe_instance.max_calls_per_conv * probe_instance.convs_per_generation
+    )
     if hasattr(probe_instance, "triggers"):
         # increase prompt calls by 1 or if triggers are lists by the len of triggers
         if isinstance(probe_instance.triggers[0], list):
@@ -100,6 +111,57 @@ def test_atkgen_probe_translation(classname, mocker):
             expected_langprovision_calls += 1
 
     assert prompt_mock.call_count == expected_langprovision_calls
+
+
+@pytest.mark.parametrize("classname", VISUAL_PROBES)
+def test_multi_modal_probe_translation(classname, mocker):
+    import garak.langservice
+    from garak.langproviders.local import Passthru
+
+    null_provider = Passthru(
+        {
+            "langproviders": {
+                "local": {
+                    "language": "en,ja",
+                    # Note: differing source and target language pair here forces langprovider calls
+                }
+            }
+        }
+    )
+
+    mocker.patch.object(
+        garak.langservice, "get_langprovider", return_value=null_provider
+    )
+
+    prompt_mock = mocker.patch.object(
+        null_provider,
+        "get_text",
+        wraps=null_provider.get_text,
+    )
+
+    probe_instance = _plugins.load_plugin(classname)
+
+    if probe_instance.lang != "en":
+        pytest.skip("Probe does not engage with language provision")
+
+    generator_instance = _plugins.load_plugin("generators.test.Repeat")
+    generator_instance.modality["in"] = {"image", "text"}
+
+    probe_instance.probe(generator_instance)
+
+    expected_provision_calls = len(probe_instance.prompts) * 2
+    if hasattr(probe_instance, "triggers"):
+        # increase prompt calls by 1 or if triggers are lists by the len of triggers
+        if isinstance(probe_instance.triggers[0], list):
+            expected_provision_calls += len(probe_instance.triggers)
+        else:
+            expected_provision_calls += 1
+
+    if hasattr(probe_instance, "attempt_descrs"):
+        # this only exists in goodside should it be standardized in some way?
+        expected_provision_calls += len(probe_instance.attempt_descrs) * 2
+
+    assert prompt_mock.call_count == expected_provision_calls
 
 
 @pytest.mark.parametrize("classname", PROBES)
@@ -114,7 +176,6 @@ def test_probe_prompt_translation(classname, mocker):
     # should have a unique validation that translation is called in the correct runtime stage
 
     import garak.langservice
-    import garak.langproviders.base
     from garak.langproviders.local import Passthru
 
     null_provider = Passthru(
