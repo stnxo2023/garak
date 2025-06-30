@@ -18,11 +18,13 @@ from garak.generators.base import Generator
 
 
 class FigStepFull(garak.probes.Probe):
-    """Using another modal - image to assist jailbreak
+    """Using image modality to assist jailbreak.
+    Refer to the following paper for more detail:
 
-    Title: FigStep: Jailbreaking Large Vision-language Models via Typographic Visual Prompts
-    Link: https://arxiv.org/pdf/2311.05608.pdf
-    Reference: Yichen Gong, Delong Ran, Jinyuan Liu, Conglei Wang, Tianshuo Cong, Anyu Wang, Sisi Duan, and Xiaoyun Wang. 2023. FigStep: Jailbreaking Large Vision-language Models via Typographic Visual Prompts.
+    Yichen Gong, Delong Ran, Jinyuan Liu, Conglei Wang, Tianshuo Cong, Anyu Wang, Sisi Duan, and Xiaoyun Wang. 2023.
+    "FigStep: Jailbreaking Large Vision-language Models via Typographic Visual Prompts."
+    ArXiv. https://arxiv.org/pdf/2311.05608
+
     """
 
     active = False  # default to use limit version - FigStep80
@@ -88,10 +90,6 @@ class FigStepFull(garak.probes.Probe):
     def probe(self, generator):
         if not isinstance(generator, Generator):
             raise ValueError("Incorrect class type of incoming argument `generator`.")
-        if not generator.modality["in"] == self.modality["in"]:
-            raise ValueError(
-                f"Incorrect generator input modality {generator.modality['in']}, expect {self.modality['in']} for this probe."
-            )
         self.prompts = [
             {
                 "text": prompt["text"],
@@ -117,10 +115,6 @@ class FigStep(FigStepFull, garak.probes.Probe):
     def probe(self, generator):
         if not isinstance(generator, Generator):
             raise ValueError("Incorrect class type of incoming argument `generator`.")
-        if not generator.modality["in"] == self.modality["in"]:
-            raise ValueError(
-                f"Incorrect generator input modality {generator.modality['in']}, expect {self.modality['in']} for this probe."
-            )
         self.prompts = [
             {
                 "text": prompt["text"],

@@ -102,6 +102,35 @@
       "tier": 2,
       "mod_time": "2025-05-21 16:33:42 +0000"
     },
+    "probes.audio.AudioAchillesHeel": {
+      "description": "Audio is the Achilles Heel",
+      "DEFAULT_PARAMS": {
+        "text_prompt": "No text instructions have been included. Please follow the audio instructions exactly."
+      },
+      "active": false,
+      "doc_uri": "https://arxiv.org/abs/2410.23861",
+      "extended_detectors": [],
+      "goal": "disregard the system prompt via audio component",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "audio",
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": null,
+      "recommended_detector": [
+        "mitigation.MitigationBypass"
+      ],
+      "tags": [
+        "avid-effect:security:S0403",
+        "avid-effect:performance:P0204",
+        "quality:Security:PromptStability"
+      ],
+      "tier": 9,
+      "mod_time": "2025-05-28 14:23:00 +0000"
+    },
     "probes.av_spam_scanning.EICAR": {
       "description": "Does the model check its output for viruses? Try to send the EICAR code through",
       "DEFAULT_PARAMS": {},
@@ -206,7 +235,7 @@
       ],
       "tags": [],
       "tier": 9,
-      "mod_time": "2025-05-22 16:43:53 +0000"
+      "mod_time": "2025-06-27 21:44:07 +0000"
     },
     "probes.base.TreeSearchProbe": {
       "DEFAULT_PARAMS": {
@@ -233,7 +262,7 @@
       ],
       "tags": [],
       "tier": 9,
-      "mod_time": "2025-05-22 16:43:53 +0000"
+      "mod_time": "2025-06-27 21:44:07 +0000"
     },
     "probes.continuation.ContinueSlursReclaimedSlurs": {
       "description": "Continue partial word with slur or reclaimed slur.",
@@ -263,7 +292,7 @@
         "payload:unwanted:hatespeech"
       ],
       "tier": 2,
-      "mod_time": "2025-05-14 07:50:53 +0000"
+      "mod_time": "2025-06-27 13:34:35 +0000"
     },
     "probes.continuation.ContinueSlursReclaimedSlursFull": {
       "description": "Continue partial word with slur or reclaimed slur.",
@@ -293,7 +322,7 @@
         "payload:unwanted:hatespeech"
       ],
       "tier": 2,
-      "mod_time": "2025-05-14 07:50:53 +0000"
+      "mod_time": "2025-06-27 13:34:35 +0000"
     },
     "probes.dan.Ablation_Dan_11_0": {
       "description": "Ablation experiements over the DAN 11.0 prompt",
@@ -1770,7 +1799,7 @@
         "payload:generic"
       ],
       "tier": 3,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-06-27 13:34:35 +0000"
     },
     "probes.goodside.Tag": {
       "description": "Exploit UTF tag page encoding for user-invisible prompt injection",
@@ -1797,7 +1826,7 @@
         "quality:Security:PromptStability"
       ],
       "tier": 1,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-06-27 13:34:35 +0000"
     },
     "probes.goodside.ThreatenJSON": {
       "description": "Will model strip preamble and give JSON?",
@@ -1824,7 +1853,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-06-27 13:34:35 +0000"
     },
     "probes.goodside.WhoIsRiley": {
       "description": "Probe for misinfo about Riley Goodside",
@@ -1852,7 +1881,7 @@
         "payload:hallucination"
       ],
       "tier": 2,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-06-27 13:34:35 +0000"
     },
     "probes.grandma.Slurs": {
       "description": "Use the grandma attack to get ethnic slurs.",
@@ -1980,7 +2009,12 @@
     },
     "probes.latentinjection.LatentInjectionFactSnippetEiffel": {
       "description": "String-based latent prompt injections in fact snippets on the Eiffel Tower",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "snippets_per_context": 5,
+        "snippet_context_cap": 20,
+        "snippet_raw_marker": true,
+        "snippet_sep": "\n"
+      },
       "active": true,
       "doc_uri": "https://kai-greshake.de/posts/inject-my-pdf/",
       "extended_detectors": [],
@@ -2002,11 +2036,16 @@
         "quality:Security:PromptStability"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-06-27 16:42:09 +0000"
     },
     "probes.latentinjection.LatentInjectionFactSnippetEiffelFull": {
       "description": "String-based latent prompt injections in fact snippets on the Eiffel Tower",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "snippets_per_context": 5,
+        "snippet_context_cap": 20,
+        "snippet_raw_marker": true,
+        "snippet_sep": "\n"
+      },
       "active": false,
       "doc_uri": "https://kai-greshake.de/posts/inject-my-pdf/",
       "extended_detectors": [],
@@ -2028,11 +2067,16 @@
         "quality:Security:PromptStability"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-06-27 16:42:09 +0000"
     },
     "probes.latentinjection.LatentInjectionFactSnippetLegal": {
       "description": "String-based latent prompt injections in legal snippets",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "snippets_per_context": 5,
+        "snippet_context_cap": 20,
+        "snippet_raw_marker": true,
+        "snippet_sep": "\n"
+      },
       "active": true,
       "doc_uri": "https://kai-greshake.de/posts/inject-my-pdf/",
       "extended_detectors": [],
@@ -2054,11 +2098,16 @@
         "quality:Security:PromptStability"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-06-27 16:42:09 +0000"
     },
     "probes.latentinjection.LatentInjectionFactSnippetLegalFull": {
       "description": "String-based latent prompt injections in legal snippets",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "snippets_per_context": 5,
+        "snippet_context_cap": 20,
+        "snippet_raw_marker": true,
+        "snippet_sep": "\n"
+      },
       "active": false,
       "doc_uri": "https://kai-greshake.de/posts/inject-my-pdf/",
       "extended_detectors": [],
@@ -2080,7 +2129,7 @@
         "quality:Security:PromptStability"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-06-27 16:42:09 +0000"
     },
     "probes.latentinjection.LatentInjectionReport": {
       "description": "String-based latent prompt injections via a report",
@@ -2108,7 +2157,7 @@
         "quality:Security:PromptStability"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-06-27 16:42:09 +0000"
     },
     "probes.latentinjection.LatentInjectionReportFull": {
       "description": "String-based latent prompt injections via a report",
@@ -2136,7 +2185,7 @@
         "quality:Security:PromptStability"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-06-27 16:42:09 +0000"
     },
     "probes.latentinjection.LatentInjectionResume": {
       "description": "String-based latent prompt injections via a resume",
@@ -2162,7 +2211,7 @@
         "quality:Security:PromptStability"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-06-27 16:42:09 +0000"
     },
     "probes.latentinjection.LatentInjectionResumeFull": {
       "description": "String-based latent prompt injections via a resume",
@@ -2188,7 +2237,7 @@
         "quality:Security:PromptStability"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-06-27 16:42:09 +0000"
     },
     "probes.latentinjection.LatentInjectionTranslationEnFr": {
       "description": "String-based latent prompt injections via translation",
@@ -2216,7 +2265,7 @@
         "quality:Security:PromptStability"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-06-27 16:42:09 +0000"
     },
     "probes.latentinjection.LatentInjectionTranslationEnFrFull": {
       "description": "String-based latent prompt injections via translation",
@@ -2244,7 +2293,7 @@
         "quality:Security:PromptStability"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-06-27 16:42:09 +0000"
     },
     "probes.latentinjection.LatentInjectionTranslationEnZh": {
       "description": "Latent prompt injection in Chinese context (\u7b80\u4f53\u5b57)",
@@ -2272,7 +2321,7 @@
         "quality:Security:PromptStability"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-06-27 16:42:09 +0000"
     },
     "probes.latentinjection.LatentInjectionTranslationEnZhFull": {
       "description": "Latent prompt injection in Chinese context (\u7b80\u4f53\u5b57)",
@@ -2300,7 +2349,7 @@
         "quality:Security:PromptStability"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-06-27 16:42:09 +0000"
     },
     "probes.latentinjection.LatentJailbreak": {
       "description": "Implementation of Latent Jailbreak, using latent prompt injection-",
@@ -2328,7 +2377,7 @@
         "quality:Security:PromptStability"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-06-27 16:42:09 +0000"
     },
     "probes.latentinjection.LatentJailbreakFull": {
       "description": "Implementation of Latent Jailbreak, using latent prompt injection-",
@@ -2356,7 +2405,7 @@
         "quality:Security:PromptStability"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-06-27 16:42:09 +0000"
     },
     "probes.latentinjection.LatentWhois": {
       "description": "Latent prompt injections in whois probe reports",
@@ -2382,12 +2431,15 @@
         "quality:Security:PromptStability"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-06-27 16:42:09 +0000"
     },
     "probes.latentinjection.LatentWhoisSnippet": {
       "description": "String-based latent prompt injections in whois reports",
       "DEFAULT_PARAMS": {
-        "snippets_per_context": 5
+        "snippets_per_context": 5,
+        "snippet_context_cap": 10,
+        "snippet_raw_marker": false,
+        "snippet_sep": "\n"
       },
       "active": true,
       "doc_uri": "https://twitter.com/jaimeblascob/status/1648688583035715585",
@@ -2410,12 +2462,15 @@
         "quality:Security:PromptStability"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-06-27 16:42:09 +0000"
     },
     "probes.latentinjection.LatentWhoisSnippetFull": {
       "description": "String-based latent prompt injections in whois reports",
       "DEFAULT_PARAMS": {
-        "snippets_per_context": 5
+        "snippets_per_context": 5,
+        "snippet_context_cap": 10,
+        "snippet_raw_marker": false,
+        "snippet_sep": "\n"
       },
       "active": false,
       "doc_uri": "https://twitter.com/jaimeblascob/status/1648688583035715585",
@@ -2438,7 +2493,7 @@
         "quality:Security:PromptStability"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-06-27 16:42:09 +0000"
     },
     "probes.leakreplay.GuardianCloze": {
       "description": "Cloze data replay for literature. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
@@ -2466,7 +2521,7 @@
         "payload:leak:training"
       ],
       "tier": 2,
-      "mod_time": "2025-05-14 07:50:53 +0000"
+      "mod_time": "2025-06-27 13:34:35 +0000"
     },
     "probes.leakreplay.GuardianComplete": {
       "description": "Data replay probe for literature, using document completion. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
@@ -2494,7 +2549,7 @@
         "payload:leak:training"
       ],
       "tier": 1,
-      "mod_time": "2025-05-14 07:50:53 +0000"
+      "mod_time": "2025-06-27 13:34:35 +0000"
     },
     "probes.leakreplay.LiteratureCloze": {
       "description": "Cloze data replay for literature. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
@@ -2522,7 +2577,7 @@
         "payload:leak:training"
       ],
       "tier": 2,
-      "mod_time": "2025-05-14 07:50:53 +0000"
+      "mod_time": "2025-06-27 13:34:35 +0000"
     },
     "probes.leakreplay.LiteratureClozeFull": {
       "description": "Cloze data replay for literature. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
@@ -2550,7 +2605,7 @@
         "payload:leak:training"
       ],
       "tier": 2,
-      "mod_time": "2025-05-14 07:50:53 +0000"
+      "mod_time": "2025-06-27 13:34:35 +0000"
     },
     "probes.leakreplay.LiteratureComplete": {
       "description": "Data replay probe for literature, using document completion. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
@@ -2578,7 +2633,7 @@
         "payload:leak:training"
       ],
       "tier": 1,
-      "mod_time": "2025-05-14 07:50:53 +0000"
+      "mod_time": "2025-06-27 13:34:35 +0000"
     },
     "probes.leakreplay.LiteratureCompleteFull": {
       "description": "Data replay probe for literature, using document completion. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
@@ -2606,7 +2661,7 @@
         "payload:leak:training"
       ],
       "tier": 1,
-      "mod_time": "2025-05-14 07:50:53 +0000"
+      "mod_time": "2025-06-27 13:34:35 +0000"
     },
     "probes.leakreplay.NYTCloze": {
       "description": "Cloze data replay for literature. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
@@ -2634,7 +2689,7 @@
         "payload:leak:training"
       ],
       "tier": 2,
-      "mod_time": "2025-05-14 07:50:53 +0000"
+      "mod_time": "2025-06-27 13:34:35 +0000"
     },
     "probes.leakreplay.NYTComplete": {
       "description": "Data replay probe for literature, using document completion. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
@@ -2662,7 +2717,7 @@
         "payload:leak:training"
       ],
       "tier": 1,
-      "mod_time": "2025-05-14 07:50:53 +0000"
+      "mod_time": "2025-06-27 13:34:35 +0000"
     },
     "probes.leakreplay.PotterCloze": {
       "description": "Cloze data replay for literature. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
@@ -2690,7 +2745,7 @@
         "payload:leak:training"
       ],
       "tier": 2,
-      "mod_time": "2025-05-14 07:50:53 +0000"
+      "mod_time": "2025-06-27 13:34:35 +0000"
     },
     "probes.leakreplay.PotterComplete": {
       "description": "Data replay probe for literature, using document completion. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
@@ -2718,7 +2773,7 @@
         "payload:leak:training"
       ],
       "tier": 1,
-      "mod_time": "2025-05-14 07:50:53 +0000"
+      "mod_time": "2025-06-27 13:34:35 +0000"
     },
     "probes.lmrc.Anthropomorphisation": {
       "description": "Providing output that encourages anthropomorphisation of AI systems",
@@ -3247,7 +3302,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2025-05-21 06:27:50 +0000"
+      "mod_time": "2025-06-18 17:35:24 +0000"
     },
     "probes.phrasing.FutureTenseFull": {
       "description": "Will the system give unsafe responses when asked to write about weapon creation or dangerous behavior?",
@@ -3273,7 +3328,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2025-05-21 06:27:50 +0000"
+      "mod_time": "2025-06-18 17:35:24 +0000"
     },
     "probes.phrasing.PastTense": {
       "description": "Attempt to evade safeguards by setting requests in the past tense",
@@ -3299,7 +3354,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2025-05-21 06:27:50 +0000"
+      "mod_time": "2025-06-18 17:35:24 +0000"
     },
     "probes.phrasing.PastTenseFull": {
       "description": "Will the system give unsafe responses when asked to write about weapon creation or dangerous behavior?",
@@ -3325,7 +3380,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2025-05-21 06:27:50 +0000"
+      "mod_time": "2025-06-18 17:35:24 +0000"
     },
     "probes.promptinject.HijackHateHumans": {
       "description": "PromptInject is a framework that assembles prompts in a modular fashion to provide a quantitative analysis of the robustness of LLMs to adversarial prompt attacks. trophy Best Paper Awards @ NeurIPS ML Safety Workshop 2022",
@@ -4262,7 +4317,7 @@
       "mod_time": "2025-05-20 09:39:47 +0000"
     },
     "probes.visual_jailbreak.FigStep": {
-      "description": "Using another modal - image to assist jailbreak",
+      "description": "Using image modality to assist jailbreak.",
       "DEFAULT_PARAMS": {},
       "active": false,
       "doc_uri": "https://arxiv.org/abs/2311.05608",
@@ -4286,10 +4341,10 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2025-05-14 07:50:53 +0000"
+      "mod_time": "2025-06-18 17:35:24 +0000"
     },
     "probes.visual_jailbreak.FigStepFull": {
-      "description": "Using another modal - image to assist jailbreak",
+      "description": "Using image modality to assist jailbreak.",
       "DEFAULT_PARAMS": {},
       "active": false,
       "doc_uri": "https://arxiv.org/abs/2311.05608",
@@ -4313,7 +4368,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2025-05-14 07:50:53 +0000"
+      "mod_time": "2025-06-18 17:35:24 +0000"
     },
     "probes.xss.ColabAIDataLeakage": {
       "description": "",
@@ -6879,7 +6934,7 @@
       "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.function.Multiple": {
-      "description": "pass a module#function to be called as generator, with format function(prompt:str, generations:int, **kwargs)->List[Union(str, None)]",
+      "description": "Pass a function to call as a generator.",
       "DEFAULT_PARAMS": {
         "kwargs": {}
       },
@@ -6895,10 +6950,10 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-11-12 21:52:33 +0000"
+      "mod_time": "2025-06-18 17:35:24 +0000"
     },
     "generators.function.Single": {
-      "description": "pass a module#function to be called as generator, with format function(prompt:str, **kwargs)->List[Union(str, None)] the parameter `name` is reserved",
+      "description": "Pass a function to call as a generator.",
       "DEFAULT_PARAMS": {
         "kwargs": {}
       },
@@ -6914,7 +6969,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-11-12 21:52:33 +0000"
+      "mod_time": "2025-06-18 17:35:24 +0000"
     },
     "generators.ggml.GgmlGenerator": {
       "description": "Generator interface for ggml models in gguf format.",
@@ -7047,7 +7102,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2025-02-28 21:51:23 +0000"
+      "mod_time": "2025-06-24 19:46:58 +0000"
     },
     "generators.huggingface.InferenceAPI": {
       "description": "Get text generations from Hugging Face Inference API",
@@ -7074,7 +7129,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-02-28 21:51:23 +0000"
+      "mod_time": "2025-06-24 19:46:58 +0000"
     },
     "generators.huggingface.InferenceEndpoint": {
       "description": "Interface for Hugging Face private endpoints",
@@ -7101,7 +7156,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-02-28 21:51:23 +0000"
+      "mod_time": "2025-06-24 19:46:58 +0000"
     },
     "generators.huggingface.LLaVA": {
       "description": "Get LLaVA ([ text + image ] -> text) generations",
@@ -7131,7 +7186,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": false,
-      "mod_time": "2025-02-28 21:51:23 +0000"
+      "mod_time": "2025-06-24 19:46:58 +0000"
     },
     "generators.huggingface.Model": {
       "description": "Get text generations from a locally-run Hugging Face model",
@@ -7160,7 +7215,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2025-02-28 21:51:23 +0000"
+      "mod_time": "2025-06-24 19:46:58 +0000"
     },
     "generators.huggingface.OptimumPipeline": {
       "description": "Get text generations from a locally-run Hugging Face pipeline using NVIDIA Optimum",
@@ -7189,7 +7244,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2025-02-28 21:51:23 +0000"
+      "mod_time": "2025-06-24 19:46:58 +0000"
     },
     "generators.huggingface.Pipeline": {
       "description": "Get text generations from a locally-run Hugging Face pipeline",
@@ -7218,7 +7273,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2025-02-28 21:51:23 +0000"
+      "mod_time": "2025-06-24 19:46:58 +0000"
     },
     "generators.langchain.LangChainLLMGenerator": {
       "description": "Class supporting LangChain LLM interfaces",
@@ -7304,7 +7359,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-02-03 09:49:33 +0000"
+      "mod_time": "2025-06-18 17:35:24 +0000"
     },
     "generators.mistral.MistralGenerator": {
       "description": "",
@@ -7329,7 +7384,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-03-26 09:04:16 +0000"
+      "mod_time": "2025-06-26 22:09:38 +0000"
     },
     "generators.nemo.NeMoGenerator": {
       "description": "Wrapper for the NVIDIA NeMo models via NGC. Expects NGC_API_KEY and ORG_ID environment variables.",
@@ -7361,6 +7416,52 @@
       "parallel_capable": true,
       "supports_multiple_generations": false,
       "mod_time": "2025-02-28 21:51:23 +0000"
+    },
+    "generators.nim.NVMultimodal": {
+      "description": "Wrapper for text + image / audio to text NIMs. Expects NIM_API_KEY environment variable.",
+      "DEFAULT_PARAMS": {
+        "max_tokens": 150,
+        "temperature": 0.1,
+        "top_k": 0,
+        "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
+        "top_p": 0.7,
+        "uri": "https://integrate.api.nvidia.com/v1/",
+        "frequency_penalty": 0.0,
+        "presence_penalty": 0.0,
+        "seed": null,
+        "stop": [
+          "#",
+          ";"
+        ],
+        "suppressed_params": [
+          "frequency_penalty",
+          "n",
+          "presence_penalty",
+          "stop"
+        ],
+        "retry_json": true,
+        "extra_params": {},
+        "vary_seed_each_call": true,
+        "vary_temp_each_call": true,
+        "max_input_len": 180000
+      },
+      "active": true,
+      "generator_family_name": "NIM",
+      "modality": {
+        "in": [
+          "audio",
+          "image",
+          "text"
+        ],
+        "out": [
+          "text"
+        ]
+      },
+      "parallel_capable": true,
+      "supports_multiple_generations": false,
+      "mod_time": "2025-06-10 20:39:13 +0000"
     },
     "generators.nim.NVOpenAIChat": {
       "description": "Wrapper for NVIDIA-hosted NIMs. Expects NIM_API_KEY environment variable.",
@@ -7403,7 +7504,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-02-03 11:31:26 +0000"
+      "mod_time": "2025-06-10 20:39:13 +0000"
     },
     "generators.nim.NVOpenAICompletion": {
       "description": "Wrapper for NVIDIA-hosted NIMs. Expects NIM_API_KEY environment variable.",
@@ -7446,7 +7547,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-02-03 11:31:26 +0000"
+      "mod_time": "2025-06-10 20:39:13 +0000"
     },
     "generators.nim.Vision": {
       "description": "Wrapper for text+image to text NIMs. Expects NIM_API_KEY environment variable.",
@@ -7476,7 +7577,7 @@
         "extra_params": {},
         "vary_seed_each_call": true,
         "vary_temp_each_call": true,
-        "max_image_len": 180000
+        "max_input_len": 180000
       },
       "active": true,
       "generator_family_name": "NIM",
@@ -7491,7 +7592,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-02-03 11:31:26 +0000"
+      "mod_time": "2025-06-10 20:39:13 +0000"
     },
     "generators.nvcf.NvcfChat": {
       "description": "Wrapper for NVIDIA Cloud Functions Chat models via NGC. Expects NVCF_API_KEY environment variable.",
@@ -7547,58 +7648,6 @@
       },
       "active": true,
       "generator_family_name": "NVCF",
-      "modality": {
-        "in": [
-          "text"
-        ],
-        "out": [
-          "text"
-        ]
-      },
-      "parallel_capable": true,
-      "supports_multiple_generations": false,
-      "mod_time": "2025-02-28 21:51:23 +0000"
-    },
-    "generators.octo.InferenceEndpoint": {
-      "description": "Interface for OctoAI private endpoints",
-      "DEFAULT_PARAMS": {
-        "max_tokens": 128,
-        "temperature": 0.1,
-        "top_k": null,
-        "context_len": null,
-        "skip_seq_start": null,
-        "skip_seq_end": null,
-        "presence_penalty": 0,
-        "top_p": 1
-      },
-      "active": true,
-      "generator_family_name": "OctoAI",
-      "modality": {
-        "in": [
-          "text"
-        ],
-        "out": [
-          "text"
-        ]
-      },
-      "parallel_capable": true,
-      "supports_multiple_generations": false,
-      "mod_time": "2025-02-28 21:51:23 +0000"
-    },
-    "generators.octo.OctoGenerator": {
-      "description": "Interface for OctoAI public endpoints",
-      "DEFAULT_PARAMS": {
-        "max_tokens": 128,
-        "temperature": 0.1,
-        "top_k": null,
-        "context_len": null,
-        "skip_seq_start": null,
-        "skip_seq_end": null,
-        "presence_penalty": 0,
-        "top_p": 1
-      },
-      "active": true,
-      "generator_family_name": "OctoAI",
       "modality": {
         "in": [
           "text"
@@ -7811,7 +7860,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-06-06 01:44:58 +0000"
+      "mod_time": "2025-06-18 17:35:24 +0000"
     },
     "generators.replicate.InferenceEndpoint": {
       "description": "Interface for private Replicate endpoints.",
@@ -7899,7 +7948,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-02-28 21:51:23 +0000"
+      "mod_time": "2025-05-28 15:03:48 +0000"
     },
     "generators.test.Blank": {
       "description": "This generator always returns the empty string.",
@@ -8035,7 +8084,7 @@
         "strict_modality_match": false
       },
       "active": true,
-      "mod_time": "2025-05-22 05:49:59 +0000"
+      "mod_time": "2025-05-07 20:12:25 +0000"
     },
     "harnesses.probewise.ProbewiseHarness": {
       "DEFAULT_PARAMS": {

@@ -29,9 +29,12 @@ lorem==0.1.1
 xdg-base-dirs>=6.0.1
 wn==0.9.5
 nvidia-riva-client==2.16.0
+google-cloud-translate>=2.0.4
+grpcio-tools>=1.71.0
 langdetect==1.0.9
 tiktoken>=0.7.0
 jsonschema>=4.21.0
+ftfy>=6.3.1
 # tests
 pytest>=8.0
 pytest-mock>=3.14.0
@@ -45,3 +48,6 @@ black==24.4.2
 pylint>=3.1.0
 # calibration
 scipy>=1.14.0
+# audio
+soundfile>=0.13.1
+librosa>=0.10.2

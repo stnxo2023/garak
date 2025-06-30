@@ -1,5 +1,3 @@
-DEFAULT_CLASS = "MistralGenerator"
-
 import backoff
 from garak.exception import GeneratorBackoffTrigger
 from garak.generators.base import Generator
@@ -64,3 +62,6 @@ class MistralGenerator(Generator):
                     raise GeneratorBackoffTrigger from e
             raise e
         return [chat_response.choices[0].message.content]
+
+
+DEFAULT_CLASS = "MistralGenerator"
