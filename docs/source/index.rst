@@ -1,7 +1,7 @@
-Welcome to the garak reference documentation
-============================================
+Garak Reference Documentation
+=============================
 
-**garak** is an LLM vulnerability scanner, `<https://garak.ai>`_.
+Garak is an LLM vulnerability scanner, `<https://garak.ai>`_.
 It uses a huge range of probes to examine and query a large language model, simulating
 attacks, and uses a range of detectors on the model's outputs to see if the model was
 vulnerable to any of those attacks.
@@ -34,18 +34,12 @@ Check out the :doc:`usage` section for further information, including :ref:`inst
 
    how
    usage
-   reporting
-   FAQ <https://github.com/NVIDIA/garak/blob/main/FAQ.md>
-
-.. toctree::
-   :caption: Advanced usage
-   :maxdepth: 1
-   :hidden:
-
    configurable
    cliref
+   reporting
    translation
    ascii_smuggling
+   FAQ <https://github.com/NVIDIA/garak/blob/main/FAQ.md>
 
 .. toctree::
    :caption: Reference
@@ -54,27 +48,21 @@ Check out the :doc:`usage` section for further information, including :ref:`inst
 
    basic
    attempt
+   buffs
    cli
    command
+   detectors
+   evaluators
    exception
+   generators
+   harnesses
    interactive
    langservice
    payloads
-   _config
-   _plugins
-
-.. toctree::
-   :caption: Plugin structure
-   :maxdepth: 1
-   :hidden:
-
-   buffs
-   detectors
-   evaluators
-   generators
-   harnesses
    probes
    report
+   _config
+   _plugins
 
 
 .. toctree::

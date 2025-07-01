@@ -1,65 +1,18 @@
-Usage
-=====
-
-.. _installation:
-
-Installation
-------------
-
-``garak`` is a command-line tool. It's developed in Linux and OSX.
-
-Friendly install instructions are at `<https://docs.garak.ai/garak/llm-scanning-basics/setting-up/installing-garak>`_ .
-The instructions below will work, but you might need to be quite familiar with your OS to use them, because they assume some particular pieces of background knowledge.
-
-Standard quick `pip` install
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-To use garak, first install it using pip:
-
-.. code-block:: console
-
-   pip install garak
-
-
-Install development version with `pip`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The standard pip version of ``garak`` is updated periodically. To get a fresher version, from GitHub, try:
-
-.. code-block:: console
-
-    python3 -m pip install -U git+https://github.com/NVIDIA/garak.git@main
-
-
-For development: clone from `git`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-You can also clone the source and run ``garak`` directly. This works fine and is recommended for development.
-
-``garak`` has its own dependencies. You can to install ``garak`` in its own Conda environment:
-
-.. code-block:: console
-
-    conda create --name garak "python>=3.10,<=3.12"
-    conda activate garak
-    gh repo clone NVIDIA/garak
-    cd garak
-    python3 -m pip install -r requirements.txt
-
-OK, if that went fine, you're probably good to go!
-
-
-Running garak
--------------
-
+..  headings: = - ^ "
+Getting Started
+===============
 
 The general syntax is:
 
 .. code-block:: console
 
-    garak <options>
+   garak <options>
 
-``garak`` needs to know what model to scan, and by default, it'll try all the probes it knows on that model, using the vulnerability detectors recommended by each probe. You can see a list of probes using:
+You must specify at least the model to scan with the ``--model_name`` option.
+By default, garak runs all the probes on the model and uses the vulnerability detectors recommended by each probe.
+You can limit the probes to run by specifying more options.
+
+You can list the probes by running the following command:
 
 .. code-block:: console
 
@@ -76,8 +29,8 @@ Some generators might need an API key to be set as an environment variable, and 
 You can also specify one specific plugin instead of a plugin family by adding the plugin name after a ``.``; for example, ``--probes lmrc.SlurUsage`` will use an implementation of checking for models generating slurs based on the `Language Model Risk Cards <https://arxiv.org/abs/2303.18190>`_ framework.
 
 
-Examples
-^^^^^^^^
+Sample Usage
+------------
 
 Probe ChatGPT for encoding-based prompt injection (OSX/\*nix) (replace example value with a real OpenAI API key):
 
