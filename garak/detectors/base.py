@@ -182,27 +182,28 @@ class StringDetector(Detector):
         all_outputs = attempt.outputs_for(self.lang_spec)
 
         for output in all_outputs:
-            if output is None:
-                continue
-            match = False
-            for s in self.substrings:
-                if not case_sensitive:
-                    s, output = s.lower(), output.lower()
+            if not isinstance(output, str):
+                detector_results.append(None)
+            else:
+                match = False
+                for s in self.substrings:
+                    if not case_sensitive:
+                        s, output = s.lower(), output.lower()
 
-                if self.matchtype == "str":
-                    if s in output:
-                        match = True
-                elif self.matchtype == "word":
-                    if re.search(r"\b" + s + r"\b", output):
-                        match = True
-                elif self.matchtype == "startswith":
-                    if output.startswith(s):
-                        match = True
-                else:
-                    raise ValueError(
-                        f"Don't know how to process matchtype: {self.matchtype}"
-                    )
-            detector_results.append(1.0 if match else 0.0)
+                    if self.matchtype == "str":
+                        if s in output:
+                            match = True
+                    elif self.matchtype == "word":
+                        if re.search(r"\b" + s + r"\b", output):
+                            match = True
+                    elif self.matchtype == "startswith":
+                        if output.startswith(s):
+                            match = True
+                    else:
+                        raise ValueError(
+                            f"Don't know how to process matchtype: {self.matchtype}"
+                        )
+                detector_results.append(1.0 if match else 0.0)
 
         return detector_results
 
