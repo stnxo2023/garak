@@ -66,6 +66,7 @@ class Evaluator:
             passes = 0
             fails = 0
             nones = 0
+            messages = []
 
             for attempt in attempts:
                 for idx, score in enumerate(attempt.detector_results[detector]):
@@ -75,6 +76,9 @@ class Evaluator:
                         passes += 1
                     else:  # if we don't pass
                         fails += 1
+                        messages.append(
+                            attempt.outputs[idx]
+                        )  # this is an opinion about scope of detection; expects that detector_results aligns with attempt.outputs (not all_outputs)
                         if (
                             _config.transient.hitlogfile is None
                             or _config.transient.hitlogfile.closed
@@ -125,7 +129,7 @@ class Evaluator:
                 print_func = self.print_results_narrow
             else:
                 print_func = self.print_results_wide
-            print_func(detector, passes, outputs_evaluated)
+            print_func(detector, passes, outputs_evaluated, messages)
 
             _config.transient.reportfile.write(
                 json.dumps(
@@ -159,7 +163,7 @@ class Evaluator:
             )
         return zscore, zrating_symbol
 
-    def print_results_wide(self, detector_name, passes, evals):
+    def print_results_wide(self, detector_name, passes, evals, messages=list()):
         """Print the evaluator's summary"""
         zscore = None
         failrate = 0.0
@@ -195,7 +199,14 @@ class Evaluator:
             print(f"    {rating_symbol} Z: {zscore:+0.1f}", end="")
         print()
 
-    def print_results_narrow(self, detector_name, passes, evals):
+        if _config.system.verbose > 0 and messages:
+            for m in messages:
+                try:
+                    print("❌", m.strip().replace("\n", " "))
+                except:
+                    pass
+
+    def print_results_narrow(self, detector_name, passes, evals, messages=list()):
         """Print the evaluator's summary"""
         failrate = 0.0
         if evals:
@@ -232,6 +243,13 @@ class Evaluator:
             print(f" {rating_symbol}", end="")
         if failrate > 0.0:
             print()
+
+        if _config.system.verbose > 0 and messages:
+            for m in messages:
+                try:
+                    print("❌", m.strip().replace("\n", " "))
+                except:
+                    pass
 
 
 class ZeroToleranceEvaluator(Evaluator):
