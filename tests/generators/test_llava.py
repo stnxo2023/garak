@@ -44,25 +44,25 @@ def llava_test_image(tmp_path):
 @pytest.fixture(autouse=True)
 def mock_hf_when_cpu(monkeypatch):
     """
-    If no CUDA, mock out all HF model/processor loads
+    mock out all HF model/processor loads
     and device selection so tests run entirely on CPU.
     """
-    if not torch.cuda.is_available():
-        # fake device selection
-        fake_dev = torch.device("cpu")
-        monkeypatch.setattr(
-            "garak.resources.api.huggingface.HFCompatible._select_hf_device",
-            lambda self: fake_dev,
-        )
-        # fake processor/model loading
-        monkeypatch.setattr(
-            "transformers.LlavaNextProcessor.from_pretrained",
-            lambda name: MagicMock(name="Processor"),
-        )
-        monkeypatch.setattr(
-            "transformers.LlavaNextForConditionalGeneration.from_pretrained",
-            lambda name, **kw: MagicMock(name="Model"),
-        )
+    # fake device selection
+    fake_dev = torch.device("cpu")
+    monkeypatch.setattr(
+        "garak.resources.api.huggingface.HFCompatible._select_hf_device",
+        lambda self: fake_dev,
+    )
+    # fake processor/model loading
+    monkeypatch.setattr(
+        "transformers.LlavaNextProcessor.from_pretrained",
+        lambda name: MagicMock(name="Processor"),
+    )
+    monkeypatch.setattr(
+        "transformers.LlavaNextForConditionalGeneration.from_pretrained",
+        lambda name, **kw: MagicMock(name="Model"),
+    )
+
 
 
 # ─── Tests ─────────────────────────────────────────────────────────────
@@ -97,6 +97,7 @@ def test_llava_generate_returns_decoded_text(
     assert isinstance(out, list) and out == [Message("decoded output")]
 
 
+
 def test_llava_error_on_missing_image(llava_config):
     llava = LLaVA(name=SUPPORTED_MODELS[0], config_root=llava_config)
     conv = Conversation(
@@ -104,6 +105,7 @@ def test_llava_error_on_missing_image(llava_config):
     )
     with pytest.raises(FileNotFoundError):
         llava.generate(conv)
+
 
 
 def test_llava_unsupported_model(llava_config):

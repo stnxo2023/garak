@@ -86,18 +86,28 @@ class Probe(Configurable):
         self.langprovider = self._get_langprovider()
         if self.langprovider is not None and hasattr(self, "triggers"):
             # check for triggers that are not type str|list or just call translate_triggers
+            preparation_bar = tqdm.tqdm(
+                total=len(self.triggers),
+                leave=False,
+                colour=f"#{garak.resources.theme.LANGPROVIDER_RGB}",
+                desc="Preparing triggers",
+            )
             if len(self.triggers) > 0:
                 if isinstance(self.triggers[0], str):
-                    self.triggers = self.langprovider.get_text(self.triggers)
+                    self.triggers = self.langprovider.get_text(
+                        self.triggers, notify_callback=preparation_bar.update
+                    )
                 elif isinstance(self.triggers[0], list):
                     self.triggers = [
                         self.langprovider.get_text(trigger_list)
                         for trigger_list in self.triggers
                     ]
+                    preparation_bar.update()
                 else:
                     raise PluginConfigurationError(
                         f"trigger type: {type(self.triggers[0])} is not supported."
                     )
+            preparation_bar.close()
         self.reverse_langprovider = self._get_reverse_langprovider()
 
     def _get_langprovider(self):
@@ -202,7 +212,9 @@ class Probe(Configurable):
             # account for possible None output
             results_text = [msg.text for msg in all_outputs if msg is not None]
             reverse_translation_outputs = [
-                garak.attempt.Message(translated_text)
+                garak.attempt.Message(
+                    translated_text, lang=self.reverse_langprovider.target_lang
+                )
                 for translated_text in self.reverse_langprovider.get_text(results_text)
             ]
             this_attempt.reverse_translation_outputs = []
@@ -257,7 +269,8 @@ class Probe(Configurable):
                         processed_attempt = self._postprocess_attempt(result)
 
                         _config.transient.reportfile.write(
-                            json.dumps(processed_attempt.as_dict()) + "\n"
+                            json.dumps(processed_attempt.as_dict(), ensure_ascii=False)
+                            + "\n"
                         )
                         attempts_completed.append(
                             processed_attempt
@@ -298,23 +311,38 @@ class Probe(Configurable):
         )  # will this still make a copy if prompts are `Message` objects?
         lang = self.lang
         # account for visual jailbreak until Turn/Conversation is supported
+        preparation_bar = tqdm.tqdm(
+            total=len(prompts),
+            leave=False,
+            colour=f"#{garak.resources.theme.LANGPROVIDER_RGB}",
+            desc="Preparing prompts",
+        )
         if isinstance(prompts[0], str):
-            localized_prompts = self.langprovider.get_text(prompts)
+            localized_prompts = self.langprovider.get_text(
+                prompts, notify_callback=preparation_bar.update
+            )
             prompts = []
             for prompt in localized_prompts:
-                prompts.append(garak.attempt.Message(prompt))
+                prompts.append(
+                    garak.attempt.Message(prompt, lang=self.langprovider.target_lang)
+                )
         else:
             # what types should this expect? Message, Conversation?
             for prompt in prompts:
                 if isinstance(prompt, garak.attempt.Message):
-                    prompt.text = self.langprovider.get_text(prompt.text)
+                    prompt.text = self.langprovider.get_text(
+                        prompt.text, notify_callback=preparation_bar.update
+                    )
                     prompt.lang = self.langprovider.target_lang
                 if isinstance(prompt, garak.attempt.Conversation):
                     for turn in prompt.turns:
                         msg = turn.content
-                        msg.text = self.langprovider.get_text(msg.text)
+                        msg.text = self.langprovider.get_text(
+                            msg.text, notify_callback=preparation_bar.update
+                        )
                         msg.lang = self.langprovider.target_lang
         lang = self.langprovider.target_lang
+        preparation_bar.close()
         for seq, prompt in enumerate(prompts):
             notes = (
                 {"pre_translation_prompt": self.prompts[seq]}
@@ -474,7 +502,9 @@ class TreeSearchProbe(Probe):
                 )
                 node_results += attempt.detector_results[self.primary_detector]
                 attempt.status = garak.attempt.ATTEMPT_COMPLETE
-                _config.transient.reportfile.write(json.dumps(attempt.as_dict()) + "\n")
+                _config.transient.reportfile.write(
+                    json.dumps(attempt.as_dict(), ensure_ascii=False) + "\n"
+                )
 
             tree_bar.update()
             tree_bar.refresh()
@@ -500,7 +530,9 @@ class TreeSearchProbe(Probe):
                 "node_score": mean_score,
                 "surface_forms": new_surface_forms,
             }
-            _config.transient.reportfile.write(json.dumps(node_info) + "\n")
+            _config.transient.reportfile.write(
+                json.dumps(node_info, ensure_ascii=False) + "\n"
+            )
             logging.debug("%s  node score %s" % (self.__class__.__name__, mean_score))
 
             if (mean_score > self.per_node_threshold and self.target_soft) or (
