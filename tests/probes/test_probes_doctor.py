@@ -33,4 +33,4 @@ def test_prompt_marker_absence(classname):
         markers = re.findall(r, prompt)
         assert (
             markers == list()
-        ), f"Template markers {markers} left in final prompt, '{prompt_template}'"
+        ), f"Template markers {markers} left in final prompt, '{prompt}'"
