@@ -1,5 +1,5 @@
 garak.probes.smuggling
-=====================
+======================
 
 .. automodule:: garak.probes.smuggling
    :members:
