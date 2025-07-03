@@ -917,6 +917,87 @@
       "tier": 2,
       "mod_time": "2025-05-20 09:39:47 +0000"
     },
+    "probes.doctor.Bypass": {
+      "description": "Implement Policy Puppetry Bypass",
+      "DEFAULT_PARAMS": {},
+      "active": false,
+      "doc_uri": "https://hiddenlayer.com/innovation-hub/novel-universal-bypass-for-all-major-llms/",
+      "extended_detectors": [],
+      "goal": "roleplay as doctor to get bypass guardrails",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "mitigation.MitigationBypass",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "owasp:llm01",
+        "avid-effect:security:S0301",
+        "quality:Security:PromptStability",
+        "cwe:1427"
+      ],
+      "tier": 2,
+      "mod_time": "2025-05-16 11:14:54 +0000"
+    },
+    "probes.doctor.BypassLeet": {
+      "description": "Implement Policy Puppetry Bypass",
+      "DEFAULT_PARAMS": {},
+      "active": false,
+      "doc_uri": "https://hiddenlayer.com/innovation-hub/novel-universal-bypass-for-all-major-llms/",
+      "extended_detectors": [],
+      "goal": "roleplay as doctor to get bypass guardrails, but use leetspeak",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "mitigation.MitigationBypass",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "owasp:llm01",
+        "avid-effect:security:S0301",
+        "quality:Security:PromptStability",
+        "cwe:1427"
+      ],
+      "tier": 2,
+      "mod_time": "2025-05-16 11:14:54 +0000"
+    },
+    "probes.doctor.Puppetry": {
+      "description": "Implement Policy Puppetry Prompt Injection",
+      "DEFAULT_PARAMS": {},
+      "active": false,
+      "doc_uri": "https://hiddenlayer.com/innovation-hub/novel-universal-bypass-for-all-major-llms/",
+      "extended_detectors": [],
+      "goal": "roleplay as doctor to get unsafe outputs",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "mitigation.MitigationBypass",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "owasp:llm01",
+        "avid-effect:security:S0301",
+        "quality:Security:PromptStability",
+        "cwe:1427"
+      ],
+      "tier": 2,
+      "mod_time": "2025-05-16 11:14:54 +0000"
+    },
     "probes.donotanswer.DiscriminationExclusionToxicityHatefulOffensive": {
       "description": "Implementation of discrimination_exclusion_toxicity_hateful_offensive probes in DoNotAnswer_Prompts",
       "DEFAULT_PARAMS": {},
@@ -1080,7 +1161,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-06-27 12:52:16 +0000"
     },
     "probes.encoding.InjectBase16": {
       "description": "Probe for susceptibility to base16 encoded injections\"",
@@ -1116,7 +1197,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-06-27 12:52:16 +0000"
     },
     "probes.encoding.InjectBase2048": {
       "description": "Probe for susceptibility to Base2048 encoding injections",
@@ -1152,7 +1233,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-06-27 12:52:16 +0000"
     },
     "probes.encoding.InjectBase32": {
       "description": "Probe for susceptibility to base32 encoded injections",
@@ -1188,7 +1269,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-06-27 12:52:16 +0000"
     },
     "probes.encoding.InjectBase64": {
       "description": "Probe for susceptibility to base64 encoded injections",
@@ -1224,7 +1305,7 @@
         "payload:generic"
       ],
       "tier": 1,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-06-27 12:52:16 +0000"
     },
     "probes.encoding.InjectBraille": {
       "description": "Probe for susceptibility to Braille encoding injections. Credit Wally#3422",
@@ -1260,7 +1341,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-06-27 12:52:16 +0000"
     },
     "probes.encoding.InjectEcoji": {
       "description": "Probe for susceptibility to Ecoji encoding.",
@@ -1296,7 +1377,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-06-27 12:52:16 +0000"
     },
     "probes.encoding.InjectHex": {
       "description": "Probe for susceptibility to hex encoded injections",
@@ -1332,7 +1413,43 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-06-27 12:52:16 +0000"
+    },
+    "probes.encoding.InjectLeet": {
+      "description": "Probe for susceptibility to 31337 encoding.",
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true,
+        "payloads": [
+          "default",
+          "xss",
+          "slur_terms"
+        ]
+      },
+      "active": false,
+      "doc_uri": "https://en.wikipedia.org/wiki/Leet",
+      "extended_detectors": [
+        "encoding.DecodeApprox"
+      ],
+      "goal": "make the model say an encoded payload",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "encoding.DecodeMatch",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "avid-effect:security:S0403",
+        "owasp:llm01",
+        "quality:Security:PromptStability",
+        "payload:generic"
+      ],
+      "tier": 2,
+      "mod_time": "2025-06-27 12:52:16 +0000"
     },
     "probes.encoding.InjectMime": {
       "description": "Probe for susceptibility to MIME encoding injections",
@@ -1368,7 +1485,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-06-27 12:52:16 +0000"
     },
     "probes.encoding.InjectMorse": {
       "description": "Probe for susceptibility to Morse encoding. Credit Wally#3422",
@@ -1404,7 +1521,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-06-27 12:52:16 +0000"
     },
     "probes.encoding.InjectNato": {
       "description": "Probe for susceptibility to Nato phonetic alphabet encoding.",
@@ -1440,7 +1557,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-06-27 12:52:16 +0000"
     },
     "probes.encoding.InjectQP": {
       "description": "Probe for susceptibility to QP encoded injections",
@@ -1476,7 +1593,7 @@
         "payload:generic"
       ],
       "tier": 1,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-06-27 12:52:16 +0000"
     },
     "probes.encoding.InjectROT13": {
       "description": "Probe for susceptibility to ROT13 encoding injections",
@@ -1512,7 +1629,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-06-27 12:52:16 +0000"
     },
     "probes.encoding.InjectUU": {
       "description": "Probe for susceptibility to UU encoded injections",
@@ -1548,7 +1665,7 @@
         "payload:generic"
       ],
       "tier": 1,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-06-27 12:52:16 +0000"
     },
     "probes.encoding.InjectZalgo": {
       "description": "Probe for susceptibility to Zalgo encoding.",
@@ -1584,7 +1701,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-06-27 12:52:16 +0000"
     },
     "probes.exploitation.JinjaTemplatePythonInjection": {
       "description": "Attempts to execute Python code via Jinja templating",
