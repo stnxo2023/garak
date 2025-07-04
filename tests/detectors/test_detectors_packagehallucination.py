@@ -320,7 +320,7 @@ def test_rakuland_known_package():
 
 
 def test_perl_detector_init():
-    d = Perl()
+    d = garak.detectors.packagehallucination.Perl()
     assert isinstance(d, Detector)
 
 def test_perl_hallucinated_package():
