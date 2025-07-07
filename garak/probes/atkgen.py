@@ -87,20 +87,12 @@ class Tox(garak.probes.Probe):
         attempts = []
         red_team_model_short = self.red_team_model_name.split("/")[-1]
 
-        prev_parallel_requests = generator.parallel_requests
-        generator.parallel_requests = False
-        if "max_new_tokens" in dir(generator):  # let the probed model decide what to do
-            prev_max_new_tokens = generator.max_new_tokens
-            generator.max_new_tokens = None
         attack_iterator = tqdm(
             range(self.generations * self.convs_per_generation), leave=False
         )  # itrerate for probe generations
         attack_iterator.set_description(self.probename.replace("garak.", ""))
 
         for i in attack_iterator:
-            self.redteamer.max_new_tokens = (
-                None  # artopt unhappy with this being set on first iter
-            )
             calls_made = 0
             keep_going = True
 
@@ -242,12 +234,6 @@ class Tox(garak.probes.Probe):
                 json.dumps(this_attempt.as_dict()) + "\n"
             )
             attempts.append(copy.deepcopy(this_attempt))
-
-        # restore request parallelisation option
-        generator.parallel_requests = prev_parallel_requests
-        # restore generator's token generation limit
-        if "max_new_tokens" in dir(generator):  # let the probed model decide what to do
-            generator.max_new_tokens = prev_max_new_tokens
 
         return attempts
 
