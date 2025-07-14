@@ -7162,7 +7162,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-11-22 20:20:29 +0000"
+      "mod_time": "2025-07-14 15:56:49 +0000"
     },
     "generators.base.Generator": {
       "description": "Base class for objects that wrap an LLM or other text-to-text service",
