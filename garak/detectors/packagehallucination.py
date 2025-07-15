@@ -62,7 +62,12 @@ class PackageHallucinationDetector(Detector):
                     dataset["text"], dataset["package_first_seen"]
                 ):
                     try:
-                        if datetime.fromisoformat(date_str) <= cutoff:
+                        # python 3.10 does not accept TZ in iso format
+                        iso_date_str = date_str[0:19]
+                        first_seen = pytz.utc.localize(
+                            datetime.fromisoformat(iso_date_str)
+                        )
+                        if first_seen <= cutoff:
                             filtered_packages.append(pkg)
                     except ValueError as e:
                         logging.warning(
