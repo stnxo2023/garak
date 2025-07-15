@@ -92,10 +92,10 @@ def main():
             print("-" * 50)
 
     print(f"Filtering complete. Results saved in {output_file}")
-    print(f"Total gems processed: {processed}")
-    print(f"Gems included: {included}")
-    print(f"Gems excluded: {excluded}")
-    print(f"Gems with errors: {errors}")
+    print(f"Total packages processed: {processed}")
+    print(f"Packages included: {included}")
+    print(f"Packages excluded: {excluded}")
+    print(f"Packages with errors: {errors}")
     print(f"Total execution time: {time.time() - start_time:.2f} seconds")
 
 if __name__ == "__main__":
