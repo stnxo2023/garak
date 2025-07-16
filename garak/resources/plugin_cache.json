@@ -942,7 +942,7 @@
         "cwe:1427"
       ],
       "tier": 2,
-      "mod_time": "2025-05-16 11:14:54 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.doctor.BypassLeet": {
       "description": "Implement Policy Puppetry Bypass",
@@ -969,7 +969,7 @@
         "cwe:1427"
       ],
       "tier": 2,
-      "mod_time": "2025-05-16 11:14:54 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.doctor.Puppetry": {
       "description": "Implement Policy Puppetry Prompt Injection",
@@ -996,7 +996,7 @@
         "cwe:1427"
       ],
       "tier": 2,
-      "mod_time": "2025-05-16 11:14:54 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.donotanswer.DiscriminationExclusionToxicityHatefulOffensive": {
       "description": "Implementation of discrimination_exclusion_toxicity_hateful_offensive probes in DoNotAnswer_Prompts",
@@ -1024,7 +1024,7 @@
         "quality:Behavioral:ContentSafety:Profanity"
       ],
       "tier": 9,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.donotanswer.HumanChatbox": {
       "description": "Implementation of human_chatbox probes in DoNotAnswer_Prompts",
@@ -1049,7 +1049,7 @@
         "quality:Behavioral:ContentSafety:Unauthorized"
       ],
       "tier": 9,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.donotanswer.InformationHazard": {
       "description": "Implementation of information_hazard probes in DoNotAnswer_Prompts",
@@ -1075,7 +1075,7 @@
         "quality:Security:Confidentiality"
       ],
       "tier": 9,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.donotanswer.MaliciousUses": {
       "description": "Implementation of malicious_uses probes in DoNotAnswer_Prompts",
@@ -1099,7 +1099,7 @@
         "quality:Behavioral:ContentSafety:LegalGoodsServices"
       ],
       "tier": 9,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.donotanswer.MisinformationHarms": {
       "description": "Implementation of misinformation_harms probes in DoNotAnswer_Prompts",
@@ -1125,7 +1125,7 @@
         "owasp:llm09"
       ],
       "tier": 9,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.encoding.InjectAscii85": {
       "description": "Probe for susceptibility to base85 encoded injections",
@@ -1737,7 +1737,7 @@
         "cwe:1336"
       ],
       "tier": 1,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.exploitation.SQLInjectionEcho": {
       "description": "Attempts to get the target to echo a SQL statement.",
@@ -1771,7 +1771,7 @@
         "cwe:1427"
       ],
       "tier": 1,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.exploitation.SQLInjectionSystem": {
       "description": "Attempts to inject untrusted SQL commands into a SQL statement.",
@@ -1805,7 +1805,7 @@
         "cwe:1427"
       ],
       "tier": 1,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.fileformats.HF_Files": {
       "description": "Get a manifest of files associated with a Hugging Face generator",
@@ -3861,7 +3861,7 @@
         "payload:unwanted"
       ],
       "tier": 1,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.realtoxicityprompts.RTPFlirtation": {
       "description": "Implementation of flirtation probes in RealToxicityPrompts",
@@ -3890,7 +3890,7 @@
         "payload:unwanted"
       ],
       "tier": 3,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.realtoxicityprompts.RTPIdentity_Attack": {
       "description": "Implementation of identity_attack probes in RealToxicityPrompts",
@@ -3921,7 +3921,7 @@
         "payload:hatespeech"
       ],
       "tier": 3,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.realtoxicityprompts.RTPInsult": {
       "description": "Implementation of insult probes in RealToxicityPrompts",
@@ -3951,7 +3951,7 @@
         "payload:unwanted"
       ],
       "tier": 3,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.realtoxicityprompts.RTPProfanity": {
       "description": "Implementation of profanity probes in RealToxicityPrompts",
@@ -3980,7 +3980,7 @@
         "payload:unwanted:profanity"
       ],
       "tier": 3,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.realtoxicityprompts.RTPSevere_Toxicity": {
       "description": "Implementation of severe_toxicity probes in RealToxicityPrompts",
@@ -4008,7 +4008,7 @@
         "payload:unwanted"
       ],
       "tier": 3,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.realtoxicityprompts.RTPSexually_Explicit": {
       "description": "Implementation of sexually_explicit probes in RealToxicityPrompts",
@@ -4036,7 +4036,7 @@
         "payload:unwanted:sexual"
       ],
       "tier": 3,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.realtoxicityprompts.RTPThreat": {
       "description": "Implementation of threat probes in RealToxicityPrompts",
@@ -4066,7 +4066,7 @@
         "payload:unwanted:violence"
       ],
       "tier": 3,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.snowball.GraphConnectivity": {
       "description": "Probe asking for impossible flight routings",
@@ -4656,7 +4656,7 @@
       "mod_time": "2025-06-18 17:35:24 +0000"
     },
     "probes.xss.ColabAIDataLeakage": {
-      "description": "",
+      "description": "Leak data via image rendering as demonstrated against Gemini in Colab.",
       "DEFAULT_PARAMS": {
         "payload_name": "example_domains_xss"
       },
@@ -4686,7 +4686,7 @@
         "quality:Security:ExtractionInversion"
       ],
       "tier": 1,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.xss.MarkdownImageExfil": {
       "description": "Can we get the model to write embedded assets exfiltrating text in the URI?",
@@ -4720,7 +4720,7 @@
         "quality:Security:ExtractionInversion"
       ],
       "tier": 1,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.xss.MdExfil20230929": {
       "description": "Markdown image URI exfil exploit published 2023 Sept 29",
@@ -4753,7 +4753,7 @@
         "quality:Security:ExtractionInversion"
       ],
       "tier": 1,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "probes.xss.StringAssemblyDataExfil": {
       "description": "Prompt injection for manipulating state",
@@ -4784,7 +4784,7 @@
         "quality:Security:ExtractionInversion"
       ],
       "tier": 1,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     }
   },
   "detectors": {
@@ -5271,7 +5271,7 @@
         "cwe:1426",
         "cwe:1427"
       ],
-      "mod_time": "2025-04-18 13:08:11 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.exploitation.PythonCodeExecution": {
       "description": "Detect the presence of python that will execute commands on the system.",
@@ -5302,10 +5302,10 @@
         "cwe:1426",
         "cwe:1427"
       ],
-      "mod_time": "2025-04-18 13:08:11 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.exploitation.SQLiEcho": {
-      "description": "",
+      "description": "Detect if the system echoes the provided SQL injection.",
       "DEFAULT_PARAMS": {
         "skip": false
       },
@@ -5331,10 +5331,10 @@
         "cwe:1426",
         "cwe:1427"
       ],
-      "mod_time": "2025-04-18 13:08:11 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.exploitation.SQLiSuccess": {
-      "description": "",
+      "description": "Detect if the system returns a \"SUCCESS\" message.",
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str"
@@ -5361,10 +5361,10 @@
         "cwe:1426",
         "cwe:1427"
       ],
-      "mod_time": "2025-04-18 13:08:11 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.fileformats.FileIsExecutable": {
-      "description": "",
+      "description": "Magic check if file is portable or linear executable (exe/dll/vxd/..)",
       "DEFAULT_PARAMS": {
         "skip": false
       },
@@ -5381,10 +5381,10 @@
       "recall": 0.0,
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.fileformats.FileIsPickled": {
-      "description": "",
+      "description": "Check whether a file is pickled.",
       "DEFAULT_PARAMS": {
         "skip": false
       },
@@ -5401,7 +5401,7 @@
       "recall": 0.0,
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.fileformats.PossiblePickleName": {
       "description": "Guess if filenames look like pickles",
@@ -5421,7 +5421,7 @@
       "recall": 0.0,
       "tags": [],
       "valid_format": null,
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.goodside.Glitch": {
       "description": "Inverse trigger list detector - hit if trigger absent",
@@ -6422,7 +6422,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.shields.Down": {
       "description": "Checks for strings commonly returned by a security system when guardrails are",
@@ -6545,7 +6545,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.unsafe_content.Martin_haDistilbert": {
       "description": "Using backup of martin-ha/toxic-comment-model DistilBERT to detect toxic content",
@@ -6576,7 +6576,7 @@
       "tags": [
         "avid-effect:ethics:E0301"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.unsafe_content.OfcomOffensiveDiscriminatory": {
       "description": "UK OFCOM potentially offensive list: discriminatory",
@@ -6600,7 +6600,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.unsafe_content.OfcomOffensiveGeneral": {
       "description": "UK OFCOM potentially offensive list: general",
@@ -6623,7 +6623,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.unsafe_content.OfcomOffensiveMentalHealth": {
       "description": "UK OFCOM potentially offensive list: mental health",
@@ -6647,7 +6647,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.unsafe_content.OfcomOffensiveRaceEthnic": {
       "description": "UK OFCOM potentially offensive list: race / ethnic",
@@ -6671,7 +6671,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.unsafe_content.OfcomOffensiveSexGender": {
       "description": "UK OFCOM potentially offensive list: sex & gender",
@@ -6695,7 +6695,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.unsafe_content.OfcomOffensiveSexual": {
       "description": "UK OFCOM potentially offensive list: sexual",
@@ -6717,7 +6717,7 @@
       "tags": [
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.unsafe_content.S_nlpDetox": {
       "description": "Using s-nlp Roberta model to detect toxic content",
@@ -6748,7 +6748,7 @@
       "tags": [
         "avid-effect:ethics:E0301"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.unsafe_content.SlursReclaimedSlurs": {
       "description": "Slurs and reclaimed slurs. Detects presence of any of the items from an ethnic slur list, regardless of context.",
@@ -6773,7 +6773,7 @@
         "avid-effect:ethics:E0302",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.unsafe_content.SurgeProfanityAnimalReferences": {
       "description": "Surge AI list: animal references",
@@ -6796,7 +6796,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.unsafe_content.SurgeProfanityBodilyFluids": {
       "description": "Surge AI list: bodily fluids / excrement",
@@ -6818,7 +6818,7 @@
       "tags": [
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.unsafe_content.SurgeProfanityMentalDisability": {
       "description": "Surge AI list: mental disability",
@@ -6842,7 +6842,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.unsafe_content.SurgeProfanityPhysicalAttributes": {
       "description": "Surge AI list: physical attributes",
@@ -6865,7 +6865,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.unsafe_content.SurgeProfanityPhysicalDisability": {
       "description": "Surge AI list: physical disability",
@@ -6889,7 +6889,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.unsafe_content.SurgeProfanityPolitical": {
       "description": "Surge AI list: political",
@@ -6914,7 +6914,7 @@
         "avid-effect:ethics:E0302",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.unsafe_content.SurgeProfanityRacialEthnic": {
       "description": "Surge AI list: racial / ethnic",
@@ -6938,7 +6938,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.unsafe_content.SurgeProfanityReligious": {
       "description": "Surge AI list: religious offense",
@@ -6961,7 +6961,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.unsafe_content.SurgeProfanitySexual": {
       "description": "Surge AI list: sexual anatomy / sexual acts",
@@ -6983,7 +6983,7 @@
       "tags": [
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.unsafe_content.SurgeProfanitySexualOrientationGender": {
       "description": "Surge AI list: sexual orientation / gender",
@@ -7007,7 +7007,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.unsafe_content.ToxicCommentModel": {
       "description": "Garak's default toxicity detector",
@@ -7038,7 +7038,7 @@
       "tags": [
         "avid-effect:ethics:E0301"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "detectors.visual_jailbreak.FigStep": {
       "description": "Looks for specific strings in the output - these should be strings inserted by image",
@@ -7588,7 +7588,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-08-29 13:35:37 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "generators.langchain_serve.LangChainServeLLMGenerator": {
       "description": "Class supporting LangChain Serve LLM interfaces via HTTP POST requests.",
@@ -7647,7 +7647,7 @@
       "mod_time": "2025-06-18 17:35:24 +0000"
     },
     "generators.mistral.MistralGenerator": {
-      "description": "",
+      "description": "Interface for public endpoints of models hosted in Mistral La Plateforme (console.mistral.ai).",
       "DEFAULT_PARAMS": {
         "max_tokens": 150,
         "temperature": null,
@@ -7669,7 +7669,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-26 22:09:38 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     },
     "generators.nemo.NeMoGenerator": {
       "description": "Wrapper for the NVIDIA NeMo models via NGC. Expects NGC_API_KEY and ORG_ID environment variables.",
@@ -8332,7 +8332,7 @@
       "mod_time": "2024-07-18 06:04:25 +0000"
     },
     "generators.watsonx.WatsonXGenerator": {
-      "description": "",
+      "description": "This is a generator for watsonx.ai.",
       "DEFAULT_PARAMS": {
         "max_tokens": 900,
         "temperature": null,
@@ -8359,7 +8359,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-01-30 22:16:02 +0000"
+      "mod_time": "2025-07-16 13:33:05 +0000"
     }
   },
   "harnesses": {
