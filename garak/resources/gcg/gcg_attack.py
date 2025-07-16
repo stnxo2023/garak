@@ -39,8 +39,7 @@ logger = getLogger(__name__)
 
 
 def token_gradients(model, input_ids, input_slice, target_slice, loss_slice):
-    """
-    Computes gradients of the loss with respect to the coordinates.
+    """Computes gradients of the loss with respect to the coordinates.
 
     Parameters
     ----------
