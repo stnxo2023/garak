@@ -12,7 +12,7 @@ https://embracethered.com/blog/posts/2025/sneaky-bits-and-ascii-smuggler/
 """
 
 
-def tag_char_smuggling(payload: str, desired_emoji: str="😈"):
+def tag_char_smuggling(payload: str, desired_emoji: str = "😈"):
     """
     Use Unicode tags to smuggle ASCII characters.
     For tag char smuggling to work, it must be appended to an emoji, per the Unicode spec.
@@ -26,7 +26,7 @@ def tag_char_smuggling(payload: str, desired_emoji: str="😈"):
         desired_emoji + encoded payload (str): Payload encoded in unicode tags attached to the emoji.
     """
 
-    encoded_payload = ''.join(chr(0xE0000 + ord(ch)) for ch in payload)
+    encoded_payload = "".join(chr(0xE0000 + ord(ch)) for ch in payload)
     return desired_emoji + encoded_payload
 
 
@@ -43,7 +43,7 @@ def variant_smuggling(payload: str):
     Returns:
         encoded_payload (str): The payload encoded in variant selectors.
     """
-    encoded_payload = ''.join(chr(0xE0100 + ord(ch)) for ch in payload)
+    encoded_payload = "".join(chr(0xE0100 + ord(ch)) for ch in payload)
     return encoded_payload
 
 
@@ -61,11 +61,11 @@ def sneaky_bits_smuggling(payload: str):
     Returns:
         encoded_payload (str): Payload encoded as binary, joined by zero-width spaces.
     """
-    char_map = {'0': chr(0x2062), '1': chr(0x2064)}
+    char_map = {"0": chr(0x2062), "1": chr(0x2064)}
     encoded_payload = list()
     for ch in payload:
         if ord(ch) == 0x20:
             encoded_payload.append(chr(0x200B))
         else:
-            for rep in bin(ord(ch)):
+            for rep in bin(ord(ch)).removeprefix("0b"):
                 encoded_payload.append(char_map[rep])
