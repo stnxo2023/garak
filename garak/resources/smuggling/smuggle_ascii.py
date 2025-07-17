@@ -69,3 +69,4 @@ def sneaky_bits_smuggling(payload: str):
         else:
             for rep in bin(ord(ch)).removeprefix("0b"):
                 encoded_payload.append(char_map[rep])
+    return "".join(encoded_payload)
