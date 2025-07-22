@@ -46,7 +46,7 @@ class CohereGenerator(Generator):
         "use_chat": True,  # Whether to use chat API (recommended in v5+) or generate API (legacy)
     }
 
-    supports_multiple_generations = True
+    supports_multiple_generations = False
     generator_family_name = "Cohere"
 
     def __init__(self, name="command", config_root=_config):
