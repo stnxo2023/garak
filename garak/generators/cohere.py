@@ -115,18 +115,15 @@ class CohereGenerator(Generator):
                 return responses
             else:
                 # Use generate API (legacy in v5+)
-                response = self.generator.generate(
+                response = self.generator.chat(
                     model=self.name,
-                    prompt=prompt,
+                    message=prompt,
                     temperature=self.temperature,
-                    num_generations=request_size,
                     max_tokens=self.max_tokens,
-                    preset=self.preset,
                     k=self.k,
                     p=self.p,
                     frequency_penalty=self.frequency_penalty,
                     presence_penalty=self.presence_penalty,
-                    end_sequences=self.stop,
                 )
                 # In v5+, the response format has changed - generations is a list of tuples
                 if hasattr(response, 'generations'):
