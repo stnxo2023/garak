@@ -45,7 +45,7 @@ class CohereGenerator(Generator):
         "p": 0.75,
         "frequency_penalty": 0.0,
         "presence_penalty": 0.0,
-        "stop": [],
+        "stop": [],  # Used for end_sequences in v1 API
         "preset": None,  # Only used with v1 API
         "api_version": "v2",  # "v1" for legacy generate API, "v2" for chat API (recommended)
     }
