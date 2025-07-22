@@ -14,6 +14,10 @@ COHERE_API_BASE = "https://api.cohere.com"
 COHERE_V1 = f"{COHERE_API_BASE}/v1"
 COHERE_V2 = f"{COHERE_API_BASE}/v2"
 
+# API version constants
+API_V1 = "v1"  # Legacy generate API
+API_V2 = "v2"  # Recommended chat API
+
 # ─── Fixtures ─────────────────────────────────────────────────────────
 
 @pytest.fixture(autouse=True)
@@ -65,10 +69,21 @@ def mock_cohere_endpoint(respx_mock, path, spec):
 # ─── Instantiation & Defaults ─────────────────────────────────────────
 
 def test_cohere_instantiation():
-    gen = CohereGenerator()
-    assert gen.name == DEFAULT_MODEL_NAME
-    assert gen.api_key == "fake-api-key"
-    assert hasattr(gen, "generator")
+    # Test v2 (default)
+    gen_v2 = CohereGenerator()
+    assert gen_v2.name == DEFAULT_MODEL_NAME
+    assert gen_v2.api_key == "fake-api-key"
+    assert hasattr(gen_v2, "generator")
+    assert gen_v2.api_version == "v2"
+    assert gen_v2.supports_multiple_generations is False
+    
+    # Test v1
+    gen_v1 = CohereGenerator()
+    gen_v1.api_version = "v1"
+    # Re-initialize the generator with v1
+    gen_v1.__init__()
+    assert gen_v1.api_version == "v1"
+    assert gen_v1.supports_multiple_generations is True
 
 
 def test_cohere_missing_api_key():
@@ -84,12 +99,33 @@ def test_cohere_missing_api_key():
 
 def test_cohere_default_parameters():
     gen = CohereGenerator()
-    assert gen.use_chat is True
+    assert gen.api_version == "v2"  # Default should be v2 (chat API)
     assert gen.temperature == CohereGenerator.DEFAULT_PARAMS["temperature"]
     assert gen.max_tokens == CohereGenerator.DEFAULT_PARAMS["max_tokens"]
     gen.temperature = 0.5
     assert gen.temperature == 0.5
 
+
+# ─── API Version Tests ─────────────────────────────────────────────────────────
+
+def test_api_version_validation():
+    # Test invalid api_version gets corrected to v2
+    gen = CohereGenerator()
+    gen.api_version = "invalid"
+    gen.__init__()
+    assert gen.api_version == "v2"
+    
+    # Test v1 is accepted
+    gen = CohereGenerator()
+    gen.api_version = "v1"
+    gen.__init__()
+    assert gen.api_version == "v1"
+    
+    # Test v2 is accepted
+    gen = CohereGenerator()
+    gen.api_version = "v2"
+    gen.__init__()
+    assert gen.api_version == "v2"
 
 # ─── (Optional) Generation Limit Enforcement ─────────────────────────────────
 # If generate() does not currently enforce COHERE_GENERATION_LIMIT, this test is skipped
@@ -97,6 +133,8 @@ import pytest
 
 def test_generation_limit_enforced():
     gen = CohereGenerator()
+    gen.api_version = "v1"  # v1 supports multiple generations
+    gen.__init__()
     too_many = COHERE_GENERATION_LIMIT + 1
     try:
         gen.generate("hello", generations_this_call=too_many)
@@ -109,7 +147,9 @@ def test_generation_limit_enforced():
 def test_cohere_generate_api_respx(respx_mock, cohere_mock_responses):
     route = mock_cohere_endpoint(respx_mock, "/v1/generate", cohere_mock_responses["generate_response"])
     gen = CohereGenerator()
-    gen.use_chat = False
+    gen.api_version = "v1"  # Use legacy generate API
+    # Re-initialize the generator with v1
+    gen.__init__()
     result = gen.generate("Test prompt", generations_this_call=2)
 
     # Assert headers
@@ -140,6 +180,9 @@ def test_cohere_chat_api_respx(respx_mock, cohere_mock_responses, response_key, 
     spec = cohere_mock_responses[response_key]
     mock_cohere_endpoint(respx_mock, "/v2/chat", spec)
     gen = CohereGenerator()
+    # Default is already v2, but being explicit for test clarity
+    gen.api_version = "v2"  
+    gen.__init__()
     result = gen.generate("Test prompt")
 
     # Header & payload checks
@@ -163,7 +206,8 @@ def test_chat_response_logs_warning(respx_mock, cohere_mock_responses, caplog):
     mock_cohere_endpoint(respx_mock, "/v2/chat", cohere_mock_responses["missing_content_response"])
 
     gen = CohereGenerator()
-    gen.use_chat = True
+    gen.api_version = "v2"  # Use chat API
+    gen.__init__()
     caplog.clear()
 
     result = gen.generate("Test prompt")
