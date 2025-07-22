@@ -59,7 +59,6 @@ class CohereGenerator(Generator):
             "Cohere generation request limit capped at %s", COHERE_GENERATION_LIMIT
         )
         self.generator = cohere.ClientV2(api_key=self.api_key)
-        self.use_chat = self.use_chat  # Get from DEFAULT_PARAMS
 
     @backoff.on_exception(backoff.fibo, ApiError, max_value=70)
     def _call_cohere_api(self, prompt, request_size=COHERE_GENERATION_LIMIT):
