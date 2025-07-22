@@ -24,9 +24,21 @@ def ollama_is_running():
 
 
 def no_models():
+    # In newer versions of ollama, list() returns a ListResponse object
     response = ollama.list()
-    # ListResponse object has a models attribute that is a list
-    return not hasattr(response, 'models') or len(response.models) == 0
+    
+    try:
+        # Try to access the models attribute or property
+        models = getattr(response, 'models', None)
+        if models is None:
+            # If no models attribute, try using it as a dict
+            models = response.get('models', [])
+        
+        # Check if models is empty
+        return len(models) == 0
+    except (AttributeError, TypeError):
+        # If we can't access models, assume there are no models
+        return True
 
 
 @pytest.mark.skipif(
