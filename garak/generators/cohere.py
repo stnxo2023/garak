@@ -42,7 +42,6 @@ class CohereGenerator(Generator):
         "preset": None,
         "frequency_penalty": 0.0,
         "presence_penalty": 0.0,
-        "stop": [],
         "use_chat": True,  # Whether to use chat API (recommended in v5+) or generate API (legacy)
     }
 
