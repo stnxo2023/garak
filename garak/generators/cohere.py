@@ -162,10 +162,10 @@ class CohereGenerator(Generator):
                             else:
                                 # Last resort - try to convert response to string
                                 return [str(response)]
-                        except Exception as e:
+                        except RuntimeError as e:
                             logging.error(f"Failed to extract text from Cohere response: {e}")
                             return [None] * request_size
-                except Exception as e:
+                except RuntimeError as e:
                     logging.error(f"Generate API error: {e}")
                     return [None] * request_size
 
