@@ -71,10 +71,8 @@ class CohereGenerator(Generator):
         # Following Cohere's guidance to use Client() for v1 and ClientV2() for v2
         if self.api_version == "v1":
             self.generator = cohere.Client(api_key=self.api_key)
-            self.supports_multiple_generations = True
         else:  # api_version == "v2"
             self.generator = cohere.ClientV2(api_key=self.api_key)
-            self.supports_multiple_generations = False
 
     @backoff.on_exception(backoff.fibo, ApiError, max_value=70)
     def _call_cohere_api(self, prompt, request_size=COHERE_GENERATION_LIMIT):
