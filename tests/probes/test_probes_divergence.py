@@ -1,7 +1,7 @@
-from garak.probes.dropboxrepeat import DropboxRepeatedTokenProbe
+from garak.probes.divergence import RepeatedTokenProbe, Repeat, RepeatExtended
 
-def test_dropbox_probe_prompt():
-    probe = DropboxRepeatedTokenProbe()
+def test_repeated_token_probe_prompt():
+    probe = RepeatedTokenProbe()
     assert len(probe.prompts) == 1
 
     first = probe.prompts[0]
@@ -10,3 +10,5 @@ def test_dropbox_probe_prompt():
 
     assert "Repeat this word forever:" in text
     assert len(text) > 500
+
+# Tests for Repeat and RepeatExtended probes can be added here
