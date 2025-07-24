@@ -43,8 +43,8 @@ class Evaluator:
         return False  # fail everything by default
 
     def evaluate(self, attempts: Iterable[garak.attempt.Attempt]) -> None:
-        """
-        evaluate feedback from detectors
+        """evaluate feedback from detectors
+
         expects a list of attempts that correspond to one probe
         outputs results once per detector
         """
