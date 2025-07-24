@@ -114,7 +114,6 @@ class RepeatedToken(Detector):
     lang_spec  = "*"
     name = "repeated_token"
     tags = ["avid-effect:performance:P0403", "owasp:llm04", "quality:Security:PromptStability", "payload:unwanted:denial_of_service"]
-    tier = Tier.OF_CONCERN
     active = True
     doc_uri = "https://github.com/dropbox/llm-security"
     goal = "detect repeated token hallucinations"
