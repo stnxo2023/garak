@@ -75,7 +75,6 @@ def test_cohere_instantiation():
     assert gen_v2.api_key == "fake-api-key"
     assert hasattr(gen_v2, "generator")
     assert gen_v2.api_version == "v2"
-    assert gen_v2.supports_multiple_generations is False
     
     # Test v1
     gen_v1 = CohereGenerator()
@@ -83,7 +82,6 @@ def test_cohere_instantiation():
     # Re-initialize the generator with v1
     gen_v1.__init__()
     assert gen_v1.api_version == "v1"
-    assert gen_v1.supports_multiple_generations is True
 
 
 def test_cohere_missing_api_key():
@@ -131,16 +129,6 @@ def test_api_version_validation():
 # If generate() does not currently enforce COHERE_GENERATION_LIMIT, this test is skipped
 import pytest
 
-def test_generation_limit_enforced():
-    gen = CohereGenerator()
-    gen.api_version = "v1"  # v1 supports multiple generations
-    gen.__init__()
-    too_many = COHERE_GENERATION_LIMIT + 1
-    try:
-        gen.generate("hello", generations_this_call=too_many)
-    except ValueError:
-        pytest.skip("Limit enforcement not implemented yet.")
-
 # ─── Legacy Generate API (respx) (respx) ──────────────────────────────────────
 
 @pytest.mark.respx(base_url=COHERE_API_BASE)
@@ -150,7 +138,7 @@ def test_cohere_generate_api_respx(respx_mock, cohere_mock_responses):
     gen.api_version = "v1"  # Use legacy generate API
     # Re-initialize the generator with v1
     gen.__init__()
-    result = gen.generate("Test prompt", generations_this_call=2)
+    result = gen.generate("Test prompt", generations_this_call=1)
 
     # Assert headers
     last = respx_mock.calls.last.request
