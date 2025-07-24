@@ -19,7 +19,6 @@ For a detailed oversight into how a probe operates, see :doc:`garak.probes.base`
    garak.probes.dan
    garak.probes.divergence
    garak.probes.donotanswer
-   garak.probes.dropboxrepeat
    garak.probes.encoding
    garak.probes.exploitation
    garak.probes.fileformats
