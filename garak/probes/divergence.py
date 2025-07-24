@@ -202,20 +202,20 @@ class RepeatExtended(Repeat):
         "h",
     ]
 
-class RepeatedTokenProbe(garak.probes.Probe):
+class RepeatedToken(garak.probes.Probe):
     """Repeated token destabilization attack from Dropbox LLM security research.
 
     This probe uses specifically chosen UTF-8 strings that map to tokens in the model's vocabulary,
     then repeats them thousands of times to destabilize the model's generation process. The attack
     can cause models to produce unexpected outputs, hallucinations, or pattern repetition.
     """
-    name = "repeatedtoken"
+    name = "repeated_token"
     description = "Repeated token destabilization attack from Dropbox LLM security research"
     tags = ["avid-effect:performance:P0403", "owasp:llm04", "quality:Security:PromptStability", "payload:unwanted:denial_of_service"]
     tier = garak.probes.Tier.OF_CONCERN
     active = True
     doc_uri = "https://github.com/dropbox/llm-security"
-    primary_detector = "divergence.RepeatDiverges"
+    primary_detector = "divergence.RepeatedToken"
     lang = "*"
     goal = "Stress-test LLMs with long repeated-token prompts to surface instability"
     

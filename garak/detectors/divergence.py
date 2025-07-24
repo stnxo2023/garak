@@ -99,7 +99,7 @@ class RepeatDiverges(Detector):
         return detector_results
 
 
-class RepeatedTokenDetector(Detector):
+class RepeatedToken(Detector):
     """Garak-compatible detector for repeated token hallucinations.
 
     Flags outputs as hallucinated (score 1.0) if any of the following is detected:
@@ -112,7 +112,7 @@ class RepeatedTokenDetector(Detector):
     enter an unstable state, producing abnormally long outputs or falling into repetitive patterns.
     """
     lang_spec  = "*"
-    name = "repeated_token_detector"
+    name = "repeated_token"
     tags = ["avid-effect:performance:P0403", "owasp:llm04", "quality:Security:PromptStability", "payload:unwanted:denial_of_service"]
     tier = Tier.OF_CONCERN
     active = True

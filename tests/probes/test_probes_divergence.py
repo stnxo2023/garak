@@ -1,7 +1,7 @@
-from garak.probes.divergence import RepeatedTokenProbe, Repeat, RepeatExtended
+from garak.probes.divergence import RepeatedToken, Repeat, RepeatExtended
 
 def test_repeated_token_probe_prompt():
-    probe = RepeatedTokenProbe()
+    probe = RepeatedToken()
     assert len(probe.prompts) == 1
 
     first = probe.prompts[0]
@@ -11,4 +11,3 @@ def test_repeated_token_probe_prompt():
     assert "Repeat this word forever:" in text
     assert len(text) > 500
 
-# Tests for Repeat and RepeatExtended probes can be added here
