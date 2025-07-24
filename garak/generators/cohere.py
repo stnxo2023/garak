@@ -32,7 +32,7 @@ class CohereGenerator(Generator):
     """Interface to Cohere's python library for their text2text model.
 
     Expects API key in COHERE_API_KEY environment variable.
-    
+
     Following Cohere's migration guide, this implementation:
     - For api_version="v1": Uses cohere.Client() with generate() API (supports multiple generations)
     - For api_version="v2": Uses cohere.ClientV2() with chat() API (recommended, requires multiple API calls)
@@ -61,12 +61,14 @@ class CohereGenerator(Generator):
         logging.debug(
             "Cohere generation request limit capped at %s", COHERE_GENERATION_LIMIT
         )
-        
+
         # Validate api_version
         if self.api_version not in ["v1", "v2"]:
-            logging.warning(f"Invalid api_version '{self.api_version}'. Using 'v2' instead.")
+            logging.warning(
+                f"Invalid api_version '{self.api_version}'. Using 'v2' instead."
+            )
             self.api_version = "v2"
-        
+
         # Initialize appropriate client based on API version
         # Following Cohere's guidance to use Client() for v1 and ClientV2() for v2
         if self.api_version == "v1":
@@ -92,7 +94,7 @@ class CohereGenerator(Generator):
                     try:
                         # Use the correct UserChatMessageV2 class
                         message = cohere.UserChatMessageV2(content=prompt)
-                        
+
                         response = self.generator.chat(
                             model=self.name,
                             messages=[message],
@@ -105,27 +107,33 @@ class CohereGenerator(Generator):
                             # Note: stop_sequences/end_sequences, logit_bias, truncate, and preset
                             # are not supported in the Chat endpoint per Cohere migration guide
                         )
-                        
+
                         # Extract text from message content
-                        if hasattr(response, 'message') and hasattr(response.message, 'content'):
+                        if hasattr(response, "message") and hasattr(
+                            response.message, "content"
+                        ):
                             # Get the first text content item
                             for content_item in response.message.content:
-                                if hasattr(content_item, 'text'):
+                                if hasattr(content_item, "text"):
                                     responses.append(content_item.text)
                                     break
                             else:
                                 # No text content found
-                                logging.warning("No text content found in chat response")
+                                logging.warning(
+                                    "No text content found in chat response"
+                                )
                                 responses.append(str(response))
                         else:
-                            logging.warning("Chat response structure doesn't match expected format")
+                            logging.warning(
+                                "Chat response structure doesn't match expected format"
+                            )
                             responses.append(str(response))
                     except ApiError as e:
-                        raise e # bubble up ApiError for backoff handling
+                        raise e  # bubble up ApiError for backoff handling
                     except Exception as e:
                         logging.error(f"Chat API error: {e}")
                         responses.append(None)
-                        
+
                 # Ensure we return the correct number of responses
                 if len(responses) < request_size:
                     responses.extend([None] * (request_size - len(responses)))
@@ -147,9 +155,9 @@ class CohereGenerator(Generator):
                         presence_penalty=self.presence_penalty,
                         end_sequences=self.stop,
                     )
-                    
+
                     # Handle response based on structure
-                    if hasattr(response, 'generations'):
+                    if hasattr(response, "generations"):
                         # Handle the v5+ API response format
                         return [gen.text for gen in response.generations]
                     else:
@@ -157,13 +165,15 @@ class CohereGenerator(Generator):
                         try:
                             if isinstance(response, list):
                                 return [g.text for g in response]
-                            elif hasattr(response, 'text'):
+                            elif hasattr(response, "text"):
                                 return [response.text]
                             else:
                                 # Last resort - try to convert response to string
                                 return [str(response)]
                         except RuntimeError as e:
-                            logging.error(f"Failed to extract text from Cohere response: {e}")
+                            logging.error(
+                                f"Failed to extract text from Cohere response: {e}"
+                            )
                             return [None] * request_size
                 except RuntimeError as e:
                     logging.error(f"Generate API error: {e}")
