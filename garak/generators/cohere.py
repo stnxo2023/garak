@@ -122,6 +122,8 @@ class CohereGenerator(Generator):
                         else:
                             logging.warning("Chat response structure doesn't match expected format")
                             responses.append(str(response))
+                    except ApiError as e:
+                        raise e # bubble up ApiError for backoff handling
                     except Exception as e:
                         logging.error(f"Chat API error: {e}")
                         responses.append(None)
