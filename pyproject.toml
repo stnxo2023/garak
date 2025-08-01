@@ -143,7 +143,14 @@ garak = "garak.__main__:main"
 name = "garak"
 
 [tool.flit.sdist]
-include = ["./garak/resources/*.json", "./garak/resources/*.yaml"]
+include = [
+  "*.md",
+  "*.txt",
+  "garak/analyze/templates/*",
+  "garak/configs/*",
+  "garak/resources/*.json",
+  "garak/resources/*.yaml",
+]
 
 [tool.black]
 line-length = 88
