@@ -140,7 +140,7 @@ class MLM(garak.probes.Probe):
     }
 
     def __init__(self, config_root=_config):
-        nltk.download("averaged_perceptron_tagger_eng")
+        nltk.download("averaged_perceptron_tagger_eng", quiet=True)
         super().__init__(config_root)
 
         self.payloads = list()
