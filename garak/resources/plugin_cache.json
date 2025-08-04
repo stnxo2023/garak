@@ -5674,7 +5674,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-07-24 21:57:33 +0000"
+      "mod_time": "2025-07-29 22:13:08 +0000"
     },
     "detectors.misleading.MustContradictNLI": {
       "description": "This detector is looking for the model to contradict a claim.",
