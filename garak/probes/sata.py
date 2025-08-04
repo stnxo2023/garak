@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: Portions Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 """Simple Assistive Task Linkage
 
 Probes that replace potentially violating or "harmful" text with a string
@@ -6,7 +9,9 @@ with a simple assistive task to bypass safeguards and guardrails.
 
 Our version uses the same instruction template as the original paper but
 instead of using OpenAI GPT models, uses NLTK for speed and efficiency.
-The original implementation can be found at https://github.com/xndong/SATA
+The original implementation can be found at https://github.com/xndong/SATA.
+
+Payloads are a subset of entries from HarmBench, some of which have been gently modified.
 """
 
 import logging
