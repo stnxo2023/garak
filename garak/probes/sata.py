@@ -97,6 +97,10 @@ class SATA(garak.probes.Probe):
     assistive task. Implementation uses NLTK to replace likely candidate
     strings in lieu of using an LLM as in the reference implementation by
     Dong et al.
+
+    Note that due to the use of NLTK and the specific string `[MASK]`, this
+    probe is not well-suited to automatic translation and should be considered
+    English-only at this time.
     """
 
     lang = "en"
