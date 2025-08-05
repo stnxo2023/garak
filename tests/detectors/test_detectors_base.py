@@ -106,7 +106,7 @@ def test_none_outputs(string_detector):
     attempt.outputs = [None, TEST_STRINGS[0], None]
 
     results = string_detector.detect(attempt, case_sensitive=True)
-    assert len(results) == 3, "Detector expected to not skip None outputs"
+    assert len(results) == len(attempt.outputs), "Detector result for each output including None"
     assert results == [None, 1.0, None], "Failed to handle None outputs correctly"
 
 
