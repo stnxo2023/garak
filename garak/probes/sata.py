@@ -19,7 +19,7 @@ import logging
 import garak.payloads
 from garak import _config
 import garak.probes
-import nltk
+from garak.resources.api import nltk
 
 
 def _nltk_mask_payloads(payloads: list, n: int = 2) -> list:
@@ -38,7 +38,7 @@ def _nltk_mask_payloads(payloads: list, n: int = 2) -> list:
             "_nltk_mask_payloads expected an integer for `n` but got %s instead!"
             % type(n)
         )
-        n = round(n)
+        n = round(float(n))
     if n < 1:
         logging.error(
             "_nltk_mask_payloads requires a positive, nonzero integer. Setting to 1."
@@ -140,7 +140,7 @@ class MLM(garak.probes.Probe):
     }
 
     def __init__(self, config_root=_config):
-        nltk.download("averaged_perceptron_tagger_eng", quiet=True)
+        nltk.download("averaged_perceptron_tagger_eng")
         super().__init__(config_root)
 
         self.payloads = list()

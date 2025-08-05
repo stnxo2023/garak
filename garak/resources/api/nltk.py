@@ -55,3 +55,4 @@ def download(
 
 data = _nltk.data
 word_tokenize = _nltk.word_tokenize
+pos_tag = _nltk.pos_tag
