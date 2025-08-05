@@ -8,7 +8,7 @@ Some LLMs will happily decode the relevant text and handle it gracefully. Others
 
 Tag Smuggling
 -------------
-Unicode Tags are used as part of the support for emojis, and the tags must be appended to an emoji, per `the Unicode spec <https://unicode.org/reports/tr51/>`.
+Unicode Tags are used as part of the support for emojis, and the tags must be appended to an emoji, per `the Unicode spec <https://unicode.org/reports/tr51/>`_.
 Although tags are intended to be used to select a particular variant of an emoji, such as the Flag emoji, there is no limit to the number of tags that can be appended.
 This allows us to append arbitrary ASCII text to an emoji, hidden in the tags.
 
