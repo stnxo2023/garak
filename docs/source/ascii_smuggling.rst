@@ -33,9 +33,9 @@ This allows us to append arbitrary ASCII text to an emoji, hidden in the tags.
 
 Variant Smuggling
 -----------------
-Variation or `Variant Selectors <https://en.wikipedia.org/wiki/Variation_Selectors_Supplement>` is a Unicode block that allows for the specification of a glyph variant for the preceding character.
+Variation or `Variant Selectors <https://en.wikipedia.org/wiki/Variation_Selectors_Supplement>`_ is a Unicode block that allows for the specification of a glyph variant for the preceding character.
 Since there are 256 of them, this means we can also convert arbitrary bytes -- like ASCII text -- to a Variant Selector.
-Like tags, the `Unicode spec <https://www.unicode.org/versions/Unicode16.0.0/>` has no limit on the number of selectors that can be concatenated together.
+Like tags, the `Unicode spec <https://www.unicode.org/versions/Unicode16.0.0/>`_ has no limit on the number of selectors that can be concatenated together.
 Unlike tags, these do not need to be appended to an emoji and can simply exist wherever we please.
 
 .. code-block:: python
@@ -58,7 +58,7 @@ Unlike tags, these do not need to be appended to an emoji and can simply exist w
 
 Sneaky Bits
 -----------
-Sneaky bits, a technique described by Johann Rehberger in `a blog post <https://embracethered.com/blog/posts/2025/sneaky-bits-and-ascii-smuggler/>` encodes ASCII characters to binary, then uses the invisible times (``U+2062``) and invisible plus (``U+2064``) Unicode characters to encode 0 and 1, relying on the ability of the LLM to interpret the binary back into text.
+Sneaky bits, a technique described by Johann Rehberger in `a blog post <https://embracethered.com/blog/posts/2025/sneaky-bits-and-ascii-smuggler/>`_ encodes ASCII characters to binary, then uses the invisible times (``U+2062``) and invisible plus (``U+2064``) Unicode characters to encode 0 and 1, relying on the ability of the LLM to interpret the binary back into text.
 In our variation, we replace literal space characters with the zero-width space (``U+200B``), since it seems to perform a bit better than encoding the ASCII space to binary.
 
 .. code-block:: python
