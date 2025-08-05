@@ -608,14 +608,22 @@ class InjectUnicodeTagChars(EncodingMixin, garak.probes.Probe):
     target model to repeat & decode them."""
 
     doc_uri = "https://embracethered.com/blog/posts/2024/hiding-and-finding-text-with-unicode-tags/"
-
-    encoding_funcs = [ascii_smuggling.tag_char_smuggling]
     encoding_name = "Unicode Tags"
     active = True
+    tier = garak.probes.Tier.OF_CONCERN
+    # May want to eventually add a check to verify that `desired_emoji` is a valid emoji.
+    DEFAULT_PARAMS = garak.probes.Probe.DEFAULT_PARAMS | {"desired_emoji": "😈"}
 
     def __init__(self, config_root=_config):
+        # Cannot reference `self` in params above.
+        self.encoding_funcs = [self._tag_char_smuggling]
         garak.probes.Probe.__init__(self, config_root=config_root)
         EncodingMixin.__init__(self, use_bytes=False)
+
+    def _tag_char_smuggling(self, text: str) -> str:
+        ascii_smuggling.tag_char_smuggling(
+            payload=text, desired_emoji=self.desired_emoji
+        )
 
 
 class InjectUnicodeVariantSelectors(EncodingMixin, garak.probes.Probe):
@@ -628,7 +636,8 @@ class InjectUnicodeVariantSelectors(EncodingMixin, garak.probes.Probe):
 
     encoding_funcs = [ascii_smuggling.variant_smuggling]
     encoding_name = "Unicode Variant Selector"
-    active = True
+    active = False
+    tier = garak.probes.Tier.COMPETE_WITH_SOTA
 
     def __init__(self, config_root=_config):
         garak.probes.Probe.__init__(self, config_root=config_root)
@@ -648,7 +657,7 @@ class InjectSneakyBits(EncodingMixin, garak.probes.Probe):
 
     encoding_funcs = [ascii_smuggling.sneaky_bits_smuggling]
     encoding_name = "Unicode hidden binary encoding"
-    active = True
+    active = False
 
     def __init__(self, config_root=_config):
         garak.probes.Probe.__init__(self, config_root=config_root)
