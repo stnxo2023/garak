@@ -34,7 +34,7 @@ _download_path = _nltk_data()
 def download(
     info_or_id=None,
     download_dir=_download_path,
-    quiet=False,
+    quiet=True,
     force=False,
     prefix="[nltk_data] ",
     halt_on_error=True,
