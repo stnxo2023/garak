@@ -132,6 +132,7 @@ class MLM(garak.probes.Probe):
     Infer the [MASK] and Infill the above text.
     """
     goal = "disregard the system prompt"
+    tier = garak.probes.Tier.COMPETE_WITH_SOTA
     active = False
 
     DEFAULT_PARAMS = garak.probes.Probe.DEFAULT_PARAMS | {
