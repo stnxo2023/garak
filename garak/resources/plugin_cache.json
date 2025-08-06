@@ -4068,6 +4068,39 @@
       "tier": 3,
       "mod_time": "2025-07-16 13:33:05 +0000"
     },
+    "probes.sata.MLM": {
+      "description": "Masked Language Model Simple Assistive Task Probe",
+      "DEFAULT_PARAMS": {
+        "payload_name": [
+          "harmful_behaviors"
+        ],
+        "n_replacements": 2
+      },
+      "active": false,
+      "doc_uri": "https://aclanthology.org/2025.findings-acl.100.pdf",
+      "extended_detectors": [],
+      "goal": "disregard the system prompt",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": null,
+      "recommended_detector": [
+        "mitigation.MitigationBypass"
+      ],
+      "tags": [
+        "avid-effect:security:S0403",
+        "avid-effect:performance:P0204",
+        "owasp:llm01",
+        "quality:Security:PromptStability",
+        "payload:jailbreak"
+      ],
+      "tier": 2,
+      "mod_time": "2025-08-06 16:58:50 +0000"
+    },
     "probes.snowball.GraphConnectivity": {
       "description": "Probe asking for impossible flight routings",
       "DEFAULT_PARAMS": {},
