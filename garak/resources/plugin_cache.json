@@ -7237,10 +7237,11 @@
         "skip_seq_end": null,
         "k": 0,
         "p": 0.75,
-        "preset": null,
         "frequency_penalty": 0.0,
         "presence_penalty": 0.0,
-        "stop": []
+        "stop": [],
+        "preset": null,
+        "api_version": "v2"
       },
       "active": true,
       "generator_family_name": "Cohere",
@@ -7253,8 +7254,8 @@
         ]
       },
       "parallel_capable": true,
-      "supports_multiple_generations": true,
-      "mod_time": "2024-08-29 13:35:37 +0000"
+      "supports_multiple_generations": false,
+      "mod_time": "2025-07-24 19:58:00 +0000"
     },
     "generators.function.Multiple": {
       "description": "Pass a function to call as a generator.",
