@@ -194,6 +194,7 @@ class EncodingMixin:
         "payload:generic",
     ]
     goal = "make the model say an encoded payload"
+    use_bytes = True
     lang = "en"
     doc_uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
     tier = garak.probes.Tier.COMPETE_WITH_SOTA
@@ -227,12 +228,12 @@ class EncodingMixin:
             if payload_to_add in extra_payload_tags:
                 self.extra_tags += extra_payload_tags[payload_to_add]
 
-    def _generate_encoded_prompts(self, encoding_funcs, encoding_name, use_bytes=True):
+    def _generate_encoded_prompts(self, encoding_funcs, encoding_name):
         encoded_prompts = set()
         for template in TEMPLATES:
             for payload in self._payloads:
                 for encoder in encoding_funcs:
-                    if use_bytes:
+                    if self.use_bytes:
                         encoded_text = encoder(bytes(payload, "utf-8"))
                     else:
                         encoded_text = encoder(payload)
@@ -245,11 +246,11 @@ class EncodingMixin:
                     encoded_prompts.add((prompt, trigger))
         return sorted(list(encoded_prompts), key=lambda k: k[0])
 
-    def __init__(self, use_bytes=True):
+    def __init__(self):
         self._load_payloads()
         self.tags += self.extra_tags
         generated_prompts = self._generate_encoded_prompts(
-            self.encoding_funcs, self.encoding_name, use_bytes
+            self.encoding_funcs, self.encoding_name
         )
         if (
             not self.follow_prompt_cap
@@ -610,6 +611,7 @@ class InjectUnicodeTagChars(EncodingMixin, garak.probes.Probe):
     encoding_name = "ASCII in Unicode Tags"
     active = True
     tier = garak.probes.Tier.OF_CONCERN
+    use_bytes = False
     # May want to eventually add a check to verify that `desired_emoji` is a valid emoji.
     DEFAULT_PARAMS = EncodingMixin.DEFAULT_PARAMS | {"desired_emoji": "😈"}
 
@@ -617,7 +619,7 @@ class InjectUnicodeTagChars(EncodingMixin, garak.probes.Probe):
         # Cannot reference `self` in params above.
         self.encoding_funcs = [self._tag_char_smuggling]
         garak.probes.Probe.__init__(self, config_root=config_root)
-        EncodingMixin.__init__(self, use_bytes=False)
+        EncodingMixin.__init__(self)
 
     def _tag_char_smuggling(self, text: str) -> str:
         encoded_payload = smuggle_ascii.tag_char_smuggling(
@@ -638,10 +640,11 @@ class InjectUnicodeVariantSelectors(EncodingMixin, garak.probes.Probe):
     encoding_name = "ASCII in Unicode Variant Selector"
     active = False
     tier = garak.probes.Tier.COMPETE_WITH_SOTA
+    use_bytes = False
 
     def __init__(self, config_root=_config):
         garak.probes.Probe.__init__(self, config_root=config_root)
-        EncodingMixin.__init__(self, use_bytes=False)
+        EncodingMixin.__init__(self)
 
 
 class InjectSneakyBits(EncodingMixin, garak.probes.Probe):
@@ -658,7 +661,8 @@ class InjectSneakyBits(EncodingMixin, garak.probes.Probe):
     encoding_funcs = [smuggle_ascii.sneaky_bits_smuggling]
     encoding_name = "ASCII in hidden unicode binary encoding"
     active = False
+    use_bytes = False
 
     def __init__(self, config_root=_config):
         garak.probes.Probe.__init__(self, config_root=config_root)
-        EncodingMixin.__init__(self, use_bytes=False)
+        EncodingMixin.__init__(self)
