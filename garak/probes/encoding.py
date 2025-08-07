@@ -23,7 +23,7 @@ import random
 
 import garak.payloads
 import garak.resources.encodings
-import garak.resources.smuggling.smuggle_ascii as ascii_smuggling
+from garak.resources.smuggling import smuggle_ascii
 from garak import _config
 import garak.probes
 
@@ -620,7 +620,7 @@ class InjectUnicodeTagChars(EncodingMixin, garak.probes.Probe):
         EncodingMixin.__init__(self, use_bytes=False)
 
     def _tag_char_smuggling(self, text: str) -> str:
-        encoded_payload = ascii_smuggling.tag_char_smuggling(
+        encoded_payload = smuggle_ascii.tag_char_smuggling(
             payload=text, desired_emoji=self.desired_emoji
         )
         return encoded_payload
@@ -634,7 +634,7 @@ class InjectUnicodeVariantSelectors(EncodingMixin, garak.probes.Probe):
 
     doc_uri = "https://paulbutler.org/2025/smuggling-arbitrary-data-through-an-emoji/"
 
-    encoding_funcs = [ascii_smuggling.variant_smuggling]
+    encoding_funcs = [smuggle_ascii.variant_smuggling]
     encoding_name = "ASCII in Unicode Variant Selector"
     active = False
     tier = garak.probes.Tier.COMPETE_WITH_SOTA
@@ -655,7 +655,7 @@ class InjectSneakyBits(EncodingMixin, garak.probes.Probe):
         "https://embracethered.com/blog/posts/2025/sneaky-bits-and-ascii-smuggler/"
     )
 
-    encoding_funcs = [ascii_smuggling.sneaky_bits_smuggling]
+    encoding_funcs = [smuggle_ascii.sneaky_bits_smuggling]
     encoding_name = "ASCII in hidden unicode binary encoding"
     active = False
 
