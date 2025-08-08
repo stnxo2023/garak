@@ -94,8 +94,8 @@ class Single(Generator):
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
     ) -> List[Union[Message, None]]:
-        # this needs to be reworked as prompt is no longer a str
-        return self.generator(prompt, **self.kwargs)
+        resp = self.generator(prompt.last_message().text, **self.kwargs)
+        return [Message(resp)] if resp else [None]
 
 
 class Multiple(Single):
@@ -110,8 +110,10 @@ class Multiple(Single):
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
     ) -> List[Union[Message, None]]:
-        # this needs to be reworked as prompt is no longer a str
-        return self.generator(prompt, **self.kwargs)
+        resp = self.generator(
+            prompt.last_message().text, generations_this_call, **self.kwargs
+        )
+        return [Message(resp)] if resp else [None]
 
 
 DEFAULT_CLASS = "Single"
