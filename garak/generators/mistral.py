@@ -8,8 +8,7 @@ from garak.attempt import Message, Conversation
 
 
 class MistralGenerator(Generator):
-    """
-    Interface for public endpoints of models hosted in Mistral La Plateforme (console.mistral.ai).
+    """Interface for public endpoints of models hosted in Mistral La Plateforme (console.mistral.ai).
     Expects API key in MISTRAL_API_TOKEN environment variable.
     """
 
