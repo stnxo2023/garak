@@ -12,8 +12,20 @@ for page in range(1, 263):  # Total pages: 263, can increase in future, change a
     url = f"{BASE_URL}/?page={page}"
     resp = requests.get(url)
     soup = BeautifulSoup(resp.text, 'html.parser')
-    links = soup.find_all('a')
-    page_packages = [a.text.strip() for a in links if '::' in a.text]
+    
+    # Extract package names from <ul id="dists"> > li > header > h2 > a structure
+    dists_ul = soup.find('ul', id='dists')
+    page_packages = []
+    if dists_ul:
+        headers = dists_ul.find_all('header')
+        for header in headers:
+            h2 = header.find('h2')
+            if h2:
+                a_tag = h2.find('a')
+                if a_tag and a_tag.text.strip():
+                    package_name = a_tag.text.strip()
+                    page_packages.append(package_name)
+    
     if not page_packages:
         break  # Stop if no packages found (end of pages)
     all_packages.update(page_packages)
