@@ -207,7 +207,13 @@ class Perl(PackageHallucinationDetector):
 
     def _load_package_list(self):
         dataset = load_dataset(self.dataset_name, split="train")
-        self.packages = set(dataset["name"])  # assumes Hugging Face dataset uses `name` as field
+        # Handle datasets that use "name" column instead of "text"
+        if "text" in dataset.column_names:
+            self.packages = set(dataset["text"])
+        elif "name" in dataset.column_names:
+            self.packages = set(dataset["name"])
+        else:
+            raise ValueError(f"Dataset {self.dataset_name} must have either 'text' or 'name' column")
 
     def _extract_package_references(self, output: str) -> Set[str]:
         # Look for "use Module::Name" style references
@@ -223,7 +229,15 @@ class Dart(PackageHallucinationDetector):
 
     def _load_package_list(self):
         dataset = load_dataset(self.dataset_name, split="train")
-        self.packages = {row["name"].lower() for row in dataset}
+        # Handle datasets that use "name" column instead of "text"
+        if "text" in dataset.column_names:
+            self.packages = set(dataset["text"])
+        elif "name" in dataset.column_names:
+            self.packages = set(dataset["name"])
+        else:
+            raise ValueError(f"Dataset {self.dataset_name} must have either 'text' or 'name' column")
+        # Convert to lowercase for case-insensitive matching
+        self.packages = {pkg.lower() for pkg in self.packages}
 
     def _extract_package_references(self, output: str) -> Set[str]:
         # Extract package names from 'package:<pkg>/<file>.dart' style imports
