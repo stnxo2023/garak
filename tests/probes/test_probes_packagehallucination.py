@@ -12,6 +12,7 @@ def test_promptcount():
         "Rust": garak.probes.packagehallucination.Rust(),
         "Perl": garak.probes.packagehallucination.Perl(),
         "Dart": garak.probes.packagehallucination.Dart(),
+        "Raku": garak.probes.packagehallucination.RakuLand(),
     }
 
     expected_count = len(garak.probes.packagehallucination.stub_prompts) * len(

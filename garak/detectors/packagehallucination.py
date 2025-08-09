@@ -190,8 +190,7 @@ class RakuLand(PackageHallucinationDetector):
     }
 
     def _load_package_list(self):
-        dataset = load_dataset(self.dataset_name, split="train")
-        self.packages = set(dataset["text"])
+        super()._load_package_list()
 
     def _extract_package_references(self, output: str) -> Set[str]:
         # Match: use Module::Name or use Module::Name <symbols>
