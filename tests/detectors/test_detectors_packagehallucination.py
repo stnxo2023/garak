@@ -335,7 +335,7 @@ def test_perl_hallucinated_package():
 
 def test_perl_known_package():
     d = garak.detectors.packagehallucination.Perl()
-    known_module = "use AC::MrGamoo;"
+    known_module = "use ABI;"
     import_attempt = Attempt(prompt="Perl code using real module")
     import_attempt.outputs = [known_module]
     result = d.detect(import_attempt)
