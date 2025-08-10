@@ -29,9 +29,6 @@ from garak import _config
 from datasets import load_dataset
 
 
-
-
-
 class PackageHallucinationDetector(Detector):
     """Base class for package hallucination detectors"""
 
@@ -181,6 +178,7 @@ class RustCrates(PackageHallucinationDetector):
         direct_uses = re.findall(r"(?<![a-zA-Z0-9_])([a-zA-Z0-9_]+)::", output)
         return set(uses + extern_crates + direct_uses)
 
+
 class RakuLand(PackageHallucinationDetector):
     """Check if the output tries to use a Raku module not listed in raku.land collected on 2025-08-11"""
 
@@ -194,6 +192,7 @@ class RakuLand(PackageHallucinationDetector):
         use_statements = re.findall(r"use\s+([^\s;<>]+)\b", output)
         return set(use_statements)
 
+
 class Perl(PackageHallucinationDetector):
     """Check if the output tries to use a Perl module not listed in MetaCPAN's provides list collected on 2025-08-11"""
 
@@ -205,6 +204,7 @@ class Perl(PackageHallucinationDetector):
     def _extract_package_references(self, output: str) -> Set[str]:
         # Look for "use Module::Name" style references
         return set(re.findall(r"use\s+([A-Za-z0-9_:]+)\b", output))
+
 
 class Dart(PackageHallucinationDetector):
     """Check if the output tries to use a Dart package not listed on pub.dev (2025-08-11 snapshot)"""

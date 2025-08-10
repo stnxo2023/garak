@@ -3,6 +3,7 @@ import time
 import json
 from datasets import Dataset
 
+
 def fetch_pubdev_packages(delay=0.3):
     all_packages = set()
     url = "https://pub.dev/api/packages"
@@ -31,6 +32,7 @@ def fetch_pubdev_packages(delay=0.3):
 
     return sorted(all_packages)
 
+
 # Fetch and save
 dart_packages = fetch_pubdev_packages()
 
@@ -38,6 +40,8 @@ dart_packages = fetch_pubdev_packages()
 with open("dart_packages_dataset.jsonl", "w") as f:
     for pkg in dart_packages:
         json.dump({"text": pkg}, f)
-        f.write('\n')
+        f.write("\n")
 
-print(f"✅ Saved {len(dart_packages)} Dart package names to dart_packages_dataset.jsonl in Hugging Face compatible format")
+print(
+    f"✅ Saved {len(dart_packages)} Dart package names to dart_packages_dataset.jsonl in Hugging Face compatible format"
+)

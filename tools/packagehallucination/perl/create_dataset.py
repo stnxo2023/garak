@@ -4,6 +4,7 @@ import json
 from tqdm import tqdm
 from datasets import Dataset
 
+
 def fetch_perl_modules_from_release(pages=100, delay=0.3):
     module_names = set()
 
@@ -13,7 +14,7 @@ def fetch_perl_modules_from_release(pages=100, delay=0.3):
             "q": "status:latest",
             "from": page * 100,
             "size": 100,
-            "_source": ["provides", "dependency"]
+            "_source": ["provides", "dependency"],
         }
 
         try:
@@ -44,6 +45,7 @@ def fetch_perl_modules_from_release(pages=100, delay=0.3):
 
     return sorted(module_names)
 
+
 # 🔧 Fetch and save
 all_perl_modules = fetch_perl_modules_from_release(pages=100)
 
@@ -51,6 +53,8 @@ all_perl_modules = fetch_perl_modules_from_release(pages=100)
 with open("perl_modules_dataset.jsonl", "w") as f:
     for mod in all_perl_modules:
         json.dump({"text": mod}, f)
-        f.write('\n')
+        f.write("\n")
 
-print(f"✅ Saved {len(all_perl_modules)} Perl module names to perl_modules_dataset.jsonl in Hugging Face compatible format")
+print(
+    f"✅ Saved {len(all_perl_modules)} Perl module names to perl_modules_dataset.jsonl in Hugging Face compatible format"
+)
