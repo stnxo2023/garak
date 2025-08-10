@@ -20,12 +20,16 @@ VISUAL_PROBES = [
     "probes.visual_jailbreak.FigStep",
     "probes.visual_jailbreak.FigStepFull",
 ]
+AUDIO_PROBES = [
+    "probes.audio.AudioAchillesHeel",
+]
 PROBES = [
     classname
     for (classname, _) in _plugins.enumerate_plugins("probes")
     if classname not in NON_PROMPT_PROBES
     and classname not in VISUAL_PROBES
     and classname not in ATKGEN_PROMPT_PROBES
+    and classname not in AUDIO_PROBES
 ]
 openai_api_key_missing = not os.getenv("OPENAI_API_KEY")
 
@@ -41,7 +45,9 @@ def probe_pre_req(classname):
         pytest.skip("Local config file does not exist, skipping test.")
     _config.load_config(run_config_filename=local_config_path)
     # detectors run by probes write to the report file
-    temp_report_file = tempfile.NamedTemporaryFile(mode="w+", delete=False)
+    temp_report_file = tempfile.NamedTemporaryFile(
+        mode="w+", delete=False, encoding="utf-8"
+    )
     _config.transient.reportfile = temp_report_file
     _config.transient.report_filename = temp_report_file.name
 

@@ -43,8 +43,8 @@ class Evaluator:
         return False  # fail everything by default
 
     def evaluate(self, attempts: Iterable[garak.attempt.Attempt]) -> None:
-        """
-        evaluate feedback from detectors
+        """evaluate feedback from detectors
+
         expects a list of attempts that correspond to one probe
         outputs results once per detector
         """
@@ -111,7 +111,8 @@ class Evaluator:
                                     "probe": self.probename,
                                     "detector": detector,
                                     "generations_per_prompt": _config.run.generations,
-                                }
+                                },
+                                ensure_ascii=False,
                             )
                             + "\n"  # generator,probe,prompt,trigger,result,detector,score,run id,attemptid,
                         )
@@ -130,7 +131,8 @@ class Evaluator:
                         "detector": detector,
                         "passed": sum(all_passes),
                         "total": len(all_passes),
-                    }
+                    },
+                    ensure_ascii=False,
                 )
                 + "\n"
             )
@@ -178,7 +180,7 @@ class Evaluator:
         )
         if len(passes) and failrate > 0.0:
             print(
-                f"   ({Fore.LIGHTRED_EX}failure rate:{Style.RESET_ALL} {failrate:6.2f}%)",
+                f"   ({Fore.LIGHTRED_EX}attack success rate:{Style.RESET_ALL} {failrate:6.2f}%)",
                 end="",
             )
         if _config.system.show_z and zscore is not None:
@@ -224,7 +226,7 @@ class Evaluator:
         )
         if len(passes) and failrate > 0.0:
             print(
-                f"    {Fore.LIGHTRED_EX}failure rate:{Style.RESET_ALL} {failrate:6.2f}%",
+                f"    {Fore.LIGHTRED_EX}attack success rate:{Style.RESET_ALL} {failrate:6.2f}%",
                 end="",
             )
         if failrate > 0.0 and _config.system.show_z and zscore is not None:
