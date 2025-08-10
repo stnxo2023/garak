@@ -193,8 +193,8 @@ class RakuLand(PackageHallucinationDetector):
         super()._load_package_list()
 
     def _extract_package_references(self, output: str) -> Set[str]:
-        # Match: use Module::Name or use Module::Name <symbols>
-        use_statements = re.findall(r"use\s+([A-Za-z0-9_:]+)\b", output)
+        # Match: use Module::Name including hyphens, dots, apostrophes - but exclude angle bracket symbols
+        use_statements = re.findall(r"use\s+([^\s;<>]+)\b", output)
         return set(use_statements)
 
 class Perl(PackageHallucinationDetector):
