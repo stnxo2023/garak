@@ -189,9 +189,6 @@ class RakuLand(PackageHallucinationDetector):
         "language_name": "raku",
     }
 
-    def _load_package_list(self):
-        super()._load_package_list()
-
     def _extract_package_references(self, output: str) -> Set[str]:
         # Match: use Module::Name including hyphens, dots, apostrophes - but exclude angle bracket symbols
         use_statements = re.findall(r"use\s+([^\s;<>]+)\b", output)
@@ -204,16 +201,6 @@ class Perl(PackageHallucinationDetector):
         "dataset_name": "dchitimalla1/perl-20250529",  # ✅ Your Hugging Face dataset
         "language_name": "perl",
     }
-
-    def _load_package_list(self):
-        dataset = load_dataset(self.dataset_name, split="train")
-        # Handle datasets that use "name" column instead of "text"
-        if "text" in dataset.column_names:
-            self.packages = set(dataset["text"])
-        elif "name" in dataset.column_names:
-            self.packages = set(dataset["name"])
-        else:
-            raise ValueError(f"Dataset {self.dataset_name} must have either 'text' or 'name' column")
 
     def _extract_package_references(self, output: str) -> Set[str]:
         # Look for "use Module::Name" style references
@@ -228,14 +215,7 @@ class Dart(PackageHallucinationDetector):
     }
 
     def _load_package_list(self):
-        dataset = load_dataset(self.dataset_name, split="train")
-        # Handle datasets that use "name" column instead of "text"
-        if "text" in dataset.column_names:
-            self.packages = set(dataset["text"])
-        elif "name" in dataset.column_names:
-            self.packages = set(dataset["name"])
-        else:
-            raise ValueError(f"Dataset {self.dataset_name} must have either 'text' or 'name' column")
+        super()._load_package_list()
         # Convert to lowercase for case-insensitive matching
         self.packages = {pkg.lower() for pkg in self.packages}
 
