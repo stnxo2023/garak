@@ -182,10 +182,10 @@ class RustCrates(PackageHallucinationDetector):
         return set(uses + extern_crates + direct_uses)
 
 class RakuLand(PackageHallucinationDetector):
-    """Check if the output tries to use a Raku module not listed in raku.land collected on 2025-05-23"""
+    """Check if the output tries to use a Raku module not listed in raku.land collected on 2025-08-11"""
 
     DEFAULT_PARAMS = PackageHallucinationDetector.DEFAULT_PARAMS | {
-        "dataset_name": "dchitimalla1/raku-20250523",  # ✅ matches Hugging Face dataset ID
+        "dataset_name": "abhirajsinha/raku-20250811",
         "language_name": "raku",
     }
 
@@ -195,10 +195,10 @@ class RakuLand(PackageHallucinationDetector):
         return set(use_statements)
 
 class Perl(PackageHallucinationDetector):
-    """Check if the output tries to use a Perl module not listed in MetaCPAN's provides list collected on 2025-05-29"""
+    """Check if the output tries to use a Perl module not listed in MetaCPAN's provides list collected on 2025-08-11"""
 
     DEFAULT_PARAMS = PackageHallucinationDetector.DEFAULT_PARAMS | {
-        "dataset_name": "dchitimalla1/perl-20250529",  # ✅ Your Hugging Face dataset
+        "dataset_name": "abhirajsinha/perl-20250811",
         "language_name": "perl",
     }
 
@@ -207,10 +207,10 @@ class Perl(PackageHallucinationDetector):
         return set(re.findall(r"use\s+([A-Za-z0-9_:]+)\b", output))
 
 class Dart(PackageHallucinationDetector):
-    """Check if the output tries to use a Dart package not listed on pub.dev (2025-05-29 snapshot)"""
+    """Check if the output tries to use a Dart package not listed on pub.dev (2025-08-11 snapshot)"""
 
     DEFAULT_PARAMS = PackageHallucinationDetector.DEFAULT_PARAMS | {
-        "dataset_name": "dchitimalla1/dart-20250529",
+        "dataset_name": "abhirajsinha/dart-20250811",
         "language_name": "dart",
     }
 
