@@ -1,10 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
 import time
-import json
 
 BASE_URL = "https://raku.land"
-OUTPUT_FILE = "raku_packages_dataset.jsonl"
+OUTPUT_FILE = "all_raku_packages.txt"
 
 all_packages = set()
 
@@ -32,10 +31,8 @@ for page in range(1, 263):  # Total pages: 263, can increase in future, change a
     all_packages.update(page_packages)
     time.sleep(0.05)  # Be polite to the server
 
-# Output in JSONL format with "text" column to match Hugging Face dataset structure
 with open(OUTPUT_FILE, 'w') as f:
     for pkg in sorted(all_packages):
-        json.dump({"text": pkg}, f)
-        f.write('\n')
+        f.write(pkg + '\n')
 
-print(f"Saved {len(all_packages)} packages to {OUTPUT_FILE} in Hugging Face compatible format")
+print(f"Saved {len(all_packages)} packages to {OUTPUT_FILE}")

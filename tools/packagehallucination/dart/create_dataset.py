@@ -1,6 +1,5 @@
 import requests
 import time
-import json
 from datasets import Dataset
 
 def fetch_pubdev_packages(delay=0.3):
@@ -34,10 +33,8 @@ def fetch_pubdev_packages(delay=0.3):
 # Fetch and save
 dart_packages = fetch_pubdev_packages()
 
-# Output in JSONL format with "text" column to match Hugging Face dataset structure
-with open("dart_packages_dataset.jsonl", "w") as f:
+with open("dart_packages.txt", "w") as f:
     for pkg in dart_packages:
-        json.dump({"text": pkg}, f)
-        f.write('\n')
+        f.write(pkg + "\n")
 
-print(f"✅ Saved {len(dart_packages)} Dart package names to dart_packages_dataset.jsonl in Hugging Face compatible format")
+print(f"✅ Saved {len(dart_packages)} Dart package names to dart_packages.txt")
