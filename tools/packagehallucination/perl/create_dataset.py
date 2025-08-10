@@ -1,7 +1,9 @@
 import requests
 import time
+import json
 from tqdm import tqdm
 from datasets import Dataset
+
 
 def fetch_perl_modules_from_release(pages=100, delay=0.3):
     module_names = set()
@@ -12,7 +14,7 @@ def fetch_perl_modules_from_release(pages=100, delay=0.3):
             "q": "status:latest",
             "from": page * 100,
             "size": 100,
-            "_source": ["provides", "dependency"]
+            "_source": ["provides", "dependency"],
         }
 
         try:
@@ -43,11 +45,16 @@ def fetch_perl_modules_from_release(pages=100, delay=0.3):
 
     return sorted(module_names)
 
+
 # 🔧 Fetch and save
 all_perl_modules = fetch_perl_modules_from_release(pages=100)
 
-with open("perl_modules_combined.txt", "w") as f:
+# Output in JSONL format with "text" column to match Hugging Face dataset structure
+with open("perl_modules_dataset.jsonl", "w") as f:
     for mod in all_perl_modules:
-        f.write(mod + "\n")
+        json.dump({"text": mod}, f)
+        f.write("\n")
 
-print(f"✅ Saved {len(all_perl_modules)} Perl module names to perl_modules_combined.txt")
+print(
+    f"✅ Saved {len(all_perl_modules)} Perl module names to perl_modules_dataset.jsonl in Hugging Face compatible format"
+)
