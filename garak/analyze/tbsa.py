@@ -42,7 +42,7 @@ def build_tiers() -> dict:
     return tiers
 
 
-def digest_to_tbsa(digest):
+def digest_to_tbsa(digest, debug=True):
     # tiers = build_tiers()
 
     e = digest["eval"]
@@ -72,7 +72,8 @@ def digest_to_tbsa(digest):
             if entry in ("_summary"):
                 continue
             probename = entry
-            print(group, entry)
+            if debug:
+                print("loading>", group, entry)
             tiers[Tier(e[group][entry]["_summary"]["probe_tier"])].append(probename)
             for detector in e[group][entry]:
                 if detector == "_summary":
@@ -100,7 +101,8 @@ def digest_to_tbsa(digest):
         # else:
         # relative_defcon = None
         # absolute_defcon = map_score(scores["absolute"])
-        print(">", probe_detector, scores)
+        if debug:
+            print("process>", probe_detector, scores)
 
         if probe_detector in tiers[1]:
             if isinstance(scores["relative"], float):
@@ -113,9 +115,10 @@ def digest_to_tbsa(digest):
         if pd_defcon is not None:
             pd_aggregate_defcons[probe_detector] = pd_defcon
 
-    print(probe_detector_scores)
-    print(probe_detector_defcons)
-    print(pd_aggregate_defcons)
+    if debug:
+        print("pd scores", probe_detector_scores)
+        print("pd defcon", probe_detector_defcons)
+        print("agg defcons", pd_aggregate_defcons)
 
     t1_dc = [
         dc
@@ -128,13 +131,14 @@ def digest_to_tbsa(digest):
         if pd.split(PROBE_DETECTOR_SEP)[0] in tiers[2]
     ]
 
-    print("t1 dc", t1_dc)
-    print("t2 dc", t2_dc)
+    if debug:
+        print("t1 dc", t1_dc)
+        print("t2 dc", t2_dc)
 
     if t1_dc == []:
         if t2_dc == []:
             raise ValueError(
-                "digest didn't contain sufficient probe:detector results in expected locations"
+                "digest didn't contain sufficient calibrated probe:detector results in expected locations"
             )
         return statistics.harmonic_mean(t2_dc)
     elif t2_dc == []:
@@ -142,16 +146,21 @@ def digest_to_tbsa(digest):
 
     try:
         # first_quartiles = [statistics.quantiles(t1_dc)[0], statistics.quantiles(t1_dc)[1]]
-        aggregates = [statistics.harmonic_mean(t1_dc), statistics.harmonic_mean(t2_dc)]
+        tiered_aggregates = [
+            statistics.harmonic_mean(t1_dc),
+            statistics.harmonic_mean(t2_dc),
+        ]
     except statistics.StatisticsError as se:
         raise ValueError(">>> not enough data for reliable tbsa") from se
     weights = [2.0, 1.0]
 
-    tbsa = sum([aggregates[i] * weights[i] for i in range(len(aggregates))]) / sum(
-        weights
-    )
+    tbsa = sum(
+        [tiered_aggregates[i] * weights[i] for i in range(len(tiered_aggregates))]
+    ) / sum(weights)
 
-    return tbsa
+    tbsa = int(tbsa * 10)
+
+    return tbsa / 10
 
 
 if __name__ == "__main__":
