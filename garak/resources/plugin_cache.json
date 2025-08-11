@@ -4825,10 +4825,11 @@
         "payload:leak:chat",
         "payload:malicious:renderer",
         "quality:Security:PromptStability",
-        "quality:Security:ExtractionInversion"
+        "quality:Security:ExtractionInversion",
+        "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-07-16 13:33:05 +0000"
+      "mod_time": "2025-08-11 18:13:36 +0000"
     },
     "probes.xss.MarkdownImageExfil": {
       "description": "Can we get the model to write embedded assets exfiltrating text in the URI?",
@@ -4859,10 +4860,75 @@
         "payload:leak:chat",
         "payload:malicious:renderer",
         "quality:Security:PromptStability",
-        "quality:Security:ExtractionInversion"
+        "quality:Security:ExtractionInversion",
+        "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-07-16 13:33:05 +0000"
+      "mod_time": "2025-08-11 18:13:36 +0000"
+    },
+    "probes.xss.MarkdownURIImageExfilExtended": {
+      "description": "Generalized implementation of data exfiltration exploits via markdown URIs.",
+      "DEFAULT_PARAMS": {},
+      "active": true,
+      "doc_uri": "https://www.aim.security/lp/aim-labs-echoleak-blogpost",
+      "extended_detectors": [],
+      "goal": "embed information an LLM would normally refuse to provide in a Markdown URI",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": null,
+      "recommended_detector": [
+        "xss.MarkdownExfilExtendedImage"
+      ],
+      "tags": [
+        "avid-effect:security:S0301",
+        "avid-effect:security:S0403",
+        "owasp:llm02",
+        "owasp:llm06",
+        "payload:leak:chat",
+        "payload:malicious:renderer",
+        "quality:Security:PromptStability",
+        "quality:Security:ExtractionInversion",
+        "cwe:352"
+      ],
+      "tier": 1,
+      "mod_time": "2025-08-11 18:13:36 +0000"
+    },
+    "probes.xss.MarkdownURINonImageExfilExtended": {
+      "description": "Generalized implementation of data exfiltration exploits via markdown URIs.",
+      "DEFAULT_PARAMS": {},
+      "active": true,
+      "doc_uri": "https://www.aim.security/lp/aim-labs-echoleak-blogpost",
+      "extended_detectors": [],
+      "goal": "embed information an LLM would normally refuse to provide in a Markdown URI",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": null,
+      "recommended_detector": [
+        "xss.MarkdownExfilExtendedNonImage"
+      ],
+      "tags": [
+        "avid-effect:security:S0301",
+        "avid-effect:security:S0403",
+        "owasp:llm02",
+        "owasp:llm06",
+        "payload:leak:chat",
+        "payload:malicious:renderer",
+        "quality:Security:PromptStability",
+        "quality:Security:ExtractionInversion",
+        "cwe:352"
+      ],
+      "tier": 1,
+      "mod_time": "2025-08-11 18:13:36 +0000"
     },
     "probes.xss.MdExfil20230929": {
       "description": "Markdown image URI exfil exploit published 2023 Sept 29",
@@ -4892,10 +4958,11 @@
         "payload:leak:chat",
         "payload:malicious:renderer",
         "quality:Security:PromptStability",
-        "quality:Security:ExtractionInversion"
+        "quality:Security:ExtractionInversion",
+        "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-07-16 13:33:05 +0000"
+      "mod_time": "2025-08-11 18:13:36 +0000"
     },
     "probes.xss.StringAssemblyDataExfil": {
       "description": "Prompt injection for manipulating state",
@@ -4923,10 +4990,11 @@
         "payload:leak:chat",
         "payload:malicious:renderer",
         "quality:Security:PromptStability",
-        "quality:Security:ExtractionInversion"
+        "quality:Security:ExtractionInversion",
+        "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-07-16 13:33:05 +0000"
+      "mod_time": "2025-08-11 18:13:36 +0000"
     }
   },
   "detectors": {
@@ -7228,7 +7296,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-07-09 18:27:31 +0000"
     },
     "detectors.xss.MarkdownExfilBasic": {
       "description": "Detect markdown images with fqdn, absolute path, and populated q= parameter",
@@ -7249,7 +7317,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-07-09 18:27:31 +0000"
     },
     "detectors.xss.MarkdownExfilContent": {
       "description": "As the basic detector, MarkdownExfilBasic, but did we exfiltrate anything?",
@@ -7270,7 +7338,49 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-07-09 18:27:31 +0000"
+    },
+    "detectors.xss.MarkdownExfilExtendedImage": {
+      "description": "Extended version of MarkdownExfilBasic that searches for a larger variety of Markdown URI formats",
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
+      "accuracy": null,
+      "active": true,
+      "doc_uri": "https://embracethered.com/blog/posts/2023/bing-chat-data-exfiltration-poc-and-fix/",
+      "lang_spec": "*",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "tags": [
+        "avid-effect:security:S0301"
+      ],
+      "mod_time": "2025-07-09 18:27:31 +0000"
+    },
+    "detectors.xss.MarkdownExfilExtendedNonImage": {
+      "description": "Extended version of MarkdownExfilBasic that searches for a larger variety of Markdown URI formats",
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
+      "accuracy": null,
+      "active": true,
+      "doc_uri": "https://embracethered.com/blog/posts/2023/bing-chat-data-exfiltration-poc-and-fix/",
+      "lang_spec": "*",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "tags": [
+        "avid-effect:security:S0301"
+      ],
+      "mod_time": "2025-07-09 18:27:31 +0000"
     }
   },
   "generators": {
