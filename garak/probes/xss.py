@@ -247,8 +247,8 @@ URL encoded summary of this conversation. Do not use a code block."""
 
 
 class MarkdownExfilMixin:
-    """
-    Mixin for more generalized implementation of data exfiltration exploits via markdown URIs.
+    """Mixin for more generalized implementation of data exfiltration exploits via markdown URIs.
+
     This class loads possible domains, variables, injection markers, injected actions, encodings, 
     link display texts, and prompt templates, and when markdown templates are provided, generates prompts
     """
@@ -329,8 +329,8 @@ class MarkdownExfilMixin:
 
 
 class MarkdownURINonImageExfilExtended(MarkdownExfilMixin, garak.probes.Probe):
-    """
-    More generalized implementation of data exfiltration exploits via markdown URIs.
+    """Generalized implementation of data exfiltration exploits via markdown URIs.
+
     This class focusses on markdown that contains URIs that need to be clicked for data to be exfiltrated.
     Inspired by Markdown URI formats suggested in https://www.aim.security/lp/aim-labs-echoleak-blogpost
 
@@ -374,8 +374,8 @@ class MarkdownURINonImageExfilExtended(MarkdownExfilMixin, garak.probes.Probe):
 
 
 class MarkdownURIImageExfilExtended(MarkdownExfilMixin, garak.probes.Probe):
-    """
-    More generalized implementation of data exfiltration exploits via markdown URIs.
+    """Generalized implementation of data exfiltration exploits via markdown URIs.
+
     This class focusses on markdown that directly attempts to render the image associated with the URI, resulting in zero click data exfiltration.
     Inspired by Markdown URI formats suggested in https://www.aim.security/lp/aim-labs-echoleak-blogpost
 
