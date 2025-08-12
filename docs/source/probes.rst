@@ -26,6 +26,7 @@ For a detailed oversight into how a probe operates, see :doc:`garak.probes.base`
    garak.probes.glitch
    garak.probes.goodside
    garak.probes.grandma
+   garak.probes.html_injection
    garak.probes.latentinjection
    garak.probes.leakreplay
    garak.probes.lmrc
@@ -41,6 +42,5 @@ For a detailed oversight into how a probe operates, see :doc:`garak.probes.base`
    garak.probes.tap
    garak.probes.test
    garak.probes.topic
-   garak.probes.xss
    garak.probes.visual_jailbreak
    garak.probes._tier
