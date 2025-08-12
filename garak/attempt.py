@@ -262,7 +262,7 @@ class Attempt:
             "probe_params": self.probe_params,
             "targets": self.targets,
             "prompt": asdict(self.prompt),
-            "outputs": [asdict(output) for output in self.outputs],
+            "outputs": [asdict(output) if output else None for output in self.outputs],
             "detector_results": {k: list(v) for k, v in self.detector_results.items()},
             "notes": notes,
             "goal": self.goal,

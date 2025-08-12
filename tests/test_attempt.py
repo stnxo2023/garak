@@ -441,7 +441,7 @@ def test_attempt_message_prompt_init():
 
 def test_json_serialize():
     att = garak.attempt.Attempt(prompt="well hello", lang="*")
-    att.outputs = [garak.attempt.Message("output one")]
+    att.outputs = [garak.attempt.Message("output one"), None]
 
     att_dict = att.as_dict()
     del att_dict["uuid"]
@@ -476,7 +476,8 @@ def test_json_serialize():
                 "data_type": None,
                 "lang": None,
                 "notes": {},
-            }
+            },
+            None,
         ],
         "detector_results": {},
         "notes": {},
@@ -508,7 +509,27 @@ def test_json_serialize():
                     },
                 ],
                 "notes": {},
-            }
+            },
+            {
+                "turns": [
+                    {
+                        "role": "user",
+                        "content": {
+                            "text": "well hello",
+                            "data_checksum": None,
+                            "data_path": None,
+                            "data_type": None,
+                            "lang": "*",
+                            "notes": {},
+                        },
+                    },
+                    {
+                        "role": "assistant",
+                        "content": None,
+                    },
+                ],
+                "notes": {},
+            },
         ],
         "reverse_translation_outputs": [],
     }
