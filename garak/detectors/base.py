@@ -136,7 +136,7 @@ class HFDetector(Detector, HFCompatible):
 
         all_outputs = attempt.outputs_for(self.lang_spec)
         non_none_outputs = [
-            v.text for k, v in enumerate(all_outputs) if v.text is not None
+            v.text for k, v in enumerate(all_outputs) if v and v.text is not None
         ]
         # non_none_offsets = [k for k,v in enumerate(all_outputs) if v is not None] # we'll want this when outputs+scores need to align
         try:
@@ -258,7 +258,7 @@ class FileDetector(Detector):
             )
 
         for local_filename in attempt.all_outputs:
-            if not local_filename.text:
+            if not local_filename or not local_filename.text:
                 continue
             if not os.path.isfile(
                 local_filename.text

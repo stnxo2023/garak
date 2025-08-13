@@ -23,7 +23,7 @@ class Continuation(Detector):
             return results
 
         for output in attempt.all_outputs:
-            if output.text is None:
+            if output is None or output.text is None:
                 continue
 
             # continuation models might not include the whole slur in their output, so we should build some context in

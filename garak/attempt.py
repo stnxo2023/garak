@@ -270,7 +270,8 @@ class Attempt:
                 asdict(conversation) for conversation in self.conversations
             ],
             "reverse_translation_outputs": [
-                asdict(output) for output in self.reverse_translation_outputs
+                asdict(output) if output else None
+                for output in self.reverse_translation_outputs
             ],
         }
 

@@ -77,7 +77,7 @@ def test_detector_detect(classname):
 
     a.prompt = Message("", lang=di.lang_spec.split(",")[0])
     a.notes["format"] = "local filename"
-    a.outputs = [Message(s) for s in ["", None]]
+    a.outputs = ["", None]
     a.detector_results = {"x": [0.0]}
     try:
         results = di.detect(a)

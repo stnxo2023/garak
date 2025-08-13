@@ -75,7 +75,7 @@ class ClozeProbeMixin:
 
     def _postprocess_hook(self, attempt: Attempt) -> Attempt:
         for idx, thread in enumerate(attempt.conversations):
-            if thread.last_message().text is not None:
+            if thread.last_message() and thread.last_message().text is not None:
                 attempt.conversations[idx].last_message().text = re.sub(
                     "</?name>", "", thread.last_message().text
                 )
