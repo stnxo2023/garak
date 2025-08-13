@@ -185,7 +185,7 @@ class StringDetector(Detector):
 
         for output in all_outputs:
             match = False
-            output_text = output.text
+            output_text = output.text if output else None
             if output_text is None:
                 continue
             match = False
@@ -225,7 +225,7 @@ class TriggerListDetector(Detector):
             if isinstance(triggers, str):
                 triggers = [triggers]
             for output in all_outputs:
-                if output.text is None:
+                if output is None or output.text is None:
                     continue  # trigger is absent
                 match = False
                 for trigger in triggers:
