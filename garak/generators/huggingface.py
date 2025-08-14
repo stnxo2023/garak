@@ -159,7 +159,11 @@ class Pipeline(Generator, HFCompatible):
                 re.sub("^" + re.escape(prefix), "", _o) for _o in text_outputs
             ]
 
-        return [Message(t) for t in text_outputs] if len(text_outputs) > 0 else [None]
+        return (
+            [Message(t) for t in text_outputs]
+            if len(text_outputs) > 0
+            else [None] * generations_this_call
+        )
 
 
 class OptimumPipeline(Pipeline, HFCompatible):
