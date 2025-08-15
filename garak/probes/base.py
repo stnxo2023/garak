@@ -345,7 +345,14 @@ class Probe(Configurable):
         preparation_bar.close()
         for seq, prompt in enumerate(prompts):
             notes = (
-                {"pre_translation_prompt": self.prompts[seq]}
+                {
+                    "pre_translation_prompt": garak.attempt.Conversation(
+                        garak.attempt.Turn(
+                            "user",
+                            garak.attempt.Message(self.prompts[seq], lang=self.lang),
+                        )
+                    )
+                }
                 if lang != self.lang
                 else None
             )
