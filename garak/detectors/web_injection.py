@@ -1,6 +1,6 @@
-"""XSS detectors
+"""Web Injection detectors
 
-Detectors to match the probes.xss plugins
+Detectors to match the probes.web_injection plugins
 """
 
 import re

@@ -15,7 +15,6 @@ garak.detectors
    garak.detectors.exploitation
    garak.detectors.fileformats
    garak.detectors.goodside
-   garak.detectors.html_injection
    garak.detectors.judge
    garak.detectors.knownbadsignatures
    garak.detectors.leakreplay
@@ -31,3 +30,4 @@ garak.detectors
    garak.detectors.snowball
    garak.detectors.unsafe_content
    garak.detectors.visual_jailbreak
+   garak.detectors.web_injection
