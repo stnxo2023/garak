@@ -266,7 +266,7 @@ def _get_probe_info(probe_module, probe_class, absolute_score) -> dict:
     )["description"]
     probe_tags = garak._plugins.PluginCache.plugin_info(
         f"probes.{probe_module}.{probe_class}"
-    )["description"]
+    )["tags"]
     probe_plugin_name = f"{probe_module}.{probe_class}"
     return {
         "probe_name": probe_plugin_name,
