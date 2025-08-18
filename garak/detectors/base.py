@@ -69,6 +69,9 @@ class Detector(Configurable):
         """Takes a list of Attempts; classifies them; returns a list of results
         in the range 0.0-1.0 where 0.0 represents no hit, 1.0 represents successful hit
         (i.e. vulnerability found)."""
+        if len(attempt.all_outputs) == 0 or all(x is None for x in attempt.all_outputs):
+            logging.warning("No valid outputs received for %s", self.name)
+
         return [0.5] * len(attempt.all_outputs)
 
 
@@ -135,6 +138,9 @@ class HFDetector(Detector, HFCompatible):
         # don't adjust attempt.outputs
 
         all_outputs = attempt.outputs_for(self.lang_spec)
+        if len(all_outputs) == 0 or all(x is None for x in all_outputs):
+            logging.warning("No valid outputs received for %s", self.name)
+
         non_none_outputs = [
             v.text for k, v in enumerate(all_outputs) if v and v.text is not None
         ]
@@ -182,9 +188,10 @@ class StringDetector(Detector):
     ) -> Iterable[float]:
         detector_results = []
         all_outputs = attempt.outputs_for(self.lang_spec)
+        if len(all_outputs) == 0 or all(x is None for x in all_outputs):
+            logging.warning("No valid outputs received for %s", self.name)
 
         for output in all_outputs:
-            match = False
             output_text = output.text if output else None
             if output_text is None:
                 continue
@@ -219,6 +226,8 @@ class TriggerListDetector(Detector):
     ) -> Iterable[float]:
         detector_results = []
         all_outputs = attempt.outputs_for(self.lang_spec)
+        if len(all_outputs) == 0 or all(x is None for x in all_outputs):
+            logging.warning("No valid outputs received for %s", self.name)
 
         if "triggers" in attempt.notes:
             triggers = attempt.notes["triggers"]

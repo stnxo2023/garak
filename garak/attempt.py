@@ -151,6 +151,8 @@ class Attempt:
     :type status: int
     :param prompt: The processed prompt that will presented to the generator
     :type prompt: Union[str|Turn|Conversation]
+    :param system_prompt: System prompt derived from the generator
+    :type system_prompt: Union[Turn|str]
     :param probe_classname: Name of the probe class that originated this ``Attempt``
     :type probe_classname: str
     :param probe_params: Non-default parameters logged by the probe
@@ -173,6 +175,8 @@ class Attempt:
     :type lang: str, valid BCP47
     :param reverse_translation_outputs: The reverse translation of output based on the original language of the probe
     :param reverse_translation_outputs: List(str)
+    :param overwrite_system_prompt: Overwrite the system prompt if it is present.
+    :param overwrite_system_prompt: bool
 
     Typical use:
 
@@ -202,6 +206,7 @@ class Attempt:
         self,
         status=ATTEMPT_NEW,
         prompt=None,
+        system_prompt=None,
         probe_classname=None,
         probe_params=None,
         targets=None,
@@ -211,6 +216,7 @@ class Attempt:
         seq=-1,
         lang=None,  # language code for prompt as sent to the target
         reverse_translation_outputs=None,
+        overwrite_system_prompt=False,
     ) -> None:
         self.uuid = uuid.uuid4()
         if prompt is not None:
@@ -224,10 +230,18 @@ class Attempt:
                 raise TypeError("prompts must be of type str | Message | Conversation")
             if not hasattr(self, "conversations"):
                 self.conversations = [Conversation([Turn("user", msg)])]
-            self.prompt = self.conversations[0]
         else:
             # is this the right way to model an empty Attempt?
             self.conversations = [Conversation()]
+
+        if system_prompt is not None:
+            self._add_system_prompt(
+                system_prompt=system_prompt,
+                overwrite=overwrite_system_prompt,
+                lang=lang,
+            )
+
+        self.prompt = self.conversations[0]
 
         self.status = status
         self.probe_classname = probe_classname
@@ -431,3 +445,35 @@ class Attempt:
             "Conversation turn role must be one of '%s', got '%s'"
             % ("'/'".join(roles), role)
         )
+
+    def _add_system_prompt(
+        self,
+        system_prompt: Union[Turn, str],
+        overwrite: bool = False,
+        lang: Union[None, str] = None,
+    ) -> None:
+        """Add system prompt to the start of the conversation.
+
+        The system prompt is configured at the generator level.
+        This inserts the system prompt of the generator at the
+        start of the conversation if it is not present unless the
+        `overwrite` flag is set to True, which may be necessary
+        for some probes.
+        """
+        if isinstance(system_prompt, str):
+            content = Turn(
+                role="system", content=Message(text=system_prompt, lang=lang)
+            )
+        elif isinstance(system_prompt, Turn):
+            content = system_prompt
+        else:
+            raise ValueError(
+                "Could not set system prompt. Expected type `str`, `Turn`, or `Message` but got %s"
+                % type(system_prompt)
+            )
+        if self.conversations[0].turns[0].role != "system":
+            for conversation in self.conversations:
+                conversation.turns.insert(0, content)
+        elif overwrite:
+            for conversation in self.conversations:
+                conversation.turns[0] = content
