@@ -40,7 +40,7 @@ def _process_file_body(in_file, out_file, aggregate_uuid):
 p = argparse.ArgumentParser(
     description="aggregate multiple similar garak reports into one jsonl"
 )
-p.add_argument("-o", help="output filename", required=True)
+p.add_argument("-o", "--output", help="output filename", required=True)
 p.add_argument("infiles", nargs="+", help="garak jsonl reports to be aggregated")
 a = p.parse_args()
 
