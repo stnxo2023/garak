@@ -28,6 +28,7 @@ class Generator(Configurable):
         "context_len": None,
         "skip_seq_start": None,
         "skip_seq_end": None,
+        "system_prompt": None,
     }
 
     _run_params = {"deprefix", "seed"}

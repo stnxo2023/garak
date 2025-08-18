@@ -246,6 +246,8 @@ class OpenAICompatible(Generator):
         elif self.generator == self.client.chat.completions:
             if isinstance(prompt, Conversation):
                 messages = []
+                if self.system_prompt is not None:
+                    messages.append({"role": "system", "content": self.system_prompt})
                 for turn in prompt.turns:
                     messages.append({"role": turn.role, "content": turn.content.text})
             elif isinstance(prompt, list):
