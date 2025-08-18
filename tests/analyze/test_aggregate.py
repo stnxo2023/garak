@@ -1,10 +1,10 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-import filecmp
 import json
 import subprocess
 import sys
+import tempfile
 
 from garak import _config
 import garak.analyze.report_digest
@@ -16,11 +16,8 @@ def test_aggregate_executes() -> None:
 
     _config.load_base_config()
 
-    agg_jsonl_output_path = str(
-        _config.transient.data_dir
-        / _config.reporting.report_dir
-        / f"{TEMP_PREFIX}.agg.report.jsonl"
-    )
+    aggfile = tempfile.NamedTemporaryFile(delete=False, encoding="utf-8", mode="w")
+    aggfile_name = aggfile.name
 
     result = subprocess.run(
         [
@@ -28,7 +25,7 @@ def test_aggregate_executes() -> None:
             "-m",
             "garak.analyze.aggregate_reports",
             "-o",
-            agg_jsonl_output_path,
+            aggfile_name,
             "tests/_assets/lmrc.report.jsonl",
             "tests/_assets/enc.report.jsonl",
         ],
@@ -36,7 +33,7 @@ def test_aggregate_executes() -> None:
     )
     assert result.returncode == 0, "aggregate_reports failed"
 
-    digest = garak.analyze.report_digest._get_report_digest(agg_jsonl_output_path)
+    digest = garak.analyze.report_digest._get_report_digest(aggfile_name)
     assert digest != False, "digest record missing from aggregated jsonl"
 
     agg_digest_eval_keys = set(digest["eval"].keys())
@@ -45,7 +42,7 @@ def test_aggregate_executes() -> None:
         "encoding",
     }, f"aggregated digest eval keys not as expected (got {agg_digest_eval_keys})"
 
-    with open(agg_jsonl_output_path, encoding="utf-8") as agg_jsonl_output_file:
+    with open(aggfile_name, encoding="utf-8") as agg_jsonl_output_file:
         agg_lines = agg_jsonl_output_file.readlines()
 
     with open("tests/_assets/agg.jsonl", encoding="utf-8") as ref_jsonl_output_file:
@@ -87,7 +84,7 @@ def test_aggregate_executes() -> None:
             "-m",
             "garak.analyze.report_digest",
             "-r",
-            agg_jsonl_output_path,
+            aggfile_name,
         ],
         check=True,
     )
