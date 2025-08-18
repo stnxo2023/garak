@@ -13,11 +13,14 @@ TEMP_PREFIX = "_garak_internal_test_temp"
 
 def test_aggregate_executes() -> None:
 
+    _config.load_base_config()
+
     agg_jsonl_output_path = str(
         _config.transient.data_dir
         / _config.reporting.report_dir
         / f"{TEMP_PREFIX}.agg.report.jsonl"
     )
+
     result = subprocess.run(
         [
             sys.executable,
@@ -26,7 +29,7 @@ def test_aggregate_executes() -> None:
             "-o",
             agg_jsonl_output_path,
             "tests/_assets/lmrc.report.jsonl",
-            "tests/_assets/enc.report.json",
+            "tests/_assets/enc.report.jsonl",
         ],
         check=True,
     )
@@ -35,11 +38,11 @@ def test_aggregate_executes() -> None:
     with open(agg_jsonl_output_path, "r", encoding="utf8") as agg_f:
         for record in [json.loads(line.strip()) for line in agg_f if line.strip()]:
             pass
-    digest = json.loads(record)
+    digest = record
     assert (
-        record["entry_type"] == "digest"
+        digest["entry_type"] == "digest"
     ), "digest record missing from aggregated jsonl"
-    agg_digest_eval_keys = set(record["eval"].keys())
+    agg_digest_eval_keys = set(digest["eval"].keys())
     assert agg_digest_eval_keys == {
         "lmrc",
         "enc",
