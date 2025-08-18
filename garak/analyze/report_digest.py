@@ -261,21 +261,17 @@ def _get_probe_result_summaries(cursor, probe_group) -> List[tuple]:
 
 
 def _get_probe_info(probe_module, probe_class, absolute_score) -> dict:
-    probe_description = garak._plugins.PluginCache.plugin_info(
-        f"probes.{probe_module}.{probe_class}"
-    )["description"]
-    probe_tags = garak._plugins.PluginCache.plugin_info(
-        f"probes.{probe_module}.{probe_class}"
-    )["tags"]
+    probe_classpath = f"probes.{probe_module}.{probe_class}"
+    probe_plugin_info = garak._plugins.PluginCache.plugin_info(probe_classpath)
+    probe_description = probe_plugin_info["description"]
+    probe_tags = probe_plugin_info["tags"]
     probe_plugin_name = f"{probe_module}.{probe_class}"
     return {
         "probe_name": probe_plugin_name,
         "probe_score": absolute_score,
         "probe_severity": map_absolute_score(absolute_score),
         "probe_descr": html.escape(probe_description),
-        "probe_tier": garak._plugins.PluginCache.plugin_info(
-            f"probes.{probe_module}.{probe_class}"
-        )["tier"],
+        "probe_tier": probe_plugin_info["tier"],
         "probe_tags": probe_tags,
     }
 
