@@ -13,7 +13,7 @@ import pprint
 import re
 import statistics
 import sys
-from typing import IO, List, Union
+from typing import IO, List
 
 import jinja2
 import sqlite3

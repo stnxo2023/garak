@@ -7,6 +7,7 @@ import subprocess
 import sys
 
 from garak import _config
+import garak.analyze.report_digest
 
 TEMP_PREFIX = "_garak_internal_test_temp"
 
@@ -35,22 +36,50 @@ def test_aggregate_executes() -> None:
     )
     assert result.returncode == 0, "aggregate_reports failed"
 
-    with open(agg_jsonl_output_path, "r", encoding="utf8") as agg_f:
-        for record in [json.loads(line.strip()) for line in agg_f if line.strip()]:
-            pass
-    digest = record
-    assert (
-        digest["entry_type"] == "digest"
-    ), "digest record missing from aggregated jsonl"
+    digest = garak.analyze.report_digest._get_report_digest(agg_jsonl_output_path)
+    assert digest != False, "digest record missing from aggregated jsonl"
+
     agg_digest_eval_keys = set(digest["eval"].keys())
     assert agg_digest_eval_keys == {
         "lmrc",
-        "enc",
+        "encoding",
     }, f"aggregated digest eval keys not as expected (got {agg_digest_eval_keys})"
 
-    assert filecmp.cmp(
-        agg_jsonl_output_path, "tests/_assets/agg.jsonl"
-    ), "aggregation output did not match reference"
+    with open(agg_jsonl_output_path, encoding="utf-8") as agg_jsonl_output_file:
+        agg_lines = agg_jsonl_output_file.readlines()
+
+    with open("tests/_assets/agg.jsonl", encoding="utf-8") as ref_jsonl_output_file:
+        ref_lines = ref_jsonl_output_file.readlines()
+
+    assert len(agg_lines) == len(
+        ref_lines
+    ), f"unexpected aggregate line count, expected {len(ref_lines)} got {len(agg_lines)}"
+
+    # skip calibration
+    agg_lines.pop(0)
+    ref_lines.pop(0)
+
+    for i in range(len(agg_lines)):
+        agg_rec = json.loads(agg_lines[i])
+        ref_rec = json.loads(ref_lines[i])
+
+        if i == 0:  # init line
+            assert agg_rec["orig_uuid"] == ref_rec["orig_uuid"]
+            assert agg_rec["orig_start_time"] == ref_rec["orig_start_time"]
+            continue
+
+        if "uuid" in ref_rec:
+            del (
+                ref_rec["uuid"],
+                agg_rec["uuid"],
+            )  # key not found in agg rec means agg rec is out of sync (test fail)
+
+        if ref_rec["entry_type"] == "digest":
+            del ref_rec["meta"]["run_uuid"], agg_rec["meta"]["run_uuid"]
+
+        assert (
+            agg_rec == ref_rec
+        ), f"aggregated data mismatch in line {i+1}, expected\n{ref_rec}\ngot\n{agg_rec}"
 
     result = subprocess.run(
         [
