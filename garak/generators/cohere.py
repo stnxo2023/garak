@@ -84,8 +84,11 @@ class CohereGenerator(Generator):
         Filtering exceptions based on message instead of type, in backoff, isn't immediately obvious
         - on the other hand blank prompt / RTP shouldn't hang forever
         """
-        if prompt_text == "":
+        if isinstance(prompt_text, str) and prompt_text == "":
             return [Message("")] * request_size
+        elif isinstance(prompt_text, list):
+            if prompt_text[-1]["content"] == "":
+                return [Message("")] * request_size
         else:
             if self.api_version == "v2":
                 # Use chat API with ClientV2 (recommended in v5+)
@@ -93,12 +96,9 @@ class CohereGenerator(Generator):
                 # Chat API doesn't support num_generations, so we need to make multiple calls
                 for _ in range(request_size):
                     try:
-                        # Use the correct UserChatMessageV2 class
-                        message = cohere.UserChatMessageV2(content=prompt_text)
-
                         response = self.generator.chat(
                             model=self.name,
-                            messages=[message],
+                            messages=[prompt_text],
                             temperature=self.temperature,
                             max_tokens=self.max_tokens,
                             k=self.k,
@@ -143,9 +143,13 @@ class CohereGenerator(Generator):
                 # Use legacy generate API with cohere.Client()
                 # Following Cohere's guidance for full backward compatibility
                 try:
+                    message = cohere.UserChatMessageV2(
+                        content=prompt_text[-1]["content"]
+                    )
+
                     response = self.generator.generate(
                         model=self.name,
-                        prompt=prompt_text,
+                        message=message,
                         temperature=self.temperature,
                         num_generations=request_size,
                         max_tokens=self.max_tokens,
@@ -194,7 +198,7 @@ class CohereGenerator(Generator):
         generation_iterator.set_description(self.fullname)
         for request_size in generation_iterator:
             outputs += self._call_cohere_api(
-                prompt.last_message().text, request_size=request_size
+                prompt.as_dict(), request_size=request_size
             )
         return outputs
 

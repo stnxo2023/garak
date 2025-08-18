@@ -143,6 +143,16 @@ class Conversation:
             ret_val.turns.append(Turn.from_dict(turn))
         return ret_val
 
+    def as_dict(self) -> list[dict]:
+        """Convert Conversation object to a list of dicts.
+
+        This is needed for a number of generators.
+        """
+        turn_list = [
+            {"role": turn.role, "content": turn.content} for turn in self.turns
+        ]
+        return turn_list
+
 
 class Attempt:
     """A class defining objects that represent everything that constitutes a single attempt at evaluating an LLM.
