@@ -105,6 +105,7 @@ class LiteLLMGenerator(Generator):
         "skip_seq_start",
         "skip_seq_end",
         "stop",
+        "system_prompt",
     )
 
     def __init__(self, name: str = "", generations: int = 10, config_root=_config):

@@ -97,12 +97,17 @@ class Turn:
     role: str
     content: Message
 
-    @staticmethod
-    def from_dict(value: dict):
-        entity = deepcopy(value)
-        message = entity.pop("content", {})
-        entity["content"] = Message(**message)
-        ret_val = Turn(**entity)
+    @classmethod
+    def from_dict(cls, value: dict):
+        if "role" in value.keys():
+            role = value["role"]
+        else:
+            raise ValueError("Expected `role` in Turn dict")
+        if "content" in value.keys():
+            content = Message(text=value["content"])
+        else:
+            raise ValueError("Expected `content` in Turn dict")
+        ret_val = Turn(role=role, content=content)
         return ret_val
 
 
@@ -142,6 +147,11 @@ class Conversation:
         for turn in turns:
             ret_val.turns.append(Turn.from_dict(turn))
         return ret_val
+
+    @classmethod
+    def from_list(cls, turn_list: list[dict]):
+        turns = [Turn.from_dict(turn) for turn in turn_list]
+        return cls(turns=turns)
 
     def as_dict(self) -> list[dict]:
         """Convert Conversation object to a list of dicts.

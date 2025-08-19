@@ -71,6 +71,7 @@ class RestGenerator(Generator):
         "top_k",
         "proxies",
         "verify_ssl",
+        "system_prompt",
     )
 
     def __init__(self, uri=None, config_root=_config):
