@@ -183,8 +183,7 @@ class Probe(Configurable):
         self, prompt=None, seq=None, notes=None, lang="*"
     ) -> garak.attempt.Attempt:
         """function for creating a new attempt given a prompt"""
-        if hasattr(self, "generator"):
-            # Base generator gets sysstem_prompt of None
+        if hasattr(self, "generator") and hasattr(self.generator, "system_prompt"):
             system_prompt = self.generator.system_prompt
         else:
             system_prompt = None
