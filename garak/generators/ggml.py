@@ -109,6 +109,7 @@ class GgmlGenerator(Generator):
         self, prompt: Conversation, generations_this_call: int = 1
     ) -> List[Union[Message, None]]:
         # should this be expanded to process all Conversation messages?
+        # EG: Yes, but I'm not clear on how to do it.
         if generations_this_call != 1:
             logging.warning(
                 "GgmlGenerator._call_model invokes with generations_this_call=%s but only 1 supported",
