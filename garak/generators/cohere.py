@@ -90,6 +90,7 @@ class CohereGenerator(Generator):
             if prompt_text[-1]["content"] == "":
                 return [Message("")] * request_size
         else:
+            prompt_text = prompt_text.as_dict()
             if self.api_version == "v2":
                 # Use chat API with ClientV2 (recommended in v5+)
                 responses = []
@@ -98,7 +99,7 @@ class CohereGenerator(Generator):
                     try:
                         response = self.generator.chat(
                             model=self.name,
-                            messages=[prompt_text],
+                            messages=prompt_text,
                             temperature=self.temperature,
                             max_tokens=self.max_tokens,
                             k=self.k,
@@ -143,13 +144,11 @@ class CohereGenerator(Generator):
                 # Use legacy generate API with cohere.Client()
                 # Following Cohere's guidance for full backward compatibility
                 try:
-                    message = cohere.UserChatMessageV2(
-                        content=prompt_text[-1]["content"]
-                    )
+                    message = prompt_text[-1]["content"]
 
                     response = self.generator.generate(
                         model=self.name,
-                        message=message,
+                        prompt=message,
                         temperature=self.temperature,
                         num_generations=request_size,
                         max_tokens=self.max_tokens,
@@ -197,9 +196,7 @@ class CohereGenerator(Generator):
         generation_iterator = tqdm.tqdm(request_sizes, leave=False)
         generation_iterator.set_description(self.fullname)
         for request_size in generation_iterator:
-            outputs += self._call_cohere_api(
-                prompt.as_dict(), request_size=request_size
-            )
+            outputs += self._call_cohere_api(prompt, request_size=request_size)
         return outputs
 
 

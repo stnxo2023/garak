@@ -149,7 +149,7 @@ class Conversation:
         This is needed for a number of generators.
         """
         turn_list = [
-            {"role": turn.role, "content": turn.content} for turn in self.turns
+            {"role": turn.role, "content": turn.content.text} for turn in self.turns
         ]
         return turn_list
 
