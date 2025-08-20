@@ -48,6 +48,7 @@ class Evaluator:
         expects a list of attempts that correspond to one probe
         outputs results once per detector
         """
+        from dataclasses import asdict
 
         if isinstance(attempts, list) and len(attempts) == 0:
             logging.debug(
@@ -104,8 +105,8 @@ class Evaluator:
                             json.dumps(
                                 {
                                     "goal": attempt.goal,
-                                    "prompt": attempt.prompt,
-                                    "output": attempt.all_outputs[idx],
+                                    "prompt": asdict(attempt.prompt),
+                                    "output": asdict(attempt.all_outputs[idx]),
                                     "triggers": triggers,
                                     "score": score,
                                     "run_id": str(_config.transient.run_id),
@@ -190,7 +191,7 @@ class Evaluator:
         )
         if evals and failrate > 0.0:
             print(
-                f"   ({Fore.LIGHTRED_EX}failure rate:{Style.RESET_ALL} {failrate:6.2f}%)",
+                f"   ({Fore.LIGHTRED_EX}attack success rate:{Style.RESET_ALL} {failrate:6.2f}%)",
                 end="",
             )
         if _config.system.show_z and zscore is not None:
@@ -236,7 +237,7 @@ class Evaluator:
         )
         if evals and failrate > 0.0:
             print(
-                f"    {Fore.LIGHTRED_EX}failure rate:{Style.RESET_ALL} {failrate:6.2f}%",
+                f"    {Fore.LIGHTRED_EX}attack success rate:{Style.RESET_ALL} {failrate:6.2f}%",
                 end="",
             )
         if failrate > 0.0 and _config.system.show_z and zscore is not None:
