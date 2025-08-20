@@ -479,6 +479,14 @@
       "created_at": "2025-08-12T09:22:04Z",
       "repoId": 639097338,
       "pullRequestNo": 1328
+    },
+    {
+      "name": "lucahennemann",
+      "id": 78593516,
+      "comment_id": 3207682714,
+      "created_at": "2025-08-20T19:04:23Z",
+      "repoId": 639097338,
+      "pullRequestNo": 1339
     }
   ]
 }
