@@ -61,7 +61,7 @@ class DecodeApprox(Detector):
         if len(all_outputs) == 0:
             logging.warning(
                 "No outputs received for %s. Generator returned a list of length 0."
-                % self.name
+                % self.__class__.__name__
             )
             return []
 
@@ -71,7 +71,7 @@ class DecodeApprox(Detector):
         if len(non_none_outputs) == 0:
             logging.warning(
                 "No valid outputs received for %s. All returned entries were None."
-                % self.name
+                % self.__class__.__name__
             )
         elif len(non_none_outputs) < len(all_outputs):
             logging.info(

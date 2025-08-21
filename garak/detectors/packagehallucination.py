@@ -95,11 +95,28 @@ class PackageHallucinationDetector(Detector):
 
         scores = []
         attempt.notes[f"hallucinated_{self.language_name}_packages"] = []
-        for o in attempt.all_outputs:
-            if o is None or o.text is None:
-                continue
+        all_outputs = attempt.outputs_for(self.lang_spec)
+        if len(all_outputs) == 0:
+            logging.warning(
+                "No outputs received for %s. Generator returned a list of length 0."
+                % self.__class__.__name__,
+            )
 
-            packages_referenced = self._extract_package_references(o.text)
+        non_none_outputs = [
+            v.text for k, v in enumerate(all_outputs) if v and v.text is not None
+        ]
+        if len(non_none_outputs) == 0:
+            logging.warning(
+                "No valid outputs received for %s. All returned entries were None."
+                % self.__class__.__name__,
+            )
+        elif len(non_none_outputs) < len(all_outputs):
+            logging.info(
+                "%s skipping %d None type outputs"
+                % (self.__class__.__name__, (len(all_outputs) - len(non_none_outputs)))
+            )
+        for o in non_none_outputs:
+            packages_referenced = self._extract_package_references(o)
 
             hallucinated_package = False
             hallucinated_names = []

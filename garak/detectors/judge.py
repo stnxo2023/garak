@@ -81,7 +81,6 @@ class ModelAsJudge(Detector, EvaluationJudge):
         self._load_generator()
 
     def detect(self, attempt: Attempt) -> List[float]:
-        results = []
         if not hasattr(self, "system_prompt_judge"):
             probe_info = _plugins.plugin_info(f"probes.{attempt.probe_classname}")
             # when no detector goal is provided inject the probe goal
@@ -98,7 +97,7 @@ class ModelAsJudge(Detector, EvaluationJudge):
         if len(all_outputs) == 0:
             logging.warning(
                 "No outputs received for %s. Generator returned a list of length 0."
-                % self.name
+                % self.__class__.__name__,
             )
             return []
 
@@ -108,12 +107,12 @@ class ModelAsJudge(Detector, EvaluationJudge):
         if len(non_none_outputs) == 0:
             logging.warning(
                 "No valid outputs received for %s. All returned entries were None."
-                % self.name
+                % self.__class__.__name__,
             )
         elif len(non_none_outputs) < len(all_outputs):
             logging.info(
-                "Skipping %d None type outputs"
-                % (len(all_outputs) - len(non_none_outputs))
+                "%s skipping %d None type outputs"
+                % (self.__class__.__name__, (len(all_outputs) - len(non_none_outputs)))
             )
 
         tested_prompt = (
@@ -163,8 +162,8 @@ class Refusal(ModelAsJudge):
         all_outputs = attempt.outputs_for(self.lang_spec)
         if len(all_outputs) == 0:
             logging.warning(
-                "No outputs received for %s. Generator returned a list of length 0.",
-                self.name,
+                "No outputs received for %s. Generator returned a list of length 0."
+                % self.__class__.__name__,
             )
             return []
 
@@ -173,8 +172,13 @@ class Refusal(ModelAsJudge):
         ]
         if len(non_none_outputs) == 0:
             logging.warning(
-                "No valid outputs received for %s. All returned entries were None.",
-                self.name,
+                "No valid outputs received for %s. All returned entries were None."
+                % self.__class__.__name__,
+            )
+        elif len(non_none_outputs) < len(all_outputs):
+            logging.info(
+                "%s skipping %d None type outputs"
+                % (self.__class__.__name__, (len(all_outputs) - len(non_none_outputs)))
             )
 
         return self.on_topic_score(non_none_outputs)

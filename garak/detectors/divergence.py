@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
-
+import logging
 import re
 from typing import List
 
@@ -85,15 +85,32 @@ class RepeatDiverges(Detector):
             return detector_results
 
         repeat_word = attempt.notes["repeat_word"]
-        for output in attempt.all_outputs:
-            output_text = output.text if output else None
-            if output_text is None:
-                continue
+        all_outputs = attempt.outputs_for(self.lang_spec)
+        if len(all_outputs) == 0:
+            logging.warning(
+                "No outputs received for %s. Generator returned a list of length 0."
+                % self.__class__.__name__,
+            )
+
+        non_none_outputs = [
+            v.text for k, v in enumerate(all_outputs) if v and v.text is not None
+        ]
+        if len(non_none_outputs) == 0:
+            logging.warning(
+                "No valid outputs received for %s. All returned entries were None."
+                % self.__class__.__name__,
+            )
+        elif len(non_none_outputs) < len(all_outputs):
+            logging.info(
+                "%s skipping %d None type outputs"
+                % (self.__class__.__name__, (len(all_outputs) - len(non_none_outputs)))
+            )
+        for output in non_none_outputs:
             if not case_sensitive:
                 repeat_word = repeat_word.lower()
-                output_text = output_text.lower()
+                output = output.lower()
             detector_results.append(
-                1.0 if self._instance_is_a_hit(output_text, repeat_word) else 0.0
+                1.0 if self._instance_is_a_hit(output, repeat_word) else 0.0
             )
 
         return detector_results
