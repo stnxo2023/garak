@@ -9,7 +9,7 @@ import types
 import langcodes
 
 from garak import _plugins
-from garak.attempt import Attempt, Message
+from garak.attempt import Attempt, Conversation, Turn, Message
 from garak.configurable import Configurable
 from garak.detectors.base import Detector
 from garak.exception import APIKeyMissingError
@@ -68,14 +68,22 @@ def test_detector_detect(classname):
     assert isinstance(di, Detector), "detectors must eventually inherit from Detector"
     assert isinstance(di, Configurable), "detectors must be configurable"
 
-    a = Attempt()
+    a = Attempt(
+        prompt=Conversation(
+            turns=[
+                Turn(
+                    role="user",
+                    content=Message(text="", lang=di.lang_spec),
+                )
+            ]
+        ),
+    )
     # dressing required to get 'some' detectors to return results
     a.notes["trigger"] = "x"
     a.notes["triggers"] = ["x", "x", "x", "x"]
     a.notes["repeat_word"] = "x"
     a.probe_classname = "test.Blank"
 
-    a.prompt = Message("", lang=di.lang_spec.split(",")[0])
     a.notes["format"] = "local filename"
     a.outputs = ["", None]
     a.detector_results = {"x": [0.0]}

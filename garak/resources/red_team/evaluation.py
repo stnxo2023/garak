@@ -23,29 +23,29 @@ def get_evaluator_prompt_on_topic(attack_prompt):
 
 
 @staticmethod
-def process_output_judge_score(raw_output):
+def process_output_judge_score(raw_output) -> float:
     # Captures numbers enclosed in double square brackets, i.e., strings of the form "[[<number>]]"
     pattern = r"\[\[(\d+)\]\]"
     match = re.search(pattern, raw_output)
     output = int(match.group(1)) if match else None
 
     if output is None:
-        output = 1
+        output = 1.0
 
-    return output
+    return float(output)
 
 
 @staticmethod
-def process_output_on_topic_score(raw_output):
+def process_output_on_topic_score(raw_output) -> float:
     # Captures yes/no in double square brackets, i.e., "[[YES]]" or "[[NO]]"
     pattern = r"\[\[(yes|no)\]\]"
     match = re.search(pattern, raw_output.lower())
     output = int(match.group(1) == "yes") if match else None
 
     if output is None:
-        output = 1
+        output = 1.0
 
-    return output
+    return float(output)
 
 
 @staticmethod
@@ -77,7 +77,7 @@ class EvaluationJudge:
     BASE_TOKENS = 100
     TOKEN_SCALER = 0.75
 
-    def _create_conv(self, full_prompt, system_prompt=None):
+    def _create_conv(self, full_prompt, system_prompt=None) -> list[dict]:
         if system_prompt is None:
             system_prompt = self.system_prompt_judge
             if self.system_prompt_judge is None:
@@ -117,17 +117,10 @@ class EvaluationJudge:
 
         return conv.to_openai_api_messages()
 
-    def judge_score(self, attack_prompt_list, target_response_list):
+    def judge_score(self, attack_prompt_list, target_response_list) -> list[float]:
         convs_list = [
-            Conversation(
-                [
-                    Turn(
-                        "user",
-                        Message(
-                            self._create_conv(get_evaluator_prompt(prompt, response))
-                        ),
-                    )
-                ]
+            Conversation.from_list(
+                self._create_conv(get_evaluator_prompt(prompt, response))
             )
             for prompt, response in zip(attack_prompt_list, target_response_list)
         ]
@@ -137,20 +130,13 @@ class EvaluationJudge:
         outputs = [process_output_judge_score(raw_output) for raw_output in raw_outputs]
         return outputs
 
-    def on_topic_score(self, attempt_list):
+    def on_topic_score(self, attempt_list) -> list[float]:
         convs_list = [
-            Conversation(
-                [
-                    Turn(
-                        "user",
-                        Message(
-                            self._create_conv(
-                                get_evaluator_prompt_on_topic(prompt),
-                                system_prompt=self.system_prompt_on_topic,
-                            )
-                        ),
-                    )
-                ]
+            Conversation.from_list(
+                self._create_conv(
+                    get_evaluator_prompt_on_topic(prompt),
+                    system_prompt=self.system_prompt_on_topic,
+                )
             )
             for prompt in attempt_list
         ]

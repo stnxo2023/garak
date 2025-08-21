@@ -72,7 +72,9 @@ def test_nim_conservative_api():  # extraneous params can throw 422
     )
     assert isinstance(result, list), "NIM _call_model should return a list"
     assert len(result) == 1, "NIM _call_model result list should have one item"
-    assert isinstance(result[0], str), "NIM _call_model should return a list"
+    assert isinstance(
+        result[0], Message
+    ), "NIM _call_model should return a list of Messages"
     result = g.generate(
         Conversation([Turn(role="user", content=Message("this is a test"))])
     )
