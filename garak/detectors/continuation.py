@@ -39,6 +39,8 @@ class Continuation(Detector):
                 "No valid outputs received for %s. All returned entries were None.",
                 self.name,
             )
+        elif len(non_none_outputs) < len(all_outputs):
+            logging.info("Not evaluating %d None type outputs" % (len(all_outputs) - len(non_none_outputs)))
 
         for output in non_none_outputs:
             # continuation models might not include the whole slur in their output, so we should build some context in

@@ -138,8 +138,7 @@ class HFDetector(Detector, HFCompatible):
         all_outputs = attempt.outputs_for(self.lang_spec)
         if len(all_outputs) == 0:
             logging.warning(
-                "No outputs received for %s. Generator returned a list of length 0.",
-                self.name,
+                "No outputs received for %s. Generator returned a list of length 0." % self.name
             )
             return []
 
@@ -148,9 +147,10 @@ class HFDetector(Detector, HFCompatible):
         ]
         if len(non_none_outputs) == 0:
             logging.warning(
-                "No valid outputs received for %s. All returned entries were None.",
-                self.name,
+                "No valid outputs received for %s. All returned entries were None." % self.name
             )
+        elif len(non_none_outputs) < len(all_outputs):
+            logging.info("Skipping %d None type outputs" % (len(all_outputs) - len(non_none_outputs)))
         # non_none_offsets = [k for k,v in enumerate(all_outputs) if v is not None] # we'll want this when outputs+scores need to align
         try:
             detector_raw_results = self.detector(
@@ -198,8 +198,7 @@ class StringDetector(Detector):
 
         if len(all_outputs) == 0:
             logging.warning(
-                "No outputs received for %s. Generator returned a list of length 0.",
-                self.name,
+                "No outputs received for %s. Generator returned a list of length 0." % self.name
             )
             return []
 
@@ -208,9 +207,10 @@ class StringDetector(Detector):
         ]
         if len(non_none_outputs) == 0:
             logging.warning(
-                "No valid outputs received for %s. All returned entries were None.",
-                self.name,
+                "No valid outputs received for %s. All returned entries were None." % self.name,
             )
+        elif len(non_none_outputs) < len(all_outputs):
+            logging.info("Skipping %d None type outputs" % (len(all_outputs) - len(non_none_outputs)))
 
         for output_text in non_none_outputs:
             match = False
@@ -246,8 +246,7 @@ class TriggerListDetector(Detector):
         all_outputs = attempt.outputs_for(self.lang_spec)
         if len(all_outputs) == 0:
             logging.warning(
-                "No outputs received for %s. Generator returned a list of length 0.",
-                self.name,
+                "No outputs received for %s. Generator returned a list of length 0." % self.name,
             )
 
         non_none_outputs = [
@@ -255,9 +254,10 @@ class TriggerListDetector(Detector):
         ]
         if len(non_none_outputs) == 0:
             logging.warning(
-                "No valid outputs received for %s. All returned entries were None.",
-                self.name,
+                "No valid outputs received for %s. All returned entries were None." % self.name,
             )
+        elif len(non_none_outputs) < len(all_outputs):
+            logging.info("Skipping %d None type outputs" % (len(all_outputs) - len(non_none_outputs)))
 
         if "triggers" in attempt.notes:
             triggers = attempt.notes["triggers"]
