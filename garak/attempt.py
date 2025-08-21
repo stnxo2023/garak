@@ -99,16 +99,17 @@ class Turn:
 
     @classmethod
     def from_dict(cls, value: dict):
-        if "role" in value.keys():
-            role = value["role"]
+        entity = deepcopy(value)
+        if "role" in entity.keys():
+            role = entity["role"]
         else:
             raise ValueError("Expected `role` in Turn dict")
-        if "content" in value.keys():
-            content = Message(text=value["content"])
+        message = entity.pop("content", {})
+        if isinstance(message, str):
+            content = Message(text=message)
         else:
-            raise ValueError("Expected `content` in Turn dict")
-        ret_val = Turn(role=role, content=content)
-        return ret_val
+            content = Message(**message)
+        return cls(role=role, content=content)
 
 
 @dataclass
@@ -250,18 +251,17 @@ class Attempt:
                 raise TypeError("prompts must be of type str | Message | Conversation")
             if not hasattr(self, "conversations"):
                 self.conversations = [Conversation([Turn("user", msg)])]
+            self.prompt = self.conversations[0]
+
+            if system_prompt is not None:
+                self._add_system_prompt(
+                    system_prompt=system_prompt,
+                    overwrite=overwrite_system_prompt,
+                    lang=lang,
+                )
         else:
             # is this the right way to model an empty Attempt?
             self.conversations = [Conversation()]
-
-        if system_prompt is not None:
-            self._add_system_prompt(
-                system_prompt=system_prompt,
-                overwrite=overwrite_system_prompt,
-                lang=lang,
-            )
-
-        self.prompt = self.conversations[0]
 
         self.status = status
         self.probe_classname = probe_classname
@@ -318,6 +318,12 @@ class Attempt:
         # this would require contributors to be more defensive and guard for the
         # exception, though that may be a reasonable trade off.
         return None
+
+    @property
+    def initial_user_message(self) -> Message:
+        for turn in self.conversations[0].turns:
+            if turn.role == "user":
+                return turn.content
 
     @property
     def lang(self):
@@ -395,9 +401,9 @@ class Attempt:
         """
         if (
             lang is not None
-            and self.conversations[0].turns[0].content.lang != "*"
+            and self.initial_user_message.lang != "*"
             and lang != "*"
-            and self.conversations[0].turns[0].content.lang != lang
+            and self.initial_user_message.lang != lang
         ):
             return self.notes.get(
                 "pre_translation_prompt", self.prompt
@@ -412,9 +418,9 @@ class Attempt:
         """
         if (
             lang is not None
-            and self.conversations[0].turns[0].content.lang != "*"
+            and self.initial_user_message.lang != "*"
             and lang != "*"
-            and self.conversations[0].turns[0].content.lang != lang
+            and self.initial_user_message.lang != lang
         ):
             return (
                 self.reverse_translation_outputs
