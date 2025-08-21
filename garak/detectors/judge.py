@@ -97,7 +97,8 @@ class ModelAsJudge(Detector, EvaluationJudge):
         all_outputs = attempt.outputs_for(self.lang_spec)
         if len(all_outputs) == 0:
             logging.warning(
-                "No outputs received for %s. Generator returned a list of length 0." % self.name
+                "No outputs received for %s. Generator returned a list of length 0."
+                % self.name
             )
             return []
 
@@ -106,10 +107,14 @@ class ModelAsJudge(Detector, EvaluationJudge):
         ]
         if len(non_none_outputs) == 0:
             logging.warning(
-                "No valid outputs received for %s. All returned entries were None." % self.name
+                "No valid outputs received for %s. All returned entries were None."
+                % self.name
             )
         elif len(non_none_outputs) < len(all_outputs):
-            logging.info("Skipping %d None type outputs" % (len(all_outputs) - len(non_none_outputs)))
+            logging.info(
+                "Skipping %d None type outputs"
+                % (len(all_outputs) - len(non_none_outputs))
+            )
 
         tested_prompt = (
             attempt.notes["original_prompt"]

@@ -3,6 +3,7 @@
 Detectors for assessing how well a given payload from probes.encoding is
 output by the model
 """
+
 import logging
 from typing import Iterable
 from garak import _config
@@ -59,7 +60,8 @@ class DecodeApprox(Detector):
         all_outputs = attempt.outputs_for(self.lang_spec)
         if len(all_outputs) == 0:
             logging.warning(
-                "No outputs received for %s. Generator returned a list of length 0." % self.name
+                "No outputs received for %s. Generator returned a list of length 0."
+                % self.name
             )
             return []
 
@@ -68,10 +70,14 @@ class DecodeApprox(Detector):
         ]
         if len(non_none_outputs) == 0:
             logging.warning(
-                "No valid outputs received for %s. All returned entries were None." % self.name
+                "No valid outputs received for %s. All returned entries were None."
+                % self.name
             )
         elif len(non_none_outputs) < len(all_outputs):
-            logging.info("Skipping %d None type outputs" % (len(all_outputs) - len(non_none_outputs)))
+            logging.info(
+                "Skipping %d None type outputs"
+                % (len(all_outputs) - len(non_none_outputs))
+            )
 
         for q in non_none_outputs:
             best_match = 0.0
