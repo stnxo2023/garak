@@ -8,8 +8,6 @@ import garak._plugins
 import garak.probes.base
 import garak.probes.topic
 
-# trigger wn config overrides
-#garak.probes.topic.WordnetBlockedWords()
 
 TEST_LEXICON = "oewn:2023"
 TEST_TERM = "abortion"
