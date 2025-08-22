@@ -5,6 +5,7 @@ from typing import List, Union
 import backoff
 
 from garak import _config
+from garak.attempt import Message, Conversation
 from garak.exception import GeneratorBackoffTrigger
 from garak.generators.base import Generator
 from httpx import TimeoutException
@@ -51,10 +52,10 @@ class OllamaGenerator(Generator):
         backoff.fibo, lambda ans: ans == [None] or len(ans) == 0, max_tries=3
     )  # Ollama sometimes returns empty responses. Only 3 retries to not delay generations expecting empty responses too much
     def _call_model(
-        self, prompt: str, generations_this_call: int = 1
-    ) -> List[Union[str, None]]:
+        self, prompt: Conversation, generations_this_call: int = 1
+    ) -> List[Union[Message, None]]:
         try:
-            response = self.client.generate(self.name, prompt)
+            response = self.client.generate(self.name, prompt.last_message().text)
         except Exception as e:
             if (
                 isinstance(e, self.ollama.ResponseError) and e.status_code == 404
@@ -66,7 +67,7 @@ class OllamaGenerator(Generator):
                     raise GeneratorBackoffTrigger from e
             raise e
 
-        return [response.get("response", None)]
+        return [Message(response.get("response", None))]
 
 
 class OllamaGeneratorChat(OllamaGenerator):
@@ -85,17 +86,15 @@ class OllamaGeneratorChat(OllamaGenerator):
         backoff.fibo, lambda ans: ans == [None] or len(ans) == 0, max_tries=3
     )  # Ollama sometimes returns empty responses. Only 3 retries to not delay generations expecting empty responses too much
     def _call_model(
-        self, prompt: str, generations_this_call: int = 1
-    ) -> List[Union[str, None]]:
+        self, prompt: Conversation, generations_this_call: int = 1
+    ) -> List[Union[Message, None]]:
+        messages = []
+        for turn in prompt.turns:
+            messages.append({"role": turn.role, "content": turn.content.text})
         try:
             response = self.client.chat(
                 model=self.name,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": prompt,
-                    },
-                ],
+                messages=messages,
             )
         except Exception as e:
             if (
@@ -108,7 +107,7 @@ class OllamaGeneratorChat(OllamaGenerator):
                     raise GeneratorBackoffTrigger from e
             raise e
         return [
-            response.get("message", {}).get("content", None)
+            Message(response.get("message", {}).get("content", None))
         ]  # Return the response or None
 
 

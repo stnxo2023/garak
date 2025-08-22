@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "garak"
-version = "0.12.0.pre1"
+version = "0.13.0.pre1"
 authors = [
   { name = "Leon Derczynski", email="lderczynski@nvidia.com" },
   { name = "Subho Majumdar", email="subho@vijil.ai" },
@@ -66,7 +66,7 @@ requires-python = ">=3.10"
 dependencies = [
   "base2048>=0.1.3",
   "transformers>=4.51.3",
-  "datasets>=3.0.0",
+  "datasets>=3.0.0,<4.0",
   "colorama>=0.4.3",
   "tqdm>=4.67.1",
   "openai>=1.45.0,<2",
@@ -82,7 +82,7 @@ dependencies = [
   "torch>=2.6.0",
   "sentencepiece>=0.1.99",
   "markdown>=3.4.3",
-  "numpy>=1.26.4,<2.0",
+  "numpy>=2.0.0",
   "zalgolib>=0.2.2",
   "ecoji>=0.1.1",
   "deepl==1.17.0",
@@ -127,7 +127,7 @@ all_plugins = [
   "garak[plugin_cohere,plugin_langchain,plugin_llava,plugin_litellm,plugin_mistralai,plugin_nemoguardrails,plugin_nemollm,plugin_ollama,plugin_optimum,plugin_replicate]"
 ]
 plugin_cohere = [
-  "cohere>=4.5.1,<5"
+  "cohere>=5.16.0"
 ]
 plugin_langchain = [
   "langchain>=0.3.25",

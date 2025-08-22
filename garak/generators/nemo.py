@@ -13,6 +13,7 @@ from typing import List, Union
 import backoff
 
 from garak import _config
+from garak.attempt import Message, Conversation
 from garak.exception import APIKeyMissingError, GeneratorBackoffTrigger
 from garak.generators.base import Generator
 
@@ -75,11 +76,11 @@ class NeMoGenerator(Generator):
         max_value=70,
     )
     def _call_model(
-        self, prompt: str, generations_this_call: int = 1
-    ) -> List[Union[str, None]]:
+        self, prompt: Conversation, generations_this_call: int = 1
+    ) -> List[Union[Message, None]]:
         # avoid:
         #    doesn't match schema #/components/schemas/CompletionRequestBody: Error at "/prompt": minimum string length is 1
-        if prompt == "":
+        if prompt.last_message().text == "":
             return [None]
 
         reset_none_seed = False
@@ -91,9 +92,10 @@ class NeMoGenerator(Generator):
                 "fixing a seed means nemollm gives the same result every time, recommend setting generations=1"
             )
         try:
+            # can this be expanded to take a conversation set of Messages?
             response = self.nemo.generate(
                 model=self.name,
-                prompt=prompt,
+                prompt=prompt.last_message().text,
                 tokens_to_generate=self.max_tokens,
                 temperature=self.temperature,
                 random_seed=self.seed,
@@ -121,7 +123,7 @@ class NeMoGenerator(Generator):
         if reset_none_seed:
             self.seed = None
 
-        return [response["text"]]
+        return [Message(response["text"])]
 
 
 DEFAULT_CLASS = "NeMoGenerator"

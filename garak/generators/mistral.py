@@ -1,12 +1,15 @@
+from typing import List
+
 import backoff
+
+from garak import _config
 from garak.exception import GeneratorBackoffTrigger
 from garak.generators.base import Generator
-import garak._config as _config
+from garak.attempt import Message, Conversation
 
 
 class MistralGenerator(Generator):
-    """
-    Interface for public endpoints of models hosted in Mistral La Plateforme (console.mistral.ai).
+    """Interface for public endpoints of models hosted in Mistral La Plateforme (console.mistral.ai).
     Expects API key in MISTRAL_API_TOKEN environment variable.
     """
 
@@ -43,17 +46,16 @@ class MistralGenerator(Generator):
         self._load_client()
 
     @backoff.on_exception(backoff.fibo, GeneratorBackoffTrigger, max_value=70)
-    def _call_model(self, prompt, generations_this_call=1):
-        print(self.name)
+    def _call_model(
+        self, prompt: Conversation, generations_this_call=1
+    ) -> List[Message | None]:
+        messages = []
+        for turn in prompt.turns:
+            messages.append({"role": turn.role, "content": turn.content.text})
         try:
             chat_response = self.client.chat.complete(
                 model=self.name,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": prompt,
-                    },
-                ],
+                messages=messages,
             )
         except Exception as e:
             backoff_exception_types = [self.mistralai.models.SDKError]
@@ -61,7 +63,7 @@ class MistralGenerator(Generator):
                 if isinstance(e, backoff_exception):
                     raise GeneratorBackoffTrigger from e
             raise e
-        return [chat_response.choices[0].message.content]
+        return [Message(chat_response.choices[0].message.content)]
 
 
 DEFAULT_CLASS = "MistralGenerator"

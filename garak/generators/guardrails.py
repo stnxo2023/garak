@@ -8,6 +8,7 @@ import io
 from typing import List, Union
 
 from garak import _config
+from garak.attempt import Message, Conversation
 from garak.generators.base import Generator
 
 
@@ -33,15 +34,19 @@ class NeMoGuardrails(Generator):
             self.rails = self.nemoguardrails.LLMRails(config=config)
 
     def _call_model(
-        self, prompt: str, generations_this_call: int = 1
-    ) -> List[Union[str, None]]:
+        self, prompt: Conversation, generations_this_call: int = 1
+    ) -> List[Union[Message, None]]:
         with redirect_stderr(io.StringIO()) as f:  # quieten the tqdm
-            result = self.rails.generate(prompt)
+            # should this be expanded to process all Conversation messages?
+            result = self.rails.generate(prompt.last_message().text)
 
         if isinstance(result, str):
-            return [result]
+            return [Message(result)]
         elif isinstance(result, dict):
-            return [result.get("content", None)]
+            content = result.get("content", None)
+            if content is not None:
+                content = Message(content)
+            return [content]
         else:
             return [None]
 

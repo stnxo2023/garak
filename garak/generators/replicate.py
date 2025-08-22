@@ -15,6 +15,7 @@ from typing import List, Union
 import backoff
 
 from garak import _config
+from garak.attempt import Message, Conversation
 from garak.exception import GeneratorBackoffTrigger
 from garak.generators.base import Generator
 
@@ -67,15 +68,16 @@ class ReplicateGenerator(Generator):
 
     @backoff.on_exception(backoff.fibo, GeneratorBackoffTrigger, max_value=70)
     def _call_model(
-        self, prompt: str, generations_this_call: int = 1
-    ) -> List[Union[str, None]]:
+        self, prompt: Conversation, generations_this_call: int = 1
+    ) -> List[Union[Message, None]]:
         if self.client is None:
             self._load_client()
         try:
             response_iterator = self.client.run(
                 self.name,
+                # assumes a prompt will always have a Turn
                 input={
-                    "prompt": prompt,
+                    "prompt": prompt.last_message().text,
                     "max_length": self.max_tokens,
                     "temperature": self.temperature,
                     "top_p": self.top_p,
@@ -83,13 +85,14 @@ class ReplicateGenerator(Generator):
                     "seed": self.seed,
                 },
             )
-            return ["".join(response_iterator)]
         except Exception as e:
             backoff_exception_types = [self.replicate.exceptions.ReplicateError]
             for backoff_exception in backoff_exception_types:
                 if isinstance(e, backoff_exception):
                     raise GeneratorBackoffTrigger from e
             raise e
+
+        return [Message("".join(response_iterator))]
 
 
 class InferenceEndpoint(ReplicateGenerator):
@@ -100,15 +103,15 @@ class InferenceEndpoint(ReplicateGenerator):
 
     @backoff.on_exception(backoff.fibo, GeneratorBackoffTrigger, max_value=70)
     def _call_model(
-        self, prompt, generations_this_call: int = 1
-    ) -> List[Union[str, None]]:
+        self, prompt: Conversation, generations_this_call: int = 1
+    ) -> List[Union[Message, None]]:
         if self.client is None:
             self._load_client()
         deployment = self.client.deployments.get(self.name)
         try:
             prediction = deployment.predictions.create(
                 input={
-                    "prompt": prompt,
+                    "prompt": prompt.last_message().text,
                     "max_length": self.max_tokens,
                     "temperature": self.temperature,
                     "top_p": self.top_p,
@@ -129,7 +132,7 @@ class InferenceEndpoint(ReplicateGenerator):
             raise IOError(
                 "Replicate endpoint didn't generate an Iterable[str]-type response. Make sure the endpoint is active."
             ) from exc
-        return [response]
+        return [Message(r) for r in response]
 
 
 DEFAULT_CLASS = "ReplicateGenerator"
