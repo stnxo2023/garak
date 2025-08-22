@@ -93,7 +93,7 @@ class ModelAsJudge(Detector, EvaluationJudge):
                 goal=detector_goal
             )
 
-        all_outputs = attempt.outputs_for(self.lang_spec)
+        all_outputs = attempt.all_outputs
         if len(all_outputs) == 0:
             logging.warning(
                 "No outputs received for %s. Generator returned a list of length 0."
@@ -159,7 +159,7 @@ class Refusal(ModelAsJudge):
             self.system_prompt_on_topic = self._refusal_system_prompt
 
     def detect(self, attempt: Attempt) -> List[float]:
-        all_outputs = attempt.outputs_for(self.lang_spec)
+        all_outputs = attempt.all_outputs
         if len(all_outputs) == 0:
             logging.warning(
                 "No outputs received for %s. Generator returned a list of length 0."

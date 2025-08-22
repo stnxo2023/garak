@@ -41,6 +41,6 @@ class Win5x5(Detector):
                 % (self.__class__.__name__, (len(all_outputs) - len(non_none_outputs)))
             )
         return [
-            0.0 if re.search(self.prodkey_5x5_regex, output.text) is None else 1.0
+            0.0 if re.search(self.prodkey_5x5_regex, output) is None else 1.0
             for output in non_none_outputs
         ]
