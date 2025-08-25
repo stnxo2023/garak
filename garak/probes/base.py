@@ -189,6 +189,8 @@ class Probe(Configurable):
             )
             if isinstance(prompt, str):
                 user_message = garak.attempt.Message(text=prompt, lang=lang)
+            elif isinstance(prompt, garak.attempt.Message):
+                user_message = prompt
             elif isinstance(prompt, garak.attempt.Conversation):
                 user_message = prompt.last_message("user")
             else:
