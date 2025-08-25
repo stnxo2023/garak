@@ -149,21 +149,6 @@ class Conversation:
             ret_val.turns.append(Turn.from_dict(turn))
         return ret_val
 
-    @classmethod
-    def from_list(cls, turn_list: list[dict]):
-        turns = [Turn.from_dict(turn) for turn in turn_list]
-        return cls(turns=turns)
-
-    def as_dict(self) -> list[dict]:
-        """Convert Conversation object to a list of dicts.
-
-        This is needed for a number of generators.
-        """
-        turn_list = [
-            {"role": turn.role, "content": turn.content.text} for turn in self.turns
-        ]
-        return turn_list
-
 
 class Attempt:
     """A class defining objects that represent everything that constitutes a single attempt at evaluating an LLM.
@@ -172,8 +157,6 @@ class Attempt:
     :type status: int
     :param prompt: The processed prompt that will presented to the generator
     :type prompt: Union[str|Turn|Conversation]
-    :param system_prompt: System prompt derived from the generator
-    :type system_prompt: Union[Turn|str]
     :param probe_classname: Name of the probe class that originated this ``Attempt``
     :type probe_classname: str
     :param probe_params: Non-default parameters logged by the probe
@@ -196,8 +179,6 @@ class Attempt:
     :type lang: str, valid BCP47
     :param reverse_translation_outputs: The reverse translation of output based on the original language of the probe
     :param reverse_translation_outputs: List(str)
-    :param overwrite_system_prompt: Overwrite the system prompt if it is present.
-    :param overwrite_system_prompt: bool
 
     Typical use:
 
@@ -227,7 +208,6 @@ class Attempt:
         self,
         status=ATTEMPT_NEW,
         prompt=None,
-        system_prompt=None,
         probe_classname=None,
         probe_params=None,
         targets=None,
@@ -237,7 +217,6 @@ class Attempt:
         seq=-1,
         lang=None,  # language code for prompt as sent to the target
         reverse_translation_outputs=None,
-        overwrite_system_prompt=False,
     ) -> None:
         self.uuid = uuid.uuid4()
         if prompt is not None:
@@ -252,17 +231,8 @@ class Attempt:
             if not hasattr(self, "conversations"):
                 self.conversations = [Conversation([Turn("user", msg)])]
             self.prompt = self.conversations[0]
-
-            if system_prompt is not None:
-                self._add_system_prompt(
-                    system_prompt=system_prompt,
-                    overwrite=overwrite_system_prompt,
-                    lang=lang,
-                )
         else:
-            # is this the right way to model an empty Attempt?
             self.conversations = [Conversation()]
-
         self.status = status
         self.probe_classname = probe_classname
         self.probe_params = {} if probe_params is None else probe_params
@@ -318,12 +288,6 @@ class Attempt:
         # this would require contributors to be more defensive and guard for the
         # exception, though that may be a reasonable trade off.
         return None
-
-    @property
-    def initial_user_message(self) -> Message:
-        for turn in self.conversations[0].turns:
-            if turn.role == "user":
-                return turn.content
 
     @property
     def lang(self):
@@ -401,9 +365,9 @@ class Attempt:
         """
         if (
             lang is not None
-            and self.initial_user_message.lang != "*"
+            and self.prompt.last_message().lang != "*"
             and lang != "*"
-            and self.initial_user_message.lang != lang
+            and self.prompt.last_message().lang != lang
         ):
             return self.notes.get(
                 "pre_translation_prompt", self.prompt
@@ -418,9 +382,9 @@ class Attempt:
         """
         if (
             lang is not None
-            and self.initial_user_message.lang != "*"
+            and self.prompt.last_message().lang != "*"
             and lang != "*"
-            and self.initial_user_message.lang != lang
+            and self.prompt.last_message().lang != lang
         ):
             return (
                 self.reverse_translation_outputs
@@ -471,35 +435,3 @@ class Attempt:
             "Conversation turn role must be one of '%s', got '%s'"
             % ("'/'".join(roles), role)
         )
-
-    def _add_system_prompt(
-        self,
-        system_prompt: Union[Turn, str],
-        overwrite: bool = False,
-        lang: Union[None, str] = None,
-    ) -> None:
-        """Add system prompt to the start of the conversation.
-
-        The system prompt is configured at the generator level.
-        This inserts the system prompt of the generator at the
-        start of the conversation if it is not present unless the
-        `overwrite` flag is set to True, which may be necessary
-        for some probes.
-        """
-        if isinstance(system_prompt, str):
-            content = Turn(
-                role="system", content=Message(text=system_prompt, lang=lang)
-            )
-        elif isinstance(system_prompt, Turn):
-            content = system_prompt
-        else:
-            raise ValueError(
-                "Could not set system prompt. Expected type `str`, `Turn`, or `Message` but got %s"
-                % type(system_prompt)
-            )
-        if self.conversations[0].turns[0].role != "system":
-            for conversation in self.conversations:
-                conversation.turns.insert(0, content)
-        elif overwrite:
-            for conversation in self.conversations:
-                conversation.turns[0] = content

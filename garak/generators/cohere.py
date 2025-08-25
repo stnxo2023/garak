@@ -84,13 +84,9 @@ class CohereGenerator(Generator):
         Filtering exceptions based on message instead of type, in backoff, isn't immediately obvious
         - on the other hand blank prompt / RTP shouldn't hang forever
         """
-        if isinstance(prompt_text, str) and prompt_text == "":
+        if not prompt_text:
             return [Message("")] * request_size
-        elif isinstance(prompt_text, list):
-            if prompt_text[-1]["content"] == "":
-                return [Message("")] * request_size
         else:
-            prompt_text = prompt_text.as_dict()
             if self.api_version == "v2":
                 # Use chat API with ClientV2 (recommended in v5+)
                 responses = []
@@ -196,7 +192,9 @@ class CohereGenerator(Generator):
         generation_iterator = tqdm.tqdm(request_sizes, leave=False)
         generation_iterator.set_description(self.fullname)
         for request_size in generation_iterator:
-            outputs += self._call_cohere_api(prompt, request_size=request_size)
+            outputs += self._call_cohere_api(
+                self.conversation_to_list(prompt), request_size=request_size
+            )
         return outputs
 
 

@@ -71,7 +71,7 @@ class OllamaGeneratorChat(OllamaGenerator):
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
     ) -> List[Union[Message, None]]:
-        messages = prompt.as_dict()
+        messages = self.conversation_to_list(prompt)
 
         response = self.client.chat(
             model=self.name,

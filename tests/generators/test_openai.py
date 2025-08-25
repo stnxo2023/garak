@@ -89,7 +89,7 @@ def test_openai_chat():
         {"role": "assistant", "content": "Hello! How can I help you today?"},
         {"role": "user", "content": "How do I write a sonnet?"},
     ]
-    messages = Conversation.from_list(turn_list=message_list)
+    messages = Conversation([Turn.from_dict(msg) for msg in message_list])
     output = generator.generate(messages, typecheck=False)
     assert len(output) == 1  # expect 1 generation by default
     for item in output:

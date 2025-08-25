@@ -57,6 +57,14 @@ def get_token_limit(model_name: str) -> int:
         return 4096
 
 
+def conversation_from_list(turns: list[dict]) -> Conversation:
+    """Take a list of dicts and return a Conversation object.
+
+    In the future this should be factored out and implemented in the probe.
+    """
+    return Conversation([Turn.from_dict(msg) for msg in turns])
+
+
 class EvaluationJudge:
     """Methods for scoring attempts using a LLM-as-a-Judge for an object that hold a reference to the Judge
 
@@ -113,7 +121,7 @@ class EvaluationJudge:
 
     def judge_score(self, attack_prompt_list, target_response_list) -> list[float]:
         convs_list = [
-            Conversation.from_list(
+            conversation_from_list(
                 self._create_conv(get_evaluator_prompt(prompt, response))
             )
             for prompt, response in zip(attack_prompt_list, target_response_list)
@@ -126,7 +134,7 @@ class EvaluationJudge:
 
     def on_topic_score(self, attempt_list) -> list[float]:
         convs_list = [
-            Conversation.from_list(
+            conversation_from_list(
                 self._create_conv(
                     get_evaluator_prompt_on_topic(prompt),
                     system_prompt=self.system_prompt_on_topic,

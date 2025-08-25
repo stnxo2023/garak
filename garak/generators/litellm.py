@@ -105,7 +105,6 @@ class LiteLLMGenerator(Generator):
         "skip_seq_start",
         "skip_seq_end",
         "stop",
-        "system_prompt",
     )
 
     def __init__(self, name: str = "", generations: int = 10, config_root=_config):
@@ -126,7 +125,7 @@ class LiteLLMGenerator(Generator):
         self, prompt: Conversation, generations_this_call: int = 1
     ) -> List[Union[Message, None]]:
         if isinstance(prompt, Conversation):
-            litellm_prompt = prompt.as_dict()
+            litellm_prompt = self.conversation_to_list(prompt)
         elif isinstance(prompt, list):
             litellm_prompt = prompt
         else:
