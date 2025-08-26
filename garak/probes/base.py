@@ -184,7 +184,14 @@ class Probe(Configurable):
     ) -> garak.attempt.Attempt:
         """function for creating a new attempt given a prompt"""
         turns = []
-        if hasattr(self, "system_prompt") and self.system_prompt:
+        if isinstance(prompt, garak.attempt.Conversation):
+            try:
+                # only add system prompt if the prompt does not contain one
+                prompt.last_message("system")
+                turns = prompt.turns
+            except ValueError as e:
+                turns.append(prompt.turns)
+        elif hasattr(self, "system_prompt") and self.system_prompt:
             turns.append(
                 garak.attempt.Turn(
                     role="system",
@@ -201,22 +208,16 @@ class Probe(Configurable):
             )
         elif isinstance(prompt, garak.attempt.Message):
             turns.append(garak.attempt.Turn(role="user", content=prompt))
-        elif isinstance(prompt, garak.attempt.Conversation):
-            try:
-                # only add system prompt if the prompt does not contain one
-                prompt.last_message("system")
-                turns = prompt.turns
-            except ValueError as e:
-                turns.append(prompt.turns)
         else:
-            raise TypeError(
-                "%s requires prompt to be a `str`, Message, or `Conversation` object but got %s"
-                % (self.__class__.__name__, type(prompt))
+            # May eventually want to raise a ValueError here
+            # Currently we need to allow for an empty attempt to be returned to support atkgen
+            logging.warning("No prompt set for attempt in %s" % self.__class__.__name__)
+
+        if len(turns) > 0:
+            prompt = garak.attempt.Conversation(
+                turns=turns,
+                notes=notes,
             )
-        prompt = garak.attempt.Conversation(
-            turns=turns,
-            notes=notes,
-        )
 
         new_attempt = garak.attempt.Attempt(
             probe_classname=(
