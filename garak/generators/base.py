@@ -224,7 +224,7 @@ class Generator(Configurable):
         return outputs
 
     @staticmethod
-    def conversation_to_list(conversation: Conversation) -> list[dict]:
+    def _conversation_to_list(conversation: Conversation) -> list[dict]:
         """Convert Conversation object to a list of dicts.
 
         This is needed for a number of generators.

@@ -125,7 +125,7 @@ class LiteLLMGenerator(Generator):
         self, prompt: Conversation, generations_this_call: int = 1
     ) -> List[Union[Message, None]]:
         if isinstance(prompt, Conversation):
-            litellm_prompt = self.conversation_to_list(prompt)
+            litellm_prompt = self._conversation_to_list(prompt)
         elif isinstance(prompt, list):
             litellm_prompt = prompt
         else:

@@ -62,7 +62,7 @@ class NvcfChat(Generator):
         }
 
     def _build_payload(self, prompt: Conversation) -> dict:
-        messages = self.conversation_to_list(prompt)
+        messages = self._conversation_to_list(prompt)
 
         payload = {
             "messages": messages,

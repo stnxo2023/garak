@@ -183,28 +183,40 @@ class Probe(Configurable):
         self, prompt=None, seq=None, notes=None, lang="*"
     ) -> garak.attempt.Attempt:
         """function for creating a new attempt given a prompt"""
+        turns = []
         if hasattr(self, "system_prompt") and self.system_prompt:
-            system_prompt = garak.attempt.Message(
-                text=_config.run.system_prompt, lang=lang
-            )
-            if isinstance(prompt, str):
-                user_message = garak.attempt.Message(text=prompt, lang=lang)
-            elif isinstance(prompt, garak.attempt.Message):
-                user_message = prompt
-            elif isinstance(prompt, garak.attempt.Conversation):
-                user_message = prompt.last_message("user")
-            else:
-                raise TypeError(
-                    "%s requires prompt to be a `str` or `Conversation` object but got %s"
-                    % (self.__class__.__name__, type(prompt))
+            turns.append(
+                garak.attempt.Turn(
+                    role="system",
+                    content=garak.attempt.Message(
+                        text=_config.run.system_prompt, lang=lang
+                    ),
                 )
-            prompt = garak.attempt.Conversation(
-                turns=[
-                    garak.attempt.Turn(role="system", content=system_prompt),
-                    garak.attempt.Turn(role="user", content=user_message),
-                ],
-                notes=notes,
             )
+        if isinstance(prompt, str):
+            turns.append(
+                garak.attempt.Turn(
+                    role="user", content=garak.attempt.Message(text=prompt, lang=lang)
+                )
+            )
+        elif isinstance(prompt, garak.attempt.Message):
+            turns.append(garak.attempt.Turn(role="user", content=prompt))
+        elif isinstance(prompt, garak.attempt.Conversation):
+            try:
+                # only add system prompt if the prompt does not contain one
+                prompt.last_message("system")
+                turns = prompt.turns
+            except ValueError as e:
+                turns.append(prompt.turns)
+        else:
+            raise TypeError(
+                "%s requires prompt to be a `str`, Message, or `Conversation` object but got %s"
+                % (self.__class__.__name__, type(prompt))
+            )
+        prompt = garak.attempt.Conversation(
+            turns=turns,
+            notes=notes,
+        )
 
         new_attempt = garak.attempt.Attempt(
             probe_classname=(

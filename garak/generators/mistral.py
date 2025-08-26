@@ -44,7 +44,7 @@ class MistralGenerator(Generator):
     def _call_model(
         self, prompt: Conversation, generations_this_call=1
     ) -> List[Message | None]:
-        messages = self.conversation_to_list(prompt)
+        messages = self._conversation_to_list(prompt)
         chat_response = self.client.chat.complete(
             model=self.name,
             messages=messages,

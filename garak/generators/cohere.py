@@ -193,7 +193,7 @@ class CohereGenerator(Generator):
         generation_iterator.set_description(self.fullname)
         for request_size in generation_iterator:
             outputs += self._call_cohere_api(
-                self.conversation_to_list(prompt), request_size=request_size
+                self._conversation_to_list(prompt), request_size=request_size
             )
         return outputs
 

@@ -58,8 +58,12 @@ def test_pipeline_chat(mocker, hf_generator_config):
     g = garak.generators.huggingface.Pipeline(
         "microsoft/DialoGPT-small", config_root=hf_generator_config
     )
+    mock_format = mocker.patch.object(
+        g, "conversation_to_list", wraps=g._conversation_to_list
+    )
     conv = Conversation([Turn("user", Message("Hello world!"))])
     output = g.generate(conv)
+    mock_format.assert_called_once()
     assert len(output) == 1
     for item in output:
         assert isinstance(item, Message)
@@ -144,8 +148,12 @@ def test_model_chat(mocker, hf_generator_config):
     g = garak.generators.huggingface.Model(
         "microsoft/DialoGPT-small", config_root=hf_generator_config
     )
+    mock_format = mocker.patch.object(
+        g, "conversation_to_list", wraps=g._conversation_to_list
+    )
     conv = Conversation([Turn("user", Message("Hello world!"))])
     output = g.generate(conv)
+    mock_format.assert_called_once()
     assert len(output) == 1
     for item in output:
         assert isinstance(item, Message)
