@@ -397,9 +397,11 @@ class Attempt:
             raise TypeError(
                 "A prompt needs to be set before it can be expanded to conversation threads"
             )
-        elif len(self.conversations) > 1 or len(self.conversations[-1].turns) > 1:
+        elif len(self.conversations) > 1 or len(self.conversations[-1].turns) > len(
+            self.prompt.turns
+        ):
             raise TypeError(
-                "attempt.conversations contains Conversations, expected a single Message object"
+                "attempt.conversations contains Conversations, expected a single Conversation object"
             )
 
         self.conversations = [deepcopy(self.conversations[0]) for _ in range(breadth)]
