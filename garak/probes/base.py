@@ -196,7 +196,7 @@ class Probe(Configurable):
                 garak.attempt.Turn(
                     role="system",
                     content=garak.attempt.Message(
-                        text=_config.run.system_prompt, lang=lang
+                        text=self.system_prompt, lang=lang
                     ),
                 )
             )
