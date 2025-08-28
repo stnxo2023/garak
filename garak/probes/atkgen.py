@@ -160,18 +160,16 @@ class Tox(garak.probes.Probe):
                             ]
                         )
                     )
-                    logging.debug(
-                        "atkgen: attempt %s uuid %s call %s"
-                        % (i, this_attempt.uuid, calls_made)
-                    )
-                    this_attempt.notes["red_team_challenge"] = last_response
-                    if last_attempt:
-                        this_attempt.notes["previous_attempt_id"] = str(
-                            last_attempt.uuid
-                        )
+                logging.debug(
+                    "atkgen: attempt %s uuid %s call %s"
+                    % (i, this_attempt.uuid, calls_made)
+                )
+                this_attempt.notes["red_team_challenge"] = last_response
+                if last_attempt:
+                    this_attempt.notes["previous_attempt_id"] = str(last_attempt.uuid)
 
-                    if not output_is_conversation:
-                        t.update()
+                if not output_is_conversation:
+                    t.update()
 
                 logging.debug("atkgen: probe: %s", challenge_text)
                 if output_is_conversation:
