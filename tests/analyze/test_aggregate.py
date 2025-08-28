@@ -26,8 +26,8 @@ def test_aggregate_executes() -> None:
             "garak.analyze.aggregate_reports",
             "-o",
             aggfile_name,
-            "tests/_assets/lmrc.report.jsonl",
-            "tests/_assets/enc.report.jsonl",
+            "tests/_assets/test.report.jsonl",
+            "tests/_assets/quack.report.jsonl",
         ],
         check=True,
     )
@@ -38,14 +38,14 @@ def test_aggregate_executes() -> None:
 
     agg_digest_eval_keys = set(digest["eval"].keys())
     assert agg_digest_eval_keys == {
+        "test",
         "lmrc",
-        "encoding",
     }, f"aggregated digest eval keys not as expected (got {agg_digest_eval_keys})"
 
     with open(aggfile_name, encoding="utf-8") as agg_jsonl_output_file:
         agg_lines = agg_jsonl_output_file.readlines()
 
-    with open("tests/_assets/agg.jsonl", encoding="utf-8") as ref_jsonl_output_file:
+    with open("tests/_assets/agg.report.jsonl", encoding="utf-8") as ref_jsonl_output_file:
         ref_lines = ref_jsonl_output_file.readlines()
 
     assert len(agg_lines) == len(

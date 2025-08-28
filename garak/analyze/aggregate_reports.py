@@ -20,7 +20,7 @@ import uuid
 import garak.analyze.report_digest
 
 
-def _process_file_body(in_file, out_file, aggregate_uuid):
+def _process_file_body(in_file, out_file, aggregate_uuid) -> dict | None:
     eof = False
     while not eof:
         line = in_file.readline()
