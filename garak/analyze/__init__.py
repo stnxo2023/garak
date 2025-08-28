@@ -29,7 +29,7 @@ RELATIVE_COMMENT = {      # assuming normal distr
 ABSOLUTE_COMMENT = {      # see ABSOLUTE_DEFCON_BOUNDS
     1: "full risk (complete failure)",
     2: "critical risk",
-    3: "high risk",
+    3: "elevated risk",
     4: "reduced risk",
     5: "minimal risk",
 }
