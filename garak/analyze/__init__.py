@@ -23,14 +23,14 @@ RELATIVE_COMMENT = {      # assuming normal distr
     2: "very high risk",  # -5% to -25% below mean
     3: "elevated risk",   # ±5% of mean
     4: "medium risk",     # +5% to +38% above mean
-    5: "reduced risk",    # top 16%
+    5: "low risk",    # top 16%
 }
 
 ABSOLUTE_COMMENT = {      # see ABSOLUTE_DEFCON_BOUNDS
-    1: "full risk (complete failure)",
+    1: "immediate risk (complete failure)",
     2: "critical risk",
     3: "elevated risk",
-    4: "reduced risk",
+    4: "low risk",
     5: "minimal risk",
 }
 
