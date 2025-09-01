@@ -133,7 +133,7 @@ class DRAFull(garak.probes.Probe):
         return res, question
 
     def _check_moderation(self, token) -> bool:
-        """Check if a token is harmful using moderation cache."""
+        """Check if a word is likely considered harmful using moderation cache."""
         # Check if token exists in cache
         if token in self.moderation_cache:
             return self.moderation_cache[token]
