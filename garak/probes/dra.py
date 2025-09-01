@@ -65,7 +65,6 @@ class DRAFull(garak.probes.Probe):
         "payload_name": "behaviors",
         "toxic_trunc": 0.5,
         "benign_trunc": 0.5,
-        "num_templates": None,  # Number of templates to randomly select (None = all)
         "num_behaviors": None,  # Number of behaviors to randomly select (None = all)
     }
 
@@ -100,15 +99,13 @@ class DRAFull(garak.probes.Probe):
         # Generate prompts for each behavior in the dataset
         self.prompts = self._generate_prompts()
         
-        # Calculate selected counts
-        selected_templates = self.num_templates if self.num_templates is not None else len(self.all_templates)
+        # Calculate selected behavior count
         selected_behaviors = self.num_behaviors if self.num_behaviors is not None else len(self.all_behaviors)
-        selected_templates = min(selected_templates, len(self.all_templates))
         selected_behaviors = min(selected_behaviors, len(self.all_behaviors))
 
         logging.info(
             f"DRAFull probe generated {len(self.prompts)} prompts using "
-            f"{selected_templates}/{len(self.all_templates)} templates and "
+            f"{len(self.all_templates)} templates and "
             f"{selected_behaviors}/{len(self.all_behaviors)} behaviors"
         )
 
@@ -206,12 +203,6 @@ class DRAFull(garak.probes.Probe):
         """Generate prompts by concatenating prefix_gen + suffix_gen for each behavior."""
         prompts = []
 
-        # Randomly select subset of templates if num_templates is specified
-        if self.num_templates is not None and self.num_templates < len(self.all_templates):
-            templates = random.sample(self.all_templates, min(self.num_templates, len(self.all_templates)))
-        else:
-            templates = self.all_templates
-            
         # Randomly select subset of behaviors if num_behaviors is specified  
         if self.num_behaviors is not None and self.num_behaviors < len(self.all_behaviors):
             behaviors = random.sample(self.all_behaviors, min(self.num_behaviors, len(self.all_behaviors)))
@@ -219,7 +210,7 @@ class DRAFull(garak.probes.Probe):
             behaviors = self.all_behaviors
 
         # Generate prompts for each selected template and behavior combination
-        for template in templates:
+        for template in self.all_templates:
             for question in behaviors:
                 prefix, current_question = self._prefix_gen(question)
                 suffix = self._suffix_gen(question, template)
@@ -317,13 +308,12 @@ class DRA(DRAFull):
     
     This probe is designed to test models using disguised and reconstructed harmful behaviors. 
     Behaviors are defined in garak/data/payloads/behaviors.json.
-    Uses a limited subset of 4 templates and 10 behaviors for efficient testing.
+    Uses all available templates and 10 behaviors for efficient testing.
     """
 
     active = True
 
     DEFAULT_PARAMS = DRAFull.DEFAULT_PARAMS | {
-        "num_templates": 4,  # Number of templates to randomly select
         "num_behaviors": 10,  # Number of behaviors to randomly select
     }
 
