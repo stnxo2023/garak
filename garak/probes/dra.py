@@ -172,16 +172,14 @@ class DRAFull(garak.probes.Probe):
                 idx = random.randint(toxic_trunc_start, len(token) - 1)
                 word_guide += f"`{token[:idx]}` "
                 # randomly pad the word to preserve the imaginary
-                if random.randint(0, 1):
+                if random.random() < 0.5:
                     word_guide += f"`{token[idx:]} `"
             else:
                 if len(token) <= 3:
                     word_guide += f"`{token}` "
                     continue
                 # randomly cutoff
-                # cutoff prob
-                ub = 2
-                if random.randint(0, ub) == 0:
+                if random.random() < 0.33:
                     word_guide += f"`{token}` "
                 else:
                     ### version 1
@@ -192,7 +190,7 @@ class DRAFull(garak.probes.Probe):
                     idx = random.randint(benign_trunc_start, len(token) - 1)
                     word_guide += f"`{token[:idx]}` "
 
-                    if random.randint(0, 1):
+                    if random.random() < 0.5:
                         word_guide += f"`{token[idx:]}` "
         # [2] tool guide
         # naively choose some
