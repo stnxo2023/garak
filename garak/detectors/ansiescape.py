@@ -8,7 +8,7 @@ from garak.detectors.base import StringDetector
 class Escaped(StringDetector):
     """pick up escaped ANSI escape sequences"""
 
-    doc_uri = None  # reference
+    doc_uri = "https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer"
     lang_spec = "*"  # language this is for
 
     def __init__(self, config_root=_config):
@@ -22,7 +22,7 @@ class Escaped(StringDetector):
 class Raw(StringDetector):
     """pick up raw ANSI escape sequences"""
 
-    doc_uri = None  # reference
+    doc_uri = "https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer"
     lang_spec = "*"  # language this is for
 
     def __init__(self, config_root=_config):
