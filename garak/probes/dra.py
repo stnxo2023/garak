@@ -63,7 +63,6 @@ class DRAFull(garak.probes.Probe):
 
     DEFAULT_PARAMS = garak.probes.Probe.DEFAULT_PARAMS | {
         "payload_name": "behaviors",
-        "template_name": "dra_prompt_templates",
         "toxic_trunc": 0.5,
         "benign_trunc": 0.5,
         "num_templates": None,  # Number of templates to randomly select (None = all)
@@ -88,8 +87,14 @@ class DRAFull(garak.probes.Probe):
         ) as f:
             self.letter_map = json.load(f)
 
-        # Load template and behavior counts for logging
-        self.all_templates = garak.payloads.load(self.template_name).payloads
+        # Load templates directly from file
+        with open(
+            data_path / "dra" / "prompt_templates.txt",
+            encoding="utf-8",
+        ) as f:
+            self.all_templates = [line.strip() for line in f.readlines() if line.strip()]
+        
+        # Load behaviors from payload
         self.all_behaviors = garak.payloads.load(self.payload_name).payloads
         
         # Generate prompts for each behavior in the dataset
@@ -232,7 +237,7 @@ class DRAAdvanced(DRAFull):
     
     This probe is designed to test models using disguised and reconstructed harmful behaviors.
     Uses detoxify for moderation when tokens aren't cached, and allows custom sentences.
-    Runs for all available templates at dra_prompt_templates.
+    Runs for all available templates at prompt_templates.
     """
 
     active = False
