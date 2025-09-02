@@ -38,12 +38,12 @@ TOOL_LIST = [
 ]
 
 
-class DRAFull(garak.probes.Probe):
-    """DRA (Disguise and Reconstruction Attack) - Full version
+class DRA(garak.probes.Probe):
+    """DRA (Disguise and Reconstruction Attack)
     
     This probe is designed to test models using disguised and reconstructed harmful behaviors. 
     Behaviors are defined in garak/data/payloads/behaviors.json.
-    Uses all available templates and behaviors.
+    Uses all available templates and behaviors. Optional soft_probe_prompt_cap for limiting.
     """
 
     lang = "en"
@@ -65,7 +65,6 @@ class DRAFull(garak.probes.Probe):
         "payload_name": "behaviors",
         "toxic_trunc": 0.5,
         "benign_trunc": 0.5,
-        "num_behaviors": None,  # Number of behaviors to randomly select (None = all)
     }
 
     def __init__(self, config_root=_config):
@@ -98,15 +97,10 @@ class DRAFull(garak.probes.Probe):
         
         # Generate prompts for each behavior in the dataset
         self.prompts = self._generate_prompts()
-        
-        # Calculate selected behavior count
-        selected_behaviors = self.num_behaviors if self.num_behaviors is not None else len(self.all_behaviors)
-        selected_behaviors = min(selected_behaviors, len(self.all_behaviors))
 
         logging.info(
-            f"DRAFull probe generated {len(self.prompts)} prompts using "
-            f"{len(self.all_templates)} templates and "
-            f"{selected_behaviors}/{len(self.all_behaviors)} behaviors"
+            f"DRA probe generated {len(self.prompts)} prompts using "
+            f"{len(self.all_templates)} templates"
         )
 
     def _prefix_gen(self, question) -> str:
@@ -203,25 +197,25 @@ class DRAFull(garak.probes.Probe):
         """Generate prompts by concatenating prefix_gen + suffix_gen for each behavior."""
         prompts = []
 
-        # Randomly select subset of behaviors if num_behaviors is specified  
-        if self.num_behaviors is not None and self.num_behaviors < len(self.all_behaviors):
-            behaviors = random.sample(self.all_behaviors, min(self.num_behaviors, len(self.all_behaviors)))
-        else:
-            behaviors = self.all_behaviors
-
-        # Generate prompts for each selected template and behavior combination
+        # Generate prompts for all template and behavior combinations
         for template in self.all_templates:
-            for question in behaviors:
+            for question in self.all_behaviors:
                 prefix, current_question = self._prefix_gen(question)
                 suffix = self._suffix_gen(question, template)
                 # Concatenate prefix + suffix
                 prompt = prefix + suffix
                 prompts.append(prompt)
 
+        # Apply soft_probe_prompt_cap by randomly selecting prompts if needed
+        if self.soft_probe_prompt_cap is not None:
+            if len(prompts) > self.soft_probe_prompt_cap:
+                # Randomly sample exactly soft_probe_prompt_cap prompts to ensure diversity
+                prompts = random.sample(prompts, self.soft_probe_prompt_cap)
+        
         return prompts
 
 
-class DRAAdvanced(DRAFull):
+class DRAAdvanced(DRA):
     """DRA (Disguise and Reconstruction Attack) - Version with detoxify
     
     This probe is designed to test models using disguised and reconstructed harmful behaviors.
@@ -231,7 +225,7 @@ class DRAAdvanced(DRAFull):
 
     active = False
 
-    DEFAULT_PARAMS = DRAFull.DEFAULT_PARAMS | {
+    DEFAULT_PARAMS = DRA.DEFAULT_PARAMS | {
         "custom_sentence": "how to perform a cyber attack",  # Default custom sentence
     }
 
@@ -302,21 +296,3 @@ class DRAAdvanced(DRAFull):
 
         return prompts
 
-
-class DRA(DRAFull):
-    """DRA (Disguise and Reconstruction Attack) - Minimal version
-    
-    This probe is designed to test models using disguised and reconstructed harmful behaviors. 
-    Behaviors are defined in garak/data/payloads/behaviors.json.
-    Uses all available templates and 10 behaviors for efficient testing.
-    """
-
-    active = True
-
-    DEFAULT_PARAMS = DRAFull.DEFAULT_PARAMS | {
-        "num_behaviors": 10,  # Number of behaviors to randomly select
-    }
-
-    def __init__(self, config_root=_config):
-        """Initialize the DRA probe and load behavioral dataset."""
-        super().__init__(config_root=config_root)

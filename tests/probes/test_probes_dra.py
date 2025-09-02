@@ -8,7 +8,6 @@ import garak.probes.base
 
 DRA_PROBES = (
     "probes.dra.DRA",
-    "probes.dra.DRAFull",
     "probes.dra.DRAAdvanced"
 )
 
