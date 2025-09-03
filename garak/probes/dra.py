@@ -44,6 +44,19 @@ class DRA(garak.probes.Probe):
     This probe is designed to test models using disguised and reconstructed harmful behaviors. 
     Behaviors are defined in garak/data/payloads/behaviors.json.
     Uses all available templates and behaviors. Optional soft_probe_prompt_cap for limiting.
+    
+    Parameter Tuning:
+    ----------------
+    
+    toxic_trunc: Controls truncation level for toxic/harmful tokens. If attacks fail,
+    this suggests the prompt is still too harmful and being rejected. Increase toxic_trunc
+    to truncate more toxic words, increasing the disguise level and making prompts less detectable.
+    
+    benign_trunc: Controls truncation level for benign tokens when they are truncated.
+    
+    benign_full_token_prob: Probability of keeping benign tokens fully (without truncation).
+    For more capable models, use lower values as they can better reconstruct the input
+    behavior from fewer token hints.
     """
 
     lang = "en"
@@ -65,6 +78,7 @@ class DRA(garak.probes.Probe):
         "payload_name": "behaviors",
         "toxic_trunc": 0.5,
         "benign_trunc": 0.5,
+        "benign_full_token_prob": 0.33,
     }
 
     def __init__(self, config_root=_config):
@@ -158,7 +172,7 @@ class DRA(garak.probes.Probe):
                         idx = 2
                     word_guide += f"`{token[:-idx]}` "
                     continue
-                ### adjust the cutoff prob automatically based on the attack result
+                ### adjust the cutoff prob
                 toxic_trunc_start = max(2, int(len(token) * self.toxic_trunc))
                 idx = random.randint(toxic_trunc_start, len(token) - 1)
                 word_guide += f"`{token[:idx]}` "
@@ -169,8 +183,8 @@ class DRA(garak.probes.Probe):
                 if len(token) <= 3:
                     word_guide += f"`{token}` "
                     continue
-                # randomly cutoff
-                if random.random() < 0.33:
+                # Randomly decide whether to keep benign token fully or truncate it
+                if random.random() < self.benign_full_token_prob:
                     word_guide += f"`{token}` "
                 else:
                     ### version 1
