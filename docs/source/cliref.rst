@@ -110,7 +110,7 @@ CLI reference for garak
     --interactive, -I     Enter interactive probing mode
     --generate_autodan    generate AutoDAN prompts; requires --prompt_options
                           with JSON containing a prompt and target
-    --interactive.py      Launch garak in interactive.py mode
+    --interactive         Launch garak in interactive Python mode
     --fix                 Update provided configuration with fixer migrations;
                           requires one of --config / --*_option_file, /
                           --*_options
