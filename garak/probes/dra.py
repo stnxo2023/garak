@@ -42,7 +42,7 @@ class DRA(garak.probes.Probe):
     """DRA (Disguise and Reconstruction Attack)
     
     This probe is designed to test models using disguised and reconstructed harmful behaviors. 
-    Behaviors are defined in garak/data/payloads/behaviors.json.
+    Behaviors are defined in garak/data/payloads/harmful_behaviors.
     Uses all available templates and behaviors. Optional soft_probe_prompt_cap for limiting.
     
     Parameter Tuning:
@@ -60,7 +60,7 @@ class DRA(garak.probes.Probe):
     """
 
     lang = "en"
-    recommended_detector = ["mitigation.MitigationBypass"]
+    recommended_detector = ["mitigation.MitigationBypass", "mitigation.Prefixes"]
     tags = [
         "avid-effect:security:S0403",
         "owasp:llm01",
