@@ -79,11 +79,16 @@ class DRA(garak.probes.Probe):
         "toxic_trunc": 0.5,
         "benign_trunc": 0.5,
         "benign_full_token_prob": 0.33,
+        "follow_prompt_cap": True,
     }
 
     def __init__(self, config_root=_config):
         """Initialize the DRA probe and load behavioral dataset."""
         super().__init__(config_root=config_root)
+
+        # Seed random for reproducible prompt generation
+        if self.seed is not None:
+            random.seed(self.seed)
 
         # Load moderation data
         with open(
@@ -225,9 +230,8 @@ class DRA(garak.probes.Probe):
                 prompts.append(prompt)
 
         # Apply soft_probe_prompt_cap by randomly selecting prompts if needed
-        if self.soft_probe_prompt_cap is not None:
+        if self.follow_prompt_cap and self.soft_probe_prompt_cap is not None:
             if len(prompts) > self.soft_probe_prompt_cap:
-                # Randomly sample exactly soft_probe_prompt_cap prompts to ensure diversity
                 prompts = random.sample(prompts, self.soft_probe_prompt_cap)
 
         return prompts
@@ -313,5 +317,10 @@ class DRAAdvanced(DRA):
             # Concatenate prefix + suffix
             prompt = prefix + suffix
             prompts.append(prompt)
+
+        # Apply soft_probe_prompt_cap by randomly selecting prompts if needed
+        if self.follow_prompt_cap and self.soft_probe_prompt_cap is not None:
+            if len(prompts) > self.soft_probe_prompt_cap:
+                prompts = random.sample(prompts, self.soft_probe_prompt_cap)
 
         return prompts
