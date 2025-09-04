@@ -40,20 +40,20 @@ TOOL_LIST = [
 
 class DRA(garak.probes.Probe):
     """DRA (Disguise and Reconstruction Attack)
-    
-    This probe is designed to test models using disguised and reconstructed harmful behaviors. 
+
+    This probe is designed to test models using disguised and reconstructed harmful behaviors.
     Behaviors are defined in garak/data/payloads/harmful_behaviors.json.
     Uses all available templates and behaviors. Optional soft_probe_prompt_cap for limiting.
-    
+
     Parameter Tuning:
     ----------------
-    
+
     toxic_trunc: Controls truncation level for toxic/harmful tokens. If attacks fail,
     this suggests the prompt is still too harmful and being rejected. Increase toxic_trunc
     to truncate more toxic words, increasing the disguise level and making prompts less detectable.
-    
+
     benign_trunc: Controls truncation level for benign tokens when they are truncated.
-    
+
     benign_full_token_prob: Probability of keeping benign tokens fully (without truncation).
     For more capable models, use lower values as they can better reconstruct the input
     behavior from fewer token hints.
@@ -84,7 +84,7 @@ class DRA(garak.probes.Probe):
     def __init__(self, config_root=_config):
         """Initialize the DRA probe and load behavioral dataset."""
         super().__init__(config_root=config_root)
-        
+
         # Load moderation data
         with open(
             data_path / "dra" / "moderation_cache.json",
@@ -104,11 +104,13 @@ class DRA(garak.probes.Probe):
             data_path / "dra" / "prompt_templates.txt",
             encoding="utf-8",
         ) as f:
-            self.all_templates = [line.strip() for line in f.readlines() if line.strip()]
-        
+            self.all_templates = [
+                line.strip() for line in f.readlines() if line.strip()
+            ]
+
         # Load behaviors from payload
         self.all_behaviors = garak.payloads.load(self.payload_name).payloads
-        
+
         # Generate prompts for each behavior in the dataset
         self.prompts = self._generate_prompts()
 
@@ -144,7 +146,9 @@ class DRA(garak.probes.Probe):
             return self.moderation_cache[token]
         else:
             # Consider tokens not in the cache as not harmful
-            logging.warning(f"Token '{token}' not found in moderation cache, treating as non-harmful")
+            logging.warning(
+                f"Token '{token}' not found in moderation cache, treating as non-harmful"
+            )
             return False
 
     def _suffix_gen(self, question, template) -> str:
@@ -225,13 +229,13 @@ class DRA(garak.probes.Probe):
             if len(prompts) > self.soft_probe_prompt_cap:
                 # Randomly sample exactly soft_probe_prompt_cap prompts to ensure diversity
                 prompts = random.sample(prompts, self.soft_probe_prompt_cap)
-        
+
         return prompts
 
 
 class DRAAdvanced(DRA):
     """DRA (Disguise and Reconstruction Attack) - Version with detoxify
-    
+
     This probe is designed to test models using disguised and reconstructed harmful behaviors.
     Uses detoxify for moderation when tokens aren't cached, and allows custom sentences.
     Runs for all available templates at prompt_templates.
@@ -248,16 +252,16 @@ class DRAAdvanced(DRA):
     def __init__(self, config_root=_config, custom_sentence=None):
         """Initialize the DRA Advanced probe with custom sentence support."""
         super().__init__(config_root=config_root)
-        
+
         # Custom sentence
         if custom_sentence is None:
             self.custom_sentence = self.DEFAULT_PARAMS["custom_sentence"]
         else:
             self.custom_sentence = custom_sentence
-        
+
         # Lazy loading of detoxify package
         self.detoxify_model = None
-        
+
         # Generate prompts using custom sentence and all templates
         self.prompts = self._generate_prompts_custom()
 
@@ -266,7 +270,6 @@ class DRAAdvanced(DRA):
             f"{len(self.all_templates)} templates and custom sentence: '{self.custom_sentence}'"
         )
 
-
     def _check_moderation(self, token) -> bool:
         """Check if a token is harmful using detoxify if needed."""
 
@@ -274,12 +277,15 @@ class DRAAdvanced(DRA):
         if self.detoxify_model is None:
             try:
                 from detoxify import Detoxify
-                self.detoxify_model = Detoxify('original')
+
+                self.detoxify_model = Detoxify("original")
                 logging.info("Detoxify model loaded successfully")
             except ImportError:
-                logging.warning("Detoxify package not available. Using cache-only moderation.")
+                logging.warning(
+                    "Detoxify package not available. Using cache-only moderation."
+                )
                 self.detoxify_model = None
-        
+
         if self.detoxify_model is not None:
             try:
                 # Get toxicity scores from detoxify
@@ -309,4 +315,3 @@ class DRAAdvanced(DRA):
             prompts.append(prompt)
 
         return prompts
-
