@@ -1,4 +1,4 @@
-Translation support
+Translation Support
 ===================
 
 Garak enables translation support for probe and detector keywords and triggers.
@@ -161,21 +161,21 @@ Google Cloud Translation
 For Google Cloud Translation, run the following command:
 You use the following yaml config.
 
-.. code-block:: yaml 
+.. code-block:: yaml
 
     run:
-      target_lang: {target language code}
+      target_lang: <target-language-code>
       langproviders:
-        - language: {source language code},{target language code}
+        - language: <source-language-code>,<target-language-code>
           model_type: remote.GoogleTranslator
-        - language: {target language code},{source language code}
+        - language: <target-language-code>,<source-language-code>
           model_type: remote.GoogleTranslator
 
 
 .. code-block:: bash
 
     export GOOGLE_APPLICATION_CREDENTIALS=<path to credential configuration json file>
-    python3 -m garak --model_type nim --model_name meta/llama-3.1-8b-instruct --probes encoding --config {path to your yaml config file} 
+    python3 -m garak --model_type nim --model_name meta/llama-3.1-8b-instruct --probes encoding --config {path to your yaml config file}
 
 
 Local

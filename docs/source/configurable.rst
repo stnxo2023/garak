@@ -1,16 +1,17 @@
 ..  headings: = - ^ "
-Configuring ``garak``
-=====================
+
+Configuring garak
+=================
 
 Beyond the standard CLI options, garak is highly configurable.
 You can use YAML files to configure a garak run, down to the level
 of exactly how each plugin behaves.
 
 
-Specifying custom configuration
+Specifying Custom Configuration
 -------------------------------
 
-``garak`` can be configured in multiple ways:
+garak can be configured in multiple ways:
 
 * Via command-line parameters
 * Using YAML configs
@@ -19,8 +20,8 @@ Specifying custom configuration
 The easiest way is often to use a YAML config, and how to do that is
 described below.
 
-Garak's config hierarchy
-^^^^^^^^^^^^^^^^^^^^^^^^
+Garak Config Hierarchy
+^^^^^^^^^^^^^^^^^^^^^^
 
 Configuration values can come from multiple places. At garak load, the
 ``_config`` module manages parsing configuration. This includes determining
@@ -90,8 +91,8 @@ Here we can see many entries that correspond to command line options, such as
 such as ``show_100_pass_modules``.
 
 
-``system`` config items
-"""""""""""""""""""""""
+System Config Items
+"""""""""""""""""""
 
 * ``parallel_requests`` - For generators not supporting multiple responses per prompt: how many requests to send in parallel with the same prompt? (raising ``parallel_attempts`` generally yields higher performance, depending on how high ``generations`` is set)
 * ``parallel_attempts`` - For parallelisable generators, how many attempts should be run in parallel? Raising this is a great way of speeding up garak runs for API-based models
@@ -102,8 +103,8 @@ such as ``show_100_pass_modules``.
 * ``enable_experimental`` - Enable experimental function CLI flags. Disabled by default. Experimental functions may disrupt your installation and provide unusual/unstable results. Can only be set by editing core config, so a git checkout of garak is recommended for this.
 * ``max_workers`` - Cap on how many parallel workers can be requested. When raising this in order to use higher parallelisation, keep an eye on system resources (e.g. `ulimit -n 4026` on Linux)
 
-``run`` config items
-""""""""""""""""""""
+Run Config Items
+""""""""""""""""
 
 * ``system_prompt`` -- If given and not overriden by the probe itself, probes will pass the specified system prompt when possible for generators that support chat modality.
 * ``probe_tags`` - If given, the probe selection is filtered according to these tags; probes that don't match the tags are not selected
@@ -116,8 +117,9 @@ such as ``show_100_pass_modules``.
 * ``target_lang`` - A single language (as BCP47 that the target application for LLM accepts as prompt and output
 * ``langproviders`` - A list of configurations representing providers for converting from probe language to lang_spec target languages (BCP47)
 
-``plugins`` config items
-""""""""""""""""""""""""
+Plugins Config Items
+""""""""""""""""""""
+
 * ``model_type`` - The generator model type, e.g. "nim" or "huggingface"
 * ``model_name`` - The name of the model to be used (optional - if blank, type-specific default is used)
 * ``probe_spec`` - A comma-separated list of probe modules or probe classnames (in ``module.classname``) format to be used. If a module is given, only ``active`` plugin in that module are chosen, this is equivalent to passing `-p` to the CLI
@@ -135,8 +137,9 @@ such as ``show_100_pass_modules``.
 For an example of how to use the ``detectors``, ``generators``, ``buffs``,
 ``harnesses``, and ``probes`` root entries, see :ref:`Configuring plugins with YAML <config_with_yaml>` below.
 
-``reporting`` config items
-""""""""""""""""""""""""""
+Reporting Config Items
+""""""""""""""""""""""
+
 * ``report_dir`` - Directory for reporting; defaults to ``$XDG_DATA/garak/garak_runs``
 * ``report_prefix`` - Prefix for report files. Defaults to ``garak.$RUN_UUID``
 * ``taxonomy`` - Which taxonomy to use to group probes when creating HTML report
@@ -163,7 +166,7 @@ These are great places to look at to get an idea of how garak YAML configs can l
 Quick configs are stored under ``garak/configs/`` in the source code/install.
 
 
-Using a custom config
+Using a Custom Config
 ^^^^^^^^^^^^^^^^^^^^^
 
 To override values in this we can create a new YAML file and point to it from the
