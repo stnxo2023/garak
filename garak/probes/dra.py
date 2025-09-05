@@ -75,7 +75,7 @@ class DRA(garak.probes.Probe):
     doc_uri = "https://arxiv.org/abs/2402.18104v2"
 
     DEFAULT_PARAMS = garak.probes.Probe.DEFAULT_PARAMS | {
-        "payload_name": "behaviors",
+        "payload_name": "harmful_behaviors",
         "toxic_trunc": 0.5,
         "benign_trunc": 0.5,
         "benign_full_token_prob": 0.33,
