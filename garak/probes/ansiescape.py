@@ -131,7 +131,7 @@ class AnsiRaw(AnsiEscaped):
         self.prompts = prompts
 
 
-class AnsiRawTokenizer(garak.probes.Probe):
+class AnsiRawTokenizerHF(garak.probes.Probe):
     """Probe for checking a tokenizer for potentially malicious ANSI escape sequences
 
     Returns any tokens bearing ANSI escape sequences that could be used to seize
