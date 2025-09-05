@@ -17,6 +17,7 @@ from garak.generators.openai import OpenAICompatible
 
 class NVOpenAIChat(OpenAICompatible):
     """Wrapper for NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.
+
     Connects to the v1/chat/completions endpoint.
     You must set the NIM_API_KEY environment variable even if you connect to a self-hosted NIM.
 
@@ -112,6 +113,7 @@ class NVOpenAIChat(OpenAICompatible):
 
 class NVOpenAICompletion(NVOpenAIChat):
     """Wrapper for NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.
+
     Connects to the v1/completions endpoint.
     You must set the NIM_API_KEY environment variable even if you connect to a self-hosted NIM.
 
@@ -137,6 +139,7 @@ class NVOpenAICompletion(NVOpenAIChat):
 
 class NVMultimodal(NVOpenAIChat):
     """Wrapper for text and image / audio to text NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.
+
     You must set the NIM_API_KEY environment variable even if you connect to a self-hosted NIM.
 
     Expects keys to be a dict with keys ``text`` (required), and ``image`` or ``audio`` (optional).
@@ -212,6 +215,7 @@ class NVMultimodal(NVOpenAIChat):
 
 class Vision(NVMultimodal):
     """Wrapper for text and image to text NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.
+
     You must set the NIM_API_KEY environment variable even if you connect to a self-hosted NIM.
 
     Following generators.huggingface.LLaVa, expects prompts to be a dict with keys

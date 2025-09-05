@@ -149,7 +149,7 @@ Reporting Config Items
 * ``show_top_group_score`` - Should the aggregated score be shown as a top-level figure in report concertinas?
 
 
-Bundled quick configs
+Bundled Quick Configs
 ^^^^^^^^^^^^^^^^^^^^^
 
 Garak comes bundled with some quick configs that can be loaded directly using ``--config``.
@@ -186,7 +186,7 @@ If we save this as ``latent1.yaml`` somewhere, then we can use it with ``garak -
 
 
 
-Using a custom JSON config
+Using a Custom JSON Config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Some plugins can take a JSON config specified on the command line. This config
@@ -206,7 +206,7 @@ the ``generators`` that interface with models, and even the ``harnesses``
 that manage run orchestration. Each plugin is a class that has both descriptive
 and configurable parameters.
 
-Viewing plugin parameters
+Viewing Plugin Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can see the parameters for any given plugin using garak ``--plugin_info``.
@@ -244,7 +244,7 @@ config, or the default.
 
 .. _config_with_yaml:
 
-Configuring plugins with YAML
+Configuring Plugins with YAML
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Plugin config happens inside the ``plugins`` block. Multiple plugins can be
@@ -343,7 +343,7 @@ This defines a REST endpoint where:
 This should be written to a file, and the file's path passed on the command
 line with `-G`.
 
-Configuration in code
+Configuration in Code
 ---------------------
 
 The preferred way to instantiate a plugin is using ``garak._plugins.load_plugin()``.
@@ -354,7 +354,7 @@ This function takes two parameters:
 
 ``load_plugin()`` returns a configured instance of the requested plugin.
 
-OpenAIGenerator config with dictionary
+OpenAIGenerator Config with Dictionary
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
