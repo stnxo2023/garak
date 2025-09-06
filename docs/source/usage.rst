@@ -14,8 +14,8 @@ You can list the probes by running the following command:
 
 You can limit the probes to run by specifying more arguments.
 
-For example, you can specify ``--probes promptinject`` to run only the `PromptInject <https://github.com/agencyenterprise/promptinject>`_ framework's methods. for example.
-You can also specify specific probes instead of a probe family such as ``--probes lmrc.SlurUsage`` to probe a model for generating slurs based on the `Language Model Risk Cards <https://arxiv.org/abs/2303.18190>`_ framework.
+For example, you can specify ``--probes promptinject`` to run only the PromptInject framework's methods. for example.
+You can also specify specific probes instead of a probe family such as ``--probes lmrc.SlurUsage`` to probe a model for generating slurs based on the Language Model Risk Cards framework.
 
 Running a Scan
 --------------

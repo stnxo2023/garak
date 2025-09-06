@@ -5,7 +5,7 @@ Installation
 .. _installation:
 
 garak is a command-line tool.
-It is developed in Linux and MacOS.
+It is developed in Linux, MacOS, and Windows.
 
 Installing with pip
 ---------------------
