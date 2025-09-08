@@ -100,7 +100,7 @@
         "payload:unwanted"
       ],
       "tier": 2,
-      "mod_time": "2025-05-21 16:33:42 +0000"
+      "mod_time": "2025-08-28 19:55:49 +0000"
     },
     "probes.audio.AudioAchillesHeel": {
       "description": "Audio is the Achilles Heel",
@@ -129,7 +129,7 @@
         "quality:Security:PromptStability"
       ],
       "tier": 9,
-      "mod_time": "2025-05-28 14:23:00 +0000"
+      "mod_time": "2025-06-12 16:14:56 +0000"
     },
     "probes.av_spam_scanning.EICAR": {
       "description": "Does the model check its output for viruses? Try to send the EICAR code through",
@@ -235,7 +235,7 @@
       ],
       "tags": [],
       "tier": 9,
-      "mod_time": "2025-06-27 21:44:07 +0000"
+      "mod_time": "2025-08-28 13:46:07 +0000"
     },
     "probes.base.TreeSearchProbe": {
       "DEFAULT_PARAMS": {
@@ -262,7 +262,7 @@
       ],
       "tags": [],
       "tier": 9,
-      "mod_time": "2025-06-27 21:44:07 +0000"
+      "mod_time": "2025-08-28 13:46:07 +0000"
     },
     "probes.continuation.ContinueSlursReclaimedSlurs": {
       "description": "Continue partial word with slur or reclaimed slur.",
@@ -2747,7 +2747,7 @@
         "payload:leak:training"
       ],
       "tier": 2,
-      "mod_time": "2025-07-01 11:05:23 +0000"
+      "mod_time": "2025-08-13 22:01:46 +0000"
     },
     "probes.leakreplay.GuardianClozeFull": {
       "description": "Test for data leakage on Guardian articles with masked entities in a cloze test format.",
@@ -2775,7 +2775,7 @@
         "payload:leak:training"
       ],
       "tier": 2,
-      "mod_time": "2025-07-01 11:05:23 +0000"
+      "mod_time": "2025-08-13 22:01:46 +0000"
     },
     "probes.leakreplay.GuardianComplete": {
       "description": "Lightweight version of Guardian completion test for data leakage.",
@@ -2803,7 +2803,7 @@
         "payload:leak:training"
       ],
       "tier": 1,
-      "mod_time": "2025-07-01 11:05:23 +0000"
+      "mod_time": "2025-08-13 22:01:46 +0000"
     },
     "probes.leakreplay.GuardianCompleteFull": {
       "description": "Test for data leakage on Guardian articles through text completion.",
@@ -2831,7 +2831,7 @@
         "payload:leak:training"
       ],
       "tier": 1,
-      "mod_time": "2025-07-01 11:05:23 +0000"
+      "mod_time": "2025-08-13 22:01:46 +0000"
     },
     "probes.leakreplay.LiteratureCloze": {
       "description": "Lightweight version of literature cloze test for data leakage.",
@@ -2859,7 +2859,7 @@
         "payload:leak:training"
       ],
       "tier": 2,
-      "mod_time": "2025-07-01 11:05:23 +0000"
+      "mod_time": "2025-08-13 22:01:46 +0000"
     },
     "probes.leakreplay.LiteratureClozeFull": {
       "description": "Test for data leakage on literature passages with masked entities in a cloze test format.",
@@ -2887,7 +2887,7 @@
         "payload:leak:training"
       ],
       "tier": 2,
-      "mod_time": "2025-07-01 11:05:23 +0000"
+      "mod_time": "2025-08-13 22:01:46 +0000"
     },
     "probes.leakreplay.LiteratureComplete": {
       "description": "Lightweight version of literature completion test for data leakage.",
@@ -2915,7 +2915,7 @@
         "payload:leak:training"
       ],
       "tier": 2,
-      "mod_time": "2025-07-01 11:05:23 +0000"
+      "mod_time": "2025-08-13 22:01:46 +0000"
     },
     "probes.leakreplay.LiteratureCompleteFull": {
       "description": "Test for data leakage on literature passages through text completion.",
@@ -2943,7 +2943,7 @@
         "payload:leak:training"
       ],
       "tier": 2,
-      "mod_time": "2025-07-01 11:05:23 +0000"
+      "mod_time": "2025-08-13 22:01:46 +0000"
     },
     "probes.leakreplay.NYTCloze": {
       "description": "Lightweight version of NYT cloze test for data leakage.",
@@ -2971,7 +2971,7 @@
         "payload:leak:training"
       ],
       "tier": 2,
-      "mod_time": "2025-07-01 11:05:23 +0000"
+      "mod_time": "2025-08-13 22:01:46 +0000"
     },
     "probes.leakreplay.NYTClozeFull": {
       "description": "Test for data leakage on New York Times articles with masked entities in a cloze test format.",
@@ -2999,7 +2999,7 @@
         "payload:leak:training"
       ],
       "tier": 2,
-      "mod_time": "2025-07-01 11:05:23 +0000"
+      "mod_time": "2025-08-13 22:01:46 +0000"
     },
     "probes.leakreplay.NYTComplete": {
       "description": "Lightweight version of NYT completion test for data leakage.",
@@ -3027,7 +3027,7 @@
         "payload:leak:training"
       ],
       "tier": 1,
-      "mod_time": "2025-07-01 11:05:23 +0000"
+      "mod_time": "2025-08-13 22:01:46 +0000"
     },
     "probes.leakreplay.NYTCompleteFull": {
       "description": "Test for data leakage on New York Times articles through text completion.",
@@ -3055,7 +3055,7 @@
         "payload:leak:training"
       ],
       "tier": 1,
-      "mod_time": "2025-07-01 11:05:23 +0000"
+      "mod_time": "2025-08-13 22:01:46 +0000"
     },
     "probes.leakreplay.PotterCloze": {
       "description": "Lightweight version of Harry Potter cloze test for data leakage.",
@@ -3083,7 +3083,7 @@
         "payload:leak:training"
       ],
       "tier": 2,
-      "mod_time": "2025-07-01 11:05:23 +0000"
+      "mod_time": "2025-08-13 22:01:46 +0000"
     },
     "probes.leakreplay.PotterClozeFull": {
       "description": "Test for data leakage on Harry Potter text with masked entities in a cloze test format.",
@@ -3111,7 +3111,7 @@
         "payload:leak:training"
       ],
       "tier": 2,
-      "mod_time": "2025-07-01 11:05:23 +0000"
+      "mod_time": "2025-08-13 22:01:46 +0000"
     },
     "probes.leakreplay.PotterComplete": {
       "description": "Lightweight version of Harry Potter completion test for data leakage.",
@@ -3139,7 +3139,7 @@
         "payload:leak:training"
       ],
       "tier": 1,
-      "mod_time": "2025-07-01 11:05:23 +0000"
+      "mod_time": "2025-08-13 22:01:46 +0000"
     },
     "probes.leakreplay.PotterCompleteFull": {
       "description": "Test for data leakage on Harry Potter text through completion.",
@@ -3167,7 +3167,7 @@
         "payload:leak:training"
       ],
       "tier": 1,
-      "mod_time": "2025-07-01 11:05:23 +0000"
+      "mod_time": "2025-08-13 22:01:46 +0000"
     },
     "probes.lmrc.Anthropomorphisation": {
       "description": "Providing output that encourages anthropomorphisation of AI systems",
@@ -4768,7 +4768,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2025-06-18 17:35:24 +0000"
+      "mod_time": "2025-07-02 22:27:38 +0000"
     },
     "probes.visual_jailbreak.FigStepFull": {
       "description": "Using image modality to assist jailbreak.",
@@ -4795,7 +4795,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2025-06-18 17:35:24 +0000"
+      "mod_time": "2025-07-02 22:27:38 +0000"
     },
     "probes.xss.ColabAIDataLeakage": {
       "description": "Leak data via image rendering as demonstrated against Gemini in Colab.",
@@ -4825,10 +4825,11 @@
         "payload:leak:chat",
         "payload:malicious:renderer",
         "quality:Security:PromptStability",
-        "quality:Security:ExtractionInversion"
+        "quality:Security:ExtractionInversion",
+        "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-07-16 13:33:05 +0000"
+      "mod_time": "2025-08-11 18:13:36 +0000"
     },
     "probes.xss.MarkdownImageExfil": {
       "description": "Can we get the model to write embedded assets exfiltrating text in the URI?",
@@ -4859,10 +4860,75 @@
         "payload:leak:chat",
         "payload:malicious:renderer",
         "quality:Security:PromptStability",
-        "quality:Security:ExtractionInversion"
+        "quality:Security:ExtractionInversion",
+        "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-07-16 13:33:05 +0000"
+      "mod_time": "2025-08-11 18:13:36 +0000"
+    },
+    "probes.xss.MarkdownURIImageExfilExtended": {
+      "description": "Generalized implementation of data exfiltration exploits via markdown URIs.",
+      "DEFAULT_PARAMS": {},
+      "active": true,
+      "doc_uri": "https://www.aim.security/lp/aim-labs-echoleak-blogpost",
+      "extended_detectors": [],
+      "goal": "embed information an LLM would normally refuse to provide in a Markdown URI",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": null,
+      "recommended_detector": [
+        "xss.MarkdownExfilExtendedImage"
+      ],
+      "tags": [
+        "avid-effect:security:S0301",
+        "avid-effect:security:S0403",
+        "owasp:llm02",
+        "owasp:llm06",
+        "payload:leak:chat",
+        "payload:malicious:renderer",
+        "quality:Security:PromptStability",
+        "quality:Security:ExtractionInversion",
+        "cwe:352"
+      ],
+      "tier": 1,
+      "mod_time": "2025-08-11 18:13:36 +0000"
+    },
+    "probes.xss.MarkdownURINonImageExfilExtended": {
+      "description": "Generalized implementation of data exfiltration exploits via markdown URIs.",
+      "DEFAULT_PARAMS": {},
+      "active": true,
+      "doc_uri": "https://www.aim.security/lp/aim-labs-echoleak-blogpost",
+      "extended_detectors": [],
+      "goal": "embed information an LLM would normally refuse to provide in a Markdown URI",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": null,
+      "recommended_detector": [
+        "xss.MarkdownExfilExtendedNonImage"
+      ],
+      "tags": [
+        "avid-effect:security:S0301",
+        "avid-effect:security:S0403",
+        "owasp:llm02",
+        "owasp:llm06",
+        "payload:leak:chat",
+        "payload:malicious:renderer",
+        "quality:Security:PromptStability",
+        "quality:Security:ExtractionInversion",
+        "cwe:352"
+      ],
+      "tier": 1,
+      "mod_time": "2025-08-11 18:13:36 +0000"
     },
     "probes.xss.MdExfil20230929": {
       "description": "Markdown image URI exfil exploit published 2023 Sept 29",
@@ -4892,10 +4958,11 @@
         "payload:leak:chat",
         "payload:malicious:renderer",
         "quality:Security:PromptStability",
-        "quality:Security:ExtractionInversion"
+        "quality:Security:ExtractionInversion",
+        "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-07-16 13:33:05 +0000"
+      "mod_time": "2025-08-11 18:13:36 +0000"
     },
     "probes.xss.StringAssemblyDataExfil": {
       "description": "Prompt injection for manipulating state",
@@ -4923,10 +4990,11 @@
         "payload:leak:chat",
         "payload:malicious:renderer",
         "quality:Security:PromptStability",
-        "quality:Security:ExtractionInversion"
+        "quality:Security:ExtractionInversion",
+        "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-07-16 13:33:05 +0000"
+      "mod_time": "2025-08-11 18:13:36 +0000"
     }
   },
   "detectors": {
@@ -4947,7 +5015,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-07-02 06:55:12 +0000"
     },
     "detectors.always.Pass": {
       "description": "Always Pass (for testing & prototyping)",
@@ -4966,7 +5034,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-07-02 06:55:12 +0000"
     },
     "detectors.always.Passthru": {
       "description": "Send existing attempt detection results; use first detector",
@@ -4985,7 +5053,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-07-02 06:55:12 +0000"
     },
     "detectors.always.Random": {
       "description": "Always return a random result (for testing & prototyping)",
@@ -5004,7 +5072,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-07-02 06:55:12 +0000"
     },
     "detectors.ansiescape.Escaped": {
       "description": "pick up escaped ANSI escape sequences",
@@ -5063,7 +5131,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-19 06:26:33 +0000"
+      "mod_time": "2025-09-02 21:22:52 +0000"
     },
     "detectors.base.FileDetector": {
       "description": "Detector subclass for processing attempts whose outputs are filenames for checking",
@@ -5083,7 +5151,7 @@
       "recall": 0.0,
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2025-04-19 06:26:33 +0000"
+      "mod_time": "2025-09-02 21:22:52 +0000"
     },
     "detectors.base.HFDetector": {
       "description": "Detector using a Hugging Face model",
@@ -5110,7 +5178,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-19 06:26:33 +0000"
+      "mod_time": "2025-09-02 21:22:52 +0000"
     },
     "detectors.base.StringDetector": {
       "description": "Subclass of Detector using list of substrings as detection triggers",
@@ -5130,7 +5198,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-19 06:26:33 +0000"
+      "mod_time": "2025-09-02 21:22:52 +0000"
     },
     "detectors.base.TriggerListDetector": {
       "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
@@ -5149,7 +5217,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-19 06:26:33 +0000"
+      "mod_time": "2025-09-02 21:22:52 +0000"
     },
     "detectors.continuation.Continuation": {
       "description": "Detect if model intiates / continues a trigger word",
@@ -5168,7 +5236,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-08-13 22:01:46 +0000"
     },
     "detectors.dan.AntiDAN": {
       "description": "Do we get an ANTI-DAN positive?",
@@ -5341,7 +5409,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-08-13 22:01:46 +0000"
     },
     "detectors.encoding.DecodeApprox": {
       "description": "Is there a partial hash decoding?",
@@ -5361,7 +5429,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-04-18 22:06:15 +0000"
     },
     "detectors.encoding.DecodeMatch": {
       "description": "Is there a direct decoding of anything in attempt[\"notes\"][\"triggers\"]?",
@@ -5381,7 +5449,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-04-18 22:06:15 +0000"
     },
     "detectors.exploitation.JinjaTemplateDetector": {
       "description": "Detect that a valid jinja template was provided.",
@@ -5413,7 +5481,7 @@
         "cwe:1426",
         "cwe:1427"
       ],
-      "mod_time": "2025-07-16 13:33:05 +0000"
+      "mod_time": "2025-08-08 14:23:52 +0000"
     },
     "detectors.exploitation.PythonCodeExecution": {
       "description": "Detect the presence of python that will execute commands on the system.",
@@ -5444,7 +5512,7 @@
         "cwe:1426",
         "cwe:1427"
       ],
-      "mod_time": "2025-07-16 13:33:05 +0000"
+      "mod_time": "2025-08-08 14:23:52 +0000"
     },
     "detectors.exploitation.SQLiEcho": {
       "description": "Detect if the system echoes the provided SQL injection.",
@@ -5473,7 +5541,7 @@
         "cwe:1426",
         "cwe:1427"
       ],
-      "mod_time": "2025-07-16 13:33:05 +0000"
+      "mod_time": "2025-08-08 14:23:52 +0000"
     },
     "detectors.exploitation.SQLiSuccess": {
       "description": "Detect if the system returns a \"SUCCESS\" message.",
@@ -5503,7 +5571,7 @@
         "cwe:1426",
         "cwe:1427"
       ],
-      "mod_time": "2025-07-16 13:33:05 +0000"
+      "mod_time": "2025-08-08 14:23:52 +0000"
     },
     "detectors.fileformats.FileIsExecutable": {
       "description": "Magic check if file is portable or linear executable (exe/dll/vxd/..)",
@@ -5582,7 +5650,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-07-02 06:55:12 +0000"
     },
     "detectors.goodside.PlainJSON": {
       "description": "Is the output valid JSON with no preamble?",
@@ -5601,7 +5669,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-07-02 06:55:12 +0000"
     },
     "detectors.goodside.RileyIsnt": {
       "description": "Look for mentions of being Canadian, female pronouns, being a singer",
@@ -5621,7 +5689,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-07-02 06:55:12 +0000"
     },
     "detectors.judge.ModelAsJudge": {
       "description": "Uses the configured model to detect responses that attained the probe goal",
@@ -5645,7 +5713,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-09-02 21:22:52 +0000"
     },
     "detectors.judge.Refusal": {
       "description": "Uses the configured model to detect if the responses is a refusal to answer",
@@ -5667,7 +5735,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-09-02 21:22:52 +0000"
     },
     "detectors.knownbadsignatures.EICAR": {
       "description": "Is the EICAR test string present?",
@@ -5752,7 +5820,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-06-12 16:14:56 +0000"
     },
     "detectors.lmrc.Anthro": {
       "description": "Looking for first person pronoun uses",
@@ -5816,7 +5884,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-07-29 22:13:08 +0000"
+      "mod_time": "2025-08-25 19:24:36 +0000"
     },
     "detectors.misleading.MustContradictNLI": {
       "description": "This detector is looking for the model to contradict a claim.",
@@ -5845,7 +5913,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:44:10 +0000"
+      "mod_time": "2025-08-20 13:55:46 +0000"
     },
     "detectors.misleading.MustRefuteClaimKW": {
       "description": "Looking for strings indicating a refutation",
@@ -5865,7 +5933,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:44:10 +0000"
+      "mod_time": "2025-08-20 13:55:46 +0000"
     },
     "detectors.misleading.MustRefuteClaimModel": {
       "description": "Using garak-llm/refutation_detector_distilbert to detect model refutations",
@@ -5894,7 +5962,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:44:10 +0000"
+      "mod_time": "2025-08-20 13:55:46 +0000"
     },
     "detectors.mitigation.MitigationBypass": {
       "description": "Detect if a string response does not contain a mitigation message.",
@@ -5917,7 +5985,7 @@
         "avid-effect:security:S0403",
         "avid-effect:performance:P0204"
       ],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-02 06:55:12 +0000"
     },
     "detectors.mitigation.Prefixes": {
       "description": "Detect failure prefixes",
@@ -5937,7 +6005,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-23 07:10:52 +0000"
+      "mod_time": "2025-07-02 06:55:12 +0000"
     },
     "detectors.packagehallucination.JavaScriptNpm": {
       "description": "Check if the output tries to import or require an npm package not listed in the npm registry",
@@ -5959,7 +6027,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-07-15 16:42:59 +0000"
+      "mod_time": "2025-08-20 13:55:46 +0000"
     },
     "detectors.packagehallucination.PackageHallucinationDetector": {
       "description": "Base class for package hallucination detectors",
@@ -5981,7 +6049,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-07-15 16:42:59 +0000"
+      "mod_time": "2025-08-20 13:55:46 +0000"
     },
     "detectors.packagehallucination.PythonPypi": {
       "description": "Check if the output tries to import a package not listed in stdlib or a pypi archive listing",
@@ -6003,7 +6071,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-07-15 16:42:59 +0000"
+      "mod_time": "2025-08-20 13:55:46 +0000"
     },
     "detectors.packagehallucination.RubyGems": {
       "description": "Check if the output tries to require a gem not listed in the Ruby standard library or RubyGems",
@@ -6025,7 +6093,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-07-15 16:42:59 +0000"
+      "mod_time": "2025-08-20 13:55:46 +0000"
     },
     "detectors.packagehallucination.RustCrates": {
       "description": "Check if the output tries to use a Rust crate not listed in the crates.io registry",
@@ -6047,7 +6115,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-07-15 16:42:59 +0000"
+      "mod_time": "2025-08-20 13:55:46 +0000"
     },
     "detectors.perspective.Attack_On_Author": {
       "description": "Targets: Attack on the author of an article or post.",
@@ -6550,7 +6618,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-06-12 16:14:56 +0000"
     },
     "detectors.promptinject.AttackRogueString": {
       "description": "Detect if model emits trigger string",
@@ -6569,7 +6637,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-07-16 13:33:05 +0000"
+      "mod_time": "2025-08-08 14:23:52 +0000"
     },
     "detectors.shields.Down": {
       "description": "Checks for strings commonly returned by a security system when guardrails are",
@@ -6596,7 +6664,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-07-02 06:55:12 +0000"
     },
     "detectors.shields.Up": {
       "description": "Checks for strings commonly returned when a security system is",
@@ -6626,7 +6694,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-07-02 06:55:12 +0000"
     },
     "detectors.snowball.DontStartNo": {
       "description": "Response should start no, or contain a negation, to pass",
@@ -6647,7 +6715,7 @@
       "tags": [
         "avid:performance:P0204"
       ],
-      "mod_time": "2025-04-17 08:44:10 +0000"
+      "mod_time": "2025-06-12 16:14:56 +0000"
     },
     "detectors.snowball.DontStartYes": {
       "description": "Response should start yes, or contain an affirmation, to pass",
@@ -6668,7 +6736,7 @@
       "tags": [
         "avid:performance:P0204"
       ],
-      "mod_time": "2025-04-17 08:44:10 +0000"
+      "mod_time": "2025-06-12 16:14:56 +0000"
     },
     "detectors.unsafe_content.LDNOOBW": {
       "description": "List of Dirty, Naughty, Obscene, and Otherwise Bad Words (English)",
@@ -7228,7 +7296,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-08-12 15:25:28 +0000"
     },
     "detectors.xss.MarkdownExfilBasic": {
       "description": "Detect markdown images with fqdn, absolute path, and populated q= parameter",
@@ -7249,7 +7317,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-08-12 15:25:28 +0000"
     },
     "detectors.xss.MarkdownExfilContent": {
       "description": "As the basic detector, MarkdownExfilBasic, but did we exfiltrate anything?",
@@ -7270,7 +7338,49 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-08-12 15:25:28 +0000"
+    },
+    "detectors.xss.MarkdownExfilExtendedImage": {
+      "description": "Extended version of MarkdownExfilBasic that searches for a larger variety of Markdown URI formats",
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
+      "accuracy": null,
+      "active": true,
+      "doc_uri": "https://embracethered.com/blog/posts/2023/bing-chat-data-exfiltration-poc-and-fix/",
+      "lang_spec": "*",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "tags": [
+        "avid-effect:security:S0301"
+      ],
+      "mod_time": "2025-08-12 15:25:28 +0000"
+    },
+    "detectors.xss.MarkdownExfilExtendedNonImage": {
+      "description": "Extended version of MarkdownExfilBasic that searches for a larger variety of Markdown URI formats",
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
+      "accuracy": null,
+      "active": true,
+      "doc_uri": "https://embracethered.com/blog/posts/2023/bing-chat-data-exfiltration-poc-and-fix/",
+      "lang_spec": "*",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "tags": [
+        "avid-effect:security:S0301"
+      ],
+      "mod_time": "2025-08-12 15:25:28 +0000"
     }
   },
   "generators": {
@@ -7333,7 +7443,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-04-25 15:55:06 +0000"
+      "mod_time": "2025-08-26 14:02:31 +0000"
     },
     "generators.cohere.CohereGenerator": {
       "description": "Interface to Cohere's python library for their text2text model.",
@@ -7364,7 +7474,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-07-24 19:58:00 +0000"
+      "mod_time": "2025-08-26 14:02:31 +0000"
     },
     "generators.function.Multiple": {
       "description": "Pass a function to call as a generator.",
@@ -7383,7 +7493,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-06-18 17:35:24 +0000"
+      "mod_time": "2025-08-08 15:45:01 +0000"
     },
     "generators.function.Single": {
       "description": "Pass a function to call as a generator.",
@@ -7402,7 +7512,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-18 17:35:24 +0000"
+      "mod_time": "2025-08-08 15:45:01 +0000"
     },
     "generators.ggml.GgmlGenerator": {
       "description": "Generator interface for ggml models in gguf format.",
@@ -7437,7 +7547,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-05-06 22:17:28 +0000"
+      "mod_time": "2025-06-17 16:15:39 +0000"
     },
     "generators.groq.GroqChat": {
       "description": "Wrapper for Groq-hosted LLM models.",
@@ -7482,7 +7592,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-11-22 20:20:29 +0000"
+      "mod_time": "2025-06-12 16:14:56 +0000"
     },
     "generators.guardrails.NeMoGuardrails": {
       "description": "Generator wrapper for NeMo Guardrails.",
@@ -7506,36 +7616,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-03-12 18:40:18 +0000"
-    },
-    "generators.huggingface.ConversationalPipeline": {
-      "description": "Conversational text generation using HuggingFace pipelines",
-      "DEFAULT_PARAMS": {
-        "max_tokens": 150,
-        "temperature": null,
-        "top_k": null,
-        "context_len": null,
-        "skip_seq_start": null,
-        "skip_seq_end": null,
-        "hf_args": {
-          "torch_dtype": "float16",
-          "do_sample": true,
-          "device": null
-        }
-      },
-      "active": true,
-      "generator_family_name": "Hugging Face \ud83e\udd17 pipeline for conversations",
-      "modality": {
-        "in": [
-          "text"
-        ],
-        "out": [
-          "text"
-        ]
-      },
-      "parallel_capable": false,
-      "supports_multiple_generations": true,
-      "mod_time": "2025-06-24 19:46:58 +0000"
+      "mod_time": "2025-08-26 14:02:31 +0000"
     },
     "generators.huggingface.InferenceAPI": {
       "description": "Get text generations from Hugging Face Inference API",
@@ -7562,7 +7643,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-06-24 19:46:58 +0000"
+      "mod_time": "2025-08-26 14:02:31 +0000"
     },
     "generators.huggingface.InferenceEndpoint": {
       "description": "Interface for Hugging Face private endpoints",
@@ -7589,7 +7670,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-24 19:46:58 +0000"
+      "mod_time": "2025-08-26 14:02:31 +0000"
     },
     "generators.huggingface.LLaVA": {
       "description": "Get LLaVA ([ text + image ] -> text) generations",
@@ -7619,7 +7700,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-24 19:46:58 +0000"
+      "mod_time": "2025-08-26 14:02:31 +0000"
     },
     "generators.huggingface.Model": {
       "description": "Get text generations from a locally-run Hugging Face model",
@@ -7648,7 +7729,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2025-06-24 19:46:58 +0000"
+      "mod_time": "2025-08-26 14:02:31 +0000"
     },
     "generators.huggingface.OptimumPipeline": {
       "description": "Get text generations from a locally-run Hugging Face pipeline using NVIDIA Optimum",
@@ -7677,7 +7758,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2025-06-24 19:46:58 +0000"
+      "mod_time": "2025-08-26 14:02:31 +0000"
     },
     "generators.huggingface.Pipeline": {
       "description": "Get text generations from a locally-run Hugging Face pipeline",
@@ -7706,7 +7787,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2025-06-24 19:46:58 +0000"
+      "mod_time": "2025-08-26 14:02:31 +0000"
     },
     "generators.langchain.LangChainLLMGenerator": {
       "description": "Class supporting LangChain LLM interfaces",
@@ -7736,7 +7817,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-07-16 13:33:05 +0000"
+      "mod_time": "2025-06-17 16:15:39 +0000"
     },
     "generators.langchain_serve.LangChainServeLLMGenerator": {
       "description": "Class supporting LangChain Serve LLM interfaces via HTTP POST requests.",
@@ -7761,7 +7842,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-08-29 13:35:37 +0000"
+      "mod_time": "2025-06-17 16:15:39 +0000"
     },
     "generators.litellm.LiteLLMGenerator": {
       "description": "Generator wrapper using LiteLLM to allow access to different providers using the OpenAI API format.",
@@ -7792,7 +7873,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-06-18 17:35:24 +0000"
+      "mod_time": "2025-08-26 14:02:31 +0000"
     },
     "generators.mistral.MistralGenerator": {
       "description": "Interface for public endpoints of models hosted in Mistral La Plateforme (console.mistral.ai).",
@@ -7817,7 +7898,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-07-16 13:33:05 +0000"
+      "mod_time": "2025-08-26 14:02:31 +0000"
     },
     "generators.nemo.NeMoGenerator": {
       "description": "Wrapper for the NVIDIA NeMo models via NGC. Expects NGC_API_KEY and ORG_ID environment variables.",
@@ -7848,7 +7929,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-02-28 21:51:23 +0000"
+      "mod_time": "2025-06-17 16:15:39 +0000"
     },
     "generators.nim.NVMultimodal": {
       "description": "Wrapper for text + image / audio to text NIMs. Expects NIM_API_KEY environment variable.",
@@ -7894,7 +7975,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-10 20:39:13 +0000"
+      "mod_time": "2025-06-12 16:14:56 +0000"
     },
     "generators.nim.NVOpenAIChat": {
       "description": "Wrapper for NVIDIA-hosted NIMs. Expects NIM_API_KEY environment variable.",
@@ -7937,7 +8018,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-10 20:39:13 +0000"
+      "mod_time": "2025-06-12 16:14:56 +0000"
     },
     "generators.nim.NVOpenAICompletion": {
       "description": "Wrapper for NVIDIA-hosted NIMs. Expects NIM_API_KEY environment variable.",
@@ -7980,7 +8061,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-10 20:39:13 +0000"
+      "mod_time": "2025-06-12 16:14:56 +0000"
     },
     "generators.nim.Vision": {
       "description": "Wrapper for text+image to text NIMs. Expects NIM_API_KEY environment variable.",
@@ -8025,7 +8106,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-10 20:39:13 +0000"
+      "mod_time": "2025-06-12 16:14:56 +0000"
     },
     "generators.nvcf.NvcfChat": {
       "description": "Wrapper for NVIDIA Cloud Functions Chat models via NGC. Expects NVCF_API_KEY environment variable.",
@@ -8058,7 +8139,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-02-28 21:51:23 +0000"
+      "mod_time": "2025-08-26 14:02:31 +0000"
     },
     "generators.nvcf.NvcfCompletion": {
       "description": "Wrapper for NVIDIA Cloud Functions Completion models via NGC. Expects NVCF_API_KEY environment variables.",
@@ -8091,7 +8172,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-02-28 21:51:23 +0000"
+      "mod_time": "2025-08-26 14:02:31 +0000"
     },
     "generators.ollama.OllamaGenerator": {
       "description": "Interface for Ollama endpoints",
@@ -8117,7 +8198,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": false,
-      "mod_time": "2024-09-30 16:49:32 +0000"
+      "mod_time": "2025-08-26 14:02:31 +0000"
     },
     "generators.ollama.OllamaGeneratorChat": {
       "description": "Interface for Ollama endpoints, using the chat functionality",
@@ -8143,7 +8224,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": false,
-      "mod_time": "2024-09-30 16:49:32 +0000"
+      "mod_time": "2025-08-26 14:02:31 +0000"
     },
     "generators.openai.OpenAICompatible": {
       "description": "Generator base class for OpenAI compatible text2text restful API. Implements shared initialization and execution methods.",
@@ -8179,7 +8260,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-02-20 20:27:07 +0000"
+      "mod_time": "2025-08-26 14:02:31 +0000"
     },
     "generators.openai.OpenAIGenerator": {
       "description": "Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable",
@@ -8214,7 +8295,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-02-20 20:27:07 +0000"
+      "mod_time": "2025-08-26 14:02:31 +0000"
     },
     "generators.openai.OpenAIReasoningGenerator": {
       "description": "Generator wrapper for OpenAI reasoning models, e.g. `o1` family.",
@@ -8254,7 +8335,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-02-20 20:27:07 +0000"
+      "mod_time": "2025-08-26 14:02:31 +0000"
     },
     "generators.rasa.RasaRestGenerator": {
       "description": "API interface for RASA models",
@@ -8319,7 +8400,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-04-23 19:33:15 +0000"
+      "mod_time": "2025-06-17 16:15:39 +0000"
     },
     "generators.replicate.ReplicateGenerator": {
       "description": "Interface for public endpoints of models hosted in Replicate (replicate.com).",
@@ -8345,7 +8426,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-04-23 19:33:15 +0000"
+      "mod_time": "2025-06-17 16:15:39 +0000"
     },
     "generators.rest.RestGenerator": {
       "description": "Generic API interface for REST models",
@@ -8381,7 +8462,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-05-28 15:03:48 +0000"
+      "mod_time": "2025-06-17 16:15:39 +0000"
     },
     "generators.test.Blank": {
       "description": "This generator always returns the empty string.",
@@ -8405,7 +8486,32 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-07-18 06:04:25 +0000"
+      "mod_time": "2025-06-18 19:31:49 +0000"
+    },
+    "generators.test.BlankVision": {
+      "description": "This text+image input generator always returns the empty string.",
+      "DEFAULT_PARAMS": {
+        "max_tokens": 150,
+        "temperature": null,
+        "top_k": null,
+        "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null
+      },
+      "active": true,
+      "generator_family_name": "Test",
+      "modality": {
+        "in": [
+          "image",
+          "text"
+        ],
+        "out": [
+          "text"
+        ]
+      },
+      "parallel_capable": true,
+      "supports_multiple_generations": true,
+      "mod_time": "2025-06-18 19:31:49 +0000"
     },
     "generators.test.Lipsum": {
       "description": "Lorem Ipsum generator, so we can get non-zero outputs that vary",
@@ -8429,10 +8535,10 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-07-18 06:04:25 +0000"
+      "mod_time": "2025-06-18 19:31:49 +0000"
     },
     "generators.test.Repeat": {
-      "description": "This generator returns the input that was posed to it.",
+      "description": "This generator returns the last message from input that was posed to it.",
       "DEFAULT_PARAMS": {
         "max_tokens": 150,
         "temperature": null,
@@ -8453,7 +8559,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-07-18 06:04:25 +0000"
+      "mod_time": "2025-06-18 19:31:49 +0000"
     },
     "generators.test.Single": {
       "description": "This generator returns the a fixed string and does not support multiple generations.",
@@ -8477,7 +8583,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-07-18 06:04:25 +0000"
+      "mod_time": "2025-06-18 19:31:49 +0000"
     },
     "generators.watsonx.WatsonXGenerator": {
       "description": "This is a generator for watsonx.ai.",
@@ -8507,7 +8613,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-07-16 13:33:05 +0000"
+      "mod_time": "2025-08-08 14:23:52 +0000"
     }
   },
   "harnesses": {
@@ -8549,7 +8655,7 @@
       "active": true,
       "doc_uri": "",
       "lang": null,
-      "mod_time": "2024-04-19 18:04:13 +0000"
+      "mod_time": "2025-06-17 16:15:39 +0000"
     },
     "buffs.encoding.CharCode": {
       "description": "CharCode buff",
@@ -8557,7 +8663,7 @@
       "active": true,
       "doc_uri": "",
       "lang": null,
-      "mod_time": "2024-04-19 18:04:13 +0000"
+      "mod_time": "2025-06-17 16:15:39 +0000"
     },
     "buffs.low_resource_languages.LRLBuff": {
       "description": "Low Resource Language buff",
@@ -8565,7 +8671,7 @@
       "active": true,
       "doc_uri": "https://arxiv.org/abs/2310.02446",
       "lang": null,
-      "mod_time": "2025-04-25 12:03:21 +0000"
+      "mod_time": "2025-06-17 16:15:39 +0000"
     },
     "buffs.lowercase.Lowercase": {
       "description": "Lowercasing buff",
@@ -8573,7 +8679,7 @@
       "active": true,
       "doc_uri": "",
       "lang": null,
-      "mod_time": "2024-04-19 18:04:13 +0000"
+      "mod_time": "2025-06-17 16:15:39 +0000"
     },
     "buffs.paraphrase.Fast": {
       "description": "CPU-friendly paraphrase buff based on Humarin's T5 paraphraser",
@@ -8587,7 +8693,7 @@
       "active": true,
       "doc_uri": "https://huggingface.co/humarin/chatgpt_paraphraser_on_T5_base",
       "lang": "en",
-      "mod_time": "2025-04-17 08:22:12 +0000"
+      "mod_time": "2025-06-17 16:15:39 +0000"
     },
     "buffs.paraphrase.PegasusT5": {
       "description": "Paraphrasing buff using Pegasus model",
@@ -8603,7 +8709,7 @@
       "active": true,
       "doc_uri": "https://huggingface.co/tuner007/pegasus_paraphrase",
       "lang": "en",
-      "mod_time": "2025-04-17 08:22:12 +0000"
+      "mod_time": "2025-06-17 16:15:39 +0000"
     }
   }
 }
