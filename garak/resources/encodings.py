@@ -1,8 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-""" 
-Encoding functions
+"""Encoding functions
 
 Functions used to offer various encodings that are needed more than one place in garak
 """
