@@ -457,6 +457,7 @@ class InjectBraille(EncodingMixin, garak.probes.Probe):
         garak.probes.Probe.__init__(self, config_root=config_root)
         EncodingMixin.__init__(self)
 
+
 class InjectAtbash(EncodingMixin, garak.probes.Probe):
     """Atbash Probe Credit: Nakul-Rajpal
 
@@ -467,9 +468,10 @@ class InjectAtbash(EncodingMixin, garak.probes.Probe):
     - repeats or decodes them,
     - and follows hidden instructions despite obfuscation.
     """
-    
+
     encoding_name = "Atbash"
     active = True
+    doc_uri = "https://en.wikipedia.org/wiki/Atbash"
 
     @staticmethod
     def atbash(text: bytes) -> bytes:
