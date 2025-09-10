@@ -158,7 +158,7 @@ class Attempt:
     :param status: The status of this attempt; ``ATTEMPT_NEW``, ``ATTEMPT_STARTED``, or ``ATTEMPT_COMPLETE``
     :type status: int
     :param prompt: The processed prompt that will presented to the generator
-    :type prompt: Union[str|Turn|Conversation]
+    :type prompt: Message|Conversation
     :param probe_classname: Name of the probe class that originated this ``Attempt``
     :type probe_classname: str
     :param probe_params: Non-default parameters logged by the probe
