@@ -4865,7 +4865,7 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-08-11 18:13:36 +0000"
+      "mod_time": "2025-09-04 20:03:05 +0000"
     },
     "probes.xss.MarkdownImageExfil": {
       "description": "Can we get the model to write embedded assets exfiltrating text in the URI?",
@@ -4900,10 +4900,10 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-08-11 18:13:36 +0000"
+      "mod_time": "2025-09-04 20:03:05 +0000"
     },
     "probes.xss.MarkdownURIImageExfilExtended": {
-      "description": "Generalized implementation of data exfiltration exploits via markdown URIs.",
+      "description": "Generalized implementation of data exfiltration exploits through Markdown URIs.",
       "DEFAULT_PARAMS": {},
       "active": true,
       "doc_uri": "https://www.aim.security/lp/aim-labs-echoleak-blogpost",
@@ -4932,10 +4932,10 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-08-11 18:13:36 +0000"
+      "mod_time": "2025-09-04 20:03:05 +0000"
     },
     "probes.xss.MarkdownURINonImageExfilExtended": {
-      "description": "Generalized implementation of data exfiltration exploits via markdown URIs.",
+      "description": "Generalized implementation of data exfiltration exploits through Markdown URIs.",
       "DEFAULT_PARAMS": {},
       "active": true,
       "doc_uri": "https://www.aim.security/lp/aim-labs-echoleak-blogpost",
@@ -4964,10 +4964,10 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-08-11 18:13:36 +0000"
+      "mod_time": "2025-09-04 20:03:05 +0000"
     },
     "probes.xss.MdExfil20230929": {
-      "description": "Markdown image URI exfil exploit published 2023 Sept 29",
+      "description": "Markdown image URI exfil exploit published 2023 Sept 29.",
       "DEFAULT_PARAMS": {
         "payload_name": "example_domains_xss"
       },
@@ -4998,7 +4998,7 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-08-11 18:13:36 +0000"
+      "mod_time": "2025-09-04 20:03:05 +0000"
     },
     "probes.xss.StringAssemblyDataExfil": {
       "description": "Prompt injection for manipulating state",
@@ -5030,7 +5030,7 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-08-11 18:13:36 +0000"
+      "mod_time": "2025-09-04 20:03:05 +0000"
     }
   },
   "detectors": {
@@ -7968,7 +7968,7 @@
       "mod_time": "2025-06-17 16:15:39 +0000"
     },
     "generators.nim.NVMultimodal": {
-      "description": "Wrapper for text + image / audio to text NIMs. Expects NIM_API_KEY environment variable.",
+      "description": "Wrapper for text and image / audio to text NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
       "DEFAULT_PARAMS": {
         "max_tokens": 150,
         "temperature": 0.1,
@@ -8011,10 +8011,10 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-12 16:14:56 +0000"
+      "mod_time": "2025-09-05 19:48:46 +0000"
     },
     "generators.nim.NVOpenAIChat": {
-      "description": "Wrapper for NVIDIA-hosted NIMs. Expects NIM_API_KEY environment variable.",
+      "description": "Wrapper for NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
       "DEFAULT_PARAMS": {
         "max_tokens": 150,
         "temperature": 0.1,
@@ -8054,10 +8054,10 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-12 16:14:56 +0000"
+      "mod_time": "2025-09-05 19:48:46 +0000"
     },
     "generators.nim.NVOpenAICompletion": {
-      "description": "Wrapper for NVIDIA-hosted NIMs. Expects NIM_API_KEY environment variable.",
+      "description": "Wrapper for NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
       "DEFAULT_PARAMS": {
         "max_tokens": 150,
         "temperature": 0.1,
@@ -8097,10 +8097,10 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-12 16:14:56 +0000"
+      "mod_time": "2025-09-05 19:48:46 +0000"
     },
     "generators.nim.Vision": {
-      "description": "Wrapper for text+image to text NIMs. Expects NIM_API_KEY environment variable.",
+      "description": "Wrapper for text and image to text NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
       "DEFAULT_PARAMS": {
         "max_tokens": 150,
         "temperature": 0.1,
@@ -8142,7 +8142,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-12 16:14:56 +0000"
+      "mod_time": "2025-09-05 19:48:46 +0000"
     },
     "generators.nvcf.NvcfChat": {
       "description": "Wrapper for NVIDIA Cloud Functions Chat models via NGC. Expects NVCF_API_KEY environment variable.",
