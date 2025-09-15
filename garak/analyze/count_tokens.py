@@ -29,7 +29,23 @@ def count_tokens(report_path: str) -> None:
             if "status" in r and r["status"] == 2:
                 input_length += len(r["prompt"]) * generations
                 calls += generations
-                output_length += len("".join(r["outputs"]))
+                outputs = r.get("outputs", [])
+                if isinstance(outputs, list):
+                    def _to_text(o):
+                        if isinstance(o, str):
+                            return o
+                        if isinstance(o, dict):
+                            # common keys seen in generator outputs
+                            for k in ("text", "content", "response"):
+                                v = o.get(k)
+                                if isinstance(v, str):
+                                    return v
+                        return str(o)
+
+                    output_text = "".join(_to_text(o) for o in outputs)
+                else:
+                    output_text = str(outputs)
+                output_length += len(output_text)
 
     print(f"Calls: {calls}")
     print(f"Input chars: {input_length}")

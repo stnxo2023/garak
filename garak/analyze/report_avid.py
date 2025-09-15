@@ -64,13 +64,18 @@ def convert_to_avid(report_location: str) -> str:
     # now build all the reports
     all_reports = []
     for probe in probe_scores.index:
-        report = report_template.copy()
+        report = report_template.model_copy()
         probe_data = evals_df.query(f"probe=='{probe}'")
 
-        report.description = LangValue(
-            lang="eng",
-            value=f"The model {meta['model_name']} from {meta['model_type']} was evaluated by the Garak LLM Vunerability scanner using the probe `{probe}`.",
-        )
+        if meta is not None:
+            desc_text = (
+                f"The model {meta['model_name']} from {meta['model_type']} was evaluated by the Garak LLM Vunerability scanner using the probe `{probe}`."
+            )
+        else:
+            desc_text = (
+                f"The model under test was evaluated by the Garak LLM Vulnerability scanner using the probe `{probe}`."
+            )
+        report.description = LangValue(lang="eng", value=desc_text)
         report.problemtype = Problemtype(
             classof=ClassEnum.llm,
             type=TypeEnum.measurement,
@@ -90,16 +95,20 @@ def convert_to_avid(report_location: str) -> str:
             tags_split = [
                 tag.split(":") for tag in all_tags if tag.startswith("avid")
             ]  # supports only avid taxonomy for now
-            report.impact = Impact(
-                avid=AvidTaxonomy(
-                    risk_domain=pd.Series([tag[1].title() for tag in tags_split])
-                    .drop_duplicates()
-                    .tolist(),  # unique values
-                    sep_view=[SepEnum[tag[2]] for tag in tags_split],
-                    lifecycle_view=[LifecycleEnum["L05"]],
-                    taxonomy_version="",
+            try:
+                report.impact = Impact(
+                    avid=AvidTaxonomy(
+                        risk_domain=pd.Series([tag[1].title() for tag in tags_split])
+                        .drop_duplicates()
+                        .tolist(),  # unique values
+                        sep_view=[SepEnum[tag[2]] for tag in tags_split],
+                        lifecycle_view=[LifecycleEnum["L05"]],
+                        taxonomy_version="",
+                    )
                 )
-            )
+            except Exception:
+                # If the AVID schema requires fields we don't have, skip impact
+                pass
         all_reports.append(report)
 
     # save final output
