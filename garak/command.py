@@ -7,8 +7,35 @@ import logging
 import json
 import random
 import typing
+from . import _config
 
 HINT_CHANCE = 0.25
+
+from typing import Iterable, List
+import sys
+
+
+def _split_csv(val: str | None) -> List[str]:
+    if not val:
+        return []
+    return [t.strip() for t in val.split(",") if t.strip()]
+
+
+def _matches(name: str, tokens: Iterable[str]) -> bool:
+    # supports prefix ("misleading") or full path ("misleading.MustContradictNLI")
+    for t in tokens:
+        if name == t or name.startswith(t + "."):
+            return True
+    return False
+
+
+def _specs_from_config(path: str) -> tuple[str | None, str | None]:
+    import yaml
+
+    with open(path, "r") as f:
+        data = yaml.safe_load(f) or {}
+    plugins = data.get("plugins", {}) if isinstance(data, dict) else {}
+    return plugins.get("probe_spec"), plugins.get("detector_spec")
 
 
 def hint(msg, logging=None):
@@ -96,7 +123,9 @@ def start_run():
             ):
                 setup_dict[f"{subset}.{k}"] = v
 
-    _config.transient.reportfile.write(json.dumps(setup_dict, ensure_ascii=False) + "\n")
+    _config.transient.reportfile.write(
+        json.dumps(setup_dict, ensure_ascii=False) + "\n"
+    )
     _config.transient.reportfile.write(
         json.dumps(
             {
@@ -104,7 +133,8 @@ def start_run():
                 "garak_version": _config.version,
                 "start_time": _config.transient.starttime_iso,
                 "run": _config.transient.run_id,
-            }, ensure_ascii=False
+            },
+            ensure_ascii=False,
         )
         + "\n"
     )
@@ -123,7 +153,9 @@ def end_run():
         "end_time": datetime.datetime.now().isoformat(),
         "run": _config.transient.run_id,
     }
-    _config.transient.reportfile.write(json.dumps(end_object, ensure_ascii=False) + "\n")
+    _config.transient.reportfile.write(
+        json.dumps(end_object, ensure_ascii=False) + "\n"
+    )
     _config.transient.reportfile.close()
 
     print(f"📜 report closed :) {_config.transient.report_filename}")
@@ -167,15 +199,69 @@ def print_plugins(prefix: str, color):
 
 
 def print_probes():
-    from colorama import Fore
+    from colorama import Fore, Style
+    from garak._plugins import enumerate_plugins
 
-    print_plugins("probes", Fore.LIGHTYELLOW_EX)
+    rows = enumerate_plugins(category="probes")
+    rows = [(p.replace("probes.", ""), a) for p, a in rows]
+    module_names = set((m.split(".")[0], True) for m, a in rows)
+    rows = sorted(rows + list(module_names))
+
+    args = _config.transient.cli_args
+    spec = getattr(args, "probes", None) or getattr(args, "probe_spec", None)
+    if not spec and getattr(args, "config", None):
+        probe_spec, _ = _specs_from_config(args.config)
+        spec = probe_spec
+
+    tokens = _split_csv(spec) if spec else []
+    if tokens:
+        rows = [(n, a) for (n, a) in rows if _matches(n, tokens)]
+        if not rows:
+            print(f"No probes match the provided 'probe_spec': {','.join(tokens)}")
+            sys.exit(2)
+
+    for plugin_name, active in rows:
+        print(f"{Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probes: {Style.RESET_ALL}", end="")
+        print(plugin_name, end="")
+        if "." not in plugin_name:
+            print(" 🌟", end="")
+        if not active:
+            print(" 💤", end="")
+        print()
 
 
 def print_detectors():
-    from colorama import Fore
+    from colorama import Fore, Style
+    from garak._plugins import enumerate_plugins
 
-    print_plugins("detectors", Fore.LIGHTBLUE_EX)
+    rows = enumerate_plugins(category="detectors")
+    rows = [(p.replace("detectors.", ""), a) for p, a in rows]
+    module_names = set((m.split(".")[0], True) for m, a in rows)
+    rows = sorted(rows + list(module_names))
+
+    args = _config.transient.cli_args
+    spec = getattr(args, "detectors", None) or getattr(args, "detector_spec", None)
+    if not spec and getattr(args, "config", None):
+        _, det_spec = _specs_from_config(args.config)
+        spec = det_spec
+
+    tokens = _split_csv(spec) if spec else []
+    if tokens:
+        rows = [(n, a) for (n, a) in rows if _matches(n, tokens)]
+        if not rows:
+            print(
+                f"No detectors match the provided 'detector_spec': {','.join(tokens)}"
+            )
+            sys.exit(2)
+
+    for plugin_name, active in rows:
+        print(f"{Style.BRIGHT}{Fore.LIGHTBLUE_EX}detectors: {Style.RESET_ALL}", end="")
+        print(plugin_name, end="")
+        if "." not in plugin_name:
+            print(" 🌟", end="")
+        if not active:
+            print(" 💤", end="")
+        print()
 
 
 def print_generators():
