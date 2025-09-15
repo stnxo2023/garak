@@ -1,8 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+# calculate calibration data given a list of report.jsonl files
 # input: list of report jsonl
 # process:
 #  for each combination of probe & detector:
@@ -13,7 +14,6 @@ from collections import defaultdict
 import datetime
 from glob import glob
 import json
-import os
 
 import numpy as np
 import scipy

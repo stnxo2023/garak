@@ -1,10 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+
 # SPDX-FileCopyrightText: Portions Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+# generate a qualitative review of a garak report
 # highlight failing probes
 # give ten +ve and ten -ve examples from failing probes
-# takes report.jsonl, optional bag.json as input
+# takes report.jsonl, optional bag.json (e.g. data/calibration/calibration.json) as input
 
 from collections import defaultdict
 import json

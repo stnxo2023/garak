@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-"""Generate reports from garak report JSONL"""
+"""Generate reports from garak report JSONL
+
+see argparse config below for usage"""
 
 from collections import defaultdict
 import datetime

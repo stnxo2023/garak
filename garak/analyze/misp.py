@@ -1,8 +1,19 @@
 #!/usr/bin/env python3
 
-# report probes per tag
-# look for untagged probes
-# look for tags without description entries
+"""
+report on & validate categories maintained within garak
+
+these are stored in MISP format
+report probes per tag
+look for untagged probes
+look for tags without description entries
+
+this might make sense to move to tests, though we are OK to pass on an unused category
+
+usage:
+
+./misp.py 
+"""
 
 from collections import defaultdict
 import importlib
