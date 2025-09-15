@@ -46,7 +46,8 @@ def get_tree(report_path: str) -> None:
         def print_tree(node_id, indent=0):
             forms = "" + ",".join(node_info[probe][node_id]["surface_forms"]) + ""
             print(
-                "  " * indent + f"{forms} ::> {node_info[probe][node_id]['node_score']}",
+                "  " * indent
+                + f"{forms} ::> {node_info[probe][node_id]['node_score']}",
             )
             children = node_children[node_id]
             if children:

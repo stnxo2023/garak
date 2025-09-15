@@ -45,7 +45,9 @@ def analyze_log(report_path: str) -> None:
                     current_probe_classname = record["probe_classname"]
 
                 # for each detector:
-                for detector_name, detector_scores in record["detector_results"].items():
+                for detector_name, detector_scores in record[
+                    "detector_results"
+                ].items():
                     normalised_scores = [1 if i >= 0.5 else 0 for i in detector_scores]
                     # are there any hits?
                     if sum(normalised_scores):

@@ -39,7 +39,9 @@ def build_score_dict(filenames):
                     value = float(r["passed"]) / r["total"]
                     eval_scores[key].append(value)
                 else:
-                    print(f"invalid result check {filename} for {key}: total tests was 0")
+                    print(
+                        f"invalid result check {filename} for {key}: total tests was 0"
+                    )
 
     distribution_dict = {}
     for key in eval_scores:
@@ -88,7 +90,9 @@ def main(argv=None) -> None:
     sys.stdout.reconfigure(encoding="utf-8")
     report_list = args.report_paths or args.reports_positional
     if not report_list:
-        parser.error("one or more report paths are required (-r/--report_paths or positional)")
+        parser.error(
+            "one or more report paths are required (-r/--report_paths or positional)"
+        )
     distribution_dict = build_score_dict(report_list)
     print(json.dumps(distribution_dict, indent=2, sort_keys=True))
 

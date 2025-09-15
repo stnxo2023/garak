@@ -72,7 +72,9 @@ def convert_to_avid(report_location: str) -> str:
             value=f"The model {meta['model_name']} from {meta['model_type']} was evaluated by the Garak LLM Vunerability scanner using the probe `{probe}`.",
         )
         report.problemtype = Problemtype(
-            classof=ClassEnum.llm, type=TypeEnum.measurement, description=report.description
+            classof=ClassEnum.llm,
+            type=TypeEnum.measurement,
+            description=report.description,
         )
         report.metrics = [
             Metric(
