@@ -17,6 +17,7 @@
 
    The HTML is created in the `docs/source/html` directory.
 
+
 ## Publishing the Documentation
 
 Tag the commit to publish with `docs-v<semver>`.
