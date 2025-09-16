@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Prints a report given a garak report in jsonl"""
+"""Prints an AVID report given a garak report in jsonl"""
 
 import importlib
 import sys
