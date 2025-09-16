@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
 
+"""
+analyze a garak report.jsonl log file
+
+print out summary stats, and which prompts led to failures
+
+usage:
+
+./analyze_log.py <report.jsonl filename>
+
+"""
 import sys
 import json
 import argparse

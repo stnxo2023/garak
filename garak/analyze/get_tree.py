@@ -1,7 +1,15 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
+
+"""
+if a TreeSearchProbe probe was used, display the tree of items explored 
+
+usage:
+
+./get_tree.py <report.jsonl filename>
+"""
 
 from collections import defaultdict
 import json

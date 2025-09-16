@@ -1,26 +1,26 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+# calculate calibration data given a list of report.jsonl files
 # input: list of report jsonl
 # process:
 #  for each combination of probe & detector:
 #   compute mean, standard deviation, shapiro-wilk across all input report evals
 # output: json dict: keys are probe/detector, values are dict: keys are mu, sigma, sw
 
+import argparse
 from collections import defaultdict
 import datetime
 from glob import glob
 import json
-import os
 import sys
-import argparse
 
 import numpy as np
 import scipy
 
-from garak import __description__
+import garak
 from garak import _config
 
 
@@ -64,7 +64,7 @@ def main(argv=None) -> None:
 
     _config.load_config()
     print(
-        f"garak {__description__} v{_config.version} ( https://github.com/NVIDIA/garak )"
+        f"garak {garak.__description__} v{_config.version} ( https://github.com/NVIDIA/garak )"
     )
 
     parser = argparse.ArgumentParser(
