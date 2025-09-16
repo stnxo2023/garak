@@ -4,6 +4,7 @@ __version__ = "0.13.1.pre1"
 __app__ = "garak"
 __description__ = "LLM vulnerability scanner"
 
+import logging
 import os
 from garak import _config
 
@@ -17,5 +18,8 @@ if _log_filename is None:
 
 _config.transient.log_filename = _log_filename
 
-# Note: Logging configuration is performed in garak.command.start_logging()
-# to enable a process-safe Queue-based logging architecture.
+logging.basicConfig(
+    filename=_log_filename,
+    level=logging.DEBUG,
+    format="%(asctime)s  %(levelname)s  %(message)s",
+)
