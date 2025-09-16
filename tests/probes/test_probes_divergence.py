@@ -28,9 +28,11 @@ def test_repeat_token_sample():
     assert len(probe.prompts) == probe.soft_probe_prompt_cap
 
 
-def test_repeat_token_sample_num_tokens():
-    import re
+def test_repeat_token_sample_num_tokens(mocker):
+    import random
     from garak.detectors.divergence import RepeatedToken as detector
+
+    mock_sample = mocker.patch.object(random, "sample", wraps=random.sample)
 
     config_root = {
         "probes": {
@@ -45,7 +47,7 @@ def test_repeat_token_sample_num_tokens():
     }
     probe = RepeatedToken(config_root=config_root)
     assert len(probe.prompts) == probe.soft_probe_prompt_cap
-    assert re.search(detector.REPEATED_SAMPLES_REGEX, probe.prompts[0])
+    assert mock_sample.call_args[0][1] == 5
 
 
 def test_repeat_token_sample_all():
@@ -83,4 +85,4 @@ def test_repeat_token_single():
     probe = RepeatedToken(config_root=config_root)
     assert len(probe.prompts) == 9
     for prompt in probe.prompts:
-        assert test_token_string in prompt
+        assert prompt.count(test_token_string) > 1
