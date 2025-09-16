@@ -3598,7 +3598,7 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-09-16 13:51:39 +0000"
     },
     "probes.packagehallucination.PackageHallucinationProbe": {
       "description": "Base class for package hallucination probes",
@@ -3625,7 +3625,7 @@
         "payload:malicious:badcode"
       ],
       "tier": 9,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-09-16 13:51:39 +0000"
     },
     "probes.packagehallucination.Python": {
       "description": "Attempts to generate Python3 code including hallucinated packages",
@@ -3652,7 +3652,7 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-09-16 13:51:39 +0000"
     },
     "probes.packagehallucination.Ruby": {
       "description": "Attempts to generate Ruby code including hallucinated gems",
@@ -3679,7 +3679,7 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-09-16 13:51:39 +0000"
     },
     "probes.packagehallucination.Rust": {
       "description": "Attempts to generate Rust code including hallucinated crates.io packages",
@@ -3706,7 +3706,7 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-09-16 13:51:39 +0000"
     },
     "probes.phrasing.FutureTense": {
       "description": "Attempt to evade safeguards by setting requests in the future tense",
