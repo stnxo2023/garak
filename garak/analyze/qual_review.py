@@ -14,10 +14,9 @@ import random
 import sys
 import argparse
 
+import garak
 import garak.analyze
 import garak.analyze.calibration
-from garak import __description__
-from garak import _config
 from garak.probes import Tier
 
 PROBE_DETECTOR_SEP = "+"
@@ -173,9 +172,9 @@ def main(argv=None) -> None:
     if argv is None:
         argv = sys.argv[1:]
 
-    _config.load_config()
+    garak._config.load_config()
     print(
-        f"garak {__description__} v{_config.version} ( https://github.com/NVIDIA/garak )"
+        f"garak {garak.__description__} v{garak._config.version} ( https://github.com/NVIDIA/garak )"
     )
 
     parser = argparse.ArgumentParser(

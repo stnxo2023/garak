@@ -18,8 +18,7 @@ import json
 import uuid
 import sys
 
-from garak import __description__
-from garak import _config
+import garak
 
 
 def _process_file_body(in_file, out_file, aggregate_uuid):
@@ -45,9 +44,9 @@ def main(argv=None) -> None:
     if argv is None:
         argv = sys.argv[1:]
 
-    _config.load_config()
+    garak._config.load_config()
     print(
-        f"garak {__description__} v{_config.version} ( https://github.com/NVIDIA/garak )"
+        f"garak {garak.__description__} v{garak._config.version} ( https://github.com/NVIDIA/garak )"
     )
 
     p = argparse.ArgumentParser(

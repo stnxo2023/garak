@@ -17,8 +17,7 @@ import json
 import sys
 import argparse
 
-from garak import __description__
-from garak import _config
+import garak
 
 
 def count_tokens(report_path: str) -> None:
@@ -66,9 +65,9 @@ def main(argv=None) -> None:
     if argv is None:
         argv = sys.argv[1:]
 
-    _config.load_config()
+    garak._config.load_config()
     print(
-        f"garak {__description__} v{_config.version} ( https://github.com/NVIDIA/garak )"
+        f"garak {garak.__description__} v{garak._config.version} ( https://github.com/NVIDIA/garak )"
     )
 
     parser = argparse.ArgumentParser(
