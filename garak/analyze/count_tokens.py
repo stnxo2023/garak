@@ -3,6 +3,16 @@
 # SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+"""
+count the number of characters sent and received based on prompts, outputs, and generations
+
+should probably be upgraded to estimate token counts, too
+
+usage
+
+./count_tokens.py <report.jsonl filename>
+"""
+
 import json
 import sys
 
