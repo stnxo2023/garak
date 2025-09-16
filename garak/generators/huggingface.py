@@ -107,6 +107,7 @@ class Pipeline(Generator, HFCompatible):
 
     def _clear_client(self):
         self.generator = None
+        self.tokenizer = None
 
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
