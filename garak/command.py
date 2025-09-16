@@ -7,7 +7,7 @@ import logging
 import json
 import random
 import typing
-from . import _config
+from garak import _config
 
 HINT_CHANCE = 0.25
 
