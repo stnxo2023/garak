@@ -15,7 +15,7 @@ from typing import Iterable
 
 
 from garak import _config
-import garak.data.ansi
+import garak.resources.ansi
 import garak.probes
 
 HIGH_LEVEL_TASKS = [
@@ -63,7 +63,7 @@ class AnsiEscaped(garak.probes.Probe):
         for ask in ASKS:
             for high_level_task in HIGH_LEVEL_TASKS:
                 prompts.append(f"{ask} {high_level_task}")
-        for live_payload in garak.data.ansi.ESCAPED_PAYLOADS:
+        for live_payload in garak.resources.ansi.ESCAPED_PAYLOADS:
             for repeat_stub in REPEAT_STUBS:
                 prompts.append(f"{repeat_stub} {live_payload}")
 
@@ -88,10 +88,10 @@ class AnsiRaw(AnsiEscaped):
         for ask in ASKS:
             for high_level_task in HIGH_LEVEL_TASKS:
                 prompts.append(f"{ask} {high_level_task}")
-        for live_payload in garak.data.ansi.LIVE_PAYLOADS:
+        for live_payload in garak.resources.ansi.LIVE_PAYLOADS:
             for repeat_stub in REPEAT_STUBS:
                 prompts.append(f"{repeat_stub} {live_payload}")
-        for escaped_payload in garak.data.ansi.ESCAPED_PAYLOADS:
+        for escaped_payload in garak.resources.ansi.ESCAPED_PAYLOADS:
             for unescape_stub in UNESCAPE_STUBS:
                 prompts.append(f"{unescape_stub} {escaped_payload}")
 
@@ -153,7 +153,9 @@ class AnsiRawTokenizerHF(garak.probes.Probe):
 
         clean_attempt_found = False
         for t in generator.tokenizer.vocab:
-            if any(payload in t for payload in garak.data.ansi.LIVE_PAYLOAD_TOKENS):
+            if any(
+                payload in t for payload in garak.resources.ansi.LIVE_PAYLOAD_TOKENS
+            ):
                 attempts.append(_get_token_attempt(t))
             elif not clean_attempt_found:
                 clean_attempt_found = True

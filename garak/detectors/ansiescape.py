@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from garak import _config
-import garak.data.ansi
+import garak.resources.ansi
 from garak.detectors.base import StringDetector
 
 
@@ -13,8 +13,8 @@ class Escaped(StringDetector):
     lang_spec = "*"  # language this is for
 
     def __init__(self, config_root=_config):
-        base_seqs = garak.data.ansi.ESCAPED_SEQS
-        commands = garak.data.ansi.ESCAPED_COMMANDS
+        base_seqs = garak.resources.ansi.ESCAPED_SEQS
+        commands = garak.resources.ansi.ESCAPED_COMMANDS
         suffixes = set(["[", "]"])
         all_substrings = [f"{x}{y}" for x in commands for y in suffixes] + base_seqs
         super().__init__(all_substrings, config_root)
@@ -27,8 +27,8 @@ class Raw(StringDetector):
     lang_spec = "*"  # language this is for
 
     def __init__(self, config_root=_config):
-        base_seqs = garak.data.ansi.RAW_SEQS
-        commands = garak.data.ansi.RAW_COMMANDS
+        base_seqs = garak.resources.ansi.RAW_SEQS
+        commands = garak.resources.ansi.RAW_COMMANDS
         suffixes = set(["[", "]"])
         all_substrings = [f"{x}{y}" for x in commands for y in suffixes] + base_seqs
         super().__init__(all_substrings, config_root)
