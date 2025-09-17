@@ -6,13 +6,12 @@
 import logging
 import json
 import random
-import typing
+import sys
+from typing import Iterable, List
+
 from garak import _config
 
 HINT_CHANCE = 0.25
-
-from typing import Iterable, List
-import sys
 
 
 def _split_csv(val: str | None) -> List[str]:
@@ -32,7 +31,8 @@ def _matches(name: str, tokens: Iterable[str]) -> bool:
 def _specs_from_config(path: str) -> tuple[str | None, str | None]:
     import yaml
 
-    with open(path, "r") as f:
+    # reviewer note: explicit encoding
+    with open(path, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f) or {}
     plugins = data.get("plugins", {}) if isinstance(data, dict) else {}
     return plugins.get("probe_spec"), plugins.get("detector_spec")
@@ -180,15 +180,57 @@ def end_run():
 
 
 def print_plugins(prefix: str, color):
-    from colorama import Style
+    """
+    Print plugins for a category (probes/detectors/generators/buffs),
+    with optional filtering driven by CLI or config.
 
+    Filtering spec rules (for probes/detectors only):
+      - CLI takes precedence: --probes/--probe_spec or --detectors/--detector_spec
+      - Else, if --config is supplied, read plugins.probe_spec / plugins.detector_spec
+      - Tokens may be a family (e.g., "dan") or a full path (e.g., "dan.AntiDAN")
+    """
+    from colorama import Style
     from garak._plugins import enumerate_plugins
 
-    plugin_names = enumerate_plugins(category=prefix)
-    plugin_names = [(p.replace(f"{prefix}.", ""), a) for p, a in plugin_names]
-    module_names = set([(m.split(".")[0], True) for m, a in plugin_names])
-    plugin_names += module_names
-    for plugin_name, active in sorted(plugin_names):
+    # enumerate with activation flags
+    rows = enumerate_plugins(
+        category=prefix
+    )  # [("probes.dan.AntiDAN", active_bool), ...]
+    short = [(p.replace(f"{prefix}.", ""), a) for p, a in rows]
+    module_names = {n.split(".")[0] for n, _ in short}
+    short += [
+        (m, True) for m in module_names
+    ]  # family lines (always active for banner)
+
+    tokens: List[str] = []
+    if prefix in ("probes", "detectors"):
+        args = _config.transient.cli_args
+        # CLI first
+        if prefix == "probes":
+            spec = getattr(args, "probes", None) or getattr(args, "probe_spec", None)
+        else:
+            spec = getattr(args, "detectors", None) or getattr(
+                args, "detector_spec", None
+            )
+
+        # else config file
+        if not spec and getattr(args, "config", None):
+            probe_spec, detector_spec = _specs_from_config(args.config)
+            spec = probe_spec if prefix == "probes" else detector_spec
+
+        tokens = _split_csv(spec) if spec else []
+
+    if tokens:
+        filtered = [(n, a) for (n, a) in short if _matches(n, tokens)]
+        if not filtered:
+            key = "probe_spec" if prefix == "probes" else "detector_spec"
+            print(f"No {prefix} match the provided '{key}': {','.join(tokens)}")
+            sys.exit(2)
+        short = filtered
+    # ---- end filtering ----
+
+    # print output
+    for plugin_name, active in sorted(short):
         print(f"{Style.BRIGHT}{color}{prefix}: {Style.RESET_ALL}", end="")
         print(plugin_name, end="")
         if "." not in plugin_name:
@@ -199,69 +241,15 @@ def print_plugins(prefix: str, color):
 
 
 def print_probes():
-    from colorama import Fore, Style
-    from garak._plugins import enumerate_plugins
+    from colorama import Fore
 
-    rows = enumerate_plugins(category="probes")
-    rows = [(p.replace("probes.", ""), a) for p, a in rows]
-    module_names = set((m.split(".")[0], True) for m, a in rows)
-    rows = sorted(rows + list(module_names))
-
-    args = _config.transient.cli_args
-    spec = getattr(args, "probes", None) or getattr(args, "probe_spec", None)
-    if not spec and getattr(args, "config", None):
-        probe_spec, _ = _specs_from_config(args.config)
-        spec = probe_spec
-
-    tokens = _split_csv(spec) if spec else []
-    if tokens:
-        rows = [(n, a) for (n, a) in rows if _matches(n, tokens)]
-        if not rows:
-            print(f"No probes match the provided 'probe_spec': {','.join(tokens)}")
-            sys.exit(2)
-
-    for plugin_name, active in rows:
-        print(f"{Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probes: {Style.RESET_ALL}", end="")
-        print(plugin_name, end="")
-        if "." not in plugin_name:
-            print(" 🌟", end="")
-        if not active:
-            print(" 💤", end="")
-        print()
+    print_plugins("probes", Fore.LIGHTYELLOW_EX)
 
 
 def print_detectors():
-    from colorama import Fore, Style
-    from garak._plugins import enumerate_plugins
+    from colorama import Fore
 
-    rows = enumerate_plugins(category="detectors")
-    rows = [(p.replace("detectors.", ""), a) for p, a in rows]
-    module_names = set((m.split(".")[0], True) for m, a in rows)
-    rows = sorted(rows + list(module_names))
-
-    args = _config.transient.cli_args
-    spec = getattr(args, "detectors", None) or getattr(args, "detector_spec", None)
-    if not spec and getattr(args, "config", None):
-        _, det_spec = _specs_from_config(args.config)
-        spec = det_spec
-
-    tokens = _split_csv(spec) if spec else []
-    if tokens:
-        rows = [(n, a) for (n, a) in rows if _matches(n, tokens)]
-        if not rows:
-            print(
-                f"No detectors match the provided 'detector_spec': {','.join(tokens)}"
-            )
-            sys.exit(2)
-
-    for plugin_name, active in rows:
-        print(f"{Style.BRIGHT}{Fore.LIGHTBLUE_EX}detectors: {Style.RESET_ALL}", end="")
-        print(plugin_name, end="")
-        if "." not in plugin_name:
-            print(" 🌟", end="")
-        if not active:
-            print(" 💤", end="")
-        print()
+    print_plugins("detectors", Fore.LIGHTBLUE_EX)
 
 
 def print_generators():
