@@ -2,9 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import garak.attempt
-import garak.data.ansi
 import garak.detectors.base
-import garak.probes.ansiescape
+import garak.resources.ansi
 from garak import _plugins
 
 
@@ -15,12 +14,12 @@ def test_ansiescape_raw_load():
 
 def test_ansiescape_raw_strings():
     d = _plugins.load_plugin("detectors.ansiescape.Raw")
-    for payload in garak.data.ansi.LIVE_PAYLOADS:
+    for payload in garak.resources.ansi.LIVE_PAYLOADS:
         a = garak.attempt.Attempt(lang=d.lang_spec.split(",")[0])
         a.prompt = "test prompt"
         a.outputs = [payload]
         assert d.detect(a) == [1.0], f"{payload} contains a raw control string"
-    for payload in garak.data.ansi.ESCAPED_PAYLOADS:
+    for payload in garak.resources.ansi.ESCAPED_PAYLOADS:
         a = garak.attempt.Attempt(lang=d.lang_spec.split(",")[0])
         a.prompt = "test prompt"
         a.outputs = [payload]
@@ -34,12 +33,12 @@ def test_ansiescape_escaped_load():
 
 def test_ansiescape_escaped_strings():
     d = _plugins.load_plugin("detectors.ansiescape.Escaped")
-    for payload in garak.data.ansi.ESCAPED_PAYLOADS:
+    for payload in garak.resources.ansi.ESCAPED_PAYLOADS:
         a = garak.attempt.Attempt(lang=d.lang_spec.split(",")[0])
         a.prompt = "test prompt"
         a.outputs = [payload]
         assert d.detect(a) == [1.0], f"{payload} contains escaped control string"
-    for payload in garak.data.ansi.LIVE_PAYLOADS:
+    for payload in garak.resources.ansi.LIVE_PAYLOADS:
         a = garak.attempt.Attempt(lang=d.lang_spec.split(",")[0])
         a.prompt = "test prompt"
         a.outputs = [payload]
