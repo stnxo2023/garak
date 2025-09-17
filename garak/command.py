@@ -152,14 +152,14 @@ def end_run():
     logging.info(msg)
 
 
-def print_plugins(prefix: str, color, filtered_plugins=None):
+def print_plugins(prefix: str, color, selected_plugins=None):
     """
     Print plugins for a category (probes/detectors/generators/buffs).
 
     Args:
         prefix: Plugin category (probes/detectors/generators/buffs)
         color: Color for output formatting
-        filtered_plugins: Optional list of specific plugins to show. If None, shows all.
+        selected_plugins: Optional list of specific plugins to show. If None, shows all.
     """
     from colorama import Style
     from garak._plugins import enumerate_plugins
@@ -171,11 +171,11 @@ def print_plugins(prefix: str, color, filtered_plugins=None):
     short = [(p.replace(f"{prefix}.", ""), a) for p, a in rows]
 
     # Apply filtering if specified
-    if filtered_plugins is not None:
-        # Convert filtered_plugins to the same format (remove prefix)
+    if selected_plugins is not None:
+        # Convert selected_plugins to the same format (remove prefix)
         filtered_short_names = [
             p.replace(f"{prefix}.", "")
-            for p in filtered_plugins
+            for p in selected_plugins
             if p.startswith(f"{prefix}.")
         ]
         short = [(n, a) for (n, a) in short if n in filtered_short_names]
@@ -201,32 +201,16 @@ def print_plugins(prefix: str, color, filtered_plugins=None):
         print()
 
 
-def print_probes():
+def print_probes(selected_probes=None):
     from colorama import Fore
-    from garak import _config
 
-    filtered_plugins = None
-
-    if hasattr(_config.transient, "cli_args") and _config.transient.cli_args:
-        probe_spec = getattr(_config.transient.cli_args, "probes", None)
-        if probe_spec and probe_spec.lower() not in ("", "auto", "all", "*"):
-            filtered_plugins, _ = _config.parse_plugin_spec(probe_spec, "probes")
-
-    print_plugins("probes", Fore.LIGHTYELLOW_EX, filtered_plugins)
+    print_plugins("probes", Fore.LIGHTYELLOW_EX, selected_probes)
 
 
-def print_detectors():
+def print_detectors(selected_detectors=None):
     from colorama import Fore
-    from garak import _config
 
-    filtered_plugins = None
-
-    if hasattr(_config.transient, "cli_args") and _config.transient.cli_args:
-        detector_spec = getattr(_config.transient.cli_args, "detectors", None)
-        if detector_spec and detector_spec.lower() not in ("", "auto", "all", "*"):
-            filtered_plugins, _ = _config.parse_plugin_spec(detector_spec, "detectors")
-
-    print_plugins("detectors", Fore.LIGHTBLUE_EX, filtered_plugins)
+    print_plugins("detectors", Fore.LIGHTBLUE_EX, selected_detectors)
 
 
 def print_generators():
