@@ -154,6 +154,17 @@ def test_fixer_empty(mocker):
                 "probe_spec": "lmrc,web_injection.PlaygroundMarkdownExfil",
             },
         ),
+        (
+            "RenameXSS",
+            {
+                "probe_spec": "test.Test",
+                "detector_spec": "xss.MarkdownExfil20230929",
+            },
+            {
+                "probe_spec": "test.Test",
+                "detector_spec": "web_injection.PlaygroundMarkdownExfil",
+            },
+        ),
     ],
 )
 def test_fixer_migrate(

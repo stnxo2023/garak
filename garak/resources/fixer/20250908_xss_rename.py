@@ -19,4 +19,15 @@ class RenameXSS(Migration):
         path = ["plugins", "probes", "web_injection"]
         old = "MdExfil20230929"
         new = "PlaygroundMarkdownExfil"
+        updated_config = _plugin.rename(updated_config, path, old, new)
+
+        path = ["plugins", "detectors"]
+        old = "xss"
+        new = "web_injection"
+        updated_config = _plugin.rename(updated_config, path, old, new)
+
+        path = ["plugins", "detectors", "web_injection"]
+        old = "MarkdownExfil20230929"
+        new = "PlaygroundMarkdownExfil"
+
         return _plugin.rename(updated_config, path, old, new)

@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""WEb Injection
+"""Web Injection
 
 Probe for vulnerabilities the permit or enact injection attacks against websites, such
 as private data exfiltration (CSRF) or script injection (XSS).
