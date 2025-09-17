@@ -34,6 +34,9 @@ def get_tree(report_path: str) -> None:
                 probes.add(probe)
                 node_info[probe][r["node_id"]] = r
 
+    if not len(probes):
+        print("No tree data in output report JSONL")
+
     for probe in probes:
         print(f"============== {probe} ==============")
 
