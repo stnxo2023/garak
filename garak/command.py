@@ -7,35 +7,8 @@ import logging
 import json
 import random
 import sys
-from typing import Iterable, List
-
-from garak import _config
 
 HINT_CHANCE = 0.25
-
-
-def _split_csv(val: str | None) -> List[str]:
-    if not val:
-        return []
-    return [t.strip() for t in val.split(",") if t.strip()]
-
-
-def _matches(name: str, tokens: Iterable[str]) -> bool:
-    # supports prefix ("misleading") or full path ("misleading.MustContradictNLI")
-    for t in tokens:
-        if name == t or name.startswith(t + "."):
-            return True
-    return False
-
-
-def _specs_from_config(path: str) -> tuple[str | None, str | None]:
-    import yaml
-
-    # reviewer note: explicit encoding
-    with open(path, "r", encoding="utf-8") as f:
-        data = yaml.safe_load(f) or {}
-    plugins = data.get("plugins", {}) if isinstance(data, dict) else {}
-    return plugins.get("probe_spec"), plugins.get("detector_spec")
 
 
 def hint(msg, logging=None):
@@ -179,15 +152,14 @@ def end_run():
     logging.info(msg)
 
 
-def print_plugins(prefix: str, color):
+def print_plugins(prefix: str, color, filtered_plugins=None):
     """
-    Print plugins for a category (probes/detectors/generators/buffs),
-    with optional filtering driven by CLI or config.
+    Print plugins for a category (probes/detectors/generators/buffs).
 
-    Filtering spec rules (for probes/detectors only):
-      - CLI takes precedence: --probes/--probe_spec or --detectors/--detector_spec
-      - Else, if --config is supplied, read plugins.probe_spec / plugins.detector_spec
-      - Tokens may be a family (e.g., "dan") or a full path (e.g., "dan.AntiDAN")
+    Args:
+        prefix: Plugin category (probes/detectors/generators/buffs)
+        color: Color for output formatting
+        filtered_plugins: Optional list of specific plugins to show. If None, shows all.
     """
     from colorama import Style
     from garak._plugins import enumerate_plugins
@@ -197,37 +169,26 @@ def print_plugins(prefix: str, color):
         category=prefix
     )  # [("probes.dan.AntiDAN", active_bool), ...]
     short = [(p.replace(f"{prefix}.", ""), a) for p, a in rows]
+
+    # Apply filtering if specified
+    if filtered_plugins is not None:
+        # Convert filtered_plugins to the same format (remove prefix)
+        filtered_short_names = [
+            p.replace(f"{prefix}.", "")
+            for p in filtered_plugins
+            if p.startswith(f"{prefix}.")
+        ]
+        short = [(n, a) for (n, a) in short if n in filtered_short_names]
+
+        if not short:
+            print(f"No {prefix} match the provided filter")
+            sys.exit(2)
+
+    # Add family headers for any families that have members
     module_names = {n.split(".")[0] for n, _ in short}
     short += [
         (m, True) for m in module_names
     ]  # family lines (always active for banner)
-
-    tokens: List[str] = []
-    if prefix in ("probes", "detectors"):
-        args = _config.transient.cli_args
-        # CLI first
-        if prefix == "probes":
-            spec = getattr(args, "probes", None) or getattr(args, "probe_spec", None)
-        else:
-            spec = getattr(args, "detectors", None) or getattr(
-                args, "detector_spec", None
-            )
-
-        # else config file
-        if not spec and getattr(args, "config", None):
-            probe_spec, detector_spec = _specs_from_config(args.config)
-            spec = probe_spec if prefix == "probes" else detector_spec
-
-        tokens = _split_csv(spec) if spec else []
-
-    if tokens:
-        filtered = [(n, a) for (n, a) in short if _matches(n, tokens)]
-        if not filtered:
-            key = "probe_spec" if prefix == "probes" else "detector_spec"
-            print(f"No {prefix} match the provided '{key}': {','.join(tokens)}")
-            sys.exit(2)
-        short = filtered
-    # ---- end filtering ----
 
     # print output
     for plugin_name, active in sorted(short):
@@ -242,14 +203,30 @@ def print_plugins(prefix: str, color):
 
 def print_probes():
     from colorama import Fore
+    from garak import _config
 
-    print_plugins("probes", Fore.LIGHTYELLOW_EX)
+    filtered_plugins = None
+
+    if hasattr(_config.transient, "cli_args") and _config.transient.cli_args:
+        probe_spec = getattr(_config.transient.cli_args, "probes", None)
+        if probe_spec and probe_spec.lower() not in ("", "auto", "all", "*"):
+            filtered_plugins, _ = _config.parse_plugin_spec(probe_spec, "probes")
+
+    print_plugins("probes", Fore.LIGHTYELLOW_EX, filtered_plugins)
 
 
 def print_detectors():
     from colorama import Fore
+    from garak import _config
 
-    print_plugins("detectors", Fore.LIGHTBLUE_EX)
+    filtered_plugins = None
+
+    if hasattr(_config.transient, "cli_args") and _config.transient.cli_args:
+        detector_spec = getattr(_config.transient.cli_args, "detectors", None)
+        if detector_spec and detector_spec.lower() not in ("", "auto", "all", "*"):
+            filtered_plugins, _ = _config.parse_plugin_spec(detector_spec, "detectors")
+
+    print_plugins("detectors", Fore.LIGHTBLUE_EX, filtered_plugins)
 
 
 def print_generators():
