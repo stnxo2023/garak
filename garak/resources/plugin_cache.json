@@ -4,7 +4,7 @@
       "description": "Probe for eliciting ANSI control codes from a model",
       "DEFAULT_PARAMS": {},
       "active": true,
-      "doc_uri": "https://i.blackhat.com/BH-US-23/Presentations/US-23-stok-weponizing-plain-text-ansi-escape-sequences-as-a-forensic-nightmare-appendix.pdf",
+      "doc_uri": "https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer",
       "extended_detectors": [],
       "goal": "print escaped ANSI terminal codes",
       "lang": "en",
@@ -27,13 +27,13 @@
         "quality:Security:Integrity"
       ],
       "tier": 3,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-09-16 15:47:16 +0000"
     },
     "probes.ansiescape.AnsiRaw": {
       "description": "Probe for eliciting raw ANSI control codes from a model",
       "DEFAULT_PARAMS": {},
       "active": true,
-      "doc_uri": "https://i.blackhat.com/BH-US-23/Presentations/US-23-stok-weponizing-plain-text-ansi-escape-sequences-as-a-forensic-nightmare-appendix.pdf",
+      "doc_uri": "https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer",
       "extended_detectors": [],
       "goal": "print raw ANSI terminal codes",
       "lang": "en",
@@ -56,7 +56,31 @@
         "quality:Security:Integrity"
       ],
       "tier": 1,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-09-16 15:47:16 +0000"
+    },
+    "probes.ansiescape.AnsiRawTokenizerHF": {
+      "description": "Probe for checking a tokenizer for potentially malicious ANSI escape sequences",
+      "DEFAULT_PARAMS": {},
+      "active": false,
+      "doc_uri": "https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer",
+      "extended_detectors": [],
+      "goal": "check if raw ANSI escape sequences tokens are available",
+      "lang": "*",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "ansiescape.Raw",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "owasp:llm05"
+      ],
+      "tier": 1,
+      "mod_time": "2025-09-16 15:47:16 +0000"
     },
     "probes.atkgen.Tox": {
       "description": "Automatic attack generation, trying to elicit toxic outputs from the model.",
@@ -5118,7 +5142,7 @@
       },
       "accuracy": null,
       "active": true,
-      "doc_uri": null,
+      "doc_uri": "https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer",
       "lang_spec": "*",
       "modality": {
         "out": [
@@ -5128,7 +5152,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-09-16 15:38:35 +0000"
     },
     "detectors.ansiescape.Raw": {
       "description": "pick up raw ANSI escape sequences",
@@ -5138,7 +5162,7 @@
       },
       "accuracy": null,
       "active": true,
-      "doc_uri": null,
+      "doc_uri": "https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer",
       "lang_spec": "*",
       "modality": {
         "out": [
@@ -5148,7 +5172,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-09-16 15:38:35 +0000"
     },
     "detectors.base.Detector": {
       "description": "Base class for objects that define a way of detecting a probe hit / LLM failure",
@@ -7679,7 +7703,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-08-26 14:02:31 +0000"
+      "mod_time": "2025-09-16 15:38:12 +0000"
     },
     "generators.huggingface.InferenceEndpoint": {
       "description": "Interface for Hugging Face private endpoints",
@@ -7706,7 +7730,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-08-26 14:02:31 +0000"
+      "mod_time": "2025-09-16 15:38:12 +0000"
     },
     "generators.huggingface.LLaVA": {
       "description": "Get LLaVA ([ text + image ] -> text) generations",
@@ -7736,7 +7760,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": false,
-      "mod_time": "2025-08-26 14:02:31 +0000"
+      "mod_time": "2025-09-16 15:38:12 +0000"
     },
     "generators.huggingface.Model": {
       "description": "Get text generations from a locally-run Hugging Face model",
@@ -7765,7 +7789,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2025-08-26 14:02:31 +0000"
+      "mod_time": "2025-09-16 15:38:12 +0000"
     },
     "generators.huggingface.OptimumPipeline": {
       "description": "Get text generations from a locally-run Hugging Face pipeline using NVIDIA Optimum",
@@ -7794,7 +7818,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2025-08-26 14:02:31 +0000"
+      "mod_time": "2025-09-16 15:38:12 +0000"
     },
     "generators.huggingface.Pipeline": {
       "description": "Get text generations from a locally-run Hugging Face pipeline",
@@ -7823,7 +7847,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2025-08-26 14:02:31 +0000"
+      "mod_time": "2025-09-16 15:38:12 +0000"
     },
     "generators.langchain.LangChainLLMGenerator": {
       "description": "Class supporting LangChain LLM interfaces",
