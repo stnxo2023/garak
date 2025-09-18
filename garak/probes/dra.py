@@ -231,7 +231,7 @@ class DRA(garak.probes.Probe):
                 prompts = random.sample(prompts, self.soft_probe_prompt_cap)
 
         logging.info(
-            f"DRA probe generated {len(self.prompts)} prompts using "
+            f"DRA probe generated {len(prompts)} prompts using "
             f"{len(self.all_templates)} templates"
         )
 
@@ -315,7 +315,7 @@ class DRAAdvanced(DRA):
                 prompts = random.sample(prompts, self.soft_probe_prompt_cap)
 
         logging.info(
-            f"DRAAdvanced probe generated {len(self.prompts)} prompts using "
+            f"DRAAdvanced probe generated {len(prompts)} prompts using "
             f"{len(self.all_templates)} templates and custom sentence: '{self.custom_sentence}'"
         )
 
