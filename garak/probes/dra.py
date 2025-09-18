@@ -265,9 +265,6 @@ class DRAAdvanced(DRA):
         # Lazy loading of detoxify package
         self.detoxify_model = None
 
-        # Generate prompts using custom sentence and all templates
-        self.prompts = self._generate_prompts_custom()
-
     def _check_moderation(self, token) -> bool:
         """Check if a token is harmful using detoxify if needed."""
 
@@ -300,7 +297,7 @@ class DRAAdvanced(DRA):
                 return False
         return False
 
-    def _generate_prompts_custom(self) -> List[str]:
+    def _generate_prompts(self) -> List[str]:
         """Generate prompts using custom sentence and all available templates."""
         prompts = []
 
@@ -321,5 +318,5 @@ class DRAAdvanced(DRA):
             f"DRAAdvanced probe generated {len(self.prompts)} prompts using "
             f"{len(self.all_templates)} templates and custom sentence: '{self.custom_sentence}'"
         )
-        
+
         return prompts
