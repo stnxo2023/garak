@@ -119,10 +119,6 @@ class DRA(garak.probes.Probe):
         # Generate prompts for each behavior in the dataset
         self.prompts = self._generate_prompts()
 
-        logging.info(
-            f"DRA probe generated {len(self.prompts)} prompts using "
-            f"{len(self.all_templates)} templates"
-        )
 
     def _prefix_gen(self, question) -> str:
         """Implements the prefix generation logic for a puzzle-based obfuscation."""
@@ -234,6 +230,11 @@ class DRA(garak.probes.Probe):
             if len(prompts) > self.soft_probe_prompt_cap:
                 prompts = random.sample(prompts, self.soft_probe_prompt_cap)
 
+        logging.info(
+            f"DRA probe generated {len(self.prompts)} prompts using "
+            f"{len(self.all_templates)} templates"
+        )
+
         return prompts
 
 
@@ -266,11 +267,6 @@ class DRAAdvanced(DRA):
 
         # Generate prompts using custom sentence and all templates
         self.prompts = self._generate_prompts_custom()
-
-        logging.info(
-            f"DRAAdvanced probe generated {len(self.prompts)} prompts using "
-            f"{len(self.all_templates)} templates and custom sentence: '{self.custom_sentence}'"
-        )
 
     def _check_moderation(self, token) -> bool:
         """Check if a token is harmful using detoxify if needed."""
@@ -321,4 +317,9 @@ class DRAAdvanced(DRA):
             if len(prompts) > self.soft_probe_prompt_cap:
                 prompts = random.sample(prompts, self.soft_probe_prompt_cap)
 
+        logging.info(
+            f"DRAAdvanced probe generated {len(self.prompts)} prompts using "
+            f"{len(self.all_templates)} templates and custom sentence: '{self.custom_sentence}'"
+        )
+        
         return prompts
