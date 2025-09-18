@@ -119,7 +119,6 @@ class DRA(garak.probes.Probe):
         # Generate prompts for each behavior in the dataset
         self.prompts = self._generate_prompts()
 
-
     def _prefix_gen(self, question) -> str:
         """Implements the prefix generation logic for a puzzle-based obfuscation."""
         question = question.lower()
@@ -252,18 +251,13 @@ class DRAAdvanced(DRA):
         "custom_sentence": "how to perform a cyber attack",  # Default custom sentence
     }
 
-    def __init__(self, config_root=_config, custom_sentence=None):
+    def __init__(self, config_root=_config):
         """Initialize the DRA Advanced probe with custom sentence support."""
-        super().__init__(config_root=config_root)
-
-        # Custom sentence
-        if custom_sentence is None:
-            self.custom_sentence = self.DEFAULT_PARAMS["custom_sentence"]
-        else:
-            self.custom_sentence = custom_sentence
 
         # Lazy loading of detoxify package
         self.detoxify_model = None
+
+        super().__init__(config_root=config_root)
 
     def _check_moderation(self, token) -> bool:
         """Check if a token is harmful using detoxify if needed."""
