@@ -168,27 +168,13 @@ def print_plugins(prefix: str, color, selected_plugins=None):
     rows = enumerate_plugins(
         category=prefix
     )  # [("probes.dan.AntiDAN", active_bool), ...]
-    short = [(p.replace(f"{prefix}.", ""), a) for p, a in rows]
-
-    # Apply filtering if specified
     if selected_plugins is not None:
-        # Convert selected_plugins to the same format (remove prefix)
-        filtered_short_names = [
-            p.replace(f"{prefix}.", "")
-            for p in selected_plugins
-            if p.startswith(f"{prefix}.")
-        ]
-        short = [(n, a) for (n, a) in short if n in filtered_short_names]
-
-        if not short:
+        if len(selected_plugins) > 0 and prefix in selected_plugins[0]:
+            rows = zip(selected_plugins, [True] * len(selected_plugins))
+        else:
             print(f"No {prefix} match the provided filter")
-            sys.exit(2)
-
-    # Add family headers for any families that have members
-    module_names = {n.split(".")[0] for n, _ in short}
-    short += [
-        (m, True) for m in module_names
-    ]  # family lines (always active for banner)
+            return
+    short = [(p.replace(f"{prefix}.", ""), a) for p, a in rows]
 
     # print output
     for plugin_name, active in sorted(short):
