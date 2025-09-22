@@ -175,6 +175,9 @@ def print_plugins(prefix: str, color, selected_plugins=None):
             print(f"No {prefix} match the provided filter")
             return
     short = [(p.replace(f"{prefix}.", ""), a) for p, a in rows]
+    if selected_plugins is None:
+        module_names = set([(m.split(".")[0], True) for m, a in short])
+        short += module_names
 
     # print output
     for plugin_name, active in sorted(short):

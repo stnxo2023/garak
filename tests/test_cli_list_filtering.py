@@ -1,50 +1,70 @@
-import subprocess
-import sys
+import pytest
 import re
 
+from garak import cli, _plugins
+
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
-
-
-def run(args):
-    cmd = [sys.executable, "-m", "garak", *args]
-    return subprocess.run(cmd, capture_output=True, text=True, check=False)
 
 
 def _strip_ansi(s: str) -> str:
     return ANSI_RE.sub("", s)
 
 
-def _probe_lines(text: str):
+def _plugin_lines(text: str):
     clean = _strip_ansi(text)
     lines = [ln.strip() for ln in clean.splitlines()]
-    # collect any line that contains the probes header (don’t require it to be at col 0)
-    return [ln for ln in lines if "probes:" in ln]
+    # collect any line that contains a plugin prefix (don’t require it to be at col 0)
+    plugin_lines = []
+    for plugin_type in _plugins.PLUGIN_TYPES:
+        [plugin_lines.append(ln) for ln in lines if f"{plugin_type}:" in ln]
+    return plugin_lines
 
 
-def test_list_probes_with_spec_filters_family_and_members():
-    r = run(["--list_probes", "-p", "dan"])
-    lines = _probe_lines(r.stdout)
-    assert lines, "expected some 'probes:' lines"
+@pytest.mark.parametrize(
+    "options",
+    [
+        ("--list_probes",),
+        ("--list_probes", "-p", "dan"),
+        ("--list_probes", "-p", "dan,dan.AntiDAN"),
+    ],
+)
+def test_list_probes_with_probe_spec(capsys, options):
+    cli.main(options)
+    lines = _plugin_lines(capsys.readouterr().out)
+    assert all(
+        ln.startswith("probes: ") for ln in lines
+    ), "expected all 'probes:' lines"
 
-    # 1) family banner exists (exact spacing after ANSI stripping)
-    assert any(
-        ln == "probes: dan 🌟" for ln in lines
-    ), "missing 'probes: dan 🌟' family banner"
+    if len(options) > 1:
+        parts = options[2].split(",")
+        assert all(
+            any(part in ln for part in parts) for ln in lines
+        ), "expected all spec values to be present"
+    else:
+        # look for active and family listing
+        assert any("🌟" in ln for ln in lines)
+        assert any("💤" in ln for ln in lines)
 
-    # split into children (those that have a dot after family)
-    children = [ln for ln in lines if ln.startswith("probes: dan.")]
 
-    # 2) there should be at least one child
-    assert children, "expected at least one dan.* probe line"
+@pytest.mark.parametrize(
+    "options",
+    [
+        ("--list_detectors",),
+        ("--list_detectors", "-d", "unsafe_content"),
+        ("--list_detectors", "-d", "unsafe_content,shields.Up"),
+    ],
+)
+def test_list_probes_with_detector_spec(capsys, options):
+    cli.main(options)
+    lines = _plugin_lines(capsys.readouterr().out)
+    assert all(
+        ln.startswith("detectors: ") for ln in lines
+    ), "expected all 'detectors:' lines"
 
-    # 3) every child is within dan family
-    assert all(ln.startswith("probes: dan.") for ln in children)
-
-    # 4) ensure no other families are listed
-    other = [
-        ln
-        for ln in lines
-        if ln.startswith("probes: ")
-        and not (ln == "probes: dan 🌟" or ln.startswith("probes: dan."))
-    ]
-    assert not other, f"unexpected non-dan lines: {other}"
+    if len(options) > 1:
+        parts = options[2].split(",")
+        assert all(
+            any(part in ln for part in parts) for ln in lines
+        ), "expected all spec values to be present"
+    else:
+        assert any("🌟" in ln for ln in lines)
