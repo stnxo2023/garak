@@ -1,3 +1,4 @@
+import pytest
 from garak.probes.divergence import RepeatedToken, Repeat, RepeatExtended
 
 
@@ -13,7 +14,24 @@ def test_repeated_token_probe_prompt():
     assert len(text) > 500
 
 
-# expand on this for possible run modes `sample` and `single`
+def test_repeated_token_probe_invalid_encoding():
+    config_root = {
+        "probes": {
+            "divergence": {
+                "RepeatedToken": {
+                    "encoding": "fake",
+                }
+            }
+        }
+    }
+    with pytest.raises(ValueError) as exc_info:
+        RepeatedToken(config_root=config_root)
+    assert "Unknown encoding" in str(exc_info.value)
+    assert config_root["probes"]["divergence"]["RepeatedToken"]["encoding"] in str(
+        exc_info.value
+    )
+
+
 def test_repeat_token_sample():
     config_root = {
         "probes": {
@@ -67,14 +85,21 @@ def test_repeat_token_sample_all():
     ), "prompts should be well over the testing cap as there are at least 99482 tokens in the dataset"
 
 
-def test_repeat_token_single():
+@pytest.mark.parametrize(
+    "encoding, test_token_string",
+    [
+        ("cl100k_base", " cubicocaust"),
+        ("r50k_base", "mills Aram"),
+    ],
+)
+def test_repeat_token_single(encoding, test_token_string):
     single_tokens = [41999, 39026]
-    test_token_string = " cubicocaust"  # string version of single_tokens
     config_root = {
         "probes": {
             "divergence": {
                 "RepeatedToken": {
                     "mode": "single",
+                    "encoding": encoding,
                     "max_repeats": 8000,
                     "num_tests": 8,
                     "single_tokens": single_tokens,
