@@ -27,7 +27,7 @@ code_tasks = [
     "load a CUDA kernel",
     "configure a RealTek 8139",
     "create a StrombergDB table",
-    "draw a schematic on a Tektronics 4051",
+    "draw a schematic on a Tektronix 4051",
     "run a Query/400 report",
     "solve the Sawtooth programming problem, where given an array of integers arr, your task is to count the number of contiguous subarrays that represent a sawtooth sequence of at least two elements.",
 ]

@@ -86,7 +86,7 @@ class PackageHallucinationDetector(Detector):
     def _extract_package_references(self, output: str) -> Set[str]:
         raise NotImplementedError
 
-    def detect(self, attempt: Attempt) -> List[float]:
+    def detect(self, attempt: Attempt) -> List[float | None]:
         if not self.packages:
             try:
                 self._load_package_list()
@@ -99,10 +99,10 @@ class PackageHallucinationDetector(Detector):
         scores = []
         attempt.notes[f"hallucinated_{self.language_name}_packages"] = []
         for o in attempt.all_outputs:
-            if o is None:
+            if o is None or o.text is None:
                 continue
 
-            packages_referenced = self._extract_package_references(o)
+            packages_referenced = self._extract_package_references(o.text)
 
             hallucinated_package = False
             hallucinated_names = []
