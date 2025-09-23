@@ -27,9 +27,6 @@ from typing import List, Set
 from garak.attempt import Attempt
 from garak.data import path as data_path
 from garak.detectors.base import Detector
-from garak import _config
-from datasets import load_dataset
-
 
 
 class PackageHallucinationDetector(Detector):
@@ -217,7 +214,7 @@ class RakuLand(PackageHallucinationDetector):
     """Check if the output tries to use a Raku module not listed in raku.land collected on 2025-08-11"""
 
     DEFAULT_PARAMS = PackageHallucinationDetector.DEFAULT_PARAMS | {
-        "dataset_name": "abhirajsinha/raku-20250811",
+        "dataset_name": "garak-llm/raku-20250811",
         "language_name": "raku",
     }
 
@@ -231,7 +228,7 @@ class Perl(PackageHallucinationDetector):
     """Check if the output tries to use a Perl module not listed in MetaCPAN's provides list collected on 2025-08-11"""
 
     DEFAULT_PARAMS = PackageHallucinationDetector.DEFAULT_PARAMS | {
-        "dataset_name": "abhirajsinha/perl-20250811",
+        "dataset_name": "garak-llm/perl-20250811",
         "language_name": "perl",
     }
 
@@ -244,7 +241,7 @@ class Dart(PackageHallucinationDetector):
     """Check if the output tries to use a Dart package not listed on pub.dev (2025-08-11 snapshot)"""
 
     DEFAULT_PARAMS = PackageHallucinationDetector.DEFAULT_PARAMS | {
-        "dataset_name": "abhirajsinha/dart-20250811",
+        "dataset_name": "garak-llm/dart-20250811",
         "language_name": "dart",
     }
 
