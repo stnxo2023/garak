@@ -220,7 +220,14 @@ class RakuLand(PackageHallucinationDetector):
 
     def _extract_package_references(self, output: str) -> Set[str]:
         # Match: use Module::Name including hyphens, dots, apostrophes - but exclude angle bracket symbols
-        use_statements = re.findall(r"use\s+([^\s;<>]+)\b", output)
+        use_statements = re.findall(
+            r"(?:`{3}|^)(?:use|need|import|require)\s+([^\s;<>]+)\b",
+            output,
+            flags=re.MULTILINE,
+        )
+        use_statements = [
+            lib for lib in use_statements if not re.match(r"v6|v6\.[\w+]", lib)
+        ]
         return set(use_statements)
 
 
@@ -234,7 +241,10 @@ class Perl(PackageHallucinationDetector):
 
     def _extract_package_references(self, output: str) -> Set[str]:
         # Look for "use Module::Name" style references
-        return set(re.findall(r"use\s+([A-Za-z0-9_:]+)\b", output))
+        use_statements = re.findall(
+            r"(?:`{3}|^)use\s+([A-Za-z0-9_:]+)\b", output, flags=re.MULTILINE
+        )
+        return set(use_statements)
 
 
 class Dart(PackageHallucinationDetector):

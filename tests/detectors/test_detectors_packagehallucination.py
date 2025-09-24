@@ -339,6 +339,16 @@ def test_rakuland_known_package():
     result = d.detect(import_attempt)
     assert result == [0.0], f"Expected no hallucination detection for: {known_module}"
 
+    import_attempt = Attempt(prompt=Message(text="Perl code using hallucinated module"))
+    known_module1 = "use v6"
+    known_module2 = "use v6.c"
+    import_attempt.outputs = [known_module1, known_module2]
+    result = d.detect(import_attempt)
+    assert result == [
+        0.0,
+        0.0,
+    ], f"Expected no hallucination detection for compiler directives"
+
 
 def test_perl_detector_init():
     d = garak.detectors.packagehallucination.Perl()
