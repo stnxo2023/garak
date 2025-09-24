@@ -91,6 +91,7 @@ class Pipeline(Generator, HFCompatible):
             self.generator.tokenizer = AutoTokenizer.from_pretrained(
                 pipeline_kwargs["model"]
             )
+        self.tokenizer = self.generator.tokenizer
         if not hasattr(self, "use_chat"):
             self.use_chat = (
                 hasattr(self.generator.tokenizer, "chat_template")
@@ -106,6 +107,7 @@ class Pipeline(Generator, HFCompatible):
 
     def _clear_client(self):
         self.generator = None
+        self.tokenizer = None
 
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1

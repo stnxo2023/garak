@@ -16,6 +16,9 @@ import argparse
 import datetime
 import json
 import uuid
+import sys
+
+import garak
 
 import garak.analyze.report_digest
 
@@ -48,86 +51,107 @@ p.add_argument("-o", "--output", help="output filename", required=True)
 p.add_argument("infiles", nargs="+", help="garak jsonl reports to be aggregated")
 a = p.parse_args()
 
-# get the list of files
-in_filenames = a.infiles
 
-# get the header from the first file
-# start_run setup
-# init
-#  attempt status 1
-#  attempt status 2
-#  eval
+def main(argv=None) -> None:
+    if argv is None:
+        argv = sys.argv[1:]
 
-aggregate_uuid = str(uuid.uuid4())
-aggregate_starttime_iso = datetime.datetime.now().isoformat()
+    garak._config.load_config()
+    print(
+        f"garak {garak.__description__} v{garak._config.version} ( https://github.com/NVIDIA/garak )"
+    )
 
-print("writing aggregated data to", a.output)
-with open(a.output, "w+", encoding="utf-8") as out_file:
-    lead_filename = in_filenames[0]
-    print("lead file", lead_filename)
-    with open(lead_filename, "r", encoding="utf8") as lead_file:
-        # extract model type, model name, garak version
+    p = argparse.ArgumentParser(
+        prog="python -m garak.analyze.aggregate_reports",
+        description="Aggregate multiple similar garak reports into one JSONL",
+        epilog="See https://github.com/NVIDIA/garak",
+        allow_abbrev=False,
+    )
+    p.add_argument("-o", "--output_path", help="Output filename", required=True)
+    p.add_argument("infiles", nargs="+", help="garak jsonl reports to be aggregated")
+    a = p.parse_args(argv)
 
-        setup_line = lead_file.readline()
-        setup = json.loads(setup_line)
-        assert setup["entry_type"] == "start_run setup"
-        model_type = setup["plugins.model_type"]
-        model_name = setup["plugins.model_name"]
-        version = setup["_config.version"]
-        setup["aggregation"] = in_filenames
+    # get the list of files
+    in_filenames = a.infiles
 
-        # write the header, completed attempts, and eval rows
+    # get the header from the first file
+    aggregate_uuid = str(uuid.uuid4())
+    aggregate_starttime_iso = datetime.datetime.now().isoformat()
 
-        out_file.write(json.dumps(setup) + "\n")
+    print("writing aggregated data to", a.output_path)
+    with open(a.output_path, "w+", encoding="utf-8") as out_file:
+        lead_filename = in_filenames[0]
+        print("lead file", in_filenames[0])
+        with open(in_filenames[0], "r", encoding="utf8") as lead_file:
+            # extract model type, model name, garak version
 
-        init_line = lead_file.readline()
-        init = json.loads(init_line)
-        assert init["entry_type"] == "init"
-        assert init["garak_version"] == version
+            setup_line = lead_file.readline()
+            setup = json.loads(setup_line)
+            assert setup["entry_type"] == "start_run setup"
+            model_type = setup["plugins.model_type"]
+            model_name = setup["plugins.model_name"]
+            version = setup["_config.version"]
+            setup["aggregation"] = in_filenames
 
-        orig_uuid = init["run"]
-        init["orig_uuid"] = init["run"]
-        init["run"] = aggregate_uuid
+            # write the header, completed attempts, and eval rows
 
-        init["orig_start_time"] = init["start_time"]
-        init["start_time"] = aggregate_starttime_iso
+            out_file.write(json.dumps(setup) + "\n")
 
-        out_file.write(json.dumps(init) + "\n")
+            init_line = lead_file.readline()
+            init = json.loads(init_line)
+            assert init["entry_type"] == "init"
+            assert init["garak_version"] == version
 
-        digest = _process_file_body(lead_file, out_file, aggregate_uuid)
-        digest["meta"]["report_aggregation"] = {
-            "files": [lead_filename],
-            "lead_file": lead_filename,
-        }
+            orig_uuid = init["run"]
+            init["orig_uuid"] = init["run"]
+            init["run"] = aggregate_uuid
 
-    if len(in_filenames) > 1:
-        # for each other file
-        for subsequent_filename in in_filenames[1:]:
-            print("processing", subsequent_filename)
-            with open(subsequent_filename, "r", encoding="utf8") as subsequent_file:
-                # check the header, quit if not good
+            init["orig_start_time"] = init["start_time"]
+            init["start_time"] = aggregate_starttime_iso
 
-                setup_line = subsequent_file.readline()
-                setup = json.loads(setup_line)
-                assert setup["entry_type"] == "start_run setup"
-                assert model_type == setup["plugins.model_type"]
-                assert model_name == setup["plugins.model_name"]
-                assert version == setup["_config.version"]
+            out_file.write(json.dumps(init) + "\n")
 
-                init_line = subsequent_file.readline()
-                init = json.loads(init_line)
-                assert init["entry_type"] == "init"
-                assert init["garak_version"] == version
+            digest = _process_file_body(lead_file, out_file, aggregate_uuid)
+            digest["meta"]["report_aggregation"] = {
+                "files": [lead_filename],
+                "lead_file": lead_filename,
+            }
 
-                # write the completed attempts and eval rows
-                subsequent_digest = _process_file_body(
-                    subsequent_file, out_file, aggregate_uuid
-                )
-                digest["meta"]["report_aggregation"]["files"].append(
-                    subsequent_filename
-                )
-                digest["eval"] = digest["eval"] | subsequent_digest["eval"]
+        if len(in_filenames) > 1:
+            # for each other file
+            for subsequent_filename in in_filenames[1:]:
+                print("processing", subsequent_filename)
+                with open(subsequent_filename, "r", encoding="utf8") as subsequent_file:
+                    # check the header, quit if not good
 
-    garak.analyze.report_digest.append_report_object(out_file, digest)
+                    setup_line = subsequent_file.readline()
+                    setup = json.loads(setup_line)
+                    assert setup["entry_type"] == "start_run setup"
+                    assert model_type == setup["plugins.model_type"]
+                    assert model_name == setup["plugins.model_name"]
+                    assert version == setup["_config.version"]
 
-print("done")
+                    init_line = subsequent_file.readline()
+                    init = json.loads(init_line)
+                    assert init["entry_type"] == "init"
+                    assert init["garak_version"] == version
+
+                    # write the completed attempts and eval rows
+                    subsequent_digest = _process_file_body(
+                        subsequent_file, out_file, aggregate_uuid
+                    )
+                    digest["meta"]["report_aggregation"]["files"].append(
+                        subsequent_filename
+                    )
+                    digest["eval"] = digest["eval"] | subsequent_digest["eval"]
+
+                    # write the completed attempts and eval rows
+                    _process_file_body(subsequent_file, out_file, aggregate_uuid)
+
+        garak.analyze.report_digest.append_report_object(out_file, digest)
+
+    print("done")
+
+
+if __name__ == "__main__":
+    main()

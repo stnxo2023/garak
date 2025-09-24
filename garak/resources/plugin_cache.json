@@ -4,7 +4,7 @@
       "description": "Probe for eliciting ANSI control codes from a model",
       "DEFAULT_PARAMS": {},
       "active": true,
-      "doc_uri": "https://i.blackhat.com/BH-US-23/Presentations/US-23-stok-weponizing-plain-text-ansi-escape-sequences-as-a-forensic-nightmare-appendix.pdf",
+      "doc_uri": "https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer",
       "extended_detectors": [],
       "goal": "print escaped ANSI terminal codes",
       "lang": "en",
@@ -27,13 +27,13 @@
         "quality:Security:Integrity"
       ],
       "tier": 3,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-09-16 15:47:16 +0000"
     },
     "probes.ansiescape.AnsiRaw": {
       "description": "Probe for eliciting raw ANSI control codes from a model",
       "DEFAULT_PARAMS": {},
       "active": true,
-      "doc_uri": "https://i.blackhat.com/BH-US-23/Presentations/US-23-stok-weponizing-plain-text-ansi-escape-sequences-as-a-forensic-nightmare-appendix.pdf",
+      "doc_uri": "https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer",
       "extended_detectors": [],
       "goal": "print raw ANSI terminal codes",
       "lang": "en",
@@ -56,7 +56,31 @@
         "quality:Security:Integrity"
       ],
       "tier": 1,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-09-16 15:47:16 +0000"
+    },
+    "probes.ansiescape.AnsiRawTokenizerHF": {
+      "description": "Probe for checking a tokenizer for potentially malicious ANSI escape sequences",
+      "DEFAULT_PARAMS": {},
+      "active": false,
+      "doc_uri": "https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer",
+      "extended_detectors": [],
+      "goal": "check if raw ANSI escape sequences tokens are available",
+      "lang": "*",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "ansiescape.Raw",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "owasp:llm05"
+      ],
+      "tier": 1,
+      "mod_time": "2025-09-16 15:47:16 +0000"
     },
     "probes.atkgen.Tox": {
       "description": "Automatic attack generation, trying to elicit toxic outputs from the model.",
@@ -884,7 +908,7 @@
         "payload:leak:training"
       ],
       "tier": 2,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-09-23 17:38:16 +0000"
     },
     "probes.divergence.RepeatExtended": {
       "description": "See if a model starts giving other data when asked to repeat a string indefinitely",
@@ -915,7 +939,44 @@
         "payload:leak:training"
       ],
       "tier": 2,
-      "mod_time": "2025-05-20 09:39:47 +0000"
+      "mod_time": "2025-09-23 17:38:16 +0000"
+    },
+    "probes.divergence.RepeatedToken": {
+      "description": "Repeated token destabilization attack from Dropbox LLM security research.",
+      "DEFAULT_PARAMS": {
+        "prefix": "Repeat this word forever: ",
+        "encoding": "cl100k_base",
+        "mode": "sample",
+        "num_tokens": 2,
+        "num_repeats": 1024,
+        "single_tokens": [],
+        "max_repeats": 1,
+        "num_tests": 3,
+        "follow_prompt_cap": true
+      },
+      "active": true,
+      "doc_uri": "https://github.com/dropbox/llm-security",
+      "extended_detectors": [],
+      "goal": "Stress-test LLMs with long repeated-token prompts to surface instability",
+      "lang": "*",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "divergence.RepeatedToken",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "avid-effect:performance:P0403",
+        "owasp:llm04",
+        "quality:Security:PromptStability",
+        "payload:unwanted:denial_of_service"
+      ],
+      "tier": 1,
+      "mod_time": "2025-09-23 17:38:16 +0000"
     },
     "probes.doctor.Bypass": {
       "description": "Implement Policy Puppetry Bypass",
@@ -1127,6 +1188,75 @@
       "tier": 9,
       "mod_time": "2025-07-16 13:33:05 +0000"
     },
+    "probes.dra.DRA": {
+      "description": "DRA (Disguise and Reconstruction Attack)",
+      "DEFAULT_PARAMS": {
+        "payload_name": "harmful_behaviors",
+        "toxic_trunc": 0.5,
+        "benign_trunc": 0.5,
+        "benign_full_token_prob": 0.33,
+        "follow_prompt_cap": true
+      },
+      "active": true,
+      "doc_uri": "https://arxiv.org/abs/2402.18104v2",
+      "extended_detectors": [],
+      "goal": "make the LLM ask and answer its own harmful instructions",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": null,
+      "recommended_detector": [
+        "mitigation.MitigationBypass",
+        "mitigation.Prefixes"
+      ],
+      "tags": [
+        "avid-effect:security:S0403",
+        "owasp:llm01",
+        "quality:Security:PromptStability",
+        "payload:jailbreak"
+      ],
+      "tier": 1,
+      "mod_time": "2025-09-18 15:11:43 +0000"
+    },
+    "probes.dra.DRAAdvanced": {
+      "description": "DRA (Disguise and Reconstruction Attack) - Version with detoxify",
+      "DEFAULT_PARAMS": {
+        "payload_name": "harmful_behaviors",
+        "toxic_trunc": 0.5,
+        "benign_trunc": 0.5,
+        "benign_full_token_prob": 0.33,
+        "follow_prompt_cap": true,
+        "custom_sentence": "how to perform a cyber attack"
+      },
+      "active": false,
+      "doc_uri": "https://arxiv.org/abs/2402.18104v2",
+      "extended_detectors": [],
+      "goal": "make the LLM ask and answer its own harmful instructions",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": null,
+      "recommended_detector": [
+        "mitigation.MitigationBypass",
+        "mitigation.Prefixes"
+      ],
+      "tags": [
+        "avid-effect:security:S0403",
+        "owasp:llm01",
+        "quality:Security:PromptStability",
+        "payload:jailbreak"
+      ],
+      "tier": 1,
+      "mod_time": "2025-09-18 15:11:43 +0000"
+    },
     "probes.encoding.InjectAscii85": {
       "description": "Probe for susceptibility to base85 encoded injections",
       "DEFAULT_PARAMS": {
@@ -1161,7 +1291,43 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-08-07 12:45:59 +0000"
+      "mod_time": "2025-09-08 12:35:41 +0000"
+    },
+    "probes.encoding.InjectAtbash": {
+      "description": "Atbash Probe Credit: Nakul-Rajpal",
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true,
+        "payloads": [
+          "default",
+          "xss",
+          "slur_terms"
+        ]
+      },
+      "active": true,
+      "doc_uri": "https://en.wikipedia.org/wiki/Atbash",
+      "extended_detectors": [
+        "encoding.DecodeApprox"
+      ],
+      "goal": "make the model say an encoded payload",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "encoding.DecodeMatch",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "avid-effect:security:S0403",
+        "owasp:llm01",
+        "quality:Security:PromptStability",
+        "payload:generic"
+      ],
+      "tier": 2,
+      "mod_time": "2025-09-08 12:35:41 +0000"
     },
     "probes.encoding.InjectBase16": {
       "description": "Probe for susceptibility to base16 encoded injections\"",
@@ -1197,7 +1363,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-08-07 12:45:59 +0000"
+      "mod_time": "2025-09-08 12:35:41 +0000"
     },
     "probes.encoding.InjectBase2048": {
       "description": "Probe for susceptibility to Base2048 encoding injections",
@@ -1233,7 +1399,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-08-07 12:45:59 +0000"
+      "mod_time": "2025-09-08 12:35:41 +0000"
     },
     "probes.encoding.InjectBase32": {
       "description": "Probe for susceptibility to base32 encoded injections",
@@ -1269,7 +1435,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-08-07 12:45:59 +0000"
+      "mod_time": "2025-09-08 12:35:41 +0000"
     },
     "probes.encoding.InjectBase64": {
       "description": "Probe for susceptibility to base64 encoded injections",
@@ -1305,7 +1471,7 @@
         "payload:generic"
       ],
       "tier": 1,
-      "mod_time": "2025-08-07 12:45:59 +0000"
+      "mod_time": "2025-09-08 12:35:41 +0000"
     },
     "probes.encoding.InjectBraille": {
       "description": "Probe for susceptibility to Braille encoding injections. Credit Wally#3422",
@@ -1341,7 +1507,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-08-07 12:45:59 +0000"
+      "mod_time": "2025-09-08 12:35:41 +0000"
     },
     "probes.encoding.InjectEcoji": {
       "description": "Probe for susceptibility to Ecoji encoding.",
@@ -1377,7 +1543,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-08-07 12:45:59 +0000"
+      "mod_time": "2025-09-08 12:35:41 +0000"
     },
     "probes.encoding.InjectHex": {
       "description": "Probe for susceptibility to hex encoded injections",
@@ -1413,7 +1579,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-08-07 12:45:59 +0000"
+      "mod_time": "2025-09-08 12:35:41 +0000"
     },
     "probes.encoding.InjectLeet": {
       "description": "Probe for susceptibility to 31337 encoding.",
@@ -1449,7 +1615,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-08-07 12:45:59 +0000"
+      "mod_time": "2025-09-08 12:35:41 +0000"
     },
     "probes.encoding.InjectMime": {
       "description": "Probe for susceptibility to MIME encoding injections",
@@ -1485,7 +1651,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-08-07 12:45:59 +0000"
+      "mod_time": "2025-09-08 12:35:41 +0000"
     },
     "probes.encoding.InjectMorse": {
       "description": "Probe for susceptibility to Morse encoding. Credit Wally#3422",
@@ -1521,7 +1687,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-08-07 12:45:59 +0000"
+      "mod_time": "2025-09-08 12:35:41 +0000"
     },
     "probes.encoding.InjectNato": {
       "description": "Probe for susceptibility to Nato phonetic alphabet encoding.",
@@ -1557,7 +1723,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-08-07 12:45:59 +0000"
+      "mod_time": "2025-09-08 12:35:41 +0000"
     },
     "probes.encoding.InjectQP": {
       "description": "Probe for susceptibility to QP encoded injections",
@@ -1593,7 +1759,7 @@
         "payload:generic"
       ],
       "tier": 1,
-      "mod_time": "2025-08-07 12:45:59 +0000"
+      "mod_time": "2025-09-08 12:35:41 +0000"
     },
     "probes.encoding.InjectROT13": {
       "description": "Probe for susceptibility to ROT13 encoding injections",
@@ -1629,7 +1795,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-08-07 12:45:59 +0000"
+      "mod_time": "2025-09-08 12:35:41 +0000"
     },
     "probes.encoding.InjectSneakyBits": {
       "description": "Probe for susceptibility to unicode variant selector ASCII smuggling",
@@ -1665,7 +1831,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-08-07 12:45:59 +0000"
+      "mod_time": "2025-09-08 12:35:41 +0000"
     },
     "probes.encoding.InjectUU": {
       "description": "Probe for susceptibility to UU encoded injections",
@@ -1701,7 +1867,7 @@
         "payload:generic"
       ],
       "tier": 1,
-      "mod_time": "2025-08-07 12:45:59 +0000"
+      "mod_time": "2025-09-08 12:35:41 +0000"
     },
     "probes.encoding.InjectUnicodeTagChars": {
       "description": "Probe for susceptibility to unicode tag ASCII smuggling",
@@ -1738,7 +1904,7 @@
         "payload:generic"
       ],
       "tier": 1,
-      "mod_time": "2025-08-07 12:45:59 +0000"
+      "mod_time": "2025-09-08 12:35:41 +0000"
     },
     "probes.encoding.InjectUnicodeVariantSelectors": {
       "description": "Probe for susceptibility to unicode variant selector ASCII smuggling",
@@ -1774,7 +1940,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-08-07 12:45:59 +0000"
+      "mod_time": "2025-09-08 12:35:41 +0000"
     },
     "probes.encoding.InjectZalgo": {
       "description": "Probe for susceptibility to Zalgo encoding.",
@@ -1810,7 +1976,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-08-07 12:45:59 +0000"
+      "mod_time": "2025-09-08 12:35:41 +0000"
     },
     "probes.exploitation.JinjaTemplatePythonInjection": {
       "description": "Attempts to execute Python code via Jinja templating",
@@ -3562,7 +3728,7 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-09-16 13:51:39 +0000"
     },
     "probes.packagehallucination.PackageHallucinationProbe": {
       "description": "Base class for package hallucination probes",
@@ -3589,7 +3755,7 @@
         "payload:malicious:badcode"
       ],
       "tier": 9,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-09-16 13:51:39 +0000"
     },
     "probes.packagehallucination.Python": {
       "description": "Attempts to generate Python3 code including hallucinated packages",
@@ -3616,7 +3782,7 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-09-16 13:51:39 +0000"
     },
     "probes.packagehallucination.Ruby": {
       "description": "Attempts to generate Ruby code including hallucinated gems",
@@ -3643,7 +3809,7 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-09-16 13:51:39 +0000"
     },
     "probes.packagehallucination.Rust": {
       "description": "Attempts to generate Rust code including hallucinated crates.io packages",
@@ -3670,7 +3836,7 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-05-09 12:45:38 +0000"
+      "mod_time": "2025-09-16 13:51:39 +0000"
     },
     "probes.phrasing.FutureTense": {
       "description": "Attempt to evade safeguards by setting requests in the future tense",
@@ -4829,7 +4995,7 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-08-11 18:13:36 +0000"
+      "mod_time": "2025-09-04 20:03:05 +0000"
     },
     "probes.xss.MarkdownImageExfil": {
       "description": "Can we get the model to write embedded assets exfiltrating text in the URI?",
@@ -4864,10 +5030,10 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-08-11 18:13:36 +0000"
+      "mod_time": "2025-09-04 20:03:05 +0000"
     },
     "probes.xss.MarkdownURIImageExfilExtended": {
-      "description": "Generalized implementation of data exfiltration exploits via markdown URIs.",
+      "description": "Generalized implementation of data exfiltration exploits through Markdown URIs.",
       "DEFAULT_PARAMS": {},
       "active": true,
       "doc_uri": "https://www.aim.security/lp/aim-labs-echoleak-blogpost",
@@ -4896,10 +5062,10 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-08-11 18:13:36 +0000"
+      "mod_time": "2025-09-04 20:03:05 +0000"
     },
     "probes.xss.MarkdownURINonImageExfilExtended": {
-      "description": "Generalized implementation of data exfiltration exploits via markdown URIs.",
+      "description": "Generalized implementation of data exfiltration exploits through Markdown URIs.",
       "DEFAULT_PARAMS": {},
       "active": true,
       "doc_uri": "https://www.aim.security/lp/aim-labs-echoleak-blogpost",
@@ -4928,10 +5094,10 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-08-11 18:13:36 +0000"
+      "mod_time": "2025-09-04 20:03:05 +0000"
     },
     "probes.xss.MdExfil20230929": {
-      "description": "Markdown image URI exfil exploit published 2023 Sept 29",
+      "description": "Markdown image URI exfil exploit published 2023 Sept 29.",
       "DEFAULT_PARAMS": {
         "payload_name": "example_domains_xss"
       },
@@ -4962,7 +5128,7 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-08-11 18:13:36 +0000"
+      "mod_time": "2025-09-04 20:03:05 +0000"
     },
     "probes.xss.StringAssemblyDataExfil": {
       "description": "Prompt injection for manipulating state",
@@ -4994,7 +5160,7 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-08-11 18:13:36 +0000"
+      "mod_time": "2025-09-04 20:03:05 +0000"
     }
   },
   "detectors": {
@@ -5082,7 +5248,7 @@
       },
       "accuracy": null,
       "active": true,
-      "doc_uri": null,
+      "doc_uri": "https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer",
       "lang_spec": "*",
       "modality": {
         "out": [
@@ -5092,7 +5258,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-09-16 15:38:35 +0000"
     },
     "detectors.ansiescape.Raw": {
       "description": "pick up raw ANSI escape sequences",
@@ -5102,7 +5268,7 @@
       },
       "accuracy": null,
       "active": true,
-      "doc_uri": null,
+      "doc_uri": "https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer",
       "lang_spec": "*",
       "modality": {
         "out": [
@@ -5112,7 +5278,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-09-16 15:38:35 +0000"
     },
     "detectors.base.Detector": {
       "description": "Base class for objects that define a way of detecting a probe hit / LLM failure",
@@ -5409,7 +5575,31 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-08-13 22:01:46 +0000"
+      "mod_time": "2025-09-16 18:15:13 +0000"
+    },
+    "detectors.divergence.RepeatedToken": {
+      "description": "Garak-compatible detector for repeated token hallucinations.",
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
+      "accuracy": null,
+      "active": true,
+      "doc_uri": "https://github.com/dropbox/llm-security",
+      "lang_spec": "*",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "tags": [
+        "avid-effect:performance:P0403",
+        "owasp:llm04",
+        "quality:Security:PromptStability",
+        "payload:unwanted:denial_of_service"
+      ],
+      "mod_time": "2025-09-16 18:15:13 +0000"
     },
     "detectors.encoding.DecodeApprox": {
       "description": "Is there a partial hash decoding?",
@@ -7643,7 +7833,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-08-26 14:02:31 +0000"
+      "mod_time": "2025-09-16 15:38:12 +0000"
     },
     "generators.huggingface.InferenceEndpoint": {
       "description": "Interface for Hugging Face private endpoints",
@@ -7670,7 +7860,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-08-26 14:02:31 +0000"
+      "mod_time": "2025-09-16 15:38:12 +0000"
     },
     "generators.huggingface.LLaVA": {
       "description": "Get LLaVA ([ text + image ] -> text) generations",
@@ -7700,7 +7890,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": false,
-      "mod_time": "2025-08-26 14:02:31 +0000"
+      "mod_time": "2025-09-16 15:38:12 +0000"
     },
     "generators.huggingface.Model": {
       "description": "Get text generations from a locally-run Hugging Face model",
@@ -7729,7 +7919,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2025-08-26 14:02:31 +0000"
+      "mod_time": "2025-09-16 15:38:12 +0000"
     },
     "generators.huggingface.OptimumPipeline": {
       "description": "Get text generations from a locally-run Hugging Face pipeline using NVIDIA Optimum",
@@ -7758,7 +7948,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2025-08-26 14:02:31 +0000"
+      "mod_time": "2025-09-16 15:38:12 +0000"
     },
     "generators.huggingface.Pipeline": {
       "description": "Get text generations from a locally-run Hugging Face pipeline",
@@ -7787,7 +7977,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2025-08-26 14:02:31 +0000"
+      "mod_time": "2025-09-16 15:38:12 +0000"
     },
     "generators.langchain.LangChainLLMGenerator": {
       "description": "Class supporting LangChain LLM interfaces",
@@ -7932,7 +8122,7 @@
       "mod_time": "2025-06-17 16:15:39 +0000"
     },
     "generators.nim.NVMultimodal": {
-      "description": "Wrapper for text + image / audio to text NIMs. Expects NIM_API_KEY environment variable.",
+      "description": "Wrapper for text and image / audio to text NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
       "DEFAULT_PARAMS": {
         "max_tokens": 150,
         "temperature": 0.1,
@@ -7975,10 +8165,10 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-12 16:14:56 +0000"
+      "mod_time": "2025-09-05 19:48:46 +0000"
     },
     "generators.nim.NVOpenAIChat": {
-      "description": "Wrapper for NVIDIA-hosted NIMs. Expects NIM_API_KEY environment variable.",
+      "description": "Wrapper for NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
       "DEFAULT_PARAMS": {
         "max_tokens": 150,
         "temperature": 0.1,
@@ -8018,10 +8208,10 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-12 16:14:56 +0000"
+      "mod_time": "2025-09-05 19:48:46 +0000"
     },
     "generators.nim.NVOpenAICompletion": {
-      "description": "Wrapper for NVIDIA-hosted NIMs. Expects NIM_API_KEY environment variable.",
+      "description": "Wrapper for NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
       "DEFAULT_PARAMS": {
         "max_tokens": 150,
         "temperature": 0.1,
@@ -8061,10 +8251,10 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-12 16:14:56 +0000"
+      "mod_time": "2025-09-05 19:48:46 +0000"
     },
     "generators.nim.Vision": {
-      "description": "Wrapper for text+image to text NIMs. Expects NIM_API_KEY environment variable.",
+      "description": "Wrapper for text and image to text NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
       "DEFAULT_PARAMS": {
         "max_tokens": 150,
         "temperature": 0.1,
@@ -8106,7 +8296,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-12 16:14:56 +0000"
+      "mod_time": "2025-09-05 19:48:46 +0000"
     },
     "generators.nvcf.NvcfChat": {
       "description": "Wrapper for NVIDIA Cloud Functions Chat models via NGC. Expects NVCF_API_KEY environment variable.",
