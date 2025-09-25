@@ -89,7 +89,7 @@ class CohereGenerator(Generator):
         - on the other hand blank prompt / RTP shouldn't hang forever
         """
         prompt_text = prompt.last_message().text
-        if prompt_text == "":
+        if not prompt_text:
             return [Message("")] * request_size
         else:
             if self.api_version == "v2":
@@ -98,12 +98,9 @@ class CohereGenerator(Generator):
                 # Chat API doesn't support num_generations, so we need to make multiple calls
                 for _ in range(request_size):
                     try:
-                        # Use the correct UserChatMessageV2 class
-                        message = self.cohere.UserChatMessageV2(content=prompt_text)
-
                         response = self.generator.chat(
                             model=self.name,
-                            messages=[message],
+                            messages=prompt_text,
                             temperature=self.temperature,
                             max_tokens=self.max_tokens,
                             k=self.k,
@@ -155,9 +152,11 @@ class CohereGenerator(Generator):
                 # Use legacy generate API with cohere.Client()
                 # Following Cohere's guidance for full backward compatibility
                 try:
+                    message = prompt_text[-1]["content"]
+
                     response = self.generator.generate(
                         model=self.name,
-                        prompt=prompt_text,
+                        prompt=message,
                         temperature=self.temperature,
                         num_generations=request_size,
                         max_tokens=self.max_tokens,

@@ -49,9 +49,7 @@ class MistralGenerator(Generator):
     def _call_model(
         self, prompt: Conversation, generations_this_call=1
     ) -> List[Message | None]:
-        messages = []
-        for turn in prompt.turns:
-            messages.append({"role": turn.role, "content": turn.content.text})
+        messages = self._conversation_to_list(prompt)
         try:
             chat_response = self.client.chat.complete(
                 model=self.name,
@@ -63,6 +61,7 @@ class MistralGenerator(Generator):
                 if isinstance(e, backoff_exception):
                     raise GeneratorBackoffTrigger from e
             raise e
+
         return [Message(chat_response.choices[0].message.content)]
 
 
