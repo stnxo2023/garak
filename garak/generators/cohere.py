@@ -135,7 +135,12 @@ class CohereGenerator(Generator):
                             )
                             responses.append(str(response))
                     except Exception as e:
-                        backoff_exception_types = [self.cohere.error.CohereAPIError]
+                        backoff_exception_types = (
+                            self.cohere.errors.GatewayTimeoutError,
+                            self.cohere.errors.TooManyRequestsError,
+                            self.cohere.errors.ServiceUnavailableError,
+                            self.cohere.errors.InternalServerError,
+                        )
                         for backoff_exception in backoff_exception_types:
                             if isinstance(e, backoff_exception):
                                 raise GeneratorBackoffTrigger from e
@@ -194,7 +199,7 @@ class CohereGenerator(Generator):
                         )
                         responses = [None] * request_size
 
-            return [Message(g.text) for g in response]
+            return [Message(g.text) if g is not None else None for g in responses]
 
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
@@ -209,9 +214,7 @@ class CohereGenerator(Generator):
         generation_iterator = tqdm.tqdm(request_sizes, leave=False)
         generation_iterator.set_description(self.fullname)
         for request_size in generation_iterator:
-            outputs += self._call_cohere_api(
-                prompt.last_message().text, request_size=request_size
-            )
+            outputs += self._call_cohere_api(prompt, request_size=request_size)
         return outputs
 
 
