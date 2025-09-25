@@ -6,7 +6,7 @@ from unittest.mock import patch, MagicMock
 from garak.attempt import Conversation, Turn, Message
 from garak._config import GarakSubConfig
 from garak.generators.huggingface import LLaVA
-from garak.exception import ModelNameMissingError
+from garak.exception import TargetNameMissingError
 
 # ─── Constants ─────────────────────────────────────────────────────────
 
@@ -106,16 +106,16 @@ def test_llava_error_on_missing_image(llava_config):
 
 
 def test_llava_unsupported_model(llava_config):
-    """Test that instantiating with an unsupported model name raises ModelNameMissingError."""
-    with pytest.raises(ModelNameMissingError) as excinfo:
+    """Test that instantiating with an unsupported model name raises TargetNameMissingError."""
+    with pytest.raises(TargetNameMissingError) as excinfo:
         LLaVA(name="not-a-supported-model", config_root=llava_config)
     # Verify the error message contains useful information
     assert "not-a-supported-model" in str(excinfo.value)
 
 
 def test_llava_missing_target_name(llava_config):
-    """Test that instantiating with an empty model name raises ModelNameMissingError."""
-    with pytest.raises(ModelNameMissingError):
+    """Test that instantiating with an empty model name raises TargetNameMissingError."""
+    with pytest.raises(TargetNameMissingError):
         LLaVA(name="", config_root=llava_config)
 
 

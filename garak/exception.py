@@ -10,7 +10,7 @@ class APIKeyMissingError(GarakException):
     """Exception to be raised if a required API key is not found"""
 
 
-class ModelNameMissingError(GarakException):
+class TargetNameMissingError(GarakException):
     """A generator requires target_name to be set, but it wasn't"""
 
 
