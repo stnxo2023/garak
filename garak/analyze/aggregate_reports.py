@@ -88,8 +88,8 @@ def main(argv=None) -> None:
             setup_line = lead_file.readline()
             setup = json.loads(setup_line)
             assert setup["entry_type"] == "start_run setup"
-            model_type = setup["plugins.model_type"]
-            model_name = setup["plugins.model_name"]
+            target_type = setup["plugins.target_type"]
+            target_name = setup["plugins.target_name"]
             version = setup["_config.version"]
             setup["aggregation"] = in_filenames
 
@@ -127,8 +127,8 @@ def main(argv=None) -> None:
                     setup_line = subsequent_file.readline()
                     setup = json.loads(setup_line)
                     assert setup["entry_type"] == "start_run setup"
-                    assert model_type == setup["plugins.model_type"]
-                    assert model_name == setup["plugins.model_name"]
+                    assert target_type == setup["plugins.target_type"]
+                    assert target_name == setup["plugins.target_name"]
                     assert version == setup["_config.version"]
 
                     init_line = subsequent_file.readline()

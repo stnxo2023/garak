@@ -11,7 +11,7 @@ class APIKeyMissingError(GarakException):
 
 
 class ModelNameMissingError(GarakException):
-    """A generator requires model_name to be set, but it wasn't"""
+    """A generator requires target_name to be set, but it wasn't"""
 
 
 class GarakBackoffTrigger(GarakException):
