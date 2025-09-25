@@ -48,7 +48,7 @@ def test_requirements_txt_pyproject_toml():
     )  # final check. this one is actually enough, but let's help us debug by finding which test fails, ok?
 
 
-PLUGIN_TYPES = ["probes", "detectors", "harnesses", "generators", "buffs"]
+PLUGIN_TYPES = garak._plugins.PLUGIN_TYPES
 
 
 def plugin_names():
