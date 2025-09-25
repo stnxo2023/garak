@@ -2,10 +2,8 @@ import importlib
 import pytest
 import respx
 import httpx
-import ollama
 
 from garak.attempt import Message, Turn, Conversation
-from garak.exception import GeneratorBackoffTrigger
 from garak.generators.ollama import OllamaGeneratorChat, OllamaGenerator
 
 PINGED_OLLAMA_SERVER = (
