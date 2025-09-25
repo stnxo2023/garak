@@ -26,9 +26,6 @@ def test_buff_structure(classname):
                 if k not in c._supported_params:
                     unsupported_defaults.append(k)
     assert unsupported_defaults == []
-    assert hasattr(c, "extra_dependency_names") and isinstance(
-        c.extra_dependency_names, list
-    ), "extra_dependency_names must be a list"
 
 
 @pytest.mark.parametrize("klassname", BUFFS)

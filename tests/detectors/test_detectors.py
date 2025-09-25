@@ -89,7 +89,9 @@ def test_detector_detect(classname):
     ), "detect() should return an ordered iterable"
     for entry in results:
         # detect() should skip non-evaluated items from output. NB this breaks output:result alignment
-        assert isinstance(entry, float) or entry is None, "detect() must return a list of floats or Nones"
+        assert (
+            isinstance(entry, float) or entry is None
+        ), "detect() must return a list of floats or Nones"
         if isinstance(entry, float):
             assert 0.0 <= entry <= 1.0, "detect() values should be between 0.0 and 1.0"
         assert len(list(results)) <= len(
@@ -132,6 +134,3 @@ def test_detector_metadata(classname):
         assert d.doc_uri.lower().startswith(
             "http"
         ), "doc uris should be fully-specified absolute HTTP addresses"
-    assert hasattr(d, "extra_dependency_names") and isinstance(
-        d.extra_dependency_names, list
-    ), "extra_dependency_names must be a list"

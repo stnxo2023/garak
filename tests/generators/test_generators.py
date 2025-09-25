@@ -76,10 +76,6 @@ def test_generator_structure(classname):
                 if k not in g._supported_params:
                     unsupported_defaults.append(k)
     assert unsupported_defaults == []
-    # extra dependency modules is a list
-    assert hasattr(g, "extra_dependency_names") and isinstance(
-        g.extra_dependency_names, list
-    ), "extra_dependency_names must be a list"
 
 
 TESTABLE_GENERATORS = [

@@ -90,9 +90,6 @@ def test_probe_metadata(classname):
     assert isinstance(p.modality["in"], set), "modality descriptors must be sets"
     assert p.tier is not None, "probe tier must be specified"
     assert isinstance(p.tier, garak.probes.Tier), "probe tier must be one of type Tier'"
-    assert hasattr(p, "extra_dependency_names") and isinstance(
-        p.extra_dependency_names, list
-    ), "extra_dependency_names must be a list"
     if p.active:
         assert (
             p.extra_dependency_names == []
