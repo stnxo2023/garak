@@ -918,7 +918,7 @@ def test_model_target_override():
         "{{nameval}}", demo_name
     )
 
-    with tempfile.NamedTemporaryFile(delete=False) as t:
+    with tempfile.NamedTemporaryFile(mode="w+", delete=False, encoding="utf-8") as t:
         t.write(candidate_yaml.encode("utf-8"))
         t.close()
         c = _config._load_yaml_config([t.name])
