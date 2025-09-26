@@ -895,8 +895,8 @@ def test_model_target_switching(type_key, name_key):
     candidate_yaml = yaml_template.replace("{{typekey}}", type_key).replace(
         "{{namekey}}", name_key
     )
-    with tempfile.NamedTemporaryFile(delete=False) as t:
-        t.write(candidate_yaml.encode("utf-8"))
+    with tempfile.NamedTemporaryFile(mode="w+", delete=False, encoding="utf-8") as t:
+        t.write(candidate_yaml)
         t.close()
         c = _config._load_yaml_config([t.name])
         assert c["plugins"]["target_name"] == demo_name
@@ -919,7 +919,7 @@ def test_model_target_override():
     )
 
     with tempfile.NamedTemporaryFile(mode="w+", delete=False, encoding="utf-8") as t:
-        t.write(candidate_yaml.encode("utf-8"))
+        t.write(candidate_yaml)
         t.close()
         c = _config._load_yaml_config([t.name])
         assert c["plugins"]["target_name"] == demo_name
