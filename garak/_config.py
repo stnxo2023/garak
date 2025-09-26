@@ -196,10 +196,12 @@ def _load_yaml_config(settings_filenames) -> dict:
                 "both target_type and model_type specified, ignoring model_type"
             )
         else:
-            config["plugins"]["target_type"] = config["plugins"]["model_type]"]
-        del config["plugins"]["model_type]"]
+            config["plugins"]["target_type"] = config["plugins"]["model_type"]
+        del config["plugins"]["model_type"]
 
     if "model_name" in config["plugins"]:
+        import garak.command
+
         garak.command.deprecation_notice("config plugins.model_name", "0.13.1.pre1")
         if "target_name" in config["plugins"]:
             logging.info(

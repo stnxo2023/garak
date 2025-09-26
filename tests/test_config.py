@@ -867,3 +867,60 @@ def test_site_yaml_overrides_max_workers(capsys):
         )
         assert exc_info.type == SystemExit
         assert exc_info.value.code == 1
+
+
+model_target_data = [
+    ("model_type", "model_name"),
+    ("model_type", "target_name"),
+    ("target_type", "model_name"),
+    ("target_type", "target_name"),
+]
+
+
+@pytest.mark.parametrize("type_key,name_key", model_target_data)
+def test_model_target_switching(type_key, name_key):
+
+    yaml_template = """
+    plugins:
+        {{typekey}}: {{typeval}}
+        {{namekey}}: {{nameval}}
+    """
+    demo_type = "test.Test"
+    demo_name = "9218-Black"
+
+    yaml_template = yaml_template.replace("{{typeval}}", demo_type).replace(
+        "{{nameval}}", demo_name
+    )
+
+    candidate_yaml = yaml_template.replace("{{typekey}}", type_key).replace(
+        "{{namekey}}", name_key
+    )
+    with tempfile.NamedTemporaryFile(delete=False) as t:
+        t.write(candidate_yaml.encode("utf-8"))
+        t.close()
+        c = _config._load_yaml_config([t.name])
+        assert c["plugins"]["target_name"] == demo_name
+        assert c["plugins"]["target_type"] == demo_type
+
+
+def test_model_target_override():
+
+    yaml_template = """
+    plugins:
+        target_type: {{typeval}}
+        target_name: {{nameval}}
+        model_type: donky.Bonky
+        model_name: obsidian
+    """
+    demo_type = "test.Test"
+    demo_name = "9218-Black"
+    candidate_yaml = yaml_template.replace("{{typeval}}", demo_type).replace(
+        "{{nameval}}", demo_name
+    )
+
+    with tempfile.NamedTemporaryFile(delete=False) as t:
+        t.write(candidate_yaml.encode("utf-8"))
+        t.close()
+        c = _config._load_yaml_config([t.name])
+        assert c["plugins"]["target_name"] == demo_name
+        assert c["plugins"]["target_type"] == demo_type
