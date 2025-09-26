@@ -53,12 +53,17 @@ class CohereGenerator(Generator):
 
     generator_family_name = "Cohere"
 
-    def __init__(self, name="command", config_root=_config):
+    def __init__(self, name="", config_root=_config):
 
         self.name = name
         self.fullname = f"Cohere {self.name}"
 
         super().__init__(self.name, config_root=config_root)
+
+        if self.name in ("", None):
+            raise ValueError(
+                f"{self.generator_family_name} requires model name to be set, e.g. --model_name command-a-03-2025"
+            )
 
         logging.debug(
             "Cohere generation request limit capped at %s", COHERE_GENERATION_LIMIT
@@ -100,7 +105,7 @@ class CohereGenerator(Generator):
                     try:
                         response = self.generator.chat(
                             model=self.name,
-                            messages=prompt_text,
+                            messages=self._conversation_to_list(prompt),
                             temperature=self.temperature,
                             max_tokens=self.max_tokens,
                             k=self.k,
@@ -110,6 +115,8 @@ class CohereGenerator(Generator):
                             # Note: stop_sequences/end_sequences, logit_bias, truncate, and preset
                             # are not supported in the Chat endpoint per Cohere migration guide
                         )
+
+                        print(response)
 
                         # Extract text from message content
                         if hasattr(response, "message") and hasattr(
@@ -141,7 +148,7 @@ class CohereGenerator(Generator):
                         for backoff_exception in backoff_exception_types:
                             if isinstance(e, backoff_exception):
                                 raise GeneratorBackoffTrigger from e
-                        logging.error(f"Chat API error: {e}")
+                        logging.error(f"Chat API error: {e.__class__.__name__} {e}")
                         responses.append(None)
 
                 # Ensure we return the correct number of responses
@@ -152,7 +159,7 @@ class CohereGenerator(Generator):
                 # Use legacy generate API with cohere.Client()
                 # Following Cohere's guidance for full backward compatibility
                 try:
-                    message = prompt_text[-1]["content"]
+                    message = prompt.last_message().text
 
                     response = self.generator.generate(
                         model=self.name,
@@ -169,13 +176,19 @@ class CohereGenerator(Generator):
                     )
 
                 except RuntimeError as e:
-                    logging.error(f"Generate API error: {e}")
+                    logging.error(f"Generate API error: RuntimeError {e}")
                     return [None] * request_size
                 except Exception as e:
-                    backoff_exception_types = [self.cohere.error.CohereAPIError]
+                    backoff_exception_types = (
+                        self.cohere.errors.GatewayTimeoutError,
+                        self.cohere.errors.TooManyRequestsError,
+                        self.cohere.errors.ServiceUnavailableError,
+                        self.cohere.errors.InternalServerError,
+                    )
                     for backoff_exception in backoff_exception_types:
                         if isinstance(e, backoff_exception):
                             raise GeneratorBackoffTrigger from e
+                    logging.error(f"Chat API error: {e.__class__.__name__} {e}")
                     raise e
 
                 # Handle response based on structure
