@@ -279,7 +279,7 @@ Example: RestGenerator
 
 RestGenerator is a slightly complex generator, though mostly because it exposes
 so many config values, allowing flexible integrations. This example sets
-``model_type: rest`` to ensure that this model is selected for the run; that might
+``target_type: rest`` to ensure that this model is selected for the run; that might
 not always be wanted, and it isn't compulsory.
 
 RestGenerator with YAML
@@ -288,7 +288,7 @@ RestGenerator with YAML
 .. code-block:: yaml
 
     plugins:
-        model_type: rest
+        target_type: rest
         generators:
             rest:
                 RestGenerator:
