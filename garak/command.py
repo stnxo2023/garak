@@ -22,7 +22,7 @@ def hint(msg, logging=None):
 
 
 def deprecation_notice(deprecated_item: str, version: str, logging=None):
-    msg = f"{deprecated_item} is deprecated since version {version}"
+    msg = f"DEPRECATION: {deprecated_item} is deprecated since version {version}"
     visible_msg = f"✋ {msg}"
     if logging is not None:
         logging.info(msg)
