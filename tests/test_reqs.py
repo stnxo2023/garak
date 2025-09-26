@@ -37,15 +37,17 @@ def test_requirements_txt_pyproject_toml():
                     pyproject_reqs.append(dep)
         pyproject_reqs.sort()
     # assert len(reqtxt_reqs) == len(pyproject_reqs) # same number of requirements
+    spurious_req = set(reqtxt_reqs) - set(pyproject_reqs)
     assert (
-        set(reqtxt_reqs) - set(pyproject_reqs) == set()
-    )  # things in reqtxt but not in pyproject
+        spurious_req == set()
+    ), f"spurious items in requirements.txt, {spurious_req}"  # things in reqtxt but not in pyproject
+    spurious_pyproject = set(pyproject_reqs) - set(reqtxt_reqs)
     assert (
-        set(pyproject_reqs) - set(reqtxt_reqs) == set()
-    )  # things in pyproject but not in reqtxt
+        spurious_pyproject == set()
+    ), f"spurious items in pyproject.toml, {spurious_pyproject}"  # things in pyproject but not in reqtxt
     assert (
         reqtxt_reqs == pyproject_reqs
-    )  # final check. this one is actually enough, but let's help us debug by finding which test fails, ok?
+    ), "requirements.txt/pyproject.toml#dependencies mismatch. are plugin sections prefixed plugin_ ?"  # final check. this one is actually enough, but let's help us debug by finding which test fails, ok?
 
 
 PLUGIN_TYPES = garak._plugins.PLUGIN_TYPES
@@ -103,6 +105,7 @@ def test_optional_extras_not_in_requirements(plugin_name: str):
         % extra_deps_in_requirements
     )
 
+
 @pytest.mark.skipif(
     tomllib is None, reason="No tomllib found (available from Python 3.11)"
 )
@@ -136,5 +139,11 @@ def test_all_plugins_coverage():
             if p.startswith("plugin_")
         ]
         all_plugins_list = re.findall(r"garak\[(.+)\]", all_plugins[0])[0].split(",")
-        assert set(all_plugins_list) - set(plugin_names) == set()
-        assert set(plugin_names) - set(all_plugins_list) == set()
+        missing_from_all_plugins = set(plugin_names) - set(all_plugins_list)
+        assert (
+            missing_from_all_plugins == set()
+        ), f"items missing from all_plugins: {missing_from_all_plugins}"
+        no_own_section_plugins = set(all_plugins_list) - set(plugin_names)
+        assert (
+            no_own_section_plugins == set()
+        ), f"items in all_plugins without own section: {no_own_section_plugins}"
