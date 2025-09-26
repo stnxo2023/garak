@@ -138,7 +138,7 @@
       "active": false,
       "doc_uri": "https://arxiv.org/abs/2410.23861",
       "extended_detectors": [],
-      "extra_dependency_names": [],
+      "extra_dependency_names": ["soundfile", "librosa"],
       "goal": "disregard the system prompt via audio component",
       "lang": "en",
       "modality": {
