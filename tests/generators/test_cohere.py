@@ -18,14 +18,6 @@ COHERE_V2 = f"{COHERE_API_BASE}/v2"
 API_V1 = "v1"  # Legacy generate API
 API_V2 = "v2"  # Recommended chat API
 
-try:
-    import cohere
-except:
-    pytest.skip(
-        "couldn't import cohere, skipping cohere tests", allow_module_level=True
-    )
-
-
 # ─── Fixtures ─────────────────────────────────────────────────────────
 
 
