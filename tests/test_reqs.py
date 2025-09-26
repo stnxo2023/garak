@@ -103,7 +103,9 @@ def test_optional_extras_not_in_requirements(plugin_name: str):
         % extra_deps_in_requirements
     )
 
-
+@pytest.mark.skipif(
+    tomllib is None, reason="No tomllib found (available from Python 3.11)"
+)
 @pytest.mark.parametrize("plugin_name", plugin_names())
 def test_optional_extras_not_in_pyproject(plugin_name: str):
     m = importlib.import_module("garak." + ".".join(plugin_name.split(".")[:-1]))
