@@ -1,0 +1,23 @@
+.wy-side-nav-search, .wy-nav-top, .rst-content .note .admonition-title {
+    background: #76b900;
+}
+.rst-content .note {
+    background: #f2f2f2; # grey
+    #background: #f2fae7; # greenmax
+    #background: #e7f2fa; # orig
+}
+.wy-menu span.caption-text, .reference, .icon-home, a {
+    color: #76b900;
+}
+.wy-nav-side {
+    background: #111111; # dark
+    #background: #343131; # orig
+}
+html.writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.citation):not(.glossary):not(.simple)>dt {
+    border-top: 3px solid #76b900;
+    color: #76b900;
+    background: #f2f2f2; # grey
+}
+.highlight .nn, .highlight .nc {
+    color: #76b900;
+}
