@@ -46,7 +46,7 @@ class DRA(garak.probes.Probe):
     Uses all available templates and behaviors. Optional soft_probe_prompt_cap for limiting.
 
     Parameter Tuning:
-    ----------------
+    -----------------
 
     toxic_trunc: Controls truncation level for toxic/harmful tokens. If attacks fail,
     this suggests the prompt is still too harmful and being rejected. Increase toxic_trunc

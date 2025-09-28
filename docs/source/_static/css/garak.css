@@ -6,7 +6,7 @@
     #background: #f2fae7; # greenmax
     #background: #e7f2fa; # orig
 }
-.wy-menu span.caption-text, .reference, .icon-home, a {
+.wy-menu span.caption-text, .reference, .icon-home, a:visited, a:hover, a:link {
     color: #76b900;
 }
 .wy-nav-side {
