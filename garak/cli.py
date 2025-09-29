@@ -159,7 +159,7 @@ def main(arguments=None) -> None:
         "-p",
         type=str,
         default=_config.plugins.probe_spec,
-        help="list of probe names to use, or 'all' for all (default).",
+        help="list of probe names to use, or 'all' for all (default). For filtering with --list_probes, use e.g. '--list_probes -p dan' to show only 'dan' family probes.",
     )
     parser.add_argument(
         "--probe_tags",
@@ -173,7 +173,7 @@ def main(arguments=None) -> None:
         "-d",
         type=str,
         default=_config.plugins.detector_spec,
-        help="list of detectors to use, or 'all' for all. Default is to use the probe's suggestion.",
+        help="list of detectors to use, or 'all' for all. Default is to use the probe's suggestion. For filtering with --list_detectors, use e.g. '--list_detectors -d misleading.Invalid'.",
     )
     parser.add_argument(
         "--extended_detectors",
@@ -221,10 +221,14 @@ def main(arguments=None) -> None:
         help="show info about one plugin; format as type.plugin.class, e.g. probes.lmrc.Profanity",
     )
     parser.add_argument(
-        "--list_probes", action="store_true", help="list available vulnerability probes"
+        "--list_probes",
+        action="store_true",
+        help="list available vulnerability probes. Usage: combine with --probes/-p to filter, e.g. '--list_probes -p dan' to show only 'dan' family probes.",
     )
     parser.add_argument(
-        "--list_detectors", action="store_true", help="list available detectors"
+        "--list_detectors",
+        action="store_true",
+        help="list available detectors. Usage: combine with --detectors/-d to filter, e.g. '--list_detectors -d misleading.Invalid' to show only that detector.",
     )
     parser.add_argument(
         "--list_generators",
