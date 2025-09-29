@@ -7,7 +7,8 @@
     color: #ffffff;
 }
 .rst-content .note {
-    background: #e0e0e0; /* Grey Light 1 */
+    border-left: .25em solid #9ca4af;
+    background: #111; /* Grey Light 1 */
 }
 .wy-menu span.caption-text {
     color: #ffffff
@@ -98,7 +99,6 @@ nav.bd-links p.caption {
 body {
     color: #e0e0e0; /* Grey Light 1 */
     background-color: #111;
-    font-family: Arial, Helvetica, Sans-Serif;
 }
 html.writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.citation):not(.glossary):not(.simple)>dt .headerlink {
     color: #e0e0e0;
@@ -115,4 +115,6 @@ html.writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(
 .btn-neutral:active {
     color: #76b900 !important;
 }
- 
+.highlight .go {
+    color: #dbb7ff;
+}
