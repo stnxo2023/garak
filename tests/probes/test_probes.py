@@ -72,7 +72,10 @@ def test_probe_structure(classname):
 
 @pytest.mark.parametrize("classname", PROBES)
 def test_probe_metadata(classname):
-    p = _plugins.load_plugin(classname)
+    try:
+        p = _plugins.load_plugin(classname)
+    except ModuleNotFoundError:
+        pytest.skip("required deps not present")
     assert isinstance(p.goal, str), "probe goals should be a text string"
     assert len(p.goal) > 0, "probes must state their general goal"
     assert p.lang is not None and (
