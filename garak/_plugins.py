@@ -484,3 +484,25 @@ def _import_failed(absent_modules: [str], calling_module: str):
     logging.critical(msg)
     print(msg + "\n" + hint)
     raise ModuleNotFoundError(msg)
+
+
+def _load_deps(self, deps_override=list()):
+    # load external dependencies. should be invoked at construction and
+    # in _client_load (if used)
+    dep_names = deps_override if deps_override else self.extra_dependency_names
+    for extra_dependency in dep_names:
+        extra_dep_name = extra_dependency.replace(".", "_").replace("-", "_")
+        if not hasattr(self, extra_dep_name) or getattr(self, extra_dep_name) is None:
+            setattr(
+                self,
+                extra_dep_name,
+                load_optional_module(extra_dependency),
+            )
+
+
+def _clear_deps(self):
+    # unload external dependencies from class. should be invoked before
+    # serialisation, esp. in _clear_client (if used)
+    for extra_dependency in self.extra_dependency_names:
+        extra_dep_name = extra_dependency.replace(".", "_")
+        setattr(self, extra_dep_name, None)

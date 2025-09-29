@@ -10,7 +10,7 @@ from typing import List, Union
 from colorama import Fore, Style
 import tqdm
 
-from garak import _config
+from garak import _config, _plugins
 from garak.attempt import Message, Conversation
 from garak.configurable import Configurable
 from garak.exception import GarakException
@@ -68,28 +68,8 @@ class Generator(Configurable):
         logging.info("generator init: %s", self)
         self._load_deps()
 
-    def _load_deps(self, deps_override=list()):
-        # load external dependencies. should be invoked at construction and
-        # in _client_load (if used)
-        dep_names = deps_override if deps_override else self.extra_dependency_names
-        for extra_dependency in dep_names:
-            extra_dep_name = extra_dependency.replace(".", "_").replace("-", "_")
-            if (
-                not hasattr(self, extra_dep_name)
-                or getattr(self, extra_dep_name) is None
-            ):
-                setattr(
-                    self,
-                    extra_dep_name,
-                    garak._plugins.load_optional_module(extra_dependency),
-                )
-
-    def _clear_deps(self):
-        # unload external dependencies from class. should be invoked before
-        # serialisation, esp. in _clear_client (if used)
-        for extra_dependency in self.extra_dependency_names:
-            extra_dep_name = extra_dependency.replace(".", "_")
-            setattr(self, extra_dep_name, None)
+    _load_deps = _plugins._load_deps
+    _clear_deps = _plugins._clear_deps
 
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1

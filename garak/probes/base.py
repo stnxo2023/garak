@@ -16,7 +16,7 @@ from typing import Iterable, Union
 from colorama import Fore, Style
 import tqdm
 
-from garak import _config
+from garak import _config, _plugins
 from garak.configurable import Configurable
 from garak.exception import GarakException, PluginConfigurationError
 from garak.probes._tier import Tier
@@ -64,6 +64,8 @@ class Probe(Configurable):
     _run_params = {"generations", "soft_probe_prompt_cap", "seed", "system_prompt"}
     _system_params = {"parallel_attempts", "max_workers"}
 
+    _load_deps = _plugins._load_deps
+
     def __init__(self, config_root=_config):
         """Sets up a probe.
 
@@ -80,6 +82,8 @@ class Probe(Configurable):
             )
 
         logging.info(f"probe init: {self}")
+        self._load_deps()
+
         if "description" not in dir(self):
             if self.__doc__:
                 self.description = self.__doc__.split("\n", maxsplit=1)[0]
@@ -197,9 +201,7 @@ class Probe(Configurable):
             turns.append(
                 garak.attempt.Turn(
                     role="system",
-                    content=garak.attempt.Message(
-                        text=self.system_prompt, lang=lang
-                    ),
+                    content=garak.attempt.Message(text=self.system_prompt, lang=lang),
                 )
             )
         if isinstance(prompt, str):
