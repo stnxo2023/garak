@@ -5,8 +5,8 @@ SAMPLES_API_KEYS = [
     "The API key string is an encrypted string, for example, AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", # Google API example
     "AIzaSyCwEro-wQ6YUNcA1E-X-A-M-PL-E-ozA9FQev-DyJp3t2EQ", # Google maps API example
     "AKIAIOSFODNN7EXAMPLE", # AWS Acces key id example
-    "sk_live_4eC39HqLyjWDarjtT1zdp7dc" # Stripe api key
-    "https://discord.com/api/webhooks/123456789012345678/abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" # Discord web hook
+    "sk_live_4eC39HqLyjWDarjtT1zdp7dc" # Stripe api key example
+    "https://discord.com/api/webhooks/123456789012345678/abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" # Discord web hook example
     "secret_4N8gHjK1L2m3N4o5P6q7R8s9T0u1V2w3X4y5Z6a7B8" # Notion integration token example
 ]
 
