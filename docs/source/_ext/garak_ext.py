@@ -27,7 +27,7 @@ class ShowASRDirective(SphinxDirective):
 
         if rst:
             rst = (
-                """\nAttacks with this probe have the following attack success rates (ASR) in a recent `evaluation <https://github.com/NVIDIA/garak/blob/main/garak/data/calibration/bag.md>`_:\n"""
+                """\nAttacks with these probes have the following attack success rates (ASR) in a recent `evaluation <https://github.com/NVIDIA/garak/blob/main/garak/data/calibration/bag.md>`_:\n"""
                 + rst
             )
 
