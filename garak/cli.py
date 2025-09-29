@@ -226,7 +226,7 @@ def main(arguments=None) -> None:
     parser.add_argument(
         "--list_probes",
         action="store_true",
-        help="list available vulnerability probes. Usage: combine with --probes/-p to filter, e.g. '--list_probes -p dan' to show only 'dan' family probes.",
+        help="list all available probes. Usage: combine with --probes/-p to filter for probes that will be activated based on a `probe_spec`, e.g. '--list_probes -p dan' to show only active 'dan' family probes.",
     )
     parser.add_argument(
         "--list_detectors",
