@@ -231,7 +231,7 @@ def main(arguments=None) -> None:
     parser.add_argument(
         "--list_detectors",
         action="store_true",
-        help="list available detectors. Usage: combine with --detectors/-d to filter, e.g. '--list_detectors -d misleading.Invalid' to show only that detector.",
+        help="list available detectors. Usage: combine with --detectors/-d to filter for detectors that will be activated based on a `detector_spec`, e.g. '--list_detectors -d misleading.Invalid' to show only that detector.",
     )
     parser.add_argument(
         "--list_generators",
