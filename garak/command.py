@@ -22,6 +22,14 @@ def hint(msg, logging=None):
         print(msg)
 
 
+def deprecation_notice(deprecated_item: str, version: str, logging=None):
+    msg = f"DEPRECATION: {deprecated_item} is deprecated since version {version}"
+    visible_msg = f"✋ {msg}"
+    if logging is not None:
+        logging.info(msg)
+    print(visible_msg)
+
+
 def start_logging():
     from garak import _config
 
