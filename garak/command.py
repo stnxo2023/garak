@@ -162,7 +162,10 @@ def print_plugins(prefix: str, color, selected_plugins=None):
         selected_plugins: Optional list of specific plugins to show. If None, shows all.
     """
     from colorama import Style
-    from garak._plugins import enumerate_plugins
+    from garak._plugins import enumerate_plugins, PLUGIN_TYPES
+
+    if prefix not in PLUGIN_TYPES:
+        raise ValueError(f"Requested prefix '{prefix}' is not a valid plugin type")
 
     # enumerate with activation flags
     rows = enumerate_plugins(
