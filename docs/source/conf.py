@@ -1,9 +1,10 @@
 # Configuration file for the Sphinx documentation builder.
 
 # -- Project information
+import datetime
 
 project = "garak"
-copyright = "2023, NVIDIA CORPORATION & AFFILIATES"
+copyright = "2023-{datetime.datetime.now().year}, NVIDIA CORPORATION & AFFILIATES"
 author = "Leon Derczynski"
 
 # -- General configuration
