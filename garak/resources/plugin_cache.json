@@ -7742,7 +7742,7 @@
         "suppressed_params": [],
         "retry_json": true,
         "extra_params": {},
-        "model_name": null
+        "target_name": null
       },
       "active": true,
       "generator_family_name": "Azure",
@@ -7756,7 +7756,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-07-14 15:56:49 +0000"
+      "mod_time": "2025-09-25 15:10:32 +0000"
     },
     "generators.base.Generator": {
       "description": "Base class for objects that wrap an LLM or other text-to-text service",
@@ -7830,7 +7830,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-08-08 15:45:01 +0000"
+      "mod_time": "2025-09-25 15:10:32 +0000"
     },
     "generators.function.Single": {
       "description": "Pass a function to call as a generator.",
@@ -7849,7 +7849,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-08-08 15:45:01 +0000"
+      "mod_time": "2025-09-25 15:10:32 +0000"
     },
     "generators.ggml.GgmlGenerator": {
       "description": "Generator interface for ggml models in gguf format.",
@@ -7884,7 +7884,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-17 16:15:39 +0000"
+      "mod_time": "2025-09-25 15:10:32 +0000"
     },
     "generators.groq.GroqChat": {
       "description": "Wrapper for Groq-hosted LLM models.",
@@ -7929,7 +7929,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-12 16:14:56 +0000"
+      "mod_time": "2025-09-25 15:10:32 +0000"
     },
     "generators.guardrails.NeMoGuardrails": {
       "description": "Generator wrapper for NeMo Guardrails.",
@@ -7953,7 +7953,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-08-26 14:02:31 +0000"
+      "mod_time": "2025-09-25 15:10:32 +0000"
     },
     "generators.huggingface.InferenceAPI": {
       "description": "Get text generations from Hugging Face Inference API",
@@ -7980,7 +7980,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-09-16 15:38:12 +0000"
+      "mod_time": "2025-09-25 15:13:06 +0000"
     },
     "generators.huggingface.InferenceEndpoint": {
       "description": "Interface for Hugging Face private endpoints",
@@ -8007,7 +8007,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-09-16 15:38:12 +0000"
+      "mod_time": "2025-09-25 15:13:06 +0000"
     },
     "generators.huggingface.LLaVA": {
       "description": "Get LLaVA ([ text + image ] -> text) generations",
@@ -8037,7 +8037,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": false,
-      "mod_time": "2025-09-16 15:38:12 +0000"
+      "mod_time": "2025-09-25 15:13:06 +0000"
     },
     "generators.huggingface.Model": {
       "description": "Get text generations from a locally-run Hugging Face model",
@@ -8066,7 +8066,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2025-09-16 15:38:12 +0000"
+      "mod_time": "2025-09-25 15:13:06 +0000"
     },
     "generators.huggingface.OptimumPipeline": {
       "description": "Get text generations from a locally-run Hugging Face pipeline using NVIDIA Optimum",
@@ -8095,7 +8095,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2025-09-16 15:38:12 +0000"
+      "mod_time": "2025-09-25 15:13:06 +0000"
     },
     "generators.huggingface.Pipeline": {
       "description": "Get text generations from a locally-run Hugging Face pipeline",
@@ -8124,7 +8124,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2025-09-16 15:38:12 +0000"
+      "mod_time": "2025-09-25 15:13:06 +0000"
     },
     "generators.langchain.LangChainLLMGenerator": {
       "description": "Class supporting LangChain LLM interfaces",
@@ -8154,7 +8154,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-17 16:15:39 +0000"
+      "mod_time": "2025-09-25 15:10:32 +0000"
     },
     "generators.langchain_serve.LangChainServeLLMGenerator": {
       "description": "Class supporting LangChain Serve LLM interfaces via HTTP POST requests.",
@@ -8210,7 +8210,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-08-26 14:02:31 +0000"
+      "mod_time": "2025-09-25 15:10:32 +0000"
     },
     "generators.mistral.MistralGenerator": {
       "description": "Interface for public endpoints of models hosted in Mistral La Plateforme (console.mistral.ai).",
@@ -8312,7 +8312,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-09-05 19:48:46 +0000"
+      "mod_time": "2025-09-25 15:10:32 +0000"
     },
     "generators.nim.NVOpenAIChat": {
       "description": "Wrapper for NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
@@ -8355,7 +8355,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-09-05 19:48:46 +0000"
+      "mod_time": "2025-09-25 15:10:32 +0000"
     },
     "generators.nim.NVOpenAICompletion": {
       "description": "Wrapper for NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
@@ -8398,7 +8398,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-09-05 19:48:46 +0000"
+      "mod_time": "2025-09-25 15:10:32 +0000"
     },
     "generators.nim.Vision": {
       "description": "Wrapper for text and image to text NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
@@ -8443,7 +8443,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-09-05 19:48:46 +0000"
+      "mod_time": "2025-09-25 15:10:32 +0000"
     },
     "generators.nvcf.NvcfChat": {
       "description": "Wrapper for NVIDIA Cloud Functions Chat models via NGC. Expects NVCF_API_KEY environment variable.",
@@ -8476,7 +8476,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-08-26 14:02:31 +0000"
+      "mod_time": "2025-09-25 15:13:06 +0000"
     },
     "generators.nvcf.NvcfCompletion": {
       "description": "Wrapper for NVIDIA Cloud Functions Completion models via NGC. Expects NVCF_API_KEY environment variables.",
@@ -8509,7 +8509,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-08-26 14:02:31 +0000"
+      "mod_time": "2025-09-25 15:13:06 +0000"
     },
     "generators.ollama.OllamaGenerator": {
       "description": "Interface for Ollama endpoints",
@@ -8597,7 +8597,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-08-26 14:02:31 +0000"
+      "mod_time": "2025-09-25 15:10:32 +0000"
     },
     "generators.openai.OpenAIGenerator": {
       "description": "Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable",
@@ -8632,7 +8632,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-08-26 14:02:31 +0000"
+      "mod_time": "2025-09-25 15:10:32 +0000"
     },
     "generators.openai.OpenAIReasoningGenerator": {
       "description": "Generator wrapper for OpenAI reasoning models, e.g. `o1` family.",
@@ -8672,7 +8672,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-08-26 14:02:31 +0000"
+      "mod_time": "2025-09-25 15:10:32 +0000"
     },
     "generators.rasa.RasaRestGenerator": {
       "description": "API interface for RASA models",
@@ -8711,7 +8711,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-18 17:35:24 +0000"
+      "mod_time": "2025-09-25 15:10:32 +0000"
     },
     "generators.replicate.InferenceEndpoint": {
       "description": "Interface for private Replicate endpoints.",
@@ -8799,7 +8799,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-17 16:15:39 +0000"
+      "mod_time": "2025-09-25 15:10:32 +0000"
     },
     "generators.test.Blank": {
       "description": "This generator always returns the empty string.",
