@@ -8,6 +8,7 @@ from docutils.utils import new_document
 from sphinx.util.docutils import SphinxDirective
 from sphinx.parsers import RSTParser
 
+
 class ShowASRDirective(SphinxDirective):
     has_content = True
 
@@ -17,7 +18,7 @@ class ShowASRDirective(SphinxDirective):
             calibration = json.load(f)
             for key in calibration:
                 if key.startswith(self.env.docname.replace("garak.probes.", "")):
-                    probe, detector =  key.split("/")
+                    probe, detector = key.split("/")
                     scores = calibration[key]
                     probe_ref = f":obj:`~garak.probes.{probe}`"
                     detector_ref = f":obj:`~garak.detectors.{detector}`"
@@ -25,10 +26,13 @@ class ShowASRDirective(SphinxDirective):
                     rst += f"\n* {probe_ref}: {100*scores["mu"]:.1f}% (w/ detector {detector_ref})"
 
         if rst:
-            rst = """\nAttacks with this probe have the following attack success rates (ASR) in a recent `evaluation <https://github.com/NVIDIA/garak/blob/main/garak/data/calibration/bag.md>`_:\n""" + rst
+            rst = (
+                """\nAttacks with this probe have the following attack success rates (ASR) in a recent `evaluation <https://github.com/NVIDIA/garak/blob/main/garak/data/calibration/bag.md>`_:\n"""
+                + rst
+            )
 
         return self._parse_rst(rst)
-    
+
     def _parse_rst(self, text):
         parser = RSTParser()
         parser.set_application(self.env.app)
@@ -40,6 +44,7 @@ class ShowASRDirective(SphinxDirective):
         document = new_document("<rst-doc>", settings=settings)
         parser.parse(text, document)
         return document.children
+
 
 def setup(app: object) -> dict:
     app.add_directive("show-asr", ShowASRDirective)
