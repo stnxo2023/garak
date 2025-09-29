@@ -411,13 +411,18 @@ def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
             "extra_dependency_names"
         ]
         if len(extra_dependency_names) > 0:
+            absent_modules = []
             for dependency_module_name in extra_dependency_names:
-                for dependency_path in [ # support both plain names and also multi-point names e.g. langchain.llms
+                for (
+                    dependency_path
+                ) in [  # support both plain names and also multi-point names e.g. langchain.llms
                     ".".join(dependency_module_name.split(".")[: n + 1])
                     for n in range(dependency_module_name.count(".") + 1)
                 ]:
                     if importlib.util.find_spec(dependency_path) is None:
-                        _import_failed(dependency_path, full_plugin_name)
+                        absent_modules.append(dependency_module_name)
+            if len(absent_modules):
+                _import_failed(absent_modules, full_plugin_name)
 
     module_path = f"garak.{category}.{module_name}"
     try:
@@ -467,14 +472,15 @@ def load_optional_module(module_name: str):
         m = importlib.import_module(module_name)
     except ModuleNotFoundError:
         requesting_module = Path(inspect.stack()[1].filename).name.replace(".py", "")
-        _import_failed(module_name, requesting_module)
+        _import_failed([module_name], requesting_module)
     return m
 
 
-def _import_failed(import_module: str, calling_module: str):
-    msg = f"⛔ Plugin '{calling_module}' requires Python module '{import_module}' but this isn't installed/available."
-    hint = f"💡 Try 'pip install {import_module}' to get it."
+def _import_failed(absent_modules: [str], calling_module: str):
+    quoted_module_list = "'" + "', '".join(absent_modules) + "'"
+    module_list = " ".join(absent_modules)
+    msg = f"⛔ Plugin '{calling_module}' requires Python modules which aren't installed/available: {quoted_module_list}"
+    hint = f"💡 Try 'pip install {module_list}' to get missing module."
     logging.critical(msg)
     print(msg + "\n" + hint)
     raise ModuleNotFoundError(msg)
-
