@@ -34,7 +34,7 @@ a:active {
 }
 .wy-menu-vertical .toctree-l1>a:hover,
 .wy-menu-vertical li.toctree-l2 a:hover {
-    color: #ffffff;
+    color: #ffffff !important;
     text-decoration: underline;
     text-decoration-thickness: double;
 }
@@ -56,6 +56,7 @@ body.wy-body-for-nav,
 .wy-menu-vertical li.toctree-l2.current>a {
     border: none;
 }
+.wy-menu-vertical li.toctree-l1.current>a,
 li.toctree-l1.current>a:link,
 li.toctree-l2.current>a:link,
 .rst-content code.literal {
