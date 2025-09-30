@@ -224,10 +224,14 @@ def main(arguments=None) -> None:
         help="show info about one plugin; format as type.plugin.class, e.g. probes.lmrc.Profanity",
     )
     parser.add_argument(
-        "--list_probes", action="store_true", help="list available vulnerability probes"
+        "--list_probes",
+        action="store_true",
+        help="list all available probes. Usage: combine with --probes/-p to filter for probes that will be activated based on a `probe_spec`, e.g. '--list_probes -p dan' to show only active 'dan' family probes.",
     )
     parser.add_argument(
-        "--list_detectors", action="store_true", help="list available detectors"
+        "--list_detectors",
+        action="store_true",
+        help="list available detectors. Usage: combine with --detectors/-d to filter for detectors that will be activated based on a `detector_spec`, e.g. '--list_detectors -d misleading.Invalid' to show only that detector.",
     )
     parser.add_argument(
         "--list_generators",
@@ -452,10 +456,20 @@ def main(arguments=None) -> None:
             command.plugin_info(args.plugin_info)
 
         elif args.list_probes:
-            command.print_probes()
+            selected_probes = None
+            probe_spec = getattr(args, "probes", None)
+            if probe_spec and probe_spec.lower() not in ("", "auto", "all", "*"):
+                selected_probes, _ = _config.parse_plugin_spec(probe_spec, "probes")
+            command.print_probes(selected_probes)
 
         elif args.list_detectors:
-            command.print_detectors()
+            selected_detectors = None
+            detector_spec = getattr(args, "detectors", None)
+            if detector_spec and detector_spec.lower() not in ("", "auto", "all", "*"):
+                selected_detectors, _ = _config.parse_plugin_spec(
+                    detector_spec, "detectors"
+                )
+            command.print_detectors(selected_detectors)
 
         elif args.list_buffs:
             command.print_buffs()
