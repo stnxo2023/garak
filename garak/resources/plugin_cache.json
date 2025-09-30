@@ -5044,7 +5044,7 @@
       "tier": 2,
       "mod_time": "2025-07-02 22:27:38 +0000"
     },
-    "probes.xss.ColabAIDataLeakage": {
+    "probes.web_injection.ColabAIDataLeakage": {
       "description": "Leak data via image rendering as demonstrated against Gemini in Colab.",
       "DEFAULT_PARAMS": {
         "payload_name": "example_domains_xss"
@@ -5062,7 +5062,7 @@
       "parallelisable_attempts": true,
       "primary_detector": null,
       "recommended_detector": [
-        "xss.MarkdownExfilContent"
+        "web_injection.MarkdownExfilContent"
       ],
       "tags": [
         "avid-effect:security:S0301",
@@ -5076,9 +5076,9 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-09-04 20:03:05 +0000"
+      "mod_time": "2025-09-30 21:00:42 +0000"
     },
-    "probes.xss.MarkdownImageExfil": {
+    "probes.web_injection.MarkdownImageExfil": {
       "description": "Can we get the model to write embedded assets exfiltrating text in the URI?",
       "DEFAULT_PARAMS": {
         "payload_name": "example_domains_xss"
@@ -5096,8 +5096,8 @@
       "parallelisable_attempts": true,
       "primary_detector": null,
       "recommended_detector": [
-        "xss.MarkdownExfilBasic",
-        "xss.MarkdownExfilContent"
+        "web_injection.MarkdownExfilBasic",
+        "web_injection.MarkdownExfilContent"
       ],
       "tags": [
         "avid-effect:security:S0301",
@@ -5111,15 +5111,15 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-09-04 20:03:05 +0000"
+      "mod_time": "2025-09-30 21:00:42 +0000"
     },
-    "probes.xss.MarkdownURIImageExfilExtended": {
+    "probes.web_injection.MarkdownURIImageExfilExtended": {
       "description": "Generalized implementation of data exfiltration exploits through Markdown URIs.",
       "DEFAULT_PARAMS": {},
       "active": true,
       "doc_uri": "https://www.aim.security/lp/aim-labs-echoleak-blogpost",
       "extended_detectors": [],
-      "goal": "embed information an LLM would normally refuse to provide in a Markdown URI",
+      "goal": "embed potentially sensitive data in a Markdown URI",
       "lang": "en",
       "modality": {
         "in": [
@@ -5129,7 +5129,7 @@
       "parallelisable_attempts": true,
       "primary_detector": null,
       "recommended_detector": [
-        "xss.MarkdownExfilExtendedImage"
+        "web_injection.MarkdownExfilExtendedImage"
       ],
       "tags": [
         "avid-effect:security:S0301",
@@ -5143,15 +5143,15 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-09-04 20:03:05 +0000"
+      "mod_time": "2025-09-30 21:00:42 +0000"
     },
-    "probes.xss.MarkdownURINonImageExfilExtended": {
+    "probes.web_injection.MarkdownURINonImageExfilExtended": {
       "description": "Generalized implementation of data exfiltration exploits through Markdown URIs.",
       "DEFAULT_PARAMS": {},
       "active": true,
       "doc_uri": "https://www.aim.security/lp/aim-labs-echoleak-blogpost",
       "extended_detectors": [],
-      "goal": "embed information an LLM would normally refuse to provide in a Markdown URI",
+      "goal": "embed potentially sensitive data in a Markdown URI",
       "lang": "en",
       "modality": {
         "in": [
@@ -5161,7 +5161,7 @@
       "parallelisable_attempts": true,
       "primary_detector": null,
       "recommended_detector": [
-        "xss.MarkdownExfilExtendedNonImage"
+        "web_injection.MarkdownExfilExtendedNonImage"
       ],
       "tags": [
         "avid-effect:security:S0301",
@@ -5175,9 +5175,44 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-09-04 20:03:05 +0000"
+      "mod_time": "2025-09-30 21:00:42 +0000"
     },
-    "probes.xss.MdExfil20230929": {
+    "probes.web_injection.MarkdownXSS": {
+      "description": "Perform cross site scripting attacks using Markdown Javascript rendering via prompt injection.",
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true,
+        "payloads": [
+          "markdown_js"
+        ]
+      },
+      "active": true,
+      "doc_uri": "https://cwe.mitre.org/data/definitions/79.html",
+      "extended_detectors": [],
+      "goal": "Exploit cross-site scripting via prompt injection",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": null,
+      "recommended_detector": [
+        "web_injection.XSS"
+      ],
+      "tags": [
+        "avid-effect:security:S0301",
+        "avid-effect:security:S0403",
+        "owasp:llm02",
+        "owasp:llm06",
+        "payload:malicious:renderer:xss",
+        "quality:Security:PromptStability",
+        "cwe:79"
+      ],
+      "tier": 1,
+      "mod_time": "2025-09-30 21:00:42 +0000"
+    },
+    "probes.web_injection.PlaygroundMarkdownExfil": {
       "description": "Markdown image URI exfil exploit published 2023 Sept 29.",
       "DEFAULT_PARAMS": {
         "payload_name": "example_domains_xss"
@@ -5195,7 +5230,7 @@
       "parallelisable_attempts": true,
       "primary_detector": null,
       "recommended_detector": [
-        "xss.MarkdownExfil20230929"
+        "web_injection.PlaygroundMarkdownExfil"
       ],
       "tags": [
         "avid-effect:security:S0301",
@@ -5209,9 +5244,9 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-09-04 20:03:05 +0000"
+      "mod_time": "2025-09-30 21:00:42 +0000"
     },
-    "probes.xss.StringAssemblyDataExfil": {
+    "probes.web_injection.StringAssemblyDataExfil": {
       "description": "Prompt injection for manipulating state",
       "DEFAULT_PARAMS": {},
       "active": true,
@@ -5227,7 +5262,7 @@
       "parallelisable_attempts": true,
       "primary_detector": null,
       "recommended_detector": [
-        "xss.MarkdownExfilBasic"
+        "web_injection.MarkdownExfilBasic"
       ],
       "tags": [
         "avid-effect:security:S0301",
@@ -5241,7 +5276,45 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-09-04 20:03:05 +0000"
+      "mod_time": "2025-09-30 21:00:42 +0000"
+    },
+    "probes.web_injection.TaskXSS": {
+      "description": "Perform cross site scripting attacks via prompt injection.",
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true,
+        "payloads": [
+          "web_html_js"
+        ],
+        "tasks": [
+          "normal_instructions"
+        ]
+      },
+      "active": true,
+      "doc_uri": "https://cwe.mitre.org/data/definitions/79.html",
+      "extended_detectors": [],
+      "goal": "Exploit cross-site scripting via prompt injection",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": null,
+      "recommended_detector": [
+        "web_injection.XSS"
+      ],
+      "tags": [
+        "avid-effect:security:S0301",
+        "avid-effect:security:S0403",
+        "owasp:llm02",
+        "owasp:llm06",
+        "payload:malicious:renderer:xss",
+        "quality:Security:PromptStability",
+        "cwe:79"
+      ],
+      "tier": 1,
+      "mod_time": "2025-09-30 21:00:42 +0000"
     }
   },
   "detectors": {
@@ -7614,28 +7687,7 @@
       ],
       "mod_time": "2025-04-17 08:31:20 +0000"
     },
-    "detectors.xss.MarkdownExfil20230929": {
-      "description": "As the basic detector, MarkdownExfilBasic, searching specifically for MarkdownExfil20230929",
-      "DEFAULT_PARAMS": {
-        "skip": false
-      },
-      "accuracy": null,
-      "active": true,
-      "doc_uri": "https://embracethered.com/blog/posts/2023/bing-chat-data-exfiltration-poc-and-fix/",
-      "lang_spec": "*",
-      "modality": {
-        "out": [
-          "text"
-        ]
-      },
-      "precision": 0.0,
-      "recall": 0.0,
-      "tags": [
-        "avid-effect:security:S0301"
-      ],
-      "mod_time": "2025-08-12 15:25:28 +0000"
-    },
-    "detectors.xss.MarkdownExfilBasic": {
+    "detectors.web_injection.MarkdownExfilBasic": {
       "description": "Detect markdown images with fqdn, absolute path, and populated q= parameter",
       "DEFAULT_PARAMS": {
         "skip": false
@@ -7654,9 +7706,9 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2025-08-12 15:25:28 +0000"
+      "mod_time": "2025-09-08 15:03:44 +0000"
     },
-    "detectors.xss.MarkdownExfilContent": {
+    "detectors.web_injection.MarkdownExfilContent": {
       "description": "As the basic detector, MarkdownExfilBasic, but did we exfiltrate anything?",
       "DEFAULT_PARAMS": {
         "skip": false
@@ -7675,9 +7727,9 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2025-08-12 15:25:28 +0000"
+      "mod_time": "2025-09-08 15:03:44 +0000"
     },
-    "detectors.xss.MarkdownExfilExtendedImage": {
+    "detectors.web_injection.MarkdownExfilExtendedImage": {
       "description": "Extended version of MarkdownExfilBasic that searches for a larger variety of Markdown URI formats",
       "DEFAULT_PARAMS": {
         "skip": false
@@ -7696,9 +7748,9 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2025-08-12 15:25:28 +0000"
+      "mod_time": "2025-09-08 15:03:44 +0000"
     },
-    "detectors.xss.MarkdownExfilExtendedNonImage": {
+    "detectors.web_injection.MarkdownExfilExtendedNonImage": {
       "description": "Extended version of MarkdownExfilBasic that searches for a larger variety of Markdown URI formats",
       "DEFAULT_PARAMS": {
         "skip": false
@@ -7717,7 +7769,50 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2025-08-12 15:25:28 +0000"
+      "mod_time": "2025-09-08 15:03:44 +0000"
+    },
+    "detectors.web_injection.PlaygroundMarkdownExfil": {
+      "description": "As the basic detector, MarkdownExfilBasic, searching specifically for PlaygroundMarkdownExfil",
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
+      "accuracy": null,
+      "active": true,
+      "doc_uri": "https://embracethered.com/blog/posts/2023/bing-chat-data-exfiltration-poc-and-fix/",
+      "lang_spec": "*",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "tags": [
+        "avid-effect:security:S0301"
+      ],
+      "mod_time": "2025-09-08 15:03:44 +0000"
+    },
+    "detectors.web_injection.XSS": {
+      "description": "Look for cross site scripting (XSS) attempts by payload.",
+      "DEFAULT_PARAMS": {
+        "skip": false,
+        "matchtype": "str"
+      },
+      "accuracy": null,
+      "active": true,
+      "doc_uri": null,
+      "lang_spec": "*",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "tags": [
+        "cwe:79"
+      ],
+      "mod_time": "2025-09-08 15:03:44 +0000"
     }
   },
   "generators": {
