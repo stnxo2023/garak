@@ -1,9 +1,10 @@
 # Configuration file for the Sphinx documentation builder.
 
 # -- Project information
+import datetime
 
 project = "garak"
-copyright = "2023, NVIDIA CORPORATION & AFFILIATES"
+copyright = f"2023-{datetime.datetime.now().year}, NVIDIA Corporation"
 author = "Leon Derczynski"
 
 # -- General configuration
@@ -29,6 +30,15 @@ exclude_patterns = []
 # -- Options for HTML output
 
 html_theme = "sphinx_rtd_theme"
+
+# These folders are copied to the documentation's HTML output
+html_static_path = ['_static']
+
+# These paths are either relative to html_static_path
+# or fully qualified paths (eg. https://...)
+html_css_files = [
+    "css/garak_theme.css",
+]
 
 # -- Options for EPUB output
 epub_show_urls = "footnote"
