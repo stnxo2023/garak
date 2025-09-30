@@ -16,6 +16,7 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
+    "garak_ext"
 ]
 
 intersphinx_mapping = {
@@ -43,6 +44,8 @@ html_css_files = [
 # -- Options for EPUB output
 epub_show_urls = "footnote"
 
+import os
 import sys
 
 sys.path.insert(0, "../..")
+sys.path.append(os.path.abspath("./_ext"))
