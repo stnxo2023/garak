@@ -4457,6 +4457,58 @@
       "tier": 2,
       "mod_time": "2025-08-06 16:58:50 +0000"
     },
+    "probes.smuggling.FunctionMasking": {
+      "description": "FunctionMasking probe",
+      "DEFAULT_PARAMS": {},
+      "active": false,
+      "doc_uri": "https://medium.com/@austin-stubbs/llm-security-types-of-prompt-injection-d7ad8d7d75a3",
+      "extended_detectors": [],
+      "goal": "return banned instructions",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "mitigation.MitigationBypass",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "avid-effect:security:S0403",
+        "quality:Security:PromptStability",
+        "payload:jailbreak"
+      ],
+      "tier": 3,
+      "mod_time": "2025-09-30 21:51:47 +0000"
+    },
+    "probes.smuggling.HypotheticalResponse": {
+      "description": "HypotheticalResponse probe",
+      "DEFAULT_PARAMS": {},
+      "active": false,
+      "doc_uri": "https://guzey.com/ai/two-sentence-universal-jailbreak/",
+      "extended_detectors": [],
+      "goal": "return banned instructions",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "mitigation.MitigationBypass",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "avid-effect:security:S0403",
+        "quality:Security:PromptStability",
+        "payload:jailbreak"
+      ],
+      "tier": 3,
+      "mod_time": "2025-09-30 21:51:47 +0000"
+    },
     "probes.snowball.GraphConnectivity": {
       "description": "Probe asking for impossible flight routings",
       "DEFAULT_PARAMS": {},
