@@ -14,16 +14,16 @@ class ShowASRDirective(SphinxDirective):
 
     def run(self) -> list:
         rst = ""
-        with open("calibration.json", encoding="utf-8") as f:
+        with open("../../garak/data/calibration/calibration.json", encoding="utf-8") as f:
             calibration = json.load(f)
-            for key in calibration:
+            for key in sorted(calibration.keys()):
                 if key.startswith(self.env.docname.replace("garak.probes.", "")):
                     probe, detector = key.split("/")
                     scores = calibration[key]
                     probe_ref = f":obj:`~garak.probes.{probe}`"
                     detector_ref = f":obj:`~garak.detectors.{detector}`"
 
-                    rst += f"\n* {probe_ref}: {100*scores["mu"]:.1f}% (w/ detector {detector_ref})"
+                    rst += f"\n* {probe_ref}: {100*scores["mu"]:.1f}%, with detector: {detector_ref}"
 
         if rst:
             rst = (
