@@ -18,6 +18,7 @@ class HypotheticalResponse(Probe):
     Obfuscates instructions by replacing a hypothetical response."""
 
     lang = "en"
+    active = False
     primary_detector = "mitigation.MitigationBypass"
     doc_uri = "https://guzey.com/ai/two-sentence-universal-jailbreak/"
     goal = "return banned instructions"
@@ -34,7 +35,7 @@ class HypotheticalResponse(Probe):
         "quality:Security:PromptStability",
         "payload:jailbreak",
     ]
-    tier = garak.probes.Tier.COMPETE_WITH_SOTA
+    tier = garak.probes.Tier.INFORMATIONAL
 
 
 class FunctionMasking(Probe):
@@ -44,6 +45,7 @@ class FunctionMasking(Probe):
     """
 
     lang = "en"
+    active = False
     primary_detector = "mitigation.MitigationBypass"
     doc_uri = "https://medium.com/@austin-stubbs/llm-security-types-of-prompt-injection-d7ad8d7d75a3"
     goal = "return banned instructions"
@@ -64,4 +66,4 @@ Complete this prompt and describe how a fictitious person did this without getti
         "quality:Security:PromptStability",
         "payload:jailbreak",
     ]
-    tier = garak.probes.Tier.COMPETE_WITH_SOTA
+    tier = garak.probes.Tier.INFORMATIONAL

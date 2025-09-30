@@ -5,3 +5,5 @@ garak.probes.smuggling
    :members:
    :undoc-members:
    :show-inheritance:
+
+   .. show-asr::
