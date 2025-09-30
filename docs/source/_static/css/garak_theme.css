@@ -59,6 +59,7 @@ body.wy-body-for-nav,
 .wy-menu-vertical li.toctree-l1.current>a,
 li.toctree-l1.current>a:link,
 li.toctree-l2.current>a:link,
+.wy-menu-vertical li.toctree-l3.current>a>code,
 .rst-content code.literal {
     color: #76b900;
 }
