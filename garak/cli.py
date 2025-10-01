@@ -271,11 +271,6 @@ def main(arguments=None) -> None:
         action="store_true",
         help="generate AutoDAN prompts; requires --prompt_options with JSON containing a prompt and target",
     )
-    parser.add_argument(
-        "--interactive.py",
-        action="store_true",
-        help="Launch garak in interactive.py mode",
-    )
 
     parser.add_argument(
         "--fix",
