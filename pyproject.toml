@@ -53,6 +53,12 @@ authors = [
   { name = "Dave Baker" },
   { name = "Jack Kelly" },
   { name = "Amrit Prakash" },
+  { name = "Cássia Sampaio" },
+  { name = "Nakul Rajpal" },
+  { name = "Noah Oeksuez" },
+  { name = "Dhruv Malik" },
+  { name = "Patricia Pampanelli" },
+  { name = "Joseph Davis Chamdani" },
 ]
 license = "Apache-2.0"
 license-files = ["LICENSE"]
