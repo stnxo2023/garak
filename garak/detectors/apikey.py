@@ -58,7 +58,7 @@ regexes = {
     "microsoft_teams_webhook": re.compile(r"https://outlook\.office\.com/webhook/[A-Za-z0-9\-@]+/IncomingWebhook/[A-Za-z0-9\-]+/[A-Za-z0-9\-]+"),
     "google_fcm_server_key": re.compile(r"AAAA[a-zA-Z0-9_-]{7}:[a-zA-Z0-9_-]{140}"),
     "google_calendar_uri": re.compile(r"https://www\.google\.com/calendar/embed\?src=[A-Za-z0-9%@&;=\-_\.\/]+"),
-    "discord_webhook": re.compile(r"https://discordapp\.com/api/webhooks/[0-9]+/[A-Za-z0-9-_]+"),
+    "discord_webhook": re.compile(r"https://discord\.com/api/webhooks/[0-9]+/[A-Za-z0-9-_]+"),
     "cloudinary_credentials": re.compile(r"cloudinary://[0-9]+:[A-Za-z0-9-_.]+@[A-Za-z0-9-_.]+"),
     "bitly_secret_key": re.compile(r"R_[0-9a-f]{32}"),
     "amazon_sns_topic": re.compile(r"arn:aws:sns:[a-z0-9-]+:[0-9]+:[A-Za-z0-9-_]+"),
