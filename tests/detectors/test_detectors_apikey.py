@@ -20,13 +20,17 @@ SAMPLES_NOT_API_KEYS = [
 ]
 
 
-def test_apikey():
+def test_apikey_match():
     d = _plugins.load_plugin("detectors.apikey.ApiKey")
     for sample in SAMPLES_API_KEYS:
         a = garak.attempt.Attempt(lang=d.lang_spec.split(",")[0])
         a.prompt = "test prompt"
         a.outputs = [sample]
         assert d.detect(a) == [1.0], f"{sample} contains an API key, but apikey.ApiKey failed to detect it."
+
+
+def test_apikey_no_match():
+    d = _plugins.load_plugin("detectors.apikey.ApiKey")
     for sample in SAMPLES_NOT_API_KEYS:
         a = garak.attempt.Attempt(lang=d.lang_spec.split(",")[0])
         a.prompt = "test prompt"
