@@ -34,7 +34,6 @@ class PackageHallucinationDetector(Detector, ABC):
     """Abstract base class for package hallucination detectors"""
 
     DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
-        "dataset_name": None,
         "cutoff_date": None,
     }
 
@@ -129,9 +128,8 @@ class PackageHallucinationDetector(Detector, ABC):
 class PythonPypi(PackageHallucinationDetector):
     """Check if the output tries to import a package not listed in stdlib or a pypi archive listing"""
 
-    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
+    DEFAULT_PARAMS = PackageHallucinationDetector.DEFAULT_PARAMS | {
         "dataset_name": "garak-llm/pypi-20241031",
-        "cutoff_date": None,
     }
 
     language_name = "python"
@@ -155,9 +153,8 @@ class PythonPypi(PackageHallucinationDetector):
 class RubyGems(PackageHallucinationDetector):
     """Check if the output tries to require a gem not listed in the Ruby standard library or RubyGems"""
 
-    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
+    DEFAULT_PARAMS = PackageHallucinationDetector.DEFAULT_PARAMS | {
         "dataset_name": "garak-llm/rubygems-20241031",
-        "cutoff_date": None,
     }
 
     language_name = "ruby"
@@ -175,9 +172,8 @@ class RubyGems(PackageHallucinationDetector):
 class JavaScriptNpm(PackageHallucinationDetector):
     """Check if the output tries to import or require an npm package not listed in the npm registry"""
 
-    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
+    DEFAULT_PARAMS = PackageHallucinationDetector.DEFAULT_PARAMS | {
         "dataset_name": "garak-llm/npm-20241031",
-        "cutoff_date": None,
     }
 
     language_name = "javascript"
@@ -198,9 +194,8 @@ class JavaScriptNpm(PackageHallucinationDetector):
 class RustCrates(PackageHallucinationDetector):
     """Check if the output tries to use a Rust crate not listed in the crates.io registry"""
 
-    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
+    DEFAULT_PARAMS = PackageHallucinationDetector.DEFAULT_PARAMS | {
         "dataset_name": "garak-llm/crates-20250307",
-        "cutoff_date": None,
     }
 
     language_name = "rust"
@@ -229,9 +224,8 @@ class RustCrates(PackageHallucinationDetector):
 class RakuLand(PackageHallucinationDetector):
     """Check if the output tries to use a Raku module not listed in raku.land collected on 2025-08-11"""
 
-    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
+    DEFAULT_PARAMS = PackageHallucinationDetector.DEFAULT_PARAMS | {
         "dataset_name": "garak-llm/raku-20250811",
-        "cutoff_date": None,
     }
 
     language_name = "raku"
@@ -252,9 +246,8 @@ class RakuLand(PackageHallucinationDetector):
 class Perl(PackageHallucinationDetector):
     """Check if the output tries to use a Perl module not listed in MetaCPAN's provides list collected on 2025-08-11"""
 
-    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
+    DEFAULT_PARAMS = PackageHallucinationDetector.DEFAULT_PARAMS | {
         "dataset_name": "garak-llm/perl-20250811",
-        "cutoff_date": None,
     }
 
     language_name = "perl"
@@ -270,9 +263,8 @@ class Perl(PackageHallucinationDetector):
 class Dart(PackageHallucinationDetector):
     """Check if the output tries to use a Dart package not listed on pub.dev (2025-08-11 snapshot)"""
 
-    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
+    DEFAULT_PARAMS = PackageHallucinationDetector.DEFAULT_PARAMS | {
         "dataset_name": "garak-llm/dart-20250811",
-        "cutoff_date": None,
     }
 
     language_name = "dart"
