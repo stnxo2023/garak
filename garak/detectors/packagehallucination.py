@@ -34,6 +34,7 @@ class PackageHallucinationDetector(Detector, ABC):
     """Abstract base class for package hallucination detectors"""
 
     DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
+        "dataset_name": None,
         "cutoff_date": None,
     }
 
@@ -43,14 +44,13 @@ class PackageHallucinationDetector(Detector, ABC):
 
     @property
     @abstractmethod
-    def dataset_name(self) -> str:
-        """Dataset name for package list - must be overridden by subclasses"""
-        pass
-
-    @property
-    @abstractmethod
     def language_name(self) -> str:
         """Programming language name - must be overridden by subclasses"""
+        pass
+
+    @abstractmethod
+    def _extract_package_references(self, output: str) -> Set[str]:
+        """Extract package references from output - must be overridden by subclasses"""
         pass
 
     def _load_package_list(self):
@@ -91,11 +91,6 @@ class PackageHallucinationDetector(Detector, ABC):
         else:
             self.packages = set(dataset["text"])
 
-    @abstractmethod
-    def _extract_package_references(self, output: str) -> Set[str]:
-        """Extract package references from output - must be overridden by subclasses"""
-        pass
-
     def detect(self, attempt: Attempt) -> List[float | None]:
         if not self.packages:
             try:
@@ -134,7 +129,11 @@ class PackageHallucinationDetector(Detector, ABC):
 class PythonPypi(PackageHallucinationDetector):
     """Check if the output tries to import a package not listed in stdlib or a pypi archive listing"""
 
-    dataset_name = "garak-llm/pypi-20241031"
+    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
+        "dataset_name": "garak-llm/pypi-20241031",
+        "cutoff_date": None,
+    }
+
     language_name = "python"
 
     def _load_package_list(self):
@@ -156,7 +155,11 @@ class PythonPypi(PackageHallucinationDetector):
 class RubyGems(PackageHallucinationDetector):
     """Check if the output tries to require a gem not listed in the Ruby standard library or RubyGems"""
 
-    dataset_name = "garak-llm/rubygems-20241031"
+    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
+        "dataset_name": "garak-llm/rubygems-20241031",
+        "cutoff_date": None,
+    }
+
     language_name = "ruby"
 
     def _extract_package_references(self, output: str) -> Set[str]:
@@ -172,7 +175,11 @@ class RubyGems(PackageHallucinationDetector):
 class JavaScriptNpm(PackageHallucinationDetector):
     """Check if the output tries to import or require an npm package not listed in the npm registry"""
 
-    dataset_name = "garak-llm/npm-20241031"
+    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
+        "dataset_name": "garak-llm/npm-20241031",
+        "cutoff_date": None,
+    }
+
     language_name = "javascript"
 
     def _extract_package_references(self, output: str) -> Set[str]:
@@ -191,7 +198,11 @@ class JavaScriptNpm(PackageHallucinationDetector):
 class RustCrates(PackageHallucinationDetector):
     """Check if the output tries to use a Rust crate not listed in the crates.io registry"""
 
-    dataset_name = "garak-llm/crates-20250307"
+    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
+        "dataset_name": "garak-llm/crates-20250307",
+        "cutoff_date": None,
+    }
+
     language_name = "rust"
 
     def _load_package_list(self):
@@ -218,7 +229,11 @@ class RustCrates(PackageHallucinationDetector):
 class RakuLand(PackageHallucinationDetector):
     """Check if the output tries to use a Raku module not listed in raku.land collected on 2025-08-11"""
 
-    dataset_name = "garak-llm/raku-20250811"
+    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
+        "dataset_name": "garak-llm/raku-20250811",
+        "cutoff_date": None,
+    }
+
     language_name = "raku"
 
     def _extract_package_references(self, output: str) -> Set[str]:
@@ -237,7 +252,11 @@ class RakuLand(PackageHallucinationDetector):
 class Perl(PackageHallucinationDetector):
     """Check if the output tries to use a Perl module not listed in MetaCPAN's provides list collected on 2025-08-11"""
 
-    dataset_name = "garak-llm/perl-20250811"
+    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
+        "dataset_name": "garak-llm/perl-20250811",
+        "cutoff_date": None,
+    }
+
     language_name = "perl"
 
     def _extract_package_references(self, output: str) -> Set[str]:
@@ -251,7 +270,11 @@ class Perl(PackageHallucinationDetector):
 class Dart(PackageHallucinationDetector):
     """Check if the output tries to use a Dart package not listed on pub.dev (2025-08-11 snapshot)"""
 
-    dataset_name = "garak-llm/dart-20250811"
+    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
+        "dataset_name": "garak-llm/dart-20250811",
+        "cutoff_date": None,
+    }
+
     language_name = "dart"
 
     def _load_package_list(self):
