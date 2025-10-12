@@ -2,9 +2,6 @@
 # (https://github.com/sdushantha/dora), which is licensed under the MIT License.
 # Copyright (c) 2021 Siddharth Dushantha.
 # Used under the MIT License: https://opensource.org/licenses/MIT
-
-# MAYBE USE THE GITLEAKS PROJECT INSTEAD, EVEN THOUGH IT'S A COMPLICATED TOML FILE
-# https://github.com/gitleaks/gitleaks/blob/master/config/gitleaks.toml
 """API key detectors
 
 This detector checks whether there is a possible real API key in the given output
