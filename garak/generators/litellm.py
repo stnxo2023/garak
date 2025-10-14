@@ -138,19 +138,30 @@ class LiteLLMGenerator(Generator):
             return []
 
         try:
-            response = litellm.completion(
-                model=self.name,
-                messages=litellm_prompt,
-                temperature=self.temperature,
-                top_p=self.top_p,
-                n=generations_this_call,
-                stop=self.stop,
-                max_tokens=self.max_tokens,
-                frequency_penalty=self.frequency_penalty,
-                presence_penalty=self.presence_penalty,
-                api_base=self.api_base,
-                custom_llm_provider=self.provider,
+            # Claude 4.5 on Bedrock doesn't allow both temperature and top_p
+            is_claude_4_5 = (
+                "claude-sonnet-4-5" in self.name or "claude-4-5" in self.name
             )
+
+            params = {
+                "model": self.name,
+                "messages": litellm_prompt,
+                "n": generations_this_call,
+                "stop": self.stop,
+                "max_tokens": self.max_tokens,
+                "frequency_penalty": self.frequency_penalty,
+                "presence_penalty": self.presence_penalty,
+                "api_base": self.api_base,
+                "custom_llm_provider": self.provider,
+            }
+
+            if is_claude_4_5:
+                params["temperature"] = self.temperature
+            else:
+                params["temperature"] = self.temperature
+                params["top_p"] = self.top_p
+
+            response = litellm.completion(**params)
         except (
             litellm.exceptions.AuthenticationError,  # authentication failed for detected or passed `provider`
             litellm.exceptions.BadRequestError,
