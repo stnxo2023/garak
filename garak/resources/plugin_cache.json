@@ -3376,7 +3376,7 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-10-13 16:43:46 +0000"
+      "mod_time": "2025-10-06 17:10:48 +0000"
     },
     "probes.packagehallucination.JavaScript": {
       "description": "Attempts to generate JavaScript code including hallucinated npm packages",
@@ -3400,31 +3400,7 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-10-13 16:43:46 +0000"
-    },
-    "probes.packagehallucination.PackageHallucinationProbe": {
-      "description": "Base class for package hallucination probes",
-      "DEFAULT_PARAMS": {},
-      "active": false,
-      "doc_uri": "https://vulcan.io/blog/ai-hallucinations-package-risk",
-      "extended_detectors": [],
-      "goal": "base probe for importing non-existent packages",
-      "lang": "*",
-      "modality": {
-        "in": [
-          "text"
-        ]
-      },
-      "parallelisable_attempts": true,
-      "primary_detector": null,
-      "tags": [
-        "owasp:llm09",
-        "owasp:llm02",
-        "quality:Robustness:GenerativeMisinformation",
-        "payload:malicious:badcode"
-      ],
-      "tier": 9,
-      "mod_time": "2025-10-13 16:43:46 +0000"
+      "mod_time": "2025-10-06 17:10:48 +0000"
     },
     "probes.packagehallucination.Perl": {
       "description": "Attempts to generate Perl code including hallucinated MetaCPAN packages",
@@ -3448,7 +3424,7 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-10-13 16:43:46 +0000"
+      "mod_time": "2025-10-06 17:10:48 +0000"
     },
     "probes.packagehallucination.Python": {
       "description": "Attempts to generate Python3 code including hallucinated packages",
@@ -3472,7 +3448,7 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-10-13 16:43:46 +0000"
+      "mod_time": "2025-10-06 17:10:48 +0000"
     },
     "probes.packagehallucination.RakuLand": {
       "description": "Attempts to generate Raku code including hallucinated raku.land packages",
@@ -3496,7 +3472,7 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-10-13 16:43:46 +0000"
+      "mod_time": "2025-10-06 17:10:48 +0000"
     },
     "probes.packagehallucination.Ruby": {
       "description": "Attempts to generate Ruby code including hallucinated gems",
@@ -3520,7 +3496,7 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-10-13 16:43:46 +0000"
+      "mod_time": "2025-10-06 17:10:48 +0000"
     },
     "probes.packagehallucination.Rust": {
       "description": "Attempts to generate Rust code including hallucinated crates.io packages",
@@ -3544,7 +3520,7 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-10-13 16:43:46 +0000"
+      "mod_time": "2025-10-06 17:10:48 +0000"
     },
     "probes.phrasing.FutureTense": {
       "description": "Attempt to evade safeguards by setting requests in the future tense",
@@ -5891,9 +5867,8 @@
       "description": "Check if the output tries to use a Dart package not listed on pub.dev (2025-08-11 snapshot)",
       "DEFAULT_PARAMS": {
         "skip": false,
-        "dataset_name": "garak-llm/dart-20250811",
-        "language_name": "dart",
-        "cutoff_date": null
+        "cutoff_date": null,
+        "dataset_name": "garak-llm/dart-20250811"
       },
       "accuracy": null,
       "active": false,
@@ -5907,15 +5882,14 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-10-13 16:43:46 +0000"
+      "mod_time": "2025-10-10 19:52:41 +0000"
     },
     "detectors.packagehallucination.JavaScriptNpm": {
       "description": "Check if the output tries to import or require an npm package not listed in the npm registry",
       "DEFAULT_PARAMS": {
         "skip": false,
-        "dataset_name": "garak-llm/npm-20241031",
-        "language_name": "javascript",
-        "cutoff_date": null
+        "cutoff_date": null,
+        "dataset_name": "garak-llm/npm-20241031"
       },
       "accuracy": null,
       "active": false,
@@ -5929,37 +5903,14 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-10-13 16:43:46 +0000"
-    },
-    "detectors.packagehallucination.PackageHallucinationDetector": {
-      "description": "Base class for package hallucination detectors",
-      "DEFAULT_PARAMS": {
-        "skip": false,
-        "dataset_name": null,
-        "language_name": null,
-        "cutoff_date": null
-      },
-      "accuracy": null,
-      "active": false,
-      "doc_uri": null,
-      "lang_spec": "*",
-      "modality": {
-        "out": [
-          "text"
-        ]
-      },
-      "precision": 0.0,
-      "recall": 0.0,
-      "tags": [],
-      "mod_time": "2025-10-13 16:43:46 +0000"
+      "mod_time": "2025-10-10 19:52:41 +0000"
     },
     "detectors.packagehallucination.Perl": {
       "description": "Check if the output tries to use a Perl module not listed in MetaCPAN's provides list collected on 2025-08-11",
       "DEFAULT_PARAMS": {
         "skip": false,
-        "dataset_name": "garak-llm/perl-20250811",
-        "language_name": "perl",
-        "cutoff_date": null
+        "cutoff_date": null,
+        "dataset_name": "garak-llm/perl-20250811"
       },
       "accuracy": null,
       "active": false,
@@ -5973,15 +5924,14 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-10-13 16:43:46 +0000"
+      "mod_time": "2025-10-10 19:52:41 +0000"
     },
     "detectors.packagehallucination.PythonPypi": {
       "description": "Check if the output tries to import a package not listed in stdlib or a pypi archive listing",
       "DEFAULT_PARAMS": {
         "skip": false,
-        "dataset_name": "garak-llm/pypi-20241031",
-        "language_name": "python",
-        "cutoff_date": null
+        "cutoff_date": null,
+        "dataset_name": "garak-llm/pypi-20241031"
       },
       "accuracy": null,
       "active": false,
@@ -5995,15 +5945,14 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-10-13 16:43:46 +0000"
+      "mod_time": "2025-10-10 19:52:41 +0000"
     },
     "detectors.packagehallucination.RakuLand": {
       "description": "Check if the output tries to use a Raku module not listed in raku.land collected on 2025-08-11",
       "DEFAULT_PARAMS": {
         "skip": false,
-        "dataset_name": "garak-llm/raku-20250811",
-        "language_name": "raku",
-        "cutoff_date": null
+        "cutoff_date": null,
+        "dataset_name": "garak-llm/raku-20250811"
       },
       "accuracy": null,
       "active": false,
@@ -6017,15 +5966,14 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-10-13 16:43:46 +0000"
+      "mod_time": "2025-10-10 19:52:41 +0000"
     },
     "detectors.packagehallucination.RubyGems": {
       "description": "Check if the output tries to require a gem not listed in the Ruby standard library or RubyGems",
       "DEFAULT_PARAMS": {
         "skip": false,
-        "dataset_name": "garak-llm/rubygems-20241031",
-        "language_name": "ruby",
-        "cutoff_date": null
+        "cutoff_date": null,
+        "dataset_name": "garak-llm/rubygems-20241031"
       },
       "accuracy": null,
       "active": false,
@@ -6039,15 +5987,14 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-10-13 16:43:46 +0000"
+      "mod_time": "2025-10-10 19:52:41 +0000"
     },
     "detectors.packagehallucination.RustCrates": {
       "description": "Check if the output tries to use a Rust crate not listed in the crates.io registry",
       "DEFAULT_PARAMS": {
         "skip": false,
-        "dataset_name": "garak-llm/crates-20250307",
-        "language_name": "rust",
-        "cutoff_date": null
+        "cutoff_date": null,
+        "dataset_name": "garak-llm/crates-20250307"
       },
       "accuracy": null,
       "active": false,
@@ -6061,7 +6008,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-10-13 16:43:46 +0000"
+      "mod_time": "2025-10-10 19:52:41 +0000"
     },
     "detectors.perspective.Attack_On_Author": {
       "description": "Targets: Attack on the author of an article or post.",
