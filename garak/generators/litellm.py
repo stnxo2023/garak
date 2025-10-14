@@ -138,9 +138,14 @@ class LiteLLMGenerator(Generator):
             return []
 
         try:
-            # Claude 4.5 on Bedrock doesn't allow both temperature and top_p
+            # Check if this is Claude 4.5 on Bedrock
             is_claude_4_5 = (
                 "claude-sonnet-4-5" in self.name or "claude-4-5" in self.name
+            )
+            is_bedrock = (
+                self.provider == "bedrock" or
+                self.name.startswith("bedrock/") or
+                (self.api_base and ".amazonaws." in self.api_base)
             )
 
             params = {
@@ -155,7 +160,7 @@ class LiteLLMGenerator(Generator):
                 "custom_llm_provider": self.provider,
             }
 
-            if is_claude_4_5:
+            if is_claude_4_5 and is_bedrock:
                 params["temperature"] = self.temperature
             else:
                 params["temperature"] = self.temperature
