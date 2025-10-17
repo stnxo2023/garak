@@ -135,20 +135,20 @@ def test_probe_prune_alignment():
     assert p.triggers[-1] in p.prompts[-1]
 
 
-@pytest.mark.parametrize(
-    "prompt",
-    [
-        "test example",
-        Message(text="test example"),
-        Conversation([Turn(role="user", content=Message(text="test example"))]),
-        Conversation(
-            [
-                Turn(role="system", content=Message(text="test system")),
-                Turn(role="user", content=Message(text="test example")),
-            ]
-        ),
-    ],
-)
+PROMPT_EXAMPLES = [
+    "test example",
+    Message(text="test example"),
+    Conversation([Turn(role="user", content=Message(text="test example"))]),
+    Conversation(
+        [
+            Turn(role="system", content=Message(text="test system")),
+            Turn(role="user", content=Message(text="test example")),
+        ]
+    ),
+]
+
+
+@pytest.mark.parametrize("prompt", PROMPT_EXAMPLES)
 def test_mint_attempt(prompt):
     import garak.probes.base
 
@@ -158,3 +158,25 @@ def test_mint_attempt(prompt):
     for turn in attempt.prompt.turns:
         assert isinstance(turn, Turn)
     assert attempt.prompt.last_message().text == "test example"
+
+
+@pytest.mark.parametrize("prompt", PROMPT_EXAMPLES)
+def test_mint_attempt_with_run_system_prompt(prompt):
+    import garak.probes.base
+
+    expected_system_prompt = "test system prompt"
+    probe = garak.probes.base.Probe()
+    probe.system_prompt = expected_system_prompt
+
+    if isinstance(prompt, Conversation):
+        try:
+            expected_system_prompt = prompt.last_message("system").text
+        except ValueError as e:
+            pass
+
+    attempt = probe._mint_attempt(prompt)
+    assert isinstance(attempt, Attempt)
+    for turn in attempt.prompt.turns:
+        assert isinstance(turn, Turn)
+    assert attempt.prompt.last_message().text == "test example"
+    assert attempt.prompt.last_message("system").text == expected_system_prompt
