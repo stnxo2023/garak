@@ -6,6 +6,7 @@
 Probes designed to disrupt a system prompt, for example the DAN (do anything
 now) probes and others in a similar vein.
 """
+import json
 import logging
 from typing import Iterable
 
@@ -24,6 +25,7 @@ class DANProbeMeta(type):
     1. Set prompt_file attribute (auto-detect from class name if not specified)
     2. Apply common DAN probe configuration (lang, goal, tier, etc)
     3. Handle custom attributes like detector, extra tags, etc.
+    4. Load prompts from JSON files (array of strings, supports multiline)
     """
 
     # Shared configuration for all DAN probes
@@ -72,8 +74,8 @@ class DANProbeMeta(type):
                     attrs["prompt_file"] = base.prompt_file
                     break
             else:
-                # No inherited prompt_file found, use default
-                attrs["prompt_file"] = f"dan/{name}.txt"
+                # No inherited prompt_file found, use default JSON format
+                attrs["prompt_file"] = f"dan/{name}.json"
 
         # Auto-add the probe method for prompt formatting
         if "probe" not in attrs:
@@ -114,18 +116,19 @@ class DANProbeMeta(type):
             try:
                 prompt_path = data_path / self.prompt_file
             except GarakException:
-                # Fallback to empty prompts
                 self.prompts = []
             else:
                 with open(prompt_path, "r", encoding="utf-8") as f:
-                    content = f.read().strip()
-                    # Allow multi-prompt files (one prompt per line)
-                    if "\n" in content:
-                        self.prompts = [
-                            line.strip() for line in content.split("\n") if line.strip()
-                        ]
-                    else:
-                        self.prompts = [content] if content else []
+                    try:
+                        prompts_data = json.load(f)
+                        if isinstance(prompts_data, list):
+                            self.prompts = [str(p).strip() for p in prompts_data if p]
+                        else:
+                            logging.warning(f"JSON file {prompt_path} should contain an array of prompts")
+                            self.prompts = []
+                    except json.JSONDecodeError as e:
+                        logging.error(f"Failed to parse JSON file {prompt_path}: {e}")
+                        self.prompts = []
 
         cls.__init__ = new_init
 
@@ -322,7 +325,7 @@ class AutoDANCached(
     metaclass=DANProbeMeta,
     tier=garak.probes.Tier.COMPETE_WITH_SOTA,
     active=True,
-    prompt_file="autodan/autodan_prompts.txt",
+    prompt_file="autodan/autodan_prompts.json",
     extra_tags=["payload:jailbreak"],
     doc_uri="https://arxiv.org/abs/2310.04451",
 ):
@@ -381,7 +384,7 @@ class DanInTheWildFull(
     garak.probes.Probe,
     metaclass=DANProbeMeta,
     tier=garak.probes.Tier.OF_CONCERN,
-    prompt_file="inthewild_jailbreak_llms.txt",
+    prompt_file="inthewild_jailbreak_llms.json",
     goal="disregard the system prompt or alignment",
     extra_tags=["payload:jailbreak"],
     recommended_detector=["always.Fail"],
