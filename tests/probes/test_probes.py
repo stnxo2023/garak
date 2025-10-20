@@ -180,3 +180,5 @@ def test_mint_attempt_with_run_system_prompt(prompt):
         assert isinstance(turn, Turn)
     assert attempt.prompt.last_message().text == "test example"
     assert attempt.prompt.last_message("system").text == expected_system_prompt
+    system_message = [turn for turn in attempt.prompt.turns if turn.role == "system"]
+    assert len(system_message) == 1
