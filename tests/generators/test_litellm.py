@@ -63,8 +63,8 @@ def test_litellm_model_detection():
         generator.generate(conv)
 
 
-def test_litellm_claude_4_5_params():
-    """Test that Claude 4.5 models on Bedrock only receive temperature parameter (not top_p)."""
+def test_litellm_suppressed_params():
+    """Test that suppressed_params configuration works correctly."""
     # Create a mock response object that matches what litellm.completion returns
     mock_response = type('obj', (object,), {
         'choices': [
@@ -76,53 +76,58 @@ def test_litellm_claude_4_5_params():
         ]
     })
     
-    # Test case 1: Claude 4.5 model on AWS Bedrock (should omit top_p)
+    target_name = "gpt-4"
+    
+    # Test case 1: Suppress top_p parameter
     with patch('litellm.completion', return_value=mock_response) as mock_completion:
-        claude_model = "eu.anthropic.claude-sonnet-4-5-20250929-v1:0"
         custom_config = {
             "generators": {
                 "litellm": {
-                    "provider": "bedrock",
-                    "api_base": "https://bedrock-runtime.us-east-1.amazonaws.com"
+                    "suppressed_params": ["top_p"]
                 }
             }
         }
-        generator = LiteLLMGenerator(name=claude_model, config_root=custom_config)
+        generator = LiteLLMGenerator(name=target_name, config_root=custom_config)
         conv = Conversation([Turn("user", Message("Test message"))])
         generator.generate(conv)
-
+        
+        # Check that top_p was not included but temperature was
         args, kwargs = mock_completion.call_args
         assert 'temperature' in kwargs
         assert 'top_p' not in kwargs
+        assert 'max_tokens' in kwargs
     
-    # Test case 2: Claude 4.5 model NOT on AWS Bedrock (should include top_p)
+    # Test case 2: Suppress multiple parameters
     with patch('litellm.completion', return_value=mock_response) as mock_completion:
-        claude_model = "eu.anthropic.claude-sonnet-4-5-20250929-v1:0"
         custom_config = {
             "generators": {
                 "litellm": {
-                    "provider": "openai",
-                    "api_base": "https://api.openai.com/v1"
+                    "suppressed_params": ["top_p", "frequency_penalty", "presence_penalty"]
                 }
             }
         }
-        generator = LiteLLMGenerator(name=claude_model, config_root=custom_config)
+        generator = LiteLLMGenerator(name=target_name, config_root=custom_config)
         conv = Conversation([Turn("user", Message("Test message"))])
         generator.generate(conv)
         
-        # Check that both temperature and top_p were included
+        # Check that suppressed params were not included
         args, kwargs = mock_completion.call_args
         assert 'temperature' in kwargs
-        assert 'top_p' in kwargs
+        assert 'top_p' not in kwargs
+        assert 'frequency_penalty' not in kwargs
+        assert 'presence_penalty' not in kwargs
+        assert 'max_tokens' in kwargs
         
-    # Test case 3: Non-Claude 4.5 model (should include top_p)
+    # Test case 3: No suppressed params (default behavior)
     with patch('litellm.completion', return_value=mock_response) as mock_completion:
-        other_model = "gpt-4"
-        generator = LiteLLMGenerator(name=other_model)
+        generator = LiteLLMGenerator(name=target_name)
         conv = Conversation([Turn("user", Message("Test message"))])
         generator.generate(conv)
         
-        # Check that both temperature and top_p were included
+        # Check that all standard parameters were included
         args, kwargs = mock_completion.call_args
         assert 'temperature' in kwargs
         assert 'top_p' in kwargs
+        assert 'frequency_penalty' in kwargs
+        assert 'presence_penalty' in kwargs
+        assert 'max_tokens' in kwargs
