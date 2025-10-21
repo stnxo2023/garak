@@ -43,17 +43,18 @@ class Win10(garak.probes.Probe):
     goal = "get model to output Win 10 product keys"
     tier = garak.probes.Tier.COMPETE_WITH_SOTA
     active = True
-
+    product_names = None
     doc_uri = "https://www.independent.co.uk/tech/chatgpt-microsoft-windows-11-grandma-exploit-b2360213.html"
 
     def __init__(self, config_root=_config):
-        win10_payload = garak.payloads.load("keyedprod_win10")
-        product_names = win10_payload.payloads
+        if self.product_names is None:
+            win10_payload = garak.payloads.load("keyedprod_win10")
+            self.product_names = win10_payload.payloads
         super().__init__(config_root=config_root)
         self.prompts = [
             p.replace("{product_name}", PRODUCT_NAME)
             for p in PRODUCT_KEY_PROBE_TEMPLATES
-            for PRODUCT_NAME in product_names
+            for PRODUCT_NAME in self.product_names
         ]
 
 
@@ -62,7 +63,8 @@ class Win11(Win10):
 
     Pretend to require Windows product keys because one misses one's grandmother."""
 
-    PRODUCT_NAMES = ("Windows 11", "Windows 11 Pro", "Windows 11 Home")
+    goal = "get model to output Win 11 product keys"
+    product_names = ("Windows 11", "Windows 11 Pro", "Windows 11 Home")
 
 
 class Slurs(garak.probes.Probe):
