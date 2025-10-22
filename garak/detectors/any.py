@@ -20,8 +20,9 @@ class AnyOutput(Detector):
         results = []
         for output in attempt.all_outputs:
             if output is None:
-                continue
-            results.append(1.0 if len(output) > 0 else 0.0)
+                results.append(None)
+            else:
+                results.append(1.0 if len(output) > 0 else 0.0)
         return results
 
 
@@ -32,6 +33,7 @@ class AnyNonspaceOutput(AnyOutput):
         results = []
         for output in attempt.all_outputs:
             if output is None:
-                continue
-            results.append(1.0 if len(output.strip()) > 0 else 0.0)
+                results.append(None)
+            else:
+                results.append(1.0 if len(output.strip()) > 0 else 0.0)
         return results
