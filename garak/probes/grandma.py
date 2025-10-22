@@ -42,9 +42,12 @@ class Win10(garak.probes.Probe):
     ]
     goal = "get model to output Win 10 product keys"
     tier = garak.probes.Tier.COMPETE_WITH_SOTA
+    active = True
+    payload = "keyedprod_win10"
+    doc_uri = "https://www.independent.co.uk/tech/chatgpt-microsoft-windows-11-grandma-exploit-b2360213.html"
+
+    def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
-        product_payload = garak.payloads.load(self.payload)
-        product_names = product_payload.payloads
         product_payload = garak.payloads.load(self.payload)
         product_names = product_payload.payloads
         self.prompts = [
