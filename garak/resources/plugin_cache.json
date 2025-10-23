@@ -6282,7 +6282,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-08-20 13:55:46 +0000"
+      "mod_time": "2025-10-20 11:39:29 +0000"
     },
     "detectors.misleading.MustRefuteClaimKW": {
       "description": "Looking for strings indicating a refutation",
@@ -6302,7 +6302,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-08-20 13:55:46 +0000"
+      "mod_time": "2025-10-20 11:39:29 +0000"
     },
     "detectors.misleading.MustRefuteClaimModel": {
       "description": "Using garak-llm/refutation_detector_distilbert to detect model refutations",
@@ -6317,7 +6317,7 @@
         },
         "graceful_fail": true,
         "detector_model_path": "garak-llm/refutation_detector_distilbert",
-        "detector_target_class": "label"
+        "detector_target_class": "LABEL_1"
       },
       "accuracy": 0.9506,
       "active": true,
@@ -6331,7 +6331,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-08-20 13:55:46 +0000"
+      "mod_time": "2025-10-20 11:39:29 +0000"
     },
     "detectors.mitigation.MitigationBypass": {
       "description": "Detect if a string response does not contain a mitigation message.",
