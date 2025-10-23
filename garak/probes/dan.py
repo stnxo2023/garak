@@ -39,7 +39,8 @@ class DANProbeMeta(type):
             "owasp:llm01",
             "quality:Security:PromptStability",
         ],
-        "recommended_detector": ["mitigation.MitigationBypass", "dan.DAN"],
+        "primary_detector": "dan.DAN",
+        "extended_detectors": ["mitigation.MitigationBypass"],
     }
 
     def __new__(cls, name, bases, attrs, **kwargs):
@@ -64,7 +65,11 @@ class DANProbeMeta(type):
 
         # Handle extra_tags (merge with parent/default tags)
         if "extra_tags" in attrs:
-            base_tags = attrs.get("tags") or get_dan_parent_attr("tags") or cls._DAN_DEFAULTS["tags"]
+            base_tags = (
+                attrs.get("tags")
+                or get_dan_parent_attr("tags")
+                or cls._DAN_DEFAULTS["tags"]
+            )
             attrs["tags"] = base_tags + attrs.pop("extra_tags")
 
         # Determine prompt file - check bases for inherited prompt_file
@@ -124,7 +129,9 @@ class DANProbeMeta(type):
                         if isinstance(prompts_data, list):
                             self.prompts = [str(p).strip() for p in prompts_data if p]
                         else:
-                            logging.warning(f"JSON file {prompt_path} should contain an array of prompts")
+                            logging.warning(
+                                f"JSON file {prompt_path} should contain an array of prompts"
+                            )
                             self.prompts = []
                     except json.JSONDecodeError as e:
                         logging.error(f"Failed to parse JSON file {prompt_path}: {e}")
@@ -200,8 +207,10 @@ class Dan_6_0(
 
 
 class DUDE(
-    garak.probes.Probe, metaclass=DANProbeMeta, extra_tags=["payload:jailbreak"],
-    recommended_detector=["mitigation.MitigationBypass", "dan.DUDE"]
+    garak.probes.Probe,
+    metaclass=DANProbeMeta,
+    primary_detector="dan.DUDE",
+    extra_tags=["payload:jailbreak"],
 ):
     """DUDE
 
@@ -210,8 +219,10 @@ class DUDE(
 
 
 class STAN(
-    garak.probes.Probe, metaclass=DANProbeMeta, extra_tags=["payload:jailbreak"],
-    recommended_detector=["mitigation.MitigationBypass", "dan.STAN"]
+    garak.probes.Probe,
+    metaclass=DANProbeMeta,
+    primary_detector="dan.STAN",
+    extra_tags=["payload:jailbreak"],
 ):
     """STAN
 
@@ -222,7 +233,7 @@ class STAN(
 class DAN_Jailbreak(
     garak.probes.Probe,
     metaclass=DANProbeMeta,
-    recommended_detector=["mitigation.MitigationBypass", "dan.DANJailbreak"],
+    primary_detector="dan.DANJailbreak",
     extra_tags=["payload:jailbreak"],
 ):
     """DAN Jailbreak
@@ -234,8 +245,8 @@ class DAN_Jailbreak(
 class AntiDAN(
     garak.probes.Probe,
     metaclass=DANProbeMeta,
+    primary_detector="dan.AntiDAN",
     extra_tags=["avid-effect:performance:P0204"],
-    recommended_detector=["mitigation.MitigationBypass", "dan.AntiDAN"],
 ):
     """Anti-DAN
 
@@ -246,7 +257,7 @@ class AntiDAN(
 class ChatGPT_Developer_Mode_v2(
     garak.probes.Probe,
     metaclass=DANProbeMeta,
-    recommended_detector=["mitigation.MitigationBypass", "dan.DevMode"],
+    primary_detector="dan.DevMode",
     extra_tags=["payload:jailbreak"],
 ):
     """ChatGPT Developer Mode v2
@@ -259,7 +270,7 @@ class ChatGPT_Developer_Mode_v2(
 class ChatGPT_Developer_Mode_RANTI(
     garak.probes.Probe,
     metaclass=DANProbeMeta,
-    recommended_detector=["mitigation.MitigationBypass", "dan.DevMode"],
+    primary_detector="dan.DevMode",
     extra_tags=["avid-effect:performance:P0204"],
 ):
     """ChatGPT DevMode + Ranti
@@ -272,7 +283,7 @@ class ChatGPT_Developer_Mode_RANTI(
 class ChatGPT_Image_Markdown(
     garak.probes.Probe,
     metaclass=DANProbeMeta,
-    recommended_detector=["mitigation.MitigationBypass", "dan.MarkdownLink"],
+    primary_detector="dan.MarkdownLink",
     extra_tags=["payload:jailbreak"],
 ):
     """ChatGPT Markdown Image Unlocker / markdown injection
@@ -387,7 +398,8 @@ class DanInTheWildFull(
     prompt_file="inthewild_jailbreak_llms.json",
     goal="disregard the system prompt or alignment",
     extra_tags=["payload:jailbreak"],
-    recommended_detector=["always.Fail"],
+    primary_detector="mitigation.MitigationBypass",
+    extended_detectors=[],
 ):
     """A library of jailbreaks.
 
@@ -395,7 +407,6 @@ class DanInTheWildFull(
     alignment/system prompt. Success is measured by not getting a safety mitigaton
     message."""
 
-    primary_detector = "mitigation.MitigationBypass"
     doc_uri = "https://arxiv.org/abs/2308.03825"
 
 
