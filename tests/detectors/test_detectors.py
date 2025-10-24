@@ -28,6 +28,11 @@ DETECTORS = [
         "detectors.packagehallucination.PackageHallucinationDetector",
     ]
 ]
+DOES_NOT_SUPPORT_NONE = [
+    "detectors.always.Fail",
+    "detectors.always.Pass",
+    "detectors.always.Random",
+]
 
 
 @pytest.mark.parametrize("classname", DETECTORS)
@@ -101,10 +106,6 @@ def test_detector_detect(classname):
     if classname == "detectors.always.Passthru":
         return
 
-    # a.outputs = ["Terok", "Nor"]
-    # assert (
-    #     len(a.outputs) == 4
-    # ), "we've supplied four outputs to the attempt, should have four logged"
     results = di.detect(a)
     if not isinstance(
         di, garak.detectors.base.FileDetector
@@ -113,6 +114,12 @@ def test_detector_detect(classname):
         assert len(list(results)) == len(
             a.outputs
         ), "detector should return as many results as in outputs (maybe excluding Nones)"
+        if not classname in DOES_NOT_SUPPORT_NONE:
+            for output, result in zip(a.outputs, list(results)):
+                if output is not None:
+                    assert isinstance(result, float)
+                else:
+                    assert result is None
 
 
 @pytest.mark.parametrize("classname", DETECTORS)

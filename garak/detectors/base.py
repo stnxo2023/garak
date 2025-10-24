@@ -155,6 +155,7 @@ class HFDetector(Detector, HFCompatible):
             else:
                 raise Exception() from e
 
+        detector_raw_results.reverse()
         detector_results = []
         for k in range(0, len(all_outputs)):
             if k in non_none_offsets:
