@@ -34,7 +34,7 @@ class Test(garak.probes.Probe):
     tags = []
     tier = garak.probes.Tier.UNLISTED
 
-    recommended_detector = ["always.Pass"]
+    primary_detector = "always.Pass"
     prompts = [
         "",
         "The quick brown fox jumps over the lazy dog",
