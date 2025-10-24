@@ -313,7 +313,7 @@
       "mod_time": "2025-10-13 21:17:54 +0000"
     },
     "probes.dan.Ablation_Dan_11_0": {
-      "description": "Ablation experiements over the DAN 11.0 prompt",
+      "description": "Ablation experiments over the DAN 11.0 prompt",
       "DEFAULT_PARAMS": {},
       "active": true,
       "doc_uri": "",
@@ -336,7 +336,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2025-10-14 14:43:03 +0000"
+      "mod_time": "2025-10-23 20:11:52 +0000"
     },
     "probes.dan.AntiDAN": {
       "description": "Anti-DAN",
@@ -356,13 +356,13 @@
       "parallelisable_attempts": true,
       "primary_detector": "dan.AntiDAN",
       "tags": [
-        "quality:Security:PromptStability",
         "avid-effect:security:S0403",
-        "avid-effect:performance:P0204",
-        "owasp:llm01"
+        "owasp:llm01",
+        "quality:Security:PromptStability",
+        "avid-effect:performance:P0204"
       ],
       "tier": 9,
-      "mod_time": "2025-10-14 14:43:03 +0000"
+      "mod_time": "2025-10-23 20:11:52 +0000"
     },
     "probes.dan.AutoDAN": {
       "description": "Probe leveraging AutoDAN attack generation",
@@ -388,7 +388,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2025-10-14 14:43:03 +0000"
+      "mod_time": "2025-10-23 20:11:52 +0000"
     },
     "probes.dan.AutoDANCached": {
       "description": "Probe leveraging generated AutoDAN prompts",
@@ -414,7 +414,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2025-10-14 14:43:03 +0000"
+      "mod_time": "2025-10-23 20:11:52 +0000"
     },
     "probes.dan.ChatGPT_Developer_Mode_RANTI": {
       "description": "ChatGPT DevMode + Ranti",
@@ -435,12 +435,12 @@
       "primary_detector": "dan.DevMode",
       "tags": [
         "avid-effect:security:S0403",
+        "owasp:llm01",
         "quality:Security:PromptStability",
-        "avid-effect:performance:P0204",
-        "owasp:llm01"
+        "avid-effect:performance:P0204"
       ],
       "tier": 9,
-      "mod_time": "2025-10-14 14:43:03 +0000"
+      "mod_time": "2025-10-23 20:11:52 +0000"
     },
     "probes.dan.ChatGPT_Developer_Mode_v2": {
       "description": "ChatGPT Developer Mode v2",
@@ -466,7 +466,7 @@
         "payload:jailbreak"
       ],
       "tier": 9,
-      "mod_time": "2025-10-14 14:43:03 +0000"
+      "mod_time": "2025-10-23 20:11:52 +0000"
     },
     "probes.dan.ChatGPT_Image_Markdown": {
       "description": "ChatGPT Markdown Image Unlocker / markdown injection",
@@ -492,7 +492,7 @@
         "payload:jailbreak"
       ],
       "tier": 9,
-      "mod_time": "2025-10-14 14:43:03 +0000"
+      "mod_time": "2025-10-23 20:11:52 +0000"
     },
     "probes.dan.DAN_Jailbreak": {
       "description": "DAN Jailbreak",
@@ -518,7 +518,7 @@
         "payload:jailbreak"
       ],
       "tier": 9,
-      "mod_time": "2025-10-14 14:43:03 +0000"
+      "mod_time": "2025-10-23 20:11:52 +0000"
     },
     "probes.dan.DUDE": {
       "description": "DUDE",
@@ -544,7 +544,7 @@
         "payload:jailbreak"
       ],
       "tier": 9,
-      "mod_time": "2025-10-14 14:43:03 +0000"
+      "mod_time": "2025-10-23 20:11:52 +0000"
     },
     "probes.dan.DanInTheWild": {
       "description": "A subset of jailbreaks from the DanInTheWild jailbreak library.",
@@ -568,7 +568,7 @@
         "payload:jailbreak"
       ],
       "tier": 1,
-      "mod_time": "2025-10-14 14:43:03 +0000"
+      "mod_time": "2025-10-23 20:11:52 +0000"
     },
     "probes.dan.DanInTheWildFull": {
       "description": "A library of jailbreaks.",
@@ -592,7 +592,7 @@
         "payload:jailbreak"
       ],
       "tier": 1,
-      "mod_time": "2025-10-14 14:43:03 +0000"
+      "mod_time": "2025-10-23 20:11:52 +0000"
     },
     "probes.dan.Dan_10_0": {
       "description": "DAN 10.0",
@@ -618,7 +618,7 @@
         "payload:jailbreak"
       ],
       "tier": 9,
-      "mod_time": "2025-10-14 14:43:03 +0000"
+      "mod_time": "2025-10-23 20:11:52 +0000"
     },
     "probes.dan.Dan_11_0": {
       "description": "DAN 11.0",
@@ -639,13 +639,13 @@
       "primary_detector": "dan.DAN",
       "tags": [
         "avid-effect:security:S0403",
-        "avid-effect:performance:P0204",
         "owasp:llm01",
         "quality:Security:PromptStability",
+        "avid-effect:performance:P0204",
         "payload:jailbreak"
       ],
       "tier": 9,
-      "mod_time": "2025-10-14 14:43:03 +0000"
+      "mod_time": "2025-10-23 20:11:52 +0000"
     },
     "probes.dan.Dan_6_0": {
       "description": "DAN 6.0",
@@ -671,7 +671,7 @@
         "payload:jailbreak"
       ],
       "tier": 9,
-      "mod_time": "2025-10-14 14:43:03 +0000"
+      "mod_time": "2025-10-23 20:11:52 +0000"
     },
     "probes.dan.Dan_6_2": {
       "description": "DAN 6.2",
@@ -697,7 +697,7 @@
         "payload:jailbreak"
       ],
       "tier": 9,
-      "mod_time": "2025-10-14 14:43:03 +0000"
+      "mod_time": "2025-10-23 20:11:52 +0000"
     },
     "probes.dan.Dan_7_0": {
       "description": "DAN 7.0",
@@ -723,7 +723,7 @@
         "payload:jailbreak"
       ],
       "tier": 9,
-      "mod_time": "2025-10-14 14:43:03 +0000"
+      "mod_time": "2025-10-23 20:11:52 +0000"
     },
     "probes.dan.Dan_8_0": {
       "description": "DAN 8.0",
@@ -749,7 +749,7 @@
         "payload:jailbreak"
       ],
       "tier": 9,
-      "mod_time": "2025-10-14 14:43:03 +0000"
+      "mod_time": "2025-10-23 20:11:52 +0000"
     },
     "probes.dan.Dan_9_0": {
       "description": "DAN 9.0",
@@ -775,7 +775,7 @@
         "payload:jailbreak"
       ],
       "tier": 9,
-      "mod_time": "2025-10-14 14:43:03 +0000"
+      "mod_time": "2025-10-23 20:11:52 +0000"
     },
     "probes.dan.STAN": {
       "description": "STAN",
@@ -801,7 +801,7 @@
         "payload:jailbreak"
       ],
       "tier": 9,
-      "mod_time": "2025-10-14 14:43:03 +0000"
+      "mod_time": "2025-10-23 20:11:52 +0000"
     },
     "probes.divergence.Repeat": {
       "description": "See if a model starts giving other data when asked to repeat a string indefinitely",
@@ -5090,7 +5090,7 @@
       "tags": [
         "avid-effect:security:S0403"
       ],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-09-29 18:48:25 +0000"
     },
     "detectors.dan.DAN": {
       "description": "Do we get a [DAN] positive?",
@@ -5112,7 +5112,7 @@
       "tags": [
         "avid-effect:security:S0403"
       ],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-09-29 18:48:25 +0000"
     },
     "detectors.dan.DANJailbreak": {
       "description": "Do we get a [\ud83d\udd13JAILBREAK] positive?",
@@ -5134,7 +5134,7 @@
       "tags": [
         "avid-effect:security:S0403"
       ],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-09-29 18:48:25 +0000"
     },
     "detectors.dan.DUDE": {
       "description": "Do we get a DUDE positive?",
@@ -5156,7 +5156,7 @@
       "tags": [
         "avid-effect:security:S0403"
       ],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-09-29 18:48:25 +0000"
     },
     "detectors.dan.DevMode": {
       "description": "Do we get a dev mode v2 positive?",
@@ -5178,7 +5178,7 @@
       "tags": [
         "avid-effect:security:S0403"
       ],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-09-29 18:48:25 +0000"
     },
     "detectors.dan.MarkdownLink": {
       "description": "Look for markdown links",
@@ -5200,7 +5200,7 @@
       "tags": [
         "avid-effect:security:S0403"
       ],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-09-29 18:48:25 +0000"
     },
     "detectors.dan.STAN": {
       "description": "Do we get a STAN positive?",
@@ -5222,7 +5222,7 @@
       "tags": [
         "avid-effect:security:S0403"
       ],
-      "mod_time": "2025-04-17 08:31:20 +0000"
+      "mod_time": "2025-09-29 18:48:25 +0000"
     },
     "detectors.divergence.RepeatDiverges": {
       "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
