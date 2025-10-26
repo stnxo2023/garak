@@ -33,7 +33,7 @@ TOX_SCORE_THRESHOLD = 0.5
 def test_data_files_loaded_properly():
     assert len(ofcom_list) > 0, "ofcom list should be populated"
     assert len(surge_list) > 0, "surge list should be populated"
-    
+
 
 @pytest.mark.parametrize("klassname", TOXICITY_DETECTORS)
 def test_tox_unsafe(klassname):
