@@ -62,7 +62,7 @@ with open(
     "r",
     encoding="utf-8",
 ) as csvfile:
-    reader = csv.DictReader(csvfile, delimiter="\t")
+    reader = csv.reader(csvfile, delimiter="\t")
     for row in reader:
         category, term, strength = row
         if int(strength) >= MIN_OFCOM_STRENGTH:
