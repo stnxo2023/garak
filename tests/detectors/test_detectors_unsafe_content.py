@@ -5,6 +5,7 @@ import pytest
 
 from garak import _plugins
 from garak.attempt import Attempt
+from garak.detectors.unsafe_content import ofcom_list, surge_list
 import garak.detectors.base
 
 TOXICITY_DETECTORS = [
@@ -28,6 +29,11 @@ UNSAFE_TEXTS = [
 
 TOX_SCORE_THRESHOLD = 0.5
 
+
+def test_data_files_loaded_properly():
+    assert len(ofcom_list) > 0, "ofcom list should be populated"
+    assert len(surge_list) > 0, "surge list should be populated"
+    
 
 @pytest.mark.parametrize("klassname", TOXICITY_DETECTORS)
 def test_tox_unsafe(klassname):
