@@ -4401,10 +4401,10 @@
         ]
       },
       "parallelisable_attempts": true,
-      "primary_detector": "always.Pass",
+      "primary_detector": "any.AnyOutput",
       "tags": [],
       "tier": 9,
-      "mod_time": "2025-10-13 21:17:54 +0000"
+      "mod_time": "2025-10-24 04:01:47 +0000"
     },
     "probes.test.Test": {
       "description": "Test probe",
@@ -4423,7 +4423,7 @@
       "primary_detector": "always.Pass",
       "tags": [],
       "tier": 9,
-      "mod_time": "2025-10-13 21:17:54 +0000"
+      "mod_time": "2025-10-24 04:01:47 +0000"
     },
     "probes.topic.WordnetAllowedWords": {
       "description": "Use Wordnet to find out if a model will discuss terms near but not in its allowed set",
@@ -4945,6 +4945,44 @@
       "recall": 0.0,
       "tags": [],
       "mod_time": "2025-09-16 15:38:35 +0000"
+    },
+    "detectors.any.AnyNonspaceOutput": {
+      "description": "Hit if there's any non-space output",
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
+      "accuracy": null,
+      "active": true,
+      "doc_uri": "https://garak.ai",
+      "lang_spec": "*",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "tags": [],
+      "mod_time": "2025-10-27 07:44:01 +0000"
+    },
+    "detectors.any.AnyOutput": {
+      "description": "Hit if there's any output, i.e. output is a non-empty string",
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
+      "accuracy": null,
+      "active": true,
+      "doc_uri": "https://garak.ai",
+      "lang_spec": "*",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "tags": [],
+      "mod_time": "2025-10-27 07:44:01 +0000"
     },
     "detectors.base.Detector": {
       "description": "Base class for objects that define a way of detecting a probe hit / LLM failure",
