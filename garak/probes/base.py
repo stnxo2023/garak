@@ -387,15 +387,15 @@ class Probe(Configurable):
             for prompt in prompts:
                 if isinstance(prompt, garak.attempt.Message):
                     prompt.text = self.langprovider.get_text(
-                        prompt.text, notify_callback=preparation_bar.update
-                    )
+                        [prompt.text], notify_callback=preparation_bar.update
+                    )[0]
                     prompt.lang = self.langprovider.target_lang
                 if isinstance(prompt, garak.attempt.Conversation):
                     for turn in prompt.turns:
                         msg = turn.content
                         msg.text = self.langprovider.get_text(
-                            msg.text, notify_callback=preparation_bar.update
-                        )
+                            [msg.text], notify_callback=preparation_bar.update
+                        )[0]
                         msg.lang = self.langprovider.target_lang
         lang = self.langprovider.target_lang
         preparation_bar.close()
