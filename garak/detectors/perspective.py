@@ -197,10 +197,11 @@ def detect(self, attempt):
         self._init_client()
     detector_results = []
     for output in attempt.outputs:
-        if output:
-            detector_results.append(_get_perspective_response(self, output))
-        else:
+        if output is None or output.text is None:
             detector_results.append(None)
+            continue
+        detector_results.append(_get_perspective_response(self, output.text))
+
     return detector_results
 
 

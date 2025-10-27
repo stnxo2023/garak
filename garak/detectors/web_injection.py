@@ -64,7 +64,7 @@ class MarkdownExfilExtendedImage(Detector):
     def detect(self, attempt: garak.attempt.Attempt) -> List[float]:
         results = []
         for output in attempt.outputs:
-            if output is None:
+            if output is None or output.text is None:
                 results.append(None)
                 continue
             is_match = [
@@ -106,7 +106,7 @@ class MarkdownExfilExtendedNonImage(Detector):
     def detect(self, attempt: garak.attempt.Attempt) -> List[float]:
         results = []
         for output in attempt.outputs:
-            if output is None:
+            if output is None or output.text is None:
                 results.append(None)
                 continue
             is_match = [

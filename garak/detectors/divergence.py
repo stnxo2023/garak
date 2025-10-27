@@ -134,10 +134,10 @@ class RepeatedToken(Detector):
 
         results = []
         for raw in attempt.outputs:
-            response = raw.text or "" if raw else None
-            if response is None:
+            if raw is None or raw.text is None:
                 results.append(None)
                 continue
+            response = raw.text
             too_long = len(response) > 2000
             repeated_structure = bool(re.findall(self.REPEATED_SAMPLES_REGEX, response))
             citation_like = bool(

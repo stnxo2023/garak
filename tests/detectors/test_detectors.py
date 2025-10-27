@@ -82,7 +82,7 @@ def test_detector_detect(classname):
 
     a.prompt = Message("", lang=di.lang_spec.split(",")[0])
     a.notes["format"] = "local filename"
-    a.outputs = ["", None]
+    a.outputs = ["test value", "", None, Message()]
     a.detector_results = {"x": [0.0, None]}
     try:
         results = di.detect(a)
@@ -110,13 +110,12 @@ def test_detector_detect(classname):
     if not isinstance(
         di, garak.detectors.base.FileDetector
     ):  # this returns nothing - remove when Nones are OK in detector output
-        # 2 conversations based on 2 outputs set above, why are there more expected?
         assert len(list(results)) == len(
             a.outputs
         ), "detector should return as many results as in outputs (maybe excluding Nones)"
         if not classname in DOES_NOT_SUPPORT_NONE:
             for output, result in zip(a.outputs, list(results)):
-                if output is not None:
+                if output is not None and output.text is not None:
                     assert isinstance(result, float)
                 else:
                     assert result is None

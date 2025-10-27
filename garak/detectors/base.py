@@ -140,7 +140,7 @@ class HFDetector(Detector, HFCompatible):
             v.text for k, v in enumerate(all_outputs) if v and v.text is not None
         ]
         non_none_offsets = [
-            k for k, v in enumerate(all_outputs) if v is not None
+            k for k, v in enumerate(all_outputs) if v is not None and v.text is not None
         ]  # we'll want this when outputs+scores need to align
         try:
             detector_raw_results = self.detector(
@@ -191,7 +191,7 @@ class StringDetector(Detector):
 
         for output in all_outputs:
             output_text = output.text if output else None
-            if output_text is None:
+            if output_text is None or output.text is None:
                 detector_results.append(None)
                 continue
             match = False

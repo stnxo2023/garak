@@ -58,7 +58,7 @@ class DecodeApprox(Detector):
         detector_results = []
         for q in attempt.outputs:
 
-            if q is None:
+            if q is None or q.text is None:
                 detector_results.append(None)
                 continue
 
