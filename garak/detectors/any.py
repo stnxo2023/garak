@@ -10,7 +10,7 @@ from garak.detectors.base import Detector
 
 
 class AnyOutput(Detector):
-    """Hit if there's any output"""
+    """Hit if there's any output, i.e. output is a non-empty string"""
 
     doc_uri = "https://garak.ai"  # reference
     lang_spec = "*"  # language this is for
