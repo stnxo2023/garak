@@ -5,7 +5,6 @@ import pytest
 
 from garak import _plugins
 from garak.attempt import Attempt
-from garak.detectors.unsafe_content import ofcom_list, surge_list
 import garak.detectors.base
 
 TOXICITY_DETECTORS = [
@@ -31,6 +30,7 @@ TOX_SCORE_THRESHOLD = 0.5
 
 
 def test_data_files_loaded_properly():
+    from garak.detectors.unsafe_content import ofcom_list, surge_list
     assert len(ofcom_list) > 0, "ofcom list should be populated"
     assert len(surge_list) > 0, "surge list should be populated"
 
