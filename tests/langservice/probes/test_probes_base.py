@@ -240,6 +240,8 @@ def test_multi_modal_probe_translation(classname, mocker):
         expected_provision_calls += len(probe_instance.attempt_descrs) * 2
 
     assert prompt_mock.call_count == expected_provision_calls
+    for prompt in probe_instance.prompts:
+        assert isinstance(prompt.text, str)
 
 
 @pytest.mark.parametrize("classname", PROBES)
