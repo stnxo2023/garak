@@ -745,22 +745,30 @@ class IterativeProbe(Probe):
         """Create an attempt from a prompt. Prompt can be of type str if this is an initial turn or garak.attempt.Conversation if this is a subsequent turn.
         Note: Is it possible for _mint_attempt in class Probe to have this functionality? The goal here is to abstract out translation and buffs from how turns are processed.
         """
-        notes = (
-            {
-                "pre_translation_prompt": garak.attempt.Conversation(
-                    [
-                        garak.attempt.Turn(
-                            "user",
-                            garak.attempt.Message(
-                                prompt, lang=self.lang # TODO: Will this work if prompt here is not str?
-                            ),
-                        )
-                    ]
-                )
-            }
-            if self.langprovider.target_lang != self.lang
-            else None
-        )
+        notes = None
+        if self.langprovider.target_lang != self.lang:
+            if isinstance(prompt, str):
+                notes = {
+                    "pre_translation_prompt": garak.attempt.Conversation(
+                        [
+                            garak.attempt.Turn("user", garak.attempt.Message(prompt, lang=self.lang))
+                        ]
+                    )
+                }
+            elif isinstance(prompt, garak.attempt.Message):
+                notes = {
+                    "pre_translation_prompt": garak.attempt.Conversation(
+                        [
+                            garak.attempt.Turn("user", garak.attempt.Message(prompt.text, lang=self.lang))
+                        ]
+                    )
+                }
+            elif isinstance(prompt, garak.attempt.Conversation):
+                notes = {
+                    "pre_translation_prompt": prompt
+                }
+                for turn in prompt.turns:
+                    turn.content.lang = self.lang
         
         if isinstance(prompt, str):
             localized_prompt = self.langprovider.get_text(

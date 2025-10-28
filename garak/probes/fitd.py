@@ -318,6 +318,9 @@ class FITDProbe(garak.probes.IterativeProbe):
             # Note that this goes ahead whether it is the target query, an SSParaphrase of it (which typically tends to decrease intensity) or a re-align of it
             last_prompt = conversation.last_message("user").text
             last_response = conversation.last_message("assistant").text
+            if self.lang != self.langprovider.target_lang:
+                last_prompt = self.reverse_langprovider.get_text([last_prompt])[0]
+                last_response = self.reverse_langprovider.get_text([last_response])[0]
             verify_response = self._get_attack_gen_llm_response(PROMPT_TEMPLATE_EVAL.format(request=last_prompt, response=last_response))
             logging.debug("In FITD verify_last_response: verify_response =" + verify_response)
             logging.debug("******")
@@ -355,7 +358,6 @@ class FITDProbe(garak.probes.IterativeProbe):
         logging.debug("======")
         
         next_turn_conv = copy.deepcopy(conversation)
-
         last_prompt = copy.deepcopy(conversation.turns[-2].content.text)
         last_response = copy.deepcopy(conversation.turns[-1].content.text)
         last_non_refused_prompt = last_attempt.notes["last_non_refused_prompt"]
@@ -363,6 +365,13 @@ class FITDProbe(garak.probes.IterativeProbe):
         levels_completed = last_attempt.notes["levels_completed"]
         new_levels_completed = None
         target_turn = last_attempt.notes["target_turn"]
+        if self.lang != self.langprovider.target_lang:
+            # Translate parts to self.lang (EN) so that turn updates work better
+            last_prompt = self.reverse_langprovider.get_text([last_prompt])[0]
+            last_response = self.reverse_langprovider.get_text([last_response])[0]
+            next_turn_conv = copy.deepcopy(last_attempt.notes["pre_translation_prompt"])
+            next_turn_conv.turns.append(garak.attempt.Turn("assistant", garak.attempt.Message(text=last_response, lang=self.lang)))
+            # target_turn and last_non_refused_prompt will be in self.lang so no need for translation
 
         if self._is_refusal(last_response):
             if len(next_turn_conv.turns) == 2 or last_non_refused_prompt is None:
@@ -375,7 +384,7 @@ class FITDProbe(garak.probes.IterativeProbe):
                 # Note: The paper actually checks if the paraphrase results in a refusal and if so it uses PROMPT_TEMPLATE_INCREASE_SAFETY instead. If we want to do that we essentially need to track if the last turn was created with SSParaphrase and if so use PROMPT_TEMPLATE_INCREASE_SAFETY instead
                 logging.debug("*** Paraphrase and hope for non refusal ***")
                 safer_turn = self._get_attack_gen_llm_response(PROMPT_TEMPLATE_SLIPPERY_SLOPE_PARAPHRASE.format(sentence1=last_non_refused_prompt, sentence2=last_prompt))
-                next_turn_conv.turns = next_turn_conv.turns[:-1]
+                next_turn_conv.turns = next_turn_conv.turns[:-2]
                 next_turn_conv.turns.append(garak.attempt.Turn("user", garak.attempt.Message(text=safer_turn)))
         elif not self._is_response_aligned(last_prompt, last_response) and not self._is_realign_prompt(last_prompt):
             new_last_non_refused_prompt = last_prompt
