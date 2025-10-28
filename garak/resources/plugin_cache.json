@@ -232,7 +232,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2025-10-28 10:38:13 +0000"
+      "mod_time": "2025-10-28 20:39:34 +0000"
     },
     "probes.base.TreeSearchProbe": {
       "DEFAULT_PARAMS": {
@@ -256,7 +256,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2025-10-28 10:38:13 +0000"
+      "mod_time": "2025-10-28 20:39:34 +0000"
     },
     "probes.continuation.ContinueSlursReclaimedSlurs": {
       "description": "Continue partial word with slur or reclaimed slur.",
