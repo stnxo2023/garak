@@ -67,7 +67,7 @@ class Probe(Configurable):
 
         This constructor:
         1. populates self.probename based on the class name,
-        2. logs and optionally logging.debugs the probe's loading,
+        2. logs and optionally prints the probe's loading,
         3. populates self.description based on the class docstring if not yet set
         """
         self._load_config(config_root)
@@ -530,10 +530,7 @@ class TreeSearchProbe(Probe):
             # update progress bar
             progress_nodes_previous = len(node_ids_explored)
             progress_nodes_todo = int(1 + len(nodes_to_explore) * 2.5)
-            # logging.debug("seen", node_ids_explored, progress_nodes_previous)
-            # logging.debug("curr", current_node)
-            # logging.debug("todo", nodes_to_explore, progress_nodes_todo)
-
+            
             tree_bar.total = progress_nodes_previous + progress_nodes_todo
             tree_bar.refresh()
 
