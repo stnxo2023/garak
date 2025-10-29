@@ -351,11 +351,7 @@ class FITDProbe(garak.probes.IterativeProbe):
         return updated_prompt
 
     def generate_next_turn_attempt(self, conversation: garak.attempt.Conversation, last_attempt: garak.attempt.Attempt) -> garak.attempt.Attempt:
-        logging.debug("======")
-        logging.debug("In FITD generate_next_turn_attempt")
-        logging.debug("------")
-        self.log_attempt(last_attempt)
-        logging.debug("======")
+        logging.debug("In FITD generate_next_turn_attempt from attempt with ID = %s" % last_attempt.uuid)
         
         next_turn_conv = copy.deepcopy(conversation)
         last_prompt = copy.deepcopy(conversation.turns[-2].content.text)
@@ -429,18 +425,6 @@ class FITDProbe(garak.probes.IterativeProbe):
         logging.debug("Is realign prompt:" + str(prompt.startswith(PROMPT_TEMPLATE_REALIGN[40:])))
         logging.debug("****")
         return prompt.startswith(PROMPT_TEMPLATE_REALIGN[:40])
-
-    def log_attempt(self, attempt: garak.attempt.Attempt):
-        """logging.debug the attempt"""
-        logging.debug(f"Goal: {attempt.goal}")
-        logging.debug("# conversations : %d" % len(attempt.conversations))
-        for idx, conversation in enumerate(attempt.conversations):
-            logging.debug(f"Conversation {idx}:")
-            for turn in conversation.turns:
-                logging.debug(turn.role + ": " + turn.content.text)
-        logging.debug("Notes: ")
-        for k, v in attempt.notes.items():
-            logging.debug(f"\t{k}: {v}")
 
             
                 
