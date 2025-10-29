@@ -116,8 +116,7 @@ class LiteLLMGenerator(Generator):
         self._load_config(config_root)
         
         # Ensure suppressed_params is a set for efficient lookup
-        if hasattr(self, 'suppressed_params') and not isinstance(self.suppressed_params, set):
-            self.suppressed_params = set(self.suppressed_params)
+        self.suppressed_params = set(self.suppressed_params)
         
         self.fullname = f"LiteLLM {self.name}"
         self.supports_multiple_generations = not any(
