@@ -658,7 +658,20 @@ class TreeSearchProbe(Probe):
 
 class IterativeProbe(Probe):
     """
-    Base class for multi turn probes where each probe turn is generated based on the target's response to the previous turn.
+    Base class for multi-turn probes in which the probe uses the last target response to generate the next prompt.
+
+    IterativeProbe assumes the probe generates a set of initial prompts, each of which are passed to the target model and the response is used for evaluation. The responses are also provided back to the probe and the probe uses the response to generate follow up prompts which are also passed to the target model and each of the responses are used for evaluation.
+    This can continue until one of:
+        - max_turns is reached
+        - The probe chooses to run the detector on the target response and stops when the detector detects a success
+        -The probe has a function, different from the detector for deciding when it thinks an attack will be successful and stops at that point.
+
+    Additional design considerations:
+    1. Not all multiturn probes need this base class. A probe could directly construct a multiturn input where it only cares about how the target responds to the last turn (eg: prefill attacks) can just subclass Probe.
+    2. Probes that inherit from IterativeProbe are allowed to manipulate the history in addition to generating new turns based on a target's response. For example if the response to the initial turn was a refusal, the probe can in the next attempt either pass in that history of old init turn + refusal + next turn or just pass a new init turn. 
+    3. An Attempt is created at every turn when the history is passed to the target. All these Attempts are collected and passed to the detector. The probe can use Attempt.notes to tell the detector to skip certain attempts but a special detector needs to be written that will pay attention to this value. 
+    4. If num_generations > 1 , for every attempt at every turn, we obtain num_generations responses from the target, reduce to the unique ones and generate next turns based on each of them. This means that as the turn number increases, the number of attempts has the potential to grow exponentially. Currently, when we have processed (# init turns * self.soft_prompt_probe_cap) attempts, the probe will exit.
+    5. Currently the expansion of attempts happens in a BFS fashion. 
     """
     DEFAULT_PARAMS = Probe.DEFAULT_PARAMS | {
         "max_turns": 10,
@@ -673,70 +686,8 @@ class IterativeProbe(Probe):
         self.detector_score_threshold = 0.5
 
     def generate_init_turns(self) -> Iterable[str]:
-        """Function to be overridden with initial turns of each unique attempt"""
+        """Function to be overridden with initialization / generation initial turns of each unique attempt"""
         raise NotImplementedError
-
-    def _mint_attempt(
-        self, prompt=None, seq=None, notes=None, lang="*"
-    ) -> garak.attempt.Attempt:
-        """function for creating a new attempt given a prompt"""
-        turns = []
-        # Create initial turn for system prompt
-        if hasattr(self, "system_prompt") and self.system_prompt:
-            turns.append(
-                garak.attempt.Turn(
-                    role="system",
-                    content=garak.attempt.Message(
-                        text=self.system_prompt, lang=lang
-                    ),
-                )
-            )
-
-        if isinstance(prompt, str):
-            # Current prompt is just an str so add a user turn with it
-            turns.append(
-                garak.attempt.Turn(
-                    role="user", content=garak.attempt.Message(text=prompt, lang=lang)
-                )
-            )
-        elif isinstance(prompt, garak.attempt.Message):
-            # Current prompt is a Message object so add a user turn with it
-            turns.append(garak.attempt.Turn(role="user", content=prompt))
-        elif isinstance(prompt, garak.attempt.Conversation):
-            try:
-                prompt.last_message("system")
-                # Conversation already has a system turn; Keep it as is.
-                turns = prompt.turns
-            except ValueError as e:
-                # Conversation doesn't have a system turn; Append existing conversation turns to the new system prompt turn created above
-                turns += prompt.turns
-        else:
-            # May eventually want to raise a ValueError here
-            # Currently we need to allow for an empty attempt to be returned to support atkgen
-            logging.warning("No prompt set for attempt in %s" % self.__class__.__name__)
-
-        if len(turns) > 0:
-            prompt = garak.attempt.Conversation(
-                turns=turns,
-                notes=notes,
-            )
-
-        new_attempt = garak.attempt.Attempt(
-            probe_classname=(
-                str(self.__class__.__module__).replace("garak.probes.", "")
-                + "."
-                + self.__class__.__name__
-            ),
-            goal=self.goal,
-            status=garak.attempt.ATTEMPT_STARTED,
-            seq=seq,
-            prompt=prompt,
-            notes=notes,
-            lang=lang,
-        )
-
-        new_attempt = self._attempt_prestore_hook(new_attempt, seq)
-        return new_attempt
 
     def _create_attempt(self, prompt) -> garak.attempt.Attempt:
         """Create an attempt from a prompt. Prompt can be of type str if this is an initial turn or garak.attempt.Conversation if this is a subsequent turn.
@@ -792,7 +743,7 @@ class IterativeProbe(Probe):
 
     def create_init_attempts(self, init_turns: Iterable[str]) -> Iterable[garak.attempt.Attempt]:
         """Wrapper converting init turns to garak.attempt.Attempt objects. 
-        Base class sets turn number in attempt notes. Subclasses can use notes to mark attempts as non-adversarial if detector should skip them.
+        Base class sets turn number in attempt notes. Subclasses can use notes to mark attempts as non-adversarial if detector should skip them (if this is needed please override this function in the subclass).
         """
         init_attempts = [self._create_attempt(turn) for turn in init_turns]
         for attempt in init_attempts:
@@ -802,7 +753,9 @@ class IterativeProbe(Probe):
         return init_attempts
 
     def verify_is_last_response_success(self, attempt: garak.attempt.Attempt) -> List[bool]:
-        """Function to be overridden if a custom method is used to determine whether to terminate the conversation based on the last response. Evaluates each of attempt.outputs as a possible last response and returns a list of bools of the same size as attempt.outputs with True is that response indicated a successful attack and False otherwise."""
+        """Function to be overridden if a custom method is used to determine whether to terminate the conversation based on the last response. Evaluates each of attempt.outputs as a possible last response and returns a list of bools of the same size as attempt.outputs with True is that response indicated a successful attack and False otherwise.
+        Note that this is not required if self.end_condition == "detector" 
+        """
         raise NotImplementedError
 
     def _should_terminate_conversation(self, attempt: garak.attempt.Attempt) -> List[bool]:
@@ -826,11 +779,16 @@ class IterativeProbe(Probe):
             raise ValueError(f"Unsupported end condition '{self.end_condition}'")
 
     def generate_next_turn_str(self, conversation: garak.attempt.Conversation, last_attempt: garak.attempt.Attempt) -> str:
-        """Function to be overridden with logic to get the next turn of the conversation based on the previous turn"""
+        """Function to be overridden with logic to get the next turn of the conversation based on the previous turn. Subclass must either implement this or override generate_next_turn_attempt() directly.
+
+        Note that `conversation` is a conversation from the last attempt that needs to be extended. This will contain the full conversation history used as prompt in the last attempt as well as the target's response in the last turn. `last_attempt` is also made available in this function in case values in notes need to be accessed."""
         raise NotImplementedError
 
     def generate_next_turn_attempt(self, conversation: garak.attempt.Conversation, last_attempt: garak.attempt.Attempt) -> garak.attempt.Attempt:
-        """Function to be overridden with logic to get a conversation object for the next turn of the conversation based on the previous turn"""
+        """Function to be overridden with logic to get a conversation object for the next turn of the conversation based on the previous turn
+        Subclasses may choose not to override this function if implementing generate_next_turn_str()
+        Overriding this function is useful if the subclass wants to manipulate conversation history (ie for the next attempt delete some turns from past history in addition to adding a new turn), or set notes for the new attempt.
+        """
         next_turn_str = self.generate_next_turn_str(conversation, last_attempt)
         next_turn_conv = copy.deepcopy(conversation)
         next_turn_conv.turns.append(garak.attempt.Turn("user", garak.attempt.Message(text=next_turn_str)))

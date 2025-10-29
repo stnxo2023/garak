@@ -277,7 +277,7 @@ class FITDProbe(garak.probes.IterativeProbe):
         self.level_queries_per_goal = dict()
         self.init_turns = list()
         for target_turn in tqdm(self.target_prompts, desc="In Probe FITD, generating init turns:"):
-            # TODO: May need to repeat this a few times until a non refusal is obtained
+            # Note: The FITD paper repeats this a few times until a non refusal is obtained. We just handle it in is_refusal case in generate_next_turn_attempt instead
             init_turn = self._generate_init_turn(target_turn)
             if init_turn is None:
                 logging.debug(f"In FITD generate_init_turns: Failed to generate init turn for {target_turn}")
