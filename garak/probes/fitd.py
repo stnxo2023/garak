@@ -171,25 +171,35 @@ class FITDProbe(garak.probes.IterativeProbe):
     active = False  # Note: This probe is currently not active because of the potential for the number of attempts to grow exponentially and have to be terminated early unless the user sets generations = 1
 
     DEFAULT_PARAMS = garak.probes.IterativeProbe.DEFAULT_PARAMS | {
-        "attack_gen_llm_type": "nim",
-        "attack_gen_llm_model": "nvdev/mistralai/mixtral-8x22b-instruct-v0.1",
-        "num_init_level_queries": 3,
+        "red_team_model_type": "nim.NVOpenAIChat",
+        "red_team_model_name": "nvdev/mistralai/mixtral-8x22b-instruct-v0.1",
+        "red_team_model_config": {},
+        "num_level_queries": 3,
         "end_condition": "verify",
     }
 
     def __init__(self, config_root=_config):
-        self.attack_gen_llm = None
+        self.red_team_model = None
         super().__init__(config_root=config_root)
 
     def set_up_attack_gen_llm(self):
         """Instantiate client for attack gen LLM"""
-        attacker_config = {
+        try:
+            rt_model_module, rt_model_class = self.red_team_model_type.split(".")
+        except ValueError as e:
+            msg = f"red team model type needs to be fully specified, w.g. 'module.Class'. Got {self.red_team_model_type}"
+            logging.critical(msg)
+            raise ValueError() from e
+        rt_config = {
             "generators": {
-                self.attack_gen_llm_type: {"name": self.attack_gen_llm_model}
+                rt_model_module: {
+                    rt_model_class: self.red_team_model_config
+                    | {"name": self.red_team_model_name},
+                }
             }
         }
-        self.attack_gen_llm = garak._plugins.load_plugin(
-            f"generators.{self.attack_gen_llm_type}", config_root=attacker_config
+        self.red_team_model = garak._plugins.load_plugin(
+            f"generators.{self.red_team_model_type}", config_root=rt_config
         )
 
     def _get_attack_gen_llm_response(self, prompt: str) -> str:
@@ -202,7 +212,7 @@ class FITDProbe(garak.probes.IterativeProbe):
                 ),
             ]
         )
-        response = self.attack_gen_llm.generate(prompt=conv, generations_this_call=1)
+        response = self.red_team_model.generate(prompt=conv, generations_this_call=1)
         return response[0].text
 
     def _is_refusal(self, response: str) -> bool:
@@ -221,12 +231,12 @@ class FITDProbe(garak.probes.IterativeProbe):
         )
 
     def _get_level_queries(self, target_turn: str, init_turn: str) -> Iterable[str]:
-        """Given a target adversarial turn, this helper function prompts the attack gen LLM to generate queries of increasing adversarial intent starting from a provided benign init turn to the target adversarial turn. The number of levels is decided by the config param `num_init_level_queries`"""
+        """Given a target adversarial turn, this helper function prompts the attack gen LLM to generate queries of increasing adversarial intent starting from a provided benign init turn to the target adversarial turn. The number of levels is decided by the config param `num_level_queries`"""
         level_queries = [init_turn]
         current_prompt = init_turn
-        for i in range(self.num_init_level_queries):
+        for i in range(self.num_level_queries):
             cur_step = i + 1
-            progress_ratio = cur_step / self.num_init_level_queries
+            progress_ratio = cur_step / self.num_level_queries
             evolution = "\n".join(level_queries)
             level_queries.append(
                 self._get_attack_gen_llm_response(
@@ -234,7 +244,7 @@ class FITDProbe(garak.probes.IterativeProbe):
                         target_prompt=target_turn,
                         current_prompt=current_prompt,
                         step=cur_step,
-                        steps=self.num_init_level_queries,
+                        steps=self.num_level_queries,
                         progress_ratio="%.2f" % (progress_ratio),
                         evolution=evolution,
                     )
@@ -270,7 +280,7 @@ class FITDProbe(garak.probes.IterativeProbe):
 
     def generate_init_turns(self) -> Iterable[str]:
         """Generate initial turns of each unique attempt"""
-        if self.attack_gen_llm is None:
+        if self.red_team_model is None:
             logging.debug("In FITD generate_init_turns: Set up attack gen LLM")
             self.set_up_attack_gen_llm()
         logging.debug(

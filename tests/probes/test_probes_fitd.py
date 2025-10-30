@@ -20,15 +20,24 @@ def test_fitd_probe(classname):
     fitd_class = getattr(mod, class_name)
 
     with tempfile.NamedTemporaryFile(mode="w+", encoding="utf-8") as temp_report_file:
-        max_turns = 3
+        max_calls_per_conv = 3
         probe_config = {
             "probes": {
                 "fitd": {
                     "FITDProbe": {
-                        "max_turns": max_turns,
+                        "max_calls_per_conv": max_calls_per_conv,
                         "num_init_level_queries": 1,
-                        "attack_gen_llm_type": "test.Repeat",
-                        "attack_gen_llm_model": "",
+                        "red_team_model_type": "test.Repeat",
+                        "red_team_model_name": "",
+                        "red_team_model_config": {
+                            "generators": {
+                                "test": {
+                                    "Repeat": {
+                                        "unused_key_for_config_test": "unused_value",
+                                    }
+                                }
+                            }
+                        },
                     }
                 }
             }
@@ -77,28 +86,28 @@ def test_fitd_probe(classname):
         assert (
             num_attempt_conv_turn_roles_not_switching == 0
         ), f"Every element in list returned by {classname} probe should have a conversation where turn roles switch between user and assistant"
-        num_attempts_gr_max_turns = len(
+        num_attempts_gr_max_calls_per_conv = len(
             [
                 attempt
                 for attempt in attempts
-                if len(attempt.conversations[0].turns) > max_turns * 2
+                if len(attempt.conversations[0].turns) > max_calls_per_conv * 2
             ]
         )
         assert (
-            num_attempts_gr_max_turns == 0
-        ), f"Every element in list returned by {classname} probe should have a conversation with at most {max_turns} turns of each role"
+            num_attempts_gr_max_calls_per_conv == 0
+        ), f"Every element in list returned by {classname} probe should have a conversation with at most {max_calls_per_conv} turns of each role"
 
 
 def test_fitd_verify_is_last_response_success():
-    max_turns = 3
+    max_calls_per_conv = 3
     probe_config = {
         "probes": {
             "fitd": {
                 "FITDProbe": {
-                    "max_turns": max_turns,
+                    "max_calls_per_conv": max_calls_per_conv,
                     "num_init_level_queries": 1,
-                    "attack_gen_llm_type": "test.Repeat",
-                    "attack_gen_llm_model": "",
+                    "red_team_model_type": "test.Repeat",
+                    "red_team_model_name": "",
                 }
             }
         }

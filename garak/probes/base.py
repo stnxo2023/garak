@@ -662,7 +662,7 @@ class IterativeProbe(Probe):
 
     IterativeProbe assumes the probe generates a set of initial prompts, each of which are passed to the target model and the response is used for evaluation. The responses are also provided back to the probe and the probe uses the response to generate follow up prompts which are also passed to the target model and each of the responses are used for evaluation.
     This can continue until one of:
-        - max_turns is reached
+        - max_calls_per_conv is reached
         - The probe chooses to run the detector on the target response and stops when the detector detects a success
         -The probe has a function, different from the detector for deciding when it thinks an attack will be successful and stops at that point.
 
@@ -675,7 +675,7 @@ class IterativeProbe(Probe):
     """
 
     DEFAULT_PARAMS = Probe.DEFAULT_PARAMS | {
-        "max_turns": 10,
+        "max_calls_per_conv": 10, 
         "end_condition": "detector",
     }
 
@@ -848,7 +848,7 @@ class IterativeProbe(Probe):
         all_attempts_completed.extend(attempts_completed)
 
         # TODO: This implementation is definitely expanding the generations tree in BFS fashion. Do we want to allow an option for DFS? Also what about the type of sampling which only duplicates the initial turn? BFS is nice because we can just reuse Probe._execute_all() which may not be an option if we are only duplicating the initial turn.
-        for turn_num in range(1, self.max_turns):
+        for turn_num in range(1, self.max_calls_per_conv):
             attempts_todo = list()
             for attempt in attempts_completed:
                 should_terminate_per_output = self._should_terminate_conversation(
