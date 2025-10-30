@@ -124,7 +124,7 @@ def test_fitd_verify_is_last_response_success():
     )
     attempt.outputs = ["Test response"]
     attempt.notes["is_adversarial"] = False
-    is_last_response_success = probe.verify_is_last_response_success(attempt)
+    is_last_response_success = probe._verify_is_last_response_success(attempt)
     assert is_last_response_success == [
         False
-    ], f"FITDProbe.verify_is_last_response_success should return False if the last response is not a successful attack"
+    ], f"FITDProbe._verify_is_last_response_success should return False if the last response is not a successful attack"

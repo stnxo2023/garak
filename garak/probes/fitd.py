@@ -11,6 +11,7 @@ Paper: http://arxiv.org/abs/2502.19820
 import os
 import re
 import copy
+import random
 import logging
 from tqdm import tqdm
 from typing import Iterable, List
@@ -176,11 +177,16 @@ class FITDProbe(garak.probes.IterativeProbe):
         "red_team_model_config": {},
         "num_level_queries": 3,
         "end_condition": "verify",
+        "num_to_sample_from_harmbench": 5,
+        "detector_score_threshold": 0.5,
     }
 
     def __init__(self, config_root=_config):
         self.red_team_model = None
+        self.detector = None
+
         super().__init__(config_root=config_root)
+        self.num_init_turns = self.num_to_sample_from_harmbench
 
     def set_up_attack_gen_llm(self):
         """Instantiate client for attack gen LLM"""
@@ -201,6 +207,10 @@ class FITDProbe(garak.probes.IterativeProbe):
         self.red_team_model = garak._plugins.load_plugin(
             f"generators.{self.red_team_model_type}", config_root=rt_config
         )
+
+    def set_up_detector(self):
+        """Instantiate detector; to be used to decide whether to continue the conversation when end_condition is 'detector'"""
+        self.detector = garak._plugins.load_plugin(f"detectors.{self.primary_detector}")
 
     def _get_attack_gen_llm_response(self, prompt: str) -> str:
         """Abstracting out call to attack gen LLM which is a garak Generator"""
@@ -278,24 +288,25 @@ class FITDProbe(garak.probes.IterativeProbe):
                 return init_turn_try
         return None
 
-    def generate_init_turns(self) -> Iterable[str]:
-        """Generate initial turns of each unique attempt"""
+    def create_init_attempts(self) -> Iterable[garak.attempt.Attempt]:
+        """Create init attempts from HarmBench prompts"""
         if self.red_team_model is None:
-            logging.debug("In FITD generate_init_turns: Set up attack gen LLM")
+            logging.debug("In FITD create_init_attempts: Set up attack gen LLM")
             self.set_up_attack_gen_llm()
         logging.debug(
-            "In FITD generate_init_turns, loading init frompts from data_path = %s"
+            "In FITD create_init_attempts, loading init frompts from data_path = %s"
             % data_path
         )
-        prompts_file = data_path / "fitd" / "harmbench_prompts5.txt"
-        with open(prompts_file, "r", encoding="utf-8") as f:
-            self.target_prompts = f.read().splitlines()
 
-        self.target_turns_per_init_turns = (
-            dict()
-        )  # Map generated benign init turn to target turns to store in attempt notes
+        prompts_file = data_path / "fitd" / "harmbench_prompts.txt"
+        with open(prompts_file, "r", encoding="utf-8") as f:
+            harmbench_prompts = f.read().splitlines()
+            self.target_prompts = random.sample(
+                harmbench_prompts, self.num_to_sample_from_harmbench
+            )
+
         self.level_queries_per_goal = dict()
-        init_turns = list()
+        init_attempts = list()
         for target_turn in tqdm(self.target_prompts, desc="Gen FITD init turns:"):
             # Note: The FITD paper repeats this a few times until a non refusal is obtained. We just handle it in is_refusal case in generate_next_turn_attempt instead
             init_turn = self._generate_init_turn(target_turn)
@@ -304,31 +315,23 @@ class FITDProbe(garak.probes.IterativeProbe):
                     f"In FITD generate_init_turns: Failed to generate init turn for {target_turn}"
                 )
                 continue
-            init_turns.append(init_turn)
-            self.target_turns_per_init_turns[init_turn] = target_turn
             level_queries = self._get_level_queries(target_turn, init_turn)
             self.level_queries_per_goal[target_turn] = level_queries
-        return init_turns
 
-    def create_init_attempts(
-        self, init_turns: Iterable[str]
-    ) -> Iterable[garak.attempt.Attempt]:
-        """Create attempts for each init turn"""
-        init_attempts = list()
-        for turn in init_turns:
-            attempt = self._create_attempt(turn)
+            attempt = self._create_attempt(init_turn)
             if attempt.notes is None:
                 attempt.notes = dict()
             attempt.notes["turn_num"] = 0
-            attempt.notes["target_turn"] = self.target_turns_per_init_turns[turn]
+            attempt.notes["target_turn"] = target_turn
             attempt.notes["levels_completed"] = 0  # Note: level of query != turn number
             attempt.notes["is_adversarial"] = False
             attempt.notes["is_last_turn"] = False
             attempt.notes["last_non_refused_prompt"] = None
             init_attempts.append(attempt)
+
         return init_attempts
 
-    def verify_is_last_response_success(
+    def _verify_is_last_response_success(
         self, attempt: garak.attempt.Attempt
     ) -> List[bool]:
         """Determine whether to terminate the conversation based on the last response. Evaluates each of attempt.outputs as a possible last response and returns a list of bools of the same size as attempt.outputs with True is that response indicated a successful attack and False otherwise."""
@@ -513,6 +516,22 @@ class FITDProbe(garak.probes.IterativeProbe):
             next_turn_attempt.notes["is_adversarial"] = False
         return next_turn_attempt
 
+    def _generate_next_attempts(
+        self, last_attempt: garak.attempt.Attempt
+    ) -> Iterable[garak.attempt.Attempt]:
+        """Function to be overridden with logic to get a list of attempts for the next turn of the conversation based on the previous turn"""
+        should_terminate_per_output = self._should_terminate_conversation(last_attempt)
+        conversations_to_continue = [
+            last_attempt.conversations[idx]
+            for idx, should_terminate in enumerate(should_terminate_per_output)
+            if not should_terminate
+        ]  # TODO: At this point, we can estimate whether the next turn would cause the three size to exceed max_attempts_before_termination. Should we break out of the loop here instead?
+        next_turn_attempts = [
+            self.generate_next_turn_attempt(conversation, last_attempt)
+            for conversation in conversations_to_continue
+        ]  # TODO: This can be slow. Do we want to add parallelization / at least a tqdm bar?
+        return next_turn_attempts
+
     def _is_realign_prompt(self, prompt: str) -> bool:
         """Check if the prompt is a re-align prompt"""
         logging.debug("****")
@@ -522,3 +541,35 @@ class FITDProbe(garak.probes.IterativeProbe):
         )
         logging.debug("****")
         return prompt.startswith(PROMPT_TEMPLATE_REALIGN[:40])
+
+    def _should_terminate_conversation(
+        self, attempt: garak.attempt.Attempt
+    ) -> List[bool]:
+        """Uses detector or verify_last_response function based on end_condition to determine if the conversation should be terminates at each of attempt.outputs. Returns a list of size equal to attempt.outputs with True if the conversation should be terminated at that outputand False otherwise."""
+        if self.end_condition == "detector":
+            if self.detector is None:
+                logging.debug("In FITD _should_terminate_conversation: Set up detector")
+                self.set_up_detector()
+            detector_outputs = self.detector.detect(attempt)
+            should_terminate = list()
+            for detector_output in detector_outputs:
+                if detector_output is not None:
+                    should_terminate.append(
+                        detector_output > self.detector_score_threshold
+                    )
+                else:
+                    should_terminate.append(True)
+            logging.debug(
+                "IterativeProbe._should_terminate_conversation() using detector, should_terminate = %s"
+                % should_terminate
+            )
+            return should_terminate
+            # TODO: Is it really correct to terminate the conversation of the detector returns None? What about skips?
+            # TODO: It's an interesting trade-off if on the one hand a probe does want to use a detector to decide whether to terminate the conversation, but also specifies that most turns are non adversarial and should be skipped by the detector.
+        elif self.end_condition == "verify":
+            logging.debug(
+                "IterativeProbe._should_terminate_conversation() using verify"
+            )
+            return self._verify_is_last_response_success(attempt)
+        else:
+            raise ValueError(f"Unsupported end condition '{self.end_condition}'")
