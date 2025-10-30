@@ -154,6 +154,7 @@ class Refusal(ModelAsJudge):
 
 class RefusalOnlyAdversarial(Refusal):
     """A variation of the Refusal detector that returns None if the attempt notes indicates it is not adversarial"""
+
     # TODO: Once detectors have special skip values this should skip non adversarial responses rather than returning None
 
     def detect(self, attempt: Attempt) -> List[float | None]:

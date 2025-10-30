@@ -530,7 +530,7 @@ class TreeSearchProbe(Probe):
             # update progress bar
             progress_nodes_previous = len(node_ids_explored)
             progress_nodes_todo = int(1 + len(nodes_to_explore) * 2.5)
-            
+
             tree_bar.total = progress_nodes_previous + progress_nodes_todo
             tree_bar.refresh()
 
@@ -668,11 +668,12 @@ class IterativeProbe(Probe):
 
     Additional design considerations:
     1. Not all multiturn probes need this base class. A probe could directly construct a multiturn input where it only cares about how the target responds to the last turn (eg: prefill attacks) can just subclass Probe.
-    2. Probes that inherit from IterativeProbe are allowed to manipulate the history in addition to generating new turns based on a target's response. For example if the response to the initial turn was a refusal, the probe can in the next attempt either pass in that history of old init turn + refusal + next turn or just pass a new init turn. 
-    3. An Attempt is created at every turn when the history is passed to the target. All these Attempts are collected and passed to the detector. The probe can use Attempt.notes to tell the detector to skip certain attempts but a special detector needs to be written that will pay attention to this value. 
+    2. Probes that inherit from IterativeProbe are allowed to manipulate the history in addition to generating new turns based on a target's response. For example if the response to the initial turn was a refusal, the probe can in the next attempt either pass in that history of old init turn + refusal + next turn or just pass a new init turn.
+    3. An Attempt is created at every turn when the history is passed to the target. All these Attempts are collected and passed to the detector. The probe can use Attempt.notes to tell the detector to skip certain attempts but a special detector needs to be written that will pay attention to this value.
     4. If num_generations > 1 , for every attempt at every turn, we obtain num_generations responses from the target, reduce to the unique ones and generate next turns based on each of them. This means that as the turn number increases, the number of attempts has the potential to grow exponentially. Currently, when we have processed (# init turns * self.soft_prompt_probe_cap) attempts, the probe will exit.
-    5. Currently the expansion of attempts happens in a BFS fashion. 
+    5. Currently the expansion of attempts happens in a BFS fashion.
     """
+
     DEFAULT_PARAMS = Probe.DEFAULT_PARAMS | {
         "max_turns": 10,
         "end_condition": "detector",
@@ -699,7 +700,9 @@ class IterativeProbe(Probe):
                 notes = {
                     "pre_translation_prompt": garak.attempt.Conversation(
                         [
-                            garak.attempt.Turn("user", garak.attempt.Message(prompt, lang=self.lang))
+                            garak.attempt.Turn(
+                                "user", garak.attempt.Message(prompt, lang=self.lang)
+                            )
                         ]
                     )
                 }
@@ -707,42 +710,44 @@ class IterativeProbe(Probe):
                 notes = {
                     "pre_translation_prompt": garak.attempt.Conversation(
                         [
-                            garak.attempt.Turn("user", garak.attempt.Message(prompt.text, lang=self.lang))
+                            garak.attempt.Turn(
+                                "user",
+                                garak.attempt.Message(prompt.text, lang=self.lang),
+                            )
                         ]
                     )
                 }
             elif isinstance(prompt, garak.attempt.Conversation):
-                notes = {
-                    "pre_translation_prompt": prompt
-                }
+                notes = {"pre_translation_prompt": prompt}
                 for turn in prompt.turns:
                     turn.content.lang = self.lang
-        
+
         if isinstance(prompt, str):
-            localized_prompt = self.langprovider.get_text(
-                [prompt]
-            )[0] # TODO: Is it less efficient to call langprovider like this instead of on a list of prompts as is done in Probe.probe()?
-            prompt = garak.attempt.Message(localized_prompt, lang=self.langprovider.target_lang)
+            localized_prompt = self.langprovider.get_text([prompt])[
+                0
+            ]  # TODO: Is it less efficient to call langprovider like this instead of on a list of prompts as is done in Probe.probe()?
+            prompt = garak.attempt.Message(
+                localized_prompt, lang=self.langprovider.target_lang
+            )
         else:
             # what types should this expect? Message, Conversation?
             if isinstance(prompt, garak.attempt.Message):
-                prompt.text = self.langprovider.get_text(
-                    [prompt.text]
-                )[0]
+                prompt.text = self.langprovider.get_text([prompt.text])[0]
                 prompt.lang = self.langprovider.target_lang
             if isinstance(prompt, garak.attempt.Conversation):
                 for turn in prompt.turns:
                     msg = turn.content
-                    msg.text = self.langprovider.get_text(
-                        [msg.text]
-                    )[0]
+                    msg.text = self.langprovider.get_text([msg.text])[0]
                     msg.lang = self.langprovider.target_lang
 
-        
-        return self._mint_attempt(prompt=prompt, seq=None, notes=notes, lang=self.langprovider.target_lang)
+        return self._mint_attempt(
+            prompt=prompt, seq=None, notes=notes, lang=self.langprovider.target_lang
+        )
 
-    def create_init_attempts(self, init_turns: Iterable[str]) -> Iterable[garak.attempt.Attempt]:
-        """Wrapper converting init turns to garak.attempt.Attempt objects. 
+    def create_init_attempts(
+        self, init_turns: Iterable[str]
+    ) -> Iterable[garak.attempt.Attempt]:
+        """Wrapper converting init turns to garak.attempt.Attempt objects.
         Base class sets turn number in attempt notes. Subclasses can use notes to mark attempts as non-adversarial if detector should skip them (if this is needed please override this function in the subclass).
         """
         init_attempts = [self._create_attempt(turn) for turn in init_turns]
@@ -752,63 +757,91 @@ class IterativeProbe(Probe):
                 attempt.notes["turn_num"] = 0
         return init_attempts
 
-    def verify_is_last_response_success(self, attempt: garak.attempt.Attempt) -> List[bool]:
+    def verify_is_last_response_success(
+        self, attempt: garak.attempt.Attempt
+    ) -> List[bool]:
         """Function to be overridden if a custom method is used to determine whether to terminate the conversation based on the last response. Evaluates each of attempt.outputs as a possible last response and returns a list of bools of the same size as attempt.outputs with True is that response indicated a successful attack and False otherwise.
-        Note that this is not required if self.end_condition == "detector" 
+        Note that this is not required if self.end_condition == "detector"
         """
         raise NotImplementedError
 
-    def _should_terminate_conversation(self, attempt: garak.attempt.Attempt) -> List[bool]:
+    def _should_terminate_conversation(
+        self, attempt: garak.attempt.Attempt
+    ) -> List[bool]:
         """Uses detector or verify_last_response function based on end_condition to determine if the conversation should be terminates at each of attempt.outputs. Returns a list of size equal to attempt.outputs with True if the conversation should be terminated at that outputand False otherwise."""
         if self.end_condition == "detector":
             detector_outputs = self.detector.detect(attempt)
             should_terminate = list()
             for detector_output in detector_outputs:
                 if detector_output is not None:
-                    should_terminate.append(detector_output > self.detector_score_threshold)
+                    should_terminate.append(
+                        detector_output > self.detector_score_threshold
+                    )
                 else:
                     should_terminate.append(True)
-            logging.debug("IterativeProbe._should_terminate_conversation() using detector, should_terminate = %s" % should_terminate)
+            logging.debug(
+                "IterativeProbe._should_terminate_conversation() using detector, should_terminate = %s"
+                % should_terminate
+            )
             return should_terminate
             # TODO: Is it really correct to terminate the conversation of the detector returns None? What about skips?
             # TODO: It's an interesting trade-off if on the one hand a probe does want to use a detector to decide whether to terminate the conversation, but also specifies that most turns are non adversarial and should be skipped by the detector.
         elif self.end_condition == "verify":
-            logging.debug("IterativeProbe._should_terminate_conversation() using verify")
+            logging.debug(
+                "IterativeProbe._should_terminate_conversation() using verify"
+            )
             return self.verify_is_last_response_success(attempt)
         else:
             raise ValueError(f"Unsupported end condition '{self.end_condition}'")
 
-    def generate_next_turn_str(self, conversation: garak.attempt.Conversation, last_attempt: garak.attempt.Attempt) -> str:
+    def generate_next_turn_str(
+        self,
+        conversation: garak.attempt.Conversation,
+        last_attempt: garak.attempt.Attempt,
+    ) -> str:
         """Function to be overridden with logic to get the next turn of the conversation based on the previous turn. Subclass must either implement this or override generate_next_turn_attempt() directly.
 
-        Note that `conversation` is a conversation from the last attempt that needs to be extended. This will contain the full conversation history used as prompt in the last attempt as well as the target's response in the last turn. `last_attempt` is also made available in this function in case values in notes need to be accessed."""
+        Note that `conversation` is a conversation from the last attempt that needs to be extended. This will contain the full conversation history used as prompt in the last attempt as well as the target's response in the last turn. `last_attempt` is also made available in this function in case values in notes need to be accessed.
+        """
         raise NotImplementedError
 
-    def generate_next_turn_attempt(self, conversation: garak.attempt.Conversation, last_attempt: garak.attempt.Attempt) -> garak.attempt.Attempt:
+    def generate_next_turn_attempt(
+        self,
+        conversation: garak.attempt.Conversation,
+        last_attempt: garak.attempt.Attempt,
+    ) -> garak.attempt.Attempt:
         """Function to be overridden with logic to get a conversation object for the next turn of the conversation based on the previous turn
         Subclasses may choose not to override this function if implementing generate_next_turn_str()
         Overriding this function is useful if the subclass wants to manipulate conversation history (ie for the next attempt delete some turns from past history in addition to adding a new turn), or set notes for the new attempt.
         """
         next_turn_str = self.generate_next_turn_str(conversation, last_attempt)
         next_turn_conv = copy.deepcopy(conversation)
-        next_turn_conv.turns.append(garak.attempt.Turn("user", garak.attempt.Message(text=next_turn_str)))
+        next_turn_conv.turns.append(
+            garak.attempt.Turn("user", garak.attempt.Message(text=next_turn_str))
+        )
         next_turn_attempt = self._create_attempt(next_turn_conv)
         return next_turn_attempt
 
     def probe(self, generator):
         """Wrapper generating all attempts and handling execution against generator"""
         if self.end_condition == "detector":
-            self.detector = garak._plugins.load_plugin(f"detectors.{self.primary_detector}") # TODO: Ideally we shouldn't be instantiating the detector again just for this. Is there a way for the probe to call the detector or use detector results withotu reinstantiating? Should we have a new subclass of Harness to shange how probe.probe() is even used or is that going too far?
+            self.detector = garak._plugins.load_plugin(
+                f"detectors.{self.primary_detector}"
+            )  # TODO: Ideally we shouldn't be instantiating the detector again just for this. Is there a way for the probe to call the detector or use detector results withotu reinstantiating? Should we have a new subclass of Harness to shange how probe.probe() is even used or is that going too far?
 
         logging.debug("In IterativeProbe.probe() generating init turns")
         self.init_turns = self.generate_init_turns()
         self.generator = generator
         all_attempts_completed = list()
         attempts_todo = self.create_init_attempts(self.init_turns)
-        self.max_attempts_before_termination = len(self.init_turns) * self.soft_probe_prompt_cap
+        self.max_attempts_before_termination = (
+            len(self.init_turns) * self.soft_probe_prompt_cap
+        )
 
         if len(_config.buffmanager.buffs) > 0:
-            attempts_todo = self._buff_hook(attempts_todo) # TODO: What's actually happening here? Is it possible to abstract it out at attempt creation?
+            attempts_todo = self._buff_hook(
+                attempts_todo
+            )  # TODO: What's actually happening here? Is it possible to abstract it out at attempt creation?
 
         logging.debug("In IterativeProbe.probe() running init turns")
         attempts_completed = self._execute_all(attempts_todo)
@@ -818,14 +851,26 @@ class IterativeProbe(Probe):
         for turn_num in range(1, self.max_turns):
             attempts_todo = list()
             for attempt in attempts_completed:
-                should_terminate_per_output = self._should_terminate_conversation(attempt)
-                conversations_to_continue = [attempt.conversations[idx] for idx, should_terminate in enumerate(should_terminate_per_output) if not should_terminate] # TODO: At this point, we can estimate whether the next turn would cause the three size to exceed max_attempts_before_termination. Should we break out of the loop here instead?
-                next_turn_attempts = [self.generate_next_turn_attempt(conversation, attempt) for conversation in conversations_to_continue] # TODO: This can be slow. Do we want to add parallelization / at least a tqdm bar?
+                should_terminate_per_output = self._should_terminate_conversation(
+                    attempt
+                )
+                conversations_to_continue = [
+                    attempt.conversations[idx]
+                    for idx, should_terminate in enumerate(should_terminate_per_output)
+                    if not should_terminate
+                ]  # TODO: At this point, we can estimate whether the next turn would cause the three size to exceed max_attempts_before_termination. Should we break out of the loop here instead?
+                next_turn_attempts = [
+                    self.generate_next_turn_attempt(conversation, attempt)
+                    for conversation in conversations_to_continue
+                ]  # TODO: This can be slow. Do we want to add parallelization / at least a tqdm bar?
                 attempts_todo.extend(next_turn_attempts)
-                
+
             print("Turn %d: Attempts created: %d" % (turn_num, len(attempts_todo)))
             if len(attempts_todo) == 0:
-                print("No new attempts created for turn %d; Breaking out of loop" % turn_num)
+                print(
+                    "No new attempts created for turn %d; Breaking out of loop"
+                    % turn_num
+                )
                 break
 
             if len(_config.buffmanager.buffs) > 0:
@@ -834,12 +879,17 @@ class IterativeProbe(Probe):
             attempts_completed = self._execute_all(attempts_todo)
             all_attempts_completed.extend(attempts_completed)
 
-            print("End of turn %d; Attempts this turn: %d; Total attempts completed: %d" % (turn_num, len(attempts_completed), len(all_attempts_completed)))
+            print(
+                "End of turn %d; Attempts this turn: %d; Total attempts completed: %d"
+                % (turn_num, len(attempts_completed), len(all_attempts_completed))
+            )
 
             if len(all_attempts_completed) > self.max_attempts_before_termination:
                 print("Max attempts before termination reached; Breaking out of loop")
                 break
 
-        print("Probe exiting; Total attempts completed: %d" % len(all_attempts_completed))
+        print(
+            "Probe exiting; Total attempts completed: %d" % len(all_attempts_completed)
+        )
 
         return all_attempts_completed
