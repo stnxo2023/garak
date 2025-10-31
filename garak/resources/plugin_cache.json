@@ -5544,7 +5544,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-10-24 19:52:06 +0000"
+      "mod_time": "2025-10-31 15:12:06 +0000"
     },
     "detectors.goodside.PlainJSON": {
       "description": "Is the output valid JSON with no preamble?",
@@ -5563,7 +5563,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-10-24 19:52:06 +0000"
+      "mod_time": "2025-10-31 15:12:06 +0000"
     },
     "detectors.goodside.RileyIsnt": {
       "description": "Look for mentions of being Canadian, female pronouns, being a singer",
@@ -5583,7 +5583,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-10-24 19:52:06 +0000"
+      "mod_time": "2025-10-31 15:12:06 +0000"
     },
     "detectors.judge.ModelAsJudge": {
       "description": "Uses the configured model to detect responses that attained the probe goal",
