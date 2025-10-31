@@ -739,7 +739,7 @@ class IterativeProbe(Probe):
             prompt=prompt, seq=None, notes=notes, lang=self.langprovider.target_lang
         )
 
-    def create_init_attempts(self) -> Iterable[garak.attempt.Attempt]:
+    def _create_init_attempts(self) -> Iterable[garak.attempt.Attempt]:
         """Function to be overridden by subclass creating attempts containing each unique initial turn."""
         raise NotImplementedError
 
@@ -753,7 +753,7 @@ class IterativeProbe(Probe):
         """Wrapper generating all attempts and handling execution against generator"""
         self.generator = generator
         all_attempts_completed = list()
-        self.attempt_queue = self.create_init_attempts()
+        self.attempt_queue = self._create_init_attempts()
         if self.num_init_turns == -1:
             self.max_attempts_before_termination = 10 * self.soft_probe_prompt_cap
         else:
