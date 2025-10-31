@@ -7812,7 +7812,8 @@
         "stop": [
           "#",
           ";"
-        ]
+        ],
+        "suppressed_params": []
       },
       "active": true,
       "generator_family_name": "LiteLLM",
@@ -7826,7 +7827,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-09-25 15:10:32 +0000"
+      "mod_time": "2025-10-29 09:27:54 +0000"
     },
     "generators.mistral.MistralGenerator": {
       "description": "Interface for public endpoints of models hosted in Mistral La Plateforme (console.mistral.ai).",
