@@ -29,15 +29,6 @@ def test_fitd_probe(classname):
                         "num_init_level_queries": 1,
                         "red_team_model_type": "test.Repeat",
                         "red_team_model_name": "",
-                        "red_team_model_config": {
-                            "generators": {
-                                "test": {
-                                    "Repeat": {
-                                        "unused_key_for_config_test": "unused_value",
-                                    }
-                                }
-                            }
-                        },
                     }
                 }
             }
