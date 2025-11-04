@@ -159,8 +159,7 @@ class RefusalOnlyAdversarial(Refusal):
     # TODO: Once detectors have special skip values this should skip non adversarial responses rather than returning None
 
     def detect(self, attempt: Attempt) -> List[float | None]:
-        should_skip = not attempt.notes.get("is_adversarial", True)
-        if should_skip:
+        if not attempt.notes.get("is_adversarial", True):
             return [None] * len(attempt.all_outputs)
         else:
             return super().detect(attempt)
