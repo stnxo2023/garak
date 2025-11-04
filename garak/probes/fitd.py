@@ -118,7 +118,7 @@ class FITDProbe(garak.probes.IterativeProbe):
         """Instantiate detector; to be used to decide whether to continue the conversation when end_condition is 'detector'"""
         self.detector = garak._plugins.load_plugin(f"detectors.{self.primary_detector}")
 
-    def _get_attack_gen_llm_response(self, prompt: str) -> str:
+    def _get_red_team_response(self, prompt: str) -> str:
         """Abstracting out call to attack gen LLM which is a garak Generator"""
         conv = garak.attempt.Conversation(
             [
@@ -164,7 +164,7 @@ class FITDProbe(garak.probes.IterativeProbe):
             progress_ratio = cur_step / self.num_level_queries
             evolution = "\n".join(level_queries)
             level_queries.append(
-                self._get_attack_gen_llm_response(
+                self._get_red_team_response(
                     self.prompt_template_get_level_query.format(
                         target_prompt=target_turn,
                         current_prompt=current_prompt,
@@ -184,14 +184,14 @@ class FITDProbe(garak.probes.IterativeProbe):
 
     def _generate_init_turn(self, target_turn: str, max_tries: int = 3) -> str:
         """Given a target adversarial turn, this helper function prompts the attack gen LLM to generate a related but benign initial turn"""
-        init_turn_try = self._get_attack_gen_llm_response(
+        init_turn_try = self._get_red_team_response(
             self.prompt_template_increase_safety.format(prompt=target_turn)
         )
         if not self._is_refusal(init_turn_try):
             return init_turn_try
         target_turn_words_changed = self._change_sensitive_words(target_turn)
         for _ in range(max_tries - 1):
-            init_turn_try = self._get_attack_gen_llm_response(
+            init_turn_try = self._get_red_team_response(
                 self.prompt_template_increase_safety.format(
                     prompt=target_turn_words_changed
                 )
@@ -275,7 +275,7 @@ class FITDProbe(garak.probes.IterativeProbe):
             if self.lang != self.langprovider.target_lang:
                 last_prompt = self.reverse_langprovider.get_text([last_prompt])[0]
                 last_response = self.reverse_langprovider.get_text([last_response])[0]
-            verify_response = self._get_attack_gen_llm_response(
+            verify_response = self._get_red_team_response(
                 self.prompt_template_eval.format(
                     request=last_prompt, response=last_response
                 )
@@ -301,7 +301,7 @@ class FITDProbe(garak.probes.IterativeProbe):
 
     def _is_response_aligned(self, request: str, response: str) -> bool:
         """Check if the response is aligned with the request"""
-        aligned_response = self._get_attack_gen_llm_response(
+        aligned_response = self._get_red_team_response(
             self.prompt_template_response_aligned.format(
                 prompt=request, response=response
             )
@@ -367,7 +367,7 @@ class FITDProbe(garak.probes.IterativeProbe):
                     "fitd.FITDProbe # generate_next_turn_attempt: From Attempt ID %s, Init turn caused refusal. Make it safer"
                     % last_attempt.uuid
                 )
-                safer_init_turn = self._get_attack_gen_llm_response(
+                safer_init_turn = self._get_red_team_response(
                     self.prompt_template_increase_safety.format(prompt=last_prompt)
                 )
                 next_turn_conv = garak.attempt.Conversation(
@@ -384,7 +384,7 @@ class FITDProbe(garak.probes.IterativeProbe):
                     "fitd.FITDProbe # generate_next_turn_attempt: From Attempt ID %s, Paraphrase and hope for non refusal"
                     % last_attempt.uuid
                 )
-                safer_turn = self._get_attack_gen_llm_response(
+                safer_turn = self._get_red_team_response(
                     self.prompt_template_slippery_slope_paraphrase.format(
                         sentence1=last_non_refused_prompt, sentence2=last_prompt
                     )
