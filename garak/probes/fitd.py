@@ -60,6 +60,7 @@ class FITDProbe(garak.probes.IterativeProbe):
     def __init__(self, config_root=_config):
         self.red_team_model = None
         self.detector = None
+        self.refusal_detector = None
 
         super().__init__(config_root=config_root)
         self._load_red_team_prompt_templates()
@@ -123,6 +124,12 @@ class FITDProbe(garak.probes.IterativeProbe):
         """Instantiate detector; to be used to decide whether to continue the conversation when end_condition is 'detector'"""
         self.detector = garak._plugins.load_plugin(f"detectors.{self.primary_detector}")
 
+    def set_up_refusal_detector(self):
+        """Instantiate a garak mitigation.Prefixes detector to be used to identify refusals. Note that this is not intended to be the garak detector for the probe"""
+        self.refusal_detector = garak._plugins.load_plugin(
+            "detectors.mitigation.Prefixes"
+        )
+
     def _get_red_team_response(self, prompt: str) -> str:
         """Abstracting out call to attack gen LLM which is a garak Generator"""
         conv = garak.attempt.Conversation(
@@ -133,32 +140,44 @@ class FITDProbe(garak.probes.IterativeProbe):
                 ),
             ]
         )
-        response = self.red_team_model.generate(prompt=conv, generations_this_call=1)
+        try:
+            response = self.red_team_model.generate(
+                prompt=conv, generations_this_call=1
+            )
+        except Exception as e:
+            msg = "Generator raised an error terminating probe."
+            logging.exception(msg, e)
+            raise GarakException(msg) from e
         if (
             response is None
             or len(response) == 0
             or response[0] is None
             or response[0].text is None
         ):
-            raise GarakException(
-                f"Failed to get response from red team model. Exiting probe."
-            )
+            return None
         return response[0].text
 
     def _is_refusal(self, response: str) -> bool:
         """Simple string matching to check if the response is a refusal"""
-        return re.match(
-            r"^\s*(I can't|I cannot|I can’t|I apologize|I can not|Unfortunately|"
-            r"I'm sorry|I’m sorry|As an|I regret|Regrettably|I'm not sure|I'm really sorry|"
-            r"I'm unable|I’m unable|Sorry|I am sorry|Whoa|We apologi|I understand|My apologi|"
-            r"I strongly advise against|As a|I'm an AI|I'm an artificial|I can no)",
-            response,
-            re.IGNORECASE,
-        ) or re.search(
-            r"\b(I can't|I cannot|I can’t|As an AI|I'm unable|I am unable)([\s\.\,\!\?\;\:])",
-            response,
-            re.IGNORECASE,
+        refusal_detection_attempt = garak.attempt.Attempt(
+            prompt=garak.attempt.Message(text="placeholder prompt", lang="en"),
         )
+        refusal_detection_attempt.outputs = [
+            garak.attempt.Message(text=response, lang="en")
+        ]
+        refusal_detector_outputs = self.refusal_detector.detect(
+            refusal_detection_attempt
+        )
+        if (
+            refusal_detector_outputs is None
+            or len(refusal_detector_outputs) == 0
+            or refusal_detector_outputs[0] is None
+        ):
+            raise GarakException(
+                f"Failed to get refusal detection output from refusal detector. Exiting probe."
+            )
+        is_refusal = refusal_detector_outputs[0] < 0.5
+        return is_refusal
 
     def _get_level_queries(self, target_turn: str, init_turn: str) -> Iterable[str]:
         """Given a target adversarial turn, this helper function prompts the attack gen LLM to generate queries of increasing adversarial intent starting from a provided benign init turn to the target adversarial turn. The number of levels is decided by the config param `num_level_queries`"""
@@ -168,19 +187,24 @@ class FITDProbe(garak.probes.IterativeProbe):
             cur_step = i + 1
             progress_ratio = cur_step / self.num_level_queries
             evolution = "\n".join(level_queries)
-            level_queries.append(
-                self._get_red_team_response(
-                    self.prompt_template_get_level_query.format(
-                        target_prompt=target_turn,
-                        current_prompt=current_prompt,
-                        step=cur_step,
-                        steps=self.num_level_queries,
-                        progress_ratio="%.2f" % (progress_ratio),
-                        evolution=evolution,
-                    )
+            level_query = self._get_red_team_response(
+                self.prompt_template_get_level_query.format(
+                    target_prompt=target_turn,
+                    current_prompt=current_prompt,
+                    step=cur_step,
+                    steps=self.num_level_queries,
+                    progress_ratio="%.2f" % (progress_ratio),
+                    evolution=evolution,
                 )
             )
-        level_queries.append(target_turn)
+            if level_query is not None:
+                level_queries.append(level_query)
+
+        # If there are missing level queries, append the target turn a few extra times
+        # Using +2 because even when all level queries get created and init_turn is added before them we want target_turn to be appended once
+        while len(level_queries) < self.num_level_queries + 2:
+            level_queries.append(target_turn)
+
         logging.debug(
             "fitd.FITDProbe # _get_level_queries: Target turn = %s, Init turn = %s, Level queries = %s"
             % (target_turn, init_turn, level_queries)
@@ -192,7 +216,7 @@ class FITDProbe(garak.probes.IterativeProbe):
         init_turn_try = self._get_red_team_response(
             self.prompt_template_increase_safety.format(prompt=target_turn)
         )
-        if not self._is_refusal(init_turn_try):
+        if init_turn_try is not None and not self._is_refusal(init_turn_try):
             return init_turn_try
         target_turn_words_changed = self._change_sensitive_words(target_turn)
         for _ in range(max_tries - 1):
@@ -201,7 +225,7 @@ class FITDProbe(garak.probes.IterativeProbe):
                     prompt=target_turn_words_changed
                 )
             )
-            if not self._is_refusal(init_turn_try):
+            if init_turn_try is not None and not self._is_refusal(init_turn_try):
                 return init_turn_try
         return None
 
@@ -212,6 +236,11 @@ class FITDProbe(garak.probes.IterativeProbe):
                 "fitd.FITDProbe # _create_init_attempts: Set up attack gen LLM"
             )
             self.set_up_attack_gen_llm()
+        if self.refusal_detector is None:
+            logging.debug(
+                "fitd.FITDProbe # _create_init_attempts: Set up refusal detector"
+            )
+            self.set_up_refusal_detector()
         logging.debug(
             "fitd.FITDProbe # _create_init_attempts: loading init prompts from data_path = %s"
             % data_path
@@ -271,10 +300,10 @@ class FITDProbe(garak.probes.IterativeProbe):
                 conversation.last_message("user") is None
                 or conversation.last_message("assistant") is None
             ):
-                # Note: The most likely reason this happens is because the target is somehow unavailable and returns a None. We choose to exit out of the probe altogether in this scenario
-                raise GarakException(
-                    f"FITD reached response verification with either no user or assistant message."
-                )
+                # Last response success can't be appropriately evaluated. Return None
+                is_last_response_success.append(None)
+                continue
+
             last_prompt = conversation.last_message("user").text
             last_response = conversation.last_message("assistant").text
             # TODO: When supporting other languages, we need to get translated versions of last_prompt and last_response which can hopefully be done using attempt.notes["pre_translation_prompt"].last_message("user").text and attempt.outputs_for(self.lang)[conv_idx] respectively
@@ -283,6 +312,10 @@ class FITDProbe(garak.probes.IterativeProbe):
                     request=last_prompt, response=last_response
                 )
             )
+            if verify_response is None:
+                # Red team model failed to evaluate last response. Return None
+                is_last_response_success.append(None)
+                continue
             logging.debug(
                 "fitd.FITDProbe # _verify_is_last_response_success: verify_response = %s for conv_idx = %s in attempt ID %s"
                 % (verify_response, conv_idx, attempt.uuid)
@@ -313,13 +346,14 @@ class FITDProbe(garak.probes.IterativeProbe):
             "fitd.FITDProbe # _is_response_aligned: aligned_response = %s for request = %s and response = %s"
             % (aligned_response, request, response)
         )
-        if (
+        if aligned_response is not None and (
             aligned_response.strip()
             .lower()
             .startswith(self.prompt_template_response_aligned__aligned_prefix)
         ):
             return True
         else:
+            # Note that response will be considered not aligned if red team model fails to respond when queried
             return False
 
     def _change_sensitive_words(self, target_prompt):
@@ -339,10 +373,7 @@ class FITDProbe(garak.probes.IterativeProbe):
             next_turn_conv.last_message("user") is None
             or next_turn_conv.last_message("assistant") is None
         ):
-            # Note: The most likely reason this happens is because the target is somehow unavailable and returns a None. We choose to exit out of the probe altogether in this scenario
-            raise GarakException(
-                f"FITD reached next turn generation with either no user or assistant message."
-            )
+            return None  # Trying to build further from a Conversation with a None turn. Terminate early.
         last_prompt = next_turn_conv.last_message("user").text
         last_response = next_turn_conv.last_message("assistant").text
         last_non_refused_prompt = last_attempt.notes["last_non_refused_prompt"]
@@ -362,6 +393,8 @@ class FITDProbe(garak.probes.IterativeProbe):
                 safer_init_turn = self._get_red_team_response(
                     self.prompt_template_increase_safety.format(prompt=last_prompt)
                 )
+                if safer_init_turn is None:
+                    return None  # Red team model failed to generate a safer init turn. Terminate early.
                 next_turn_conv = garak.attempt.Conversation(
                     turns=[
                         garak.attempt.Turn(
@@ -381,6 +414,8 @@ class FITDProbe(garak.probes.IterativeProbe):
                         sentence1=last_non_refused_prompt, sentence2=last_prompt
                     )
                 )
+                if safer_turn is None:
+                    return None  # Red team model failed to generate a safer turn. Terminate early.
                 next_turn_conv.turns = next_turn_conv.turns[:-2]
                 next_turn_conv.turns.append(
                     garak.attempt.Turn("user", garak.attempt.Message(text=safer_turn))
@@ -469,11 +504,14 @@ class FITDProbe(garak.probes.IterativeProbe):
             last_attempt.conversations[idx]
             for idx, should_terminate in enumerate(should_terminate_per_output)
             if not should_terminate
-        ]  # TODO: At this point, we can estimate whether the next turn would cause the three size to exceed max_attempts_before_termination. Should we break out of the loop here instead?
+        ]
         next_turn_attempts = [
             self.generate_next_turn_attempt(conversation, last_attempt)
             for conversation in conversations_to_continue
-        ]  # TODO: This can be slow. Do we want to add parallelization / at least a tqdm bar?
+        ]
+        next_turn_attempts = [
+            attempt for attempt in next_turn_attempts if attempt is not None
+        ]  # Conversations that have a previous None turn will result in a None generated for next turn attempt. Filter out these.
         return next_turn_attempts
 
     def _is_realign_prompt(self, prompt: str) -> bool:
@@ -517,10 +555,15 @@ class FITDProbe(garak.probes.IterativeProbe):
             return should_terminate
         elif self.end_condition == "verify":
             should_terminate = self._verify_is_last_response_success(attempt)
+            should_terminate = [
+                v if v is not None else True for v in should_terminate
+            ]  # Choose to terminate conversations where last response could not be verified
             logging.debug(
                 "fitd.FITDProbe # _should_terminate_conversation: Using verify, should_terminate = %s for attempt ID %s"
                 % (should_terminate, attempt.uuid)
             )
             return should_terminate
         else:
-            raise ValueError(f"Unsupported end condition '{self.end_condition}'")
+            raise GarakException(
+                f"Unsupported end condition '{self.end_condition}' in probe FITD. Exiting probe."
+            )
