@@ -676,7 +676,7 @@ class IterativeProbe(Probe):
 
     DEFAULT_PARAMS = Probe.DEFAULT_PARAMS | {
         "max_calls_per_conv": 10,
-        "num_init_turns": -1,
+        "follow_prompt_cap": True,
     }
 
     def __init__(self, config_root=_config):
@@ -754,11 +754,10 @@ class IterativeProbe(Probe):
         self.generator = generator
         all_attempts_completed = list()
         self.attempt_queue = self._create_init_attempts()
-        if self.num_init_turns == -1:
-            self.max_attempts_before_termination = 10 * self.soft_probe_prompt_cap
-        else:
+        self.max_attempts_before_termination = float("inf")
+        if self.follow_prompt_cap:
             self.max_attempts_before_termination = (
-                self.num_init_turns * self.soft_probe_prompt_cap
+                len(self.attempt_queue) * self.soft_probe_prompt_cap
             )
 
         # TODO: This implementation is definitely expanding the generations tree in BFS fashion. Do we want to allow an option for DFS? Also what about the type of sampling which only duplicates the initial turn? BFS is nice because we can just reuse Probe._execute_all() which may not be an option if we are only duplicating the initial turn.

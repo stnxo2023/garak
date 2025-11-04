@@ -62,7 +62,6 @@ class FITDProbe(garak.probes.IterativeProbe):
         self.detector = None
 
         super().__init__(config_root=config_root)
-        self.num_init_turns = self.num_to_sample_from_harmbench
         self._load_red_team_prompt_templates()
 
     def _load_red_team_prompt_templates(self):
