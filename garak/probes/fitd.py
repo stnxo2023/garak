@@ -63,6 +63,11 @@ class FITDProbe(garak.probes.IterativeProbe):
 
         super().__init__(config_root=config_root)
         self._load_red_team_prompt_templates()
+        if self.lang != self.langprovider.target_lang:
+            raise GarakException(
+                "FITD probe currently does not support languages other than %s"
+                % self.lang
+            )
 
     def _load_red_team_prompt_templates(self):
         prompts_file = data_path / "fitd" / "prompt_template_increase_safety.txt"
@@ -272,9 +277,7 @@ class FITDProbe(garak.probes.IterativeProbe):
                 )
             last_prompt = conversation.last_message("user").text
             last_response = conversation.last_message("assistant").text
-            if self.lang != self.langprovider.target_lang:
-                last_prompt = self.reverse_langprovider.get_text([last_prompt])[0]
-                last_response = self.reverse_langprovider.get_text([last_response])[0]
+            # TODO: When supporting other languages, we need to get translated versions of last_prompt and last_response which can hopefully be done using attempt.notes["pre_translation_prompt"].last_message("user").text and attempt.outputs_for(self.lang)[conv_idx] respectively
             verify_response = self._get_red_team_response(
                 self.prompt_template_eval.format(
                     request=last_prompt, response=last_response
@@ -347,18 +350,7 @@ class FITDProbe(garak.probes.IterativeProbe):
         levels_completed = last_attempt.notes["levels_completed"]
         new_levels_completed = None
         target_turn = last_attempt.notes["target_turn"]
-        if self.lang != self.langprovider.target_lang:
-            # Translate parts to self.lang (EN) so that turn updates work better
-            last_prompt = self.reverse_langprovider.get_text([last_prompt])[0]
-            last_response = self.reverse_langprovider.get_text([last_response])[0]
-            next_turn_conv = copy.deepcopy(last_attempt.notes["pre_translation_prompt"])
-            next_turn_conv.turns.append(
-                garak.attempt.Turn(
-                    "assistant",
-                    garak.attempt.Message(text=last_response, lang=self.lang),
-                )
-            )
-            # target_turn and last_non_refused_prompt will be in self.lang so no need for translation
+        # TODO: If supporting other languages, last_prompt, last_response and next_turn_conv need to be converted back here to self.lang. This should be possible using last_attempt.notes["pre_translation_prompt"] and last_attempt.outputs_for(). target_turn and last_non_refused_prompt will be in self.lang so no need for translation
 
         if self._is_refusal(last_response):
             if len(next_turn_conv.turns) == 2 or last_non_refused_prompt is None:
