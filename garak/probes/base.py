@@ -773,19 +773,19 @@ class IterativeProbe(Probe):
                 attempts_completed = self._execute_all(attempts_todo)
                 all_attempts_completed.extend(attempts_completed)
 
-                print(
-                    "End of turn %d; Attempts this turn: %d; Total attempts completed: %d"
+                logging.debug(
+                    "probe.IterativeProbe # probe: End of turn %d; Attempts this turn: %d; Total attempts completed: %d"
                     % (turn_num, len(attempts_completed), len(all_attempts_completed))
                 )
 
                 if len(all_attempts_completed) > self.max_attempts_before_termination:
-                    print(
-                        "Max attempts before termination reached; Breaking out of loop"
+                    logging.debug(
+                        "probe.IterativeProbe # probe: Max attempts before termination reached; Breaking out of loop"
                     )
                     break
 
-            print(
-                "Probe exiting; Total attempts completed: %d"
+            logging.debug(
+                "probe.IterativeProbe # probe: Probe exiting; Total attempts completed: %d"
                 % len(all_attempts_completed)
             )
         except GarakException as e:
