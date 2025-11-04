@@ -20,6 +20,7 @@ from typing import Iterable, List
 from dataclasses import asdict
 
 from garak import _config
+from garak.exception import GarakException
 from garak.data import path as data_path
 import garak.probes
 
@@ -128,6 +129,15 @@ class FITDProbe(garak.probes.IterativeProbe):
             ]
         )
         response = self.red_team_model.generate(prompt=conv, generations_this_call=1)
+        if (
+            response is None
+            or len(response) == 0
+            or response[0] is None
+            or response[0].text is None
+        ):
+            raise GarakException(
+                f"Failed to get response from red team model. Exiting probe."
+            )
         return response[0].text
 
     def _is_refusal(self, response: str) -> bool:
@@ -252,6 +262,14 @@ class FITDProbe(garak.probes.IterativeProbe):
                 continue
 
             # Note that this goes ahead whether it is the target query, an SSParaphrase of it (which typically tends to decrease intensity) or a re-align of it
+            if (
+                conversation.last_message("user") is None
+                or conversation.last_message("assistant") is None
+            ):
+                # Note: The most likely reason this happens is because the target is somehow unavailable and returns a None. We choose to exit out of the probe altogether in this scenario
+                raise GarakException(
+                    f"FITD reached response verification with either no user or assistant message."
+                )
             last_prompt = conversation.last_message("user").text
             last_response = conversation.last_message("assistant").text
             if self.lang != self.langprovider.target_lang:
@@ -310,6 +328,14 @@ class FITDProbe(garak.probes.IterativeProbe):
     ) -> garak.attempt.Attempt:
         """Given the `conversation` object from the last attempt, this function generates an attempt for the next interaction. This can either create a new conversation with a newly generated turn appended to the last one or create a new conversation with an optional subset of the past turns from `conversation` along with a new turn."""
         next_turn_conv = copy.deepcopy(conversation)
+        if (
+            next_turn_conv.last_message("user") is None
+            or next_turn_conv.last_message("assistant") is None
+        ):
+            # Note: The most likely reason this happens is because the target is somehow unavailable and returns a None. We choose to exit out of the probe altogether in this scenario
+            raise GarakException(
+                f"FITD reached next turn generation with either no user or assistant message."
+            )
         last_prompt = next_turn_conv.last_message("user").text
         last_response = next_turn_conv.last_message("assistant").text
         last_non_refused_prompt = last_attempt.notes["last_non_refused_prompt"]
@@ -474,15 +500,20 @@ class FITDProbe(garak.probes.IterativeProbe):
                 self.set_up_detector()
             detector_outputs = self.detector.detect(attempt)
             should_terminate = list()
-            for detector_output in detector_outputs:
+            for attempt_output, detector_output in zip(
+                attempt.outputs, detector_outputs
+            ):
                 if detector_output is not None:
                     should_terminate.append(
                         detector_output > self.detector_score_threshold
                     )
-                else:
+                elif attempt_output is not None and attempt_output.text is not None:
                     # Since FITD probe causes detectors to return None for non adversarial turns, it usually does not make sense to terminate the conversation in this case.
                     # Note that once detectors are updated to have a Skip value different from None, this needs to be updated.
                     should_terminate.append(False)
+                else:
+                    # None response in Attempt probably means something is wrong with the generator; Worth ending the run here.
+                    should_terminate.append(True)
             logging.debug(
                 "fitd.FITDProbe # _should_terminate_conversation: Using detector, should_terminate = %s for attempt ID %s"
                 % (should_terminate, attempt.uuid)
