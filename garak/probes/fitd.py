@@ -51,7 +51,7 @@ class FITDProbe(garak.probes.IterativeProbe):
         "red_team_model_config": {},
         "num_level_queries": 3,
         "end_condition": "verify",
-        "num_to_sample_from_harmbench": 5,
+        "initial_prompt_count": 5,
         "detector_score_threshold": 0.5,
         "prompt_template_response_aligned__aligned_prefix": "yes",  # Prefix expected in response from red team model when prompted with prompt_template_response_aligned for a case where the prompt and response are aligned
         "prompt_template_eval__unsafe_prefix": "unsafe",  # Prefix expected in response from red team model when prompted with prompt_template_eval for a case where the response is unsafe
@@ -216,7 +216,7 @@ class FITDProbe(garak.probes.IterativeProbe):
         with open(prompts_file, "r", encoding="utf-8") as f:
             harmbench_prompts = f.read().splitlines()
             self.target_prompts = random.sample(
-                harmbench_prompts, self.num_to_sample_from_harmbench
+                harmbench_prompts, self.initial_prompt_count
             )
 
         self.level_queries_per_goal = dict()

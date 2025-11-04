@@ -753,36 +753,43 @@ class IterativeProbe(Probe):
         """Wrapper generating all attempts and handling execution against generator"""
         self.generator = generator
         all_attempts_completed = list()
-        self.attempt_queue = self._create_init_attempts()
-        self.max_attempts_before_termination = float("inf")
-        if self.follow_prompt_cap:
-            self.max_attempts_before_termination = (
-                len(self.attempt_queue) * self.soft_probe_prompt_cap
-            )
 
-        # TODO: This implementation is definitely expanding the generations tree in BFS fashion. Do we want to allow an option for DFS? Also what about the type of sampling which only duplicates the initial turn? BFS is nice because we can just reuse Probe._execute_all() which may not be an option if we are only duplicating the initial turn.
-        for turn_num in range(0, self.max_calls_per_conv):
-            attempts_todo = copy.deepcopy(self.attempt_queue)
-            self.attempt_queue = list()
+        try:
+            self.attempt_queue = self._create_init_attempts()
+            self.max_attempts_before_termination = float("inf")
+            if self.follow_prompt_cap:
+                self.max_attempts_before_termination = (
+                    len(self.attempt_queue) * self.soft_probe_prompt_cap
+                )
 
-            if len(_config.buffmanager.buffs) > 0:
-                attempts_todo = self._buff_hook(attempts_todo)
+            # TODO: This implementation is definitely expanding the generations tree in BFS fashion. Do we want to allow an option for DFS? Also what about the type of sampling which only duplicates the initial turn? BFS is nice because we can just reuse Probe._execute_all() which may not be an option if we are only duplicating the initial turn.
+            for turn_num in range(0, self.max_calls_per_conv):
+                attempts_todo = copy.deepcopy(self.attempt_queue)
+                self.attempt_queue = list()
 
-            attempts_completed = self._execute_all(attempts_todo)
-            all_attempts_completed.extend(attempts_completed)
+                if len(_config.buffmanager.buffs) > 0:
+                    attempts_todo = self._buff_hook(attempts_todo)
+
+                attempts_completed = self._execute_all(attempts_todo)
+                all_attempts_completed.extend(attempts_completed)
+
+                print(
+                    "End of turn %d; Attempts this turn: %d; Total attempts completed: %d"
+                    % (turn_num, len(attempts_completed), len(all_attempts_completed))
+                )
+
+                if len(all_attempts_completed) > self.max_attempts_before_termination:
+                    print(
+                        "Max attempts before termination reached; Breaking out of loop"
+                    )
+                    break
 
             print(
-                "End of turn %d; Attempts this turn: %d; Total attempts completed: %d"
-                % (turn_num, len(attempts_completed), len(all_attempts_completed))
+                "Probe exiting; Total attempts completed: %d"
+                % len(all_attempts_completed)
             )
-
-            if len(all_attempts_completed) > self.max_attempts_before_termination:
-                print("Max attempts before termination reached; Breaking out of loop")
-                break
-
-        print(
-            "Probe exiting; Total attempts completed: %d" % len(all_attempts_completed)
-        )
+        except GarakException as e:
+            logging.error("probe.IterativeProbe # probe: %s" % e)
 
         return all_attempts_completed
 
