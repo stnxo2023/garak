@@ -11,6 +11,7 @@ import platform
 from collections import defaultdict
 from dataclasses import dataclass
 import importlib
+import json
 import logging
 import os
 import stat
@@ -161,7 +162,10 @@ def _load_yaml_config(settings_filenames) -> dict:
     config = nested_dict()
     for settings_filename in settings_filenames:
         with open(settings_filename, encoding="utf-8") as settings_file:
-            settings = yaml.safe_load(settings_file)
+            if settings_filename.endswith(".json"):
+                settings = json.load(settings_file)
+            else:
+                settings = yaml.safe_load(settings_file)
             if settings is not None:
                 if _key_exists(settings, "api_key"):
                     if platform.system() == "Windows":
