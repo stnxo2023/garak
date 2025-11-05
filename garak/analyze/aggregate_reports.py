@@ -139,11 +139,7 @@ def main(argv=None) -> None:
 
             out_file.write(json.dumps(init) + "\n")
 
-            digest = _process_file_body(lead_file, out_file, aggregate_uuid)
-            digest["meta"]["report_aggregation"] = {
-                "files": [lead_filename],
-                "lead_file": lead_filename,
-            }
+            _process_file_body(lead_file, out_file, aggregate_uuid)
 
         if len(in_filenames) > 1:
             # for each other file
@@ -171,18 +167,10 @@ def main(argv=None) -> None:
                     assert init["garak_version"] == version
 
                     # write the completed attempts and eval rows
-                    subsequent_digest = _process_file_body(
-                        subsequent_file, out_file, aggregate_uuid
-                    )
-                    digest["meta"]["report_aggregation"]["files"].append(
-                        subsequent_filename
-                    )
-                    digest["eval"] = digest["eval"] | subsequent_digest["eval"]
-
-                    # write the completed attempts and eval rows
                     _process_file_body(subsequent_file, out_file, aggregate_uuid)
 
-        digest["meta"]["probespec"] = probespecs
+    digest = garak.analyze.report_digest.build_digest(a.output_path)
+    with open(a.output_path, "a+", encoding="utf-8") as out_file:
         garak.analyze.report_digest.append_report_object(out_file, digest)
 
     print("done")

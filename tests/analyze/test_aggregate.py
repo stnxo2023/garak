@@ -76,7 +76,15 @@ def test_aggregate_executes() -> None:
             )  # key not found in agg rec means agg rec is out of sync (test fail)
 
         if ref_rec["entry_type"] == "digest":
-            del ref_rec["meta"]["run_uuid"], agg_rec["meta"]["run_uuid"]
+            for key in [
+                "run_uuid",
+                "start_time",
+                "reportfile",
+                "report_digest_time",
+                "calibration",
+            ]:
+                ref_rec["meta"].pop(key, None)
+                agg_rec["meta"].pop(key, None)
 
         assert (
             agg_rec == ref_rec
