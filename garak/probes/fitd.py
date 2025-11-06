@@ -246,7 +246,7 @@ class FITDProbe(garak.probes.IterativeProbe):
             % data_path
         )
 
-        prompts_file = data_path / "fitd" / "harmbench_prompts.txt"
+        prompts_file = data_path / "harmbench" / "harmbench_prompts.txt"
         with open(prompts_file, "r", encoding="utf-8") as f:
             harmbench_prompts = f.read().splitlines()
             self.target_prompts = random.sample(
