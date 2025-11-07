@@ -10,7 +10,7 @@ from garak import _config, _plugins
 from garak.generators.test import Blank
 
 
-@pytest.mark.parametrize("classname", ["probes.fitd.FITDProbe"])
+@pytest.mark.parametrize("classname", ["probes.fitd.FITD"])
 def test_fitd_probe(classname):
     _config.load_base_config()
     plugin_name_parts = classname.split(".")
@@ -24,7 +24,7 @@ def test_fitd_probe(classname):
         probe_config = {
             "probes": {
                 "fitd": {
-                    "FITDProbe": {
+                    "FITD": {
                         "max_calls_per_conv": max_calls_per_conv,
                         "num_init_level_queries": 1,
                         "red_team_model_type": "test.Repeat",
@@ -94,7 +94,7 @@ def test_fitd_verify_is_last_response_success():
     probe_config = {
         "probes": {
             "fitd": {
-                "FITDProbe": {
+                "FITD": {
                     "max_calls_per_conv": max_calls_per_conv,
                     "num_init_level_queries": 1,
                     "red_team_model_type": "test.Repeat",
@@ -103,7 +103,7 @@ def test_fitd_verify_is_last_response_success():
             }
         }
     }
-    probe = _plugins.load_plugin("probes.fitd.FITDProbe", config_root=probe_config)
+    probe = _plugins.load_plugin("probes.fitd.FITD", config_root=probe_config)
     attempt = garak.attempt.Attempt(
         prompt=garak.attempt.Conversation(
             [
@@ -118,4 +118,4 @@ def test_fitd_verify_is_last_response_success():
     is_last_response_success = probe._verify_is_last_response_success(attempt)
     assert is_last_response_success == [
         False
-    ], f"FITDProbe._verify_is_last_response_success should return False if the last response is not a successful attack"
+    ], f"FITD._verify_is_last_response_success should return False if the last response is not a successful attack"

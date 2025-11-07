@@ -782,6 +782,10 @@ class IterativeProbe(Probe):
                     logging.debug(
                         "probe.IterativeProbe # probe: Max attempts before termination reached; Breaking out of loop"
                     )
+                    probe = self.probename.replace("garak.", "")
+                    print(
+                        f"{probe}: Iteration terminated early due to configuration limits!"
+                    )
                     break
 
             logging.debug(

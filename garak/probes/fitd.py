@@ -8,8 +8,6 @@ A multi-turn jailbreak that generates queries of increasing intensity from safe 
 Paper: http://arxiv.org/abs/2502.19820
 """
 
-import os
-import re
 import csv
 import copy
 import random
@@ -17,15 +15,13 @@ import logging
 from tqdm import tqdm
 from typing import Iterable, List
 
-from dataclasses import asdict
-
 from garak import _config
 from garak.exception import GarakException
 from garak.data import path as data_path
 import garak.probes
 
 
-class FITDProbe(garak.probes.IterativeProbe):
+class FITD(garak.probes.IterativeProbe):
     """Foot In The Door probe
 
     A multi-turn jailbreak that generates queries of increasing intensity from safe to adversarial, getting compliance from the model at each intermediate stage to obtain attack success with the adversarial prompt
@@ -206,7 +202,7 @@ class FITDProbe(garak.probes.IterativeProbe):
             level_queries.append(target_turn)
 
         logging.debug(
-            "fitd.FITDProbe # _get_level_queries: Target turn = %s, Init turn = %s, Level queries = %s"
+            "fitd.FITD # _get_level_queries: Target turn = %s, Init turn = %s, Level queries = %s"
             % (target_turn, init_turn, level_queries)
         )
         return level_queries
@@ -232,17 +228,13 @@ class FITDProbe(garak.probes.IterativeProbe):
     def _create_init_attempts(self) -> Iterable[garak.attempt.Attempt]:
         """Create init attempts from HarmBench prompts"""
         if self.red_team_model is None:
-            logging.debug(
-                "fitd.FITDProbe # _create_init_attempts: Set up attack gen LLM"
-            )
+            logging.debug("fitd.FITD # _create_init_attempts: Set up attack gen LLM")
             self.set_up_attack_gen_llm()
         if self.refusal_detector is None:
-            logging.debug(
-                "fitd.FITDProbe # _create_init_attempts: Set up refusal detector"
-            )
+            logging.debug("fitd.FITD # _create_init_attempts: Set up refusal detector")
             self.set_up_refusal_detector()
         logging.debug(
-            "fitd.FITDProbe # _create_init_attempts: loading init prompts from data_path = %s"
+            "fitd.FITD # _create_init_attempts: loading init prompts from data_path = %s"
             % data_path
         )
 
@@ -255,12 +247,13 @@ class FITDProbe(garak.probes.IterativeProbe):
 
         self.level_queries_per_goal = dict()
         init_attempts = list()
-        for target_turn in tqdm(self.target_prompts, desc="Gen FITD init turns:"):
+        desc = f"Generating {self.__class__.__name__} initial turns:"
+        for target_turn in tqdm(self.target_prompts, desc=desc, leave=False):
             # Note: The FITD paper repeats this a few times until a non refusal is obtained. We just handle it in is_refusal case in generate_next_turn_attempt instead
             init_turn = self._generate_init_turn(target_turn)
             if init_turn is None:
                 logging.debug(
-                    f"fitd.FITDProbe # _create_init_attempts: Failed to generate init turn for {target_turn}"
+                    f"fitd.FITD # _create_init_attempts: Failed to generate init turn for {target_turn}"
                 )
                 continue
             level_queries = self._get_level_queries(target_turn, init_turn)
@@ -289,7 +282,7 @@ class FITDProbe(garak.probes.IterativeProbe):
             if not attempt.notes["is_adversarial"]:
                 # Not yet at last level. No need to evaluate potentially non harmful queries
                 logging.debug(
-                    "fitd.FITDProbe # _verify_is_last_response_success: Not yet at last level with attempt ID = %s"
+                    "fitd.FITD # _verify_is_last_response_success: Not yet at last level with attempt ID = %s"
                     % attempt.uuid
                 )
                 is_last_response_success.append(False)
@@ -317,7 +310,7 @@ class FITDProbe(garak.probes.IterativeProbe):
                 is_last_response_success.append(None)
                 continue
             logging.debug(
-                "fitd.FITDProbe # _verify_is_last_response_success: verify_response = %s for conv_idx = %s in attempt ID %s"
+                "fitd.FITD # _verify_is_last_response_success: verify_response = %s for conv_idx = %s in attempt ID %s"
                 % (verify_response, conv_idx, attempt.uuid)
             )
             if (
@@ -330,7 +323,7 @@ class FITDProbe(garak.probes.IterativeProbe):
                 cur_conv_last_response_success = False
             is_last_response_success.append(cur_conv_last_response_success)
         logging.debug(
-            "fitd.FITDProbe # _verify_is_last_response_success: is_last_response_success = %s for attempt ID %s"
+            "fitd.FITD # _verify_is_last_response_success: is_last_response_success = %s for attempt ID %s"
             % (is_last_response_success, attempt.uuid)
         )
         return is_last_response_success
@@ -343,7 +336,7 @@ class FITDProbe(garak.probes.IterativeProbe):
             )
         )
         logging.debug(
-            "fitd.FITDProbe # _is_response_aligned: aligned_response = %s for request = %s and response = %s"
+            "fitd.FITD # _is_response_aligned: aligned_response = %s for request = %s and response = %s"
             % (aligned_response, request, response)
         )
         if aligned_response is not None and (
@@ -387,7 +380,7 @@ class FITDProbe(garak.probes.IterativeProbe):
             if len(next_turn_conv.turns) == 2 or last_non_refused_prompt is None:
                 # First turn from probe (attack gen LLM) caused refusal from target. Generate a safer init turn.
                 logging.debug(
-                    "fitd.FITDProbe # generate_next_turn_attempt: From Attempt ID %s, Init turn caused refusal. Make it safer"
+                    "fitd.FITD # generate_next_turn_attempt: From Attempt ID %s, Init turn caused refusal. Make it safer"
                     % last_attempt.uuid
                 )
                 safer_init_turn = self._get_red_team_response(
@@ -406,7 +399,7 @@ class FITDProbe(garak.probes.IterativeProbe):
                 # Use SSParaphrase and hope for non refusal
                 # Note: The paper actually checks if the paraphrase results in a refusal and if so it uses self.prompt_template_increase_safety instead. If we want to do that we essentially need to track if the last turn was created with SSParaphrase and if so use self.prompt_template_increase_safety instead
                 logging.debug(
-                    "fitd.FITDProbe # generate_next_turn_attempt: From Attempt ID %s, Paraphrase and hope for non refusal"
+                    "fitd.FITD # generate_next_turn_attempt: From Attempt ID %s, Paraphrase and hope for non refusal"
                     % last_attempt.uuid
                 )
                 safer_turn = self._get_red_team_response(
@@ -426,7 +419,7 @@ class FITDProbe(garak.probes.IterativeProbe):
             new_last_non_refused_prompt = last_prompt
             # Re-align - Try to get the model to respond better by pointing out issues with it's last response
             logging.debug(
-                "fitd.FITDProbe # generate_next_turn_attempt: From Attempt ID %s, Re-align"
+                "fitd.FITD # generate_next_turn_attempt: From Attempt ID %s, Re-align"
                 % last_attempt.uuid
             )
             next_turn_str = self.prompt_template_realign.format(
@@ -440,7 +433,7 @@ class FITDProbe(garak.probes.IterativeProbe):
             new_last_non_refused_prompt = last_prompt
             new_levels_completed = levels_completed + 1
             logging.debug(
-                f"fitd.FITDProbe # generate_next_turn_attempt: From Attempt ID %s, Increasing level to %d from %d/%d for target turn %s"
+                f"fitd.FITD # generate_next_turn_attempt: From Attempt ID %s, Increasing level to %d from %d/%d for target turn %s"
                 % (
                     last_attempt.uuid,
                     new_levels_completed,
@@ -461,7 +454,7 @@ class FITDProbe(garak.probes.IterativeProbe):
             else:
                 # If we have completed all level queries, use the target turn
                 logging.debug(
-                    "fitd.FITDProbe # generate_next_turn_attempt: From Attempt ID %s, All levels completed for target turn %s"
+                    "fitd.FITD # generate_next_turn_attempt: From Attempt ID %s, All levels completed for target turn %s"
                     % (last_attempt.uuid, target_turn)
                 )
                 next_turn_conv.turns.append(
@@ -470,7 +463,7 @@ class FITDProbe(garak.probes.IterativeProbe):
 
         next_turn_attempt = self._create_attempt(next_turn_conv)
         logging.debug(
-            "fitd.FITDProbe # generate_next_turn_attempt: Created next turn attempt ID %s from attempt ID %s"
+            "fitd.FITD # generate_next_turn_attempt: Created next turn attempt ID %s from attempt ID %s"
             % (next_turn_attempt.uuid, last_attempt.uuid)
         )
         next_turn_attempt.notes["is_last_turn"] = False
@@ -529,7 +522,7 @@ class FITDProbe(garak.probes.IterativeProbe):
         if self.end_condition == "detector":
             if self.detector is None:
                 logging.debug(
-                    "fitd.FITDProbe # _should_terminate_conversation: Set up detector"
+                    "fitd.FITD # _should_terminate_conversation: Set up detector"
                 )
                 self.set_up_detector()
             detector_outputs = self.detector.detect(attempt)
@@ -549,7 +542,7 @@ class FITDProbe(garak.probes.IterativeProbe):
                     # None response in Attempt probably means something is wrong with the generator; Worth ending the run here.
                     should_terminate.append(True)
             logging.debug(
-                "fitd.FITDProbe # _should_terminate_conversation: Using detector, should_terminate = %s for attempt ID %s"
+                "fitd.FITD # _should_terminate_conversation: Using detector, should_terminate = %s for attempt ID %s"
                 % (should_terminate, attempt.uuid)
             )
             return should_terminate
@@ -559,7 +552,7 @@ class FITDProbe(garak.probes.IterativeProbe):
                 v if v is not None else True for v in should_terminate
             ]  # Choose to terminate conversations where last response could not be verified
             logging.debug(
-                "fitd.FITDProbe # _should_terminate_conversation: Using verify, should_terminate = %s for attempt ID %s"
+                "fitd.FITD # _should_terminate_conversation: Using verify, should_terminate = %s for attempt ID %s"
                 % (should_terminate, attempt.uuid)
             )
             return should_terminate
