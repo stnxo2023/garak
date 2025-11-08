@@ -75,8 +75,8 @@ def test_bedrock_initialization():
     """Test that BedrockGenerator can be initialized."""
     from garak.generators.bedrock import BedrockGenerator
 
-    generator = BedrockGenerator(name="claude-3-sonnet")
-    assert generator.name == "anthropic.claude-3-sonnet-20240229-v1:0"
+    generator = BedrockGenerator(name="claude-4-5-sonnet")
+    assert generator.name == "global.anthropic.claude-sonnet-4-5-20250929-v1:0"
     assert generator.generator_family_name == "Bedrock"
 
 
@@ -86,10 +86,10 @@ def test_bedrock_model_alias_resolution():
     from garak.generators.bedrock import BedrockGenerator
 
     test_cases = [
-        ("claude-3-sonnet", "anthropic.claude-3-sonnet-20240229-v1:0"),
-        ("claude-3-haiku", "anthropic.claude-3-haiku-20240307-v1:0"),
-        ("llama3-70b", "meta.llama3-70b-instruct-v1:0"),
-        ("titan-express", "amazon.titan-text-express-v1"),
+        ("claude-4-5-haiku", "global.anthropic.claude-haiku-4-5-20251001-v1:0"),
+        ("claude-4-5-sonnet", "global.anthropic.claude-sonnet-4-5-20250929-v1:0"),
+        ("nova-premier", "us.amazon.nova-premier-v1:0"),
+        ("nova-pro", "us.amazon.nova-pro-v1:0"),
     ]
 
     for alias, expected_full_id in test_cases:
@@ -115,7 +115,7 @@ def test_bedrock_successful_generation(mock_boto3):
     """Test successful text generation returns Message objects."""
     from garak.generators.bedrock import BedrockGenerator
 
-    generator = BedrockGenerator(name="claude-3-sonnet")
+    generator = BedrockGenerator(name="claude-4-5-sonnet")
     conv = Conversation([Turn(role="user", content=Message("Hello Bedrock!"))])
 
     output = generator.generate(conv, generations_this_call=1)
@@ -134,7 +134,7 @@ def test_bedrock_parameter_mapping(mock_boto3):
     """Test parameter mapping (temperature, max_tokens, top_p)."""
     from garak.generators.bedrock import BedrockGenerator
 
-    generator = BedrockGenerator(name="claude-3-sonnet")
+    generator = BedrockGenerator(name="claude-4-5-sonnet")
     generator.temperature = 0.8
     generator.max_tokens = 100
     generator.top_p = 0.9
@@ -160,7 +160,7 @@ def test_bedrock_conversation_to_message_format(mock_boto3):
     """Test Conversation to message format conversion."""
     from garak.generators.bedrock import BedrockGenerator
 
-    generator = BedrockGenerator(name="claude-3-sonnet")
+    generator = BedrockGenerator(name="claude-4-5-sonnet")
 
     # Create a multi-turn conversation
     conv = Conversation(
@@ -193,7 +193,7 @@ def test_bedrock_malformed_response_handling(mock_boto3):
     """Test malformed response handling."""
     from garak.generators.bedrock import BedrockGenerator
 
-    generator = BedrockGenerator(name="claude-3-sonnet")
+    generator = BedrockGenerator(name="claude-4-5-sonnet")
     conv = Conversation([Turn(role="user", content=Message("Test"))])
 
     # Test various malformed responses
@@ -228,7 +228,7 @@ def test_bedrock_validation_error_does_not_retry(mock_boto3):
 
     mock_boto3.converse.side_effect = validation_error
 
-    generator = BedrockGenerator(name="claude-3-sonnet")
+    generator = BedrockGenerator(name="claude-4-5-sonnet")
     conv = Conversation([Turn(role="user", content=Message("Test"))])
 
     output = generator.generate(conv, generations_this_call=1)
@@ -253,7 +253,7 @@ def test_bedrock_access_denied_error_does_not_retry(mock_boto3):
 
     mock_boto3.converse.side_effect = access_denied_error
 
-    generator = BedrockGenerator(name="claude-3-sonnet")
+    generator = BedrockGenerator(name="claude-4-5-sonnet")
     conv = Conversation([Turn(role="user", content=Message("Test"))])
 
     output = generator.generate(conv, generations_this_call=1)
