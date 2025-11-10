@@ -15,6 +15,7 @@ NON_PROMPT_PROBES = [
     "probes.tap.TAP",
     "probes.suffix.BEAST",
     "probes.suffix.GCG",
+    "probes.fitd.FITD",
 ]
 ATKGEN_PROMPT_PROBES = ["probes.atkgen.Tox"]
 VISUAL_PROBES = [
@@ -128,7 +129,7 @@ def test_base_postprocess_attempt(responses, mocker):
     r = p._postprocess_attempt(a)
     assert prompt_mock.called
     assert len(r.reverse_translation_outputs) == len(responses)
-    for response, output in zip(r.reverse_translation_outputs, r.all_outputs):
+    for response, output in zip(r.reverse_translation_outputs, r.outputs):
         assert type(response) == type(
             output
         ), "translation index outputs should align with output types"
@@ -240,6 +241,8 @@ def test_multi_modal_probe_translation(classname, mocker):
         expected_provision_calls += len(probe_instance.attempt_descrs) * 2
 
     assert prompt_mock.call_count == expected_provision_calls
+    for prompt in probe_instance.prompts:
+        assert isinstance(prompt.text, str)
 
 
 @pytest.mark.parametrize("classname", PROBES)

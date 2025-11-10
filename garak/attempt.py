@@ -131,7 +131,7 @@ class Conversation:
         """The last message exchanged in the conversation
 
         :param role: Optional, role to search for
-        type: str
+        :type role: str
         """
         if len(self.turns) < 1:
             raise ValueError("No messages available")
@@ -399,7 +399,7 @@ class Attempt:
             return (
                 self.reverse_translation_outputs
             )  # this needs to be wired back in for support
-        return self.all_outputs
+        return self.outputs
 
     def _expand_prompt_to_histories(self, breadth):
         """expand a prompt-only message history to many threads"""
