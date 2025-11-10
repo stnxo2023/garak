@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "garak"
-version = "0.13.2.pre1"
+version = "0.13.2"
 authors = [
   { name = "Leon Derczynski", email="lderczynski@nvidia.com" },
   { name = "Subho Majumdar", email="subho@vijil.ai" },
@@ -59,6 +59,12 @@ authors = [
   { name = "Dhruv Malik" },
   { name = "Patricia Pampanelli" },
   { name = "Joseph Davis Chamdani" },
+  { name = "Rob Geada" },
+  { name = "Ashish RajAnand" },
+  { name = "Paulina Kalicka" },
+  { name = "Gal Moshkovitz" },
+  { name = "Jack Smith" },
+  { name = "Paul A. Parkanzky" },
 ]
 license = "Apache-2.0"
 license-files = ["LICENSE"]
