@@ -8,6 +8,11 @@ from unittest.mock import Mock, patch, MagicMock
 
 from garak.attempt import Message, Turn, Conversation
 
+try:
+    from botocore.exceptions import ClientError
+except ImportError:
+    ClientError = None
+
 
 @pytest.fixture
 def mock_boto3():
@@ -215,10 +220,10 @@ def test_bedrock_malformed_response_handling(mock_boto3):
 
 
 @pytest.mark.usefixtures("set_aws_env", "mock_boto3")
+@pytest.mark.skipif(ClientError is None, reason="botocore not installed")
 def test_bedrock_validation_error_does_not_retry(mock_boto3):
     """Test validation error does not retry."""
     from garak.generators.bedrock import BedrockGenerator
-    from botocore.exceptions import ClientError
 
     # Create a validation error
     validation_error = ClientError(
@@ -240,10 +245,10 @@ def test_bedrock_validation_error_does_not_retry(mock_boto3):
 
 
 @pytest.mark.usefixtures("set_aws_env", "mock_boto3")
+@pytest.mark.skipif(ClientError is None, reason="botocore not installed")
 def test_bedrock_access_denied_error_does_not_retry(mock_boto3):
     """Test access denied error does not retry."""
     from garak.generators.bedrock import BedrockGenerator
-    from botocore.exceptions import ClientError
 
     # Create an access denied error
     access_denied_error = ClientError(
