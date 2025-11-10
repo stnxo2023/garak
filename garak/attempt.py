@@ -106,9 +106,7 @@ class Turn:
             raise ValueError("Expected `role` in Turn dict")
         message = entity.pop("content", {})
         if isinstance(message, str):
-            raise TypeError(
-                "Turn does not support str-type content, use Message / report this as a bug"
-            )
+            content = Message(message, str)
         else:
             content = Message(**message)
         return cls(role=role, content=content)

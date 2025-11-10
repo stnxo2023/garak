@@ -638,3 +638,8 @@ def test_outputs_for():
     assert all_output_a.outputs_for(None) == tlh_outputs
     assert all_output_a.outputs_for("*") == tlh_outputs
     assert all_output_a.outputs_for("en") == reverse_outputs
+
+
+def test_attempt_prompt_no_str():
+    with pytest.raises(ValueError):
+        attempt = garak.attempt.Attempt(prompt="nine two one eight black")
