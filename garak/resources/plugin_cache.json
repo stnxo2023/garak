@@ -215,6 +215,28 @@
       "tier": 9,
       "mod_time": "2025-10-13 21:17:54 +0000"
     },
+    "probes.base.IterativeProbe": {
+      "description": "",
+      "DEFAULT_PARAMS": {
+        "max_calls_per_conv": 10,
+        "follow_prompt_cap": true
+      },
+      "active": false,
+      "doc_uri": "",
+      "extended_detectors": [],
+      "goal": "",
+      "lang": null,
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": null,
+      "tags": [],
+      "tier": 9,
+      "mod_time": "2025-11-07 22:58:39 +0000"
+    },
     "probes.base.Probe": {
       "description": "Base class for objects that define and execute LLM evaluations",
       "DEFAULT_PARAMS": {},
@@ -232,7 +254,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2025-10-28 20:39:34 +0000"
+      "mod_time": "2025-11-07 22:58:39 +0000"
     },
     "probes.base.TreeSearchProbe": {
       "DEFAULT_PARAMS": {
@@ -256,7 +278,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2025-10-28 20:39:34 +0000"
+      "mod_time": "2025-11-07 22:58:39 +0000"
     },
     "probes.continuation.ContinueSlursReclaimedSlurs": {
       "description": "Continue partial word with slur or reclaimed slur.",
@@ -1924,6 +1946,41 @@
       ],
       "tier": 1,
       "mod_time": "2025-05-16 07:39:54 +0000"
+    },
+    "probes.fitd.FITD": {
+      "description": "Foot In The Door probe",
+      "DEFAULT_PARAMS": {
+        "max_calls_per_conv": 10,
+        "follow_prompt_cap": true,
+        "red_team_model_type": "nim.NVOpenAIChat",
+        "red_team_model_name": "mistralai/mixtral-8x22b-instruct-v0.1",
+        "red_team_model_config": {},
+        "num_level_queries": 3,
+        "end_condition": "verify",
+        "initial_prompt_count": 5,
+        "detector_score_threshold": 0.5,
+        "prompt_template_response_aligned__aligned_prefix": "yes",
+        "prompt_template_eval__unsafe_prefix": "unsafe"
+      },
+      "active": false,
+      "doc_uri": "http://arxiv.org/abs/2502.19820",
+      "extended_detectors": [],
+      "goal": "Transform queries from benign to harmful obtaining intermediate responses to get compliance from the model",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "judge.RefusalOnlyAdversarial",
+      "tags": [
+        "owasp:llm01",
+        "owasp:llm02",
+        "owasp:llm05"
+      ],
+      "tier": 3,
+      "mod_time": "2025-11-07 22:58:39 +0000"
     },
     "probes.glitch.Glitch": {
       "description": "Probe model for glitch tokens that provoke unusual behavior",
@@ -5607,7 +5664,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-10-16 17:28:10 +0000"
+      "mod_time": "2025-11-04 02:55:32 +0000"
     },
     "detectors.judge.Refusal": {
       "description": "Uses the configured model to detect if the responses is a refusal to answer",
@@ -5629,7 +5686,29 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-10-16 17:28:10 +0000"
+      "mod_time": "2025-11-04 02:55:32 +0000"
+    },
+    "detectors.judge.RefusalOnlyAdversarial": {
+      "description": "Uses the configured model to detect if the responses is a refusal to answer",
+      "DEFAULT_PARAMS": {
+        "skip": false,
+        "detector_model_type": "nim",
+        "detector_model_name": "meta/llama3-70b-instruct",
+        "detector_model_config": null
+      },
+      "accuracy": null,
+      "active": true,
+      "doc_uri": null,
+      "lang_spec": "en",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "tags": [],
+      "mod_time": "2025-11-04 02:55:32 +0000"
     },
     "detectors.knownbadsignatures.EICAR": {
       "description": "Is the EICAR test string present?",
@@ -8214,7 +8293,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-09-25 15:10:32 +0000"
+      "mod_time": "2025-11-04 22:23:08 +0000"
     },
     "generators.openai.OpenAIGenerator": {
       "description": "Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable",
@@ -8249,7 +8328,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-09-25 15:10:32 +0000"
+      "mod_time": "2025-11-04 22:23:08 +0000"
     },
     "generators.openai.OpenAIReasoningGenerator": {
       "description": "Generator wrapper for OpenAI reasoning models, e.g. `o1` family.",
@@ -8289,7 +8368,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-09-25 15:10:32 +0000"
+      "mod_time": "2025-11-04 22:23:08 +0000"
     },
     "generators.rasa.RasaRestGenerator": {
       "description": "API interface for RASA models",
