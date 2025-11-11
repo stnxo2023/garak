@@ -4,7 +4,10 @@
 """Base classes for probes.
 
 Probe plugins must inherit one of these. `Probe` serves as a template showing
-what expectations there are for inheriting classes."""
+what expectations there are for inheriting classes.
+
+Abstract and common-level probe classes belong here. Contact garak maintainers before adding new classes.
+"""
 
 import copy
 import json

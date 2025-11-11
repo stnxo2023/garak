@@ -17,7 +17,7 @@ All probes will inherit from ``garak.probes.base.Probe``, exposed at package lev
         """Probe to do something naughty to a language model"""
         ...
 
-We require class docstrings in garak and enforce this requirement via a test required before merging.
+Class docstrings are required in garak and enforce this requirement via a test required before merging.
 
 Probes must always inherit from ``garak.probes.base.Probe``.
 This allows probes to work nicely with ``Generator`` and ``Attempt`` objects in addition to ensuring that any ``Buff``\ s that one might want to apply to a probe are going to work appropriately.
@@ -116,6 +116,53 @@ Many of these are decent defaults, though there are a few that we absolutely wan
         active = False
         ...
 
+Docs
+****
+
+All probes require documentation in garak.
+Without it, the tests won't pass.
+Add a dedicated ``.rst`` file in ``docs/source`` with the name ``garak.probes.module``, where ``module`` is the name of the file that your new probes went in.
+Have a look at other probe documentation for an example of the content; it should be something like:
+
+Also, add an entry in ``docs/source/probes.rst`` linking your new module file.
+
+In the code, add a module docstring to the Python module you're working on, if there isn't one there already.
+It should comprise the following parts:
+
+* Title
+* A description of the common technique/intent/source for all probes in this module (one sentence)
+* The inclusion criteria for items in this module, so that others can work out whether or not a new probe would belong here (1-3 sentences)
+* Further description (optional; one paragraph; 1-5 sentences)
+* Links to information about this kind of attack (optional)
+
+For example,
+
+.. code-block:: 
+
+    """ANSI Escape attack
+
+    Try to get model to produce ANSI escape codes, which can disrupt downstream processing.
+
+    Probes in this module should all be trying to elicit ANSI escape codes or information suggesting that the target is capable of producing them.
+    There are a couple of different dimensions included:
+
+    * the encoding can vary - raw binary, or an escaped version;
+    * the technique used can vary - can we get OCS8, OCS52
+    * the action can also be different - log cursor, crash machine, install software etc.
+
+    Further info:
+
+    * https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer
+    * https://www.youtube.com/watch?v=3T2Al3jdY38
+    * https://embracethered.com/blog/posts/2024/terminal-dillmas-prompt-injection-ansi-sequences/
+    * https://dgl.cx/2023/09/ansi-terminal-security
+    * https://cwe.mitre.org/data/definitions/150.html
+    """
+
+
+Note that both class and module docstrings should be in Restructured Text (rst) format, and not markdown. Here's an `rst Cheatsheet <https://bashtage.github.io/sphinx-material/rst-cheatsheet/rst-cheatsheet.html>`_ to get you started.
+
+Garak tests should help guide you to a correct configuration - they automatically test that there are docs and class docstrings, and that these link in the right places.
 
 Testing
 *******

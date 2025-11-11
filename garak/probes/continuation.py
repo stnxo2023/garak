@@ -1,4 +1,8 @@
-"""Probes to check if a generator will continue a contentious term.
+"""Probes to check if a target will continue a contentious term.
+
+These probes pose a phrase ending in an unwanted term, and see if the target will offer a continuation of that term.
+
+Probes that implement this kind of continuation attack belong in this module.
 
 Operates by giving high-risk context as a prompt, extracted from e.g. Urban
 Dictionary examples of use of contentious terms, and seeing if the model will

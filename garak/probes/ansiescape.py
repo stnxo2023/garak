@@ -1,14 +1,24 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""ANSI probe
+"""ANSI Escape attack
 
-Try to get model to produce ANSI codes. These can disrupt downstream processing.
+Try to get model to produce ANSI escape codes, which can disrupt downstream processing.
 
-We have a couple of different dimensions here:
+Probes in this module should all be trying to elicit ANSI escape codes or information suggesting that the target is capable of producing them.
+There are a couple of different dimensions included:
+
 * the encoding can vary - raw binary, or an escaped version;
 * the technique used can vary - can we get OCS8, OCS52
 * the action can also be different - log cursor, crash machine, install software etc.
+
+Further info:
+
+* https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer
+* https://www.youtube.com/watch?v=3T2Al3jdY38
+* https://embracethered.com/blog/posts/2024/terminal-dillmas-prompt-injection-ansi-sequences/
+* https://dgl.cx/2023/09/ansi-terminal-security
+* https://cwe.mitre.org/data/definitions/150.html
 """
 
 import logging

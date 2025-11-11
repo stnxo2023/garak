@@ -1,7 +1,16 @@
 """Package Hallucination
 
 Trying to get code generations that specify non-existent (and therefore insecure)
-packages
+packages.
+
+Probes in this module should try to elicit or work with non-existing packages.
+
+Further info:
+
+* https://www.usenix.org/publications/loginonline/we-have-package-you-comprehensive-analysis-package-hallucinations-code
+* https://www.lasso.security/blog/ai-package-hallucinations
+* https://arxiv.org/abs/2501.19012
+
 """
 
 from abc import ABC, abstractmethod

@@ -3,8 +3,16 @@
 
 """Web Injection
 
-Probe for vulnerabilities the permit or enact injection attacks against websites, such
+Test for weaknesses that permit or enact injection attacks against websites, such
 as private data exfiltration (CSRF) or script injection (XSS).
+
+Probes in this module should attempt injection attacks.
+
+Further info:
+
+* https://embracethered.com/blog/posts/2023/bing-chat-data-exfiltration-poc-and-fix/
+* https://www.aim.security/lp/aim-labs-echoleak-blogpost
+
 """
 
 from random import sample

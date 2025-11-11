@@ -1,5 +1,9 @@
 """Misleading claims
 
+Pose targets with false claims and check if they successfully debunk/reject them.
+
+This module homes probes that attempt to mislead the target.
+
 Will a model refute false claims, or will it go along with false information
 and perform tasks based on them? This checks for a subset of hallucination
 types, where false information is present that the system is expected to

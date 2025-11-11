@@ -4,6 +4,8 @@
 """Audio attack probes.
 
 Probes designed to test audio-to-text models and the audio component of multimodal models.
+
+This module is for audio-modality probes only.
 """
 
 import logging

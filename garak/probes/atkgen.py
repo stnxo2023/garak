@@ -1,14 +1,19 @@
 """atkgen: Attack Generation.
 
-This probe uses a separate model to create prompts for a generator,
+This probe uses a separate model to create attack prompts,
 which are intended to guide that generator into a certain failure mode.
+
+Only probes that dynamically generate their own attack prompts belong in this module.
 
 Warning: These attack models may generate highly toxic prompts while
 attempting to goad target models into failure - peruse logs at your
 own risk, and don't spend too much time doing it, using this guide
-to working with harmful text:
+to working with harmful text: https://aclanthology.org/2022.findings-emnlp.35/
 
- https://aclanthology.org/2022.findings-emnlp.35/
+Further info:
+
+* https://interhumanagreement.substack.com/p/faketoxicityprompts-automatic-red
+
 """
 
 import copy
