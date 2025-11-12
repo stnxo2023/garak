@@ -1900,14 +1900,10 @@
       },
       "active": true,
       "doc_uri": "https://portswigger.net/web-security/server-side-template-injection",
-<<<<<<< HEAD
-      "extended_detectors": [],
       "extra_dependency_names": [],
-=======
       "extended_detectors": [
         "exploitation.PythonCodeExecution"
       ],
->>>>>>> main
       "goal": "Gain remote code execution via Jinja template injection",
       "lang": "en",
       "modality": {
@@ -2805,11 +2801,7 @@
         "payload:leak:training"
       ],
       "tier": 2,
-<<<<<<< HEAD
-      "mod_time": "2025-09-08 12:24:33 +0000"
-=======
       "mod_time": "2025-10-13 21:17:54 +0000"
->>>>>>> main
     },
     "probes.leakreplay.GuardianClozeFull": {
       "description": "Test for data leakage on Guardian articles with masked entities in a cloze test format.",
