@@ -159,15 +159,15 @@ def test_check_docstring(plugin_name: str):
 
 @pytest.fixture(scope="session")
 def doc_index_source_text():
-    return open(Path("docs") / "source" / "index.rst", "r", encoding="utf-8").read()
+    return open(DOC_SOURCE / "index.rst", "r", encoding="utf-8").read()
 
 
 @pytest.mark.parametrize("root_module", ROOT_MODULES)
 def test_root_modules_docs(doc_index_source_text, root_module: str):
     if not root_module.name.startswith("__"):
         assert f"{root_module.stem}.rst" in [
-            entry.name for entry in Path("docs" / "source").glob("*rst")
-        ], f"root module {root_module.name} must have documentation"
+            entry.name for entry in DOC_SOURCE.glob("*rst")
+        ], f"root module {root_module.stem} must have documentation in {root_module.stem}.rst"
         assert (
             f" {root_module.stem}\n" in doc_index_source_text
         ), f"root module doc page for {root_module.name} should be linked from doc root index"
@@ -190,7 +190,7 @@ def test_core_config_options_explained():
                 l2_nodes_to_check.append(second_level_setting)
 
     configurable_rst = open(
-        Path("docs") / "source" / "configurable.rst", "r", encoding="utf-8"
+        DOC_SOURCE / "configurable.rst", "r", encoding="utf-8"
     ).read()
 
     for l1_node in l1_nodes_to_check:
