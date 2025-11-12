@@ -84,8 +84,8 @@ class AzureOpenAIGenerator(OpenAICompatible):
 
     def _load_client(self):
         self._load_deps()
-        if self.model_name in openai_model_mapping:
-            self.model_name = openai_model_mapping[self.model_name]
+        if self.target_name in openai_model_mapping:
+            self.target_name = openai_model_mapping[self.target_name]
 
         self.client = openai.AzureOpenAI(
             azure_endpoint=self.uri, api_key=self.api_key, api_version=self.api_version
