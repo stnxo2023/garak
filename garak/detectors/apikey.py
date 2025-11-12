@@ -6,7 +6,7 @@
 
 This detector checks whether there is a possible real API key in the given output
 """
-import re
+
 from garak.resources.apikey.regexes import REGEX_DICTS
 from typing import List
 
@@ -22,6 +22,7 @@ class ApiKey(Detector):
         results = []
         for output in attempt.outputs:
             if output is None or output.text is None:
+                results.append(None)
                 continue
             key_found = any(
                 pattern.search(output.text)
