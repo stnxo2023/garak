@@ -24,7 +24,7 @@ When invoking garak, specify the path to the generator option file:
 
 .. code-block:: bash
 
-   python -m garak --model_type litellm --model_name "phi" --generator_option_file ollama_base.json -p dan
+   python -m garak --target_type litellm --target_name "phi" --generator_option_file ollama_base.json -p dan
 """
 
 import logging
@@ -75,6 +75,7 @@ class LiteLLMGenerator(Generator):
         "presence_penalty": 0.0,
         "stop": ["#", ";"],
         "verbose": False,
+        "suppressed_params": set(),
     }
 
     supports_multiple_generations = True
@@ -96,7 +97,11 @@ class LiteLLMGenerator(Generator):
         "skip_seq_start",
         "skip_seq_end",
         "stop",
+<<<<<<< HEAD
         "verbose",
+=======
+        "suppressed_params",
+>>>>>>> main
     )
 
     def __init__(self, name: str = "", generations: int = 10, config_root=_config):
@@ -104,6 +109,10 @@ class LiteLLMGenerator(Generator):
         self.api_base = None
         self.provider = None
         self._load_config(config_root)
+        
+        # Ensure suppressed_params is a set for efficient lookup
+        self.suppressed_params = set(self.suppressed_params)
+        
         self.fullname = f"LiteLLM {self.name}"
         self.supports_multiple_generations = not any(
             self.name.startswith(provider)
@@ -140,6 +149,7 @@ class LiteLLMGenerator(Generator):
             return []
 
         try:
+<<<<<<< HEAD
             response = self.litellm.completion(
                 model=self.name,
                 messages=litellm_prompt,
@@ -153,6 +163,32 @@ class LiteLLMGenerator(Generator):
                 api_base=self.api_base,
                 custom_llm_provider=self.provider,
             )
+=======
+            # Build parameters dynamically, respecting suppressed_params
+            params = {
+                "model": self.name,
+                "messages": litellm_prompt,
+                "api_base": self.api_base,
+                "custom_llm_provider": self.provider,
+            }
+            
+            # Add optional parameters if not suppressed
+            optional_params = {
+                "n": generations_this_call,
+                "temperature": self.temperature,
+                "top_p": self.top_p,
+                "stop": self.stop,
+                "max_tokens": self.max_tokens,
+                "frequency_penalty": self.frequency_penalty,
+                "presence_penalty": self.presence_penalty,
+            }
+            
+            for param_name, param_value in optional_params.items():
+                if param_name not in self.suppressed_params:
+                    params[param_name] = param_value
+
+            response = litellm.completion(**params)
+>>>>>>> main
         except (
             self.litellm.exceptions.AuthenticationError,  # authentication failed for detected or passed `provider`
             self.litellm.exceptions.BadRequestError,
