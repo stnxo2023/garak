@@ -1,4 +1,4 @@
-"""atkgen: Attack Generation.
+"""**atkgen: Attack Generation**
 
 This probe uses a separate model to create attack prompts,
 which are intended to guide that generator into a certain failure mode.

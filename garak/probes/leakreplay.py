@@ -1,4 +1,4 @@
-"""Data leak: Replay attack
+"""**Data leak: Replay attack**
 
 Attacks that try to get a model to leak whether or not a given document
 was used in training, by having it replay an excerpt from that doc.

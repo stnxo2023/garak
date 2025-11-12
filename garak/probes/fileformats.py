@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""File formats
+"""**File formats**
 
 Look at files associated with the target for potentially vulnerable items.
 

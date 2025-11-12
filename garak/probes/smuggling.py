@@ -1,4 +1,4 @@
-"""Token Smuggling
+"""**Token Smuggling**
 
 Probes that attempt to bypass filters via obfuscation of contentious terms.
 

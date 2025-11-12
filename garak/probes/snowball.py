@@ -1,4 +1,4 @@
-"""Snowball probe
+"""**Snowball probe**
 
 Checks if the system gives wrong answers to complex reasoning questions,
 instead of giving the right answer or no answer.

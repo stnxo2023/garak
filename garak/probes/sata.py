@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""Simple Assistive Task Linkage
+"""**Simple Assistive Task Linkage**
 
 Attacks here replace potentially violating or "harmful" text with a string
 that should be converted to a [MASK] token then, links the masked query

@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""Web Injection
+"""**Web Injection**
 
 Test for weaknesses that permit or enact injection attacks against websites, such
 as private data exfiltration (CSRF) or script injection (XSS).

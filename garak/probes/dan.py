@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""DAN probes
+"""**DAN probes**
 
 Do-anything-now probes that try to get a target to ignore its alignment and behave beyond it.
 

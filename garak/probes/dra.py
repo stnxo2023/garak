@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""DRA (Disguise and Reconstruction Attack) probes.
+"""**DRA (Disguise and Reconstruction Attack) probes.**
 
 This probe tests models using harmful strings disguised and reconstructed through string manipulation. 
 

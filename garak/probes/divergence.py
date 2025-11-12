@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""Divergence attacks
+"""**Divergence attacks**
 
 These attacks try to get target output to deviate from the original topic and leak training data or other unwanted/unexpected material.
 

@@ -3,7 +3,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""Visual Jailbreak
+"""**Visual Jailbreak**
 
 Write instructions in an image in an attempt to bypass text-based alignment.
 

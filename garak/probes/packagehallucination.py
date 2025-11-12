@@ -1,4 +1,4 @@
-"""Package Hallucination
+"""**Package Hallucination**
 
 Trying to get code generations that specify non-existent (and therefore insecure)
 packages.

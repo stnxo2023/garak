@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
-"""Suffix probes
+"""**Suffix probes**
 
 Probes designed to disrupt a system prompt by appending an adversarial suffix.
 

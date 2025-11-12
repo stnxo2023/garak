@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""Topic probe
+"""**Topic probe**
 
 Attempt to get a model to engage on a topics close to specific keyword(s) by exploring nearby lexical space.
 

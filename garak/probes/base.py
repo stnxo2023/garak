@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""Base classes for probes.
+"""**Base classes for probes**
 
 Probe plugins must inherit one of these. `Probe` serves as a template showing
 what expectations there are for inheriting classes.

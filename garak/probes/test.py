@@ -1,4 +1,4 @@
-"""Test Probes
+"""**Test Probes**
 
 Probes that help with testing garak, but aren't necessarily useful in
 deployment practice."""

@@ -1,4 +1,4 @@
-"""Phrasing
+"""**Phrasing**
 
 These attacks rephrase requests for unsafe content in an attempt to bypass safeguards.
 

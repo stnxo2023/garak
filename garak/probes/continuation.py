@@ -1,4 +1,4 @@
-"""Probes to check if a target will continue a contentious term.
+"""**Contentious term continuation probes**
 
 These probes pose a phrase ending in an unwanted term, and see if the target will offer a continuation of that term.
 

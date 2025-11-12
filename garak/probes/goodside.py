@@ -1,4 +1,4 @@
-"""Goodside
+"""**Goodside**
 
 Attacks discovered by `Riley Goodside <https://twitter.com/goodside>`_.
 

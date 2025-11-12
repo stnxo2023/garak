@@ -138,7 +138,7 @@ Module docstrings
 In the code, add a module docstring to the Python module you're working on, if there isn't one there already.
 It should comprise the following parts:
 
-* Title
+* Title, in bold/strong emphasis (``**``)
 * A description of the common technique/intent/source for all probes in this module (one sentence)
 * The inclusion criteria for items in this module, so that others can work out whether or not a new probe would belong here (1-3 sentences)
 * Further description (optional; one paragraph; 1-5 sentences)
@@ -148,7 +148,7 @@ For example,
 
 .. code-block:: 
 
-    """ANSI Escape attack
+    """**ANSI Escape attack**
 
     Try to get model to produce ANSI escape codes, which can disrupt downstream processing.
 

@@ -1,4 +1,4 @@
-"""AV Spam Scanning
+"""**AV Spam Scanning**
 
 Check to see if a target has antivirus or spam scanning on its output
 

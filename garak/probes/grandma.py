@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
-"""The grandma attack
+
+"""**The grandma attack**
 
 Roleplay as a grandma.
 

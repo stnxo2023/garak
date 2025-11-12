@@ -1,4 +1,4 @@
-"""Encoding-based prompt injection
+"""**Encoding-based prompt injection**
 
 Encode an unsafe instruction or string in an effort to get it past alignment.
 

@@ -1,4 +1,4 @@
-"""PromptInject
+"""**PromptInject**
 
 Basic prompt injections, including plaintext malicious commands into requests
 for innocuous information.

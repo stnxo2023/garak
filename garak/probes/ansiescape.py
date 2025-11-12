@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""ANSI Escape attack
+"""**ANSI Escape attack**
 
 Try to get model to produce ANSI escape codes, which can disrupt downstream processing.
 

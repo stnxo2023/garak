@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""Foot In The Door
+"""**Foot In The Door**
 
 A multi-turn jailbreak that generates queries of increasing intensity from safe to adversarial, getting compliance from the model at each intermediate stage to obtain attack success with the adversarial prompt.
 

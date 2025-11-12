@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""Latent injection
+"""**Latent injection**
 
 Probes to test prompt injections buried in other contexts, like a resume or financial report.
 

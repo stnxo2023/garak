@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""Audio attack probes.
+"""**Audio attack probes**
 
 Probes designed to test audio-to-text models and the audio component of multimodal models.
 

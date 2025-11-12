@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tree of Attacks with Pruning (TAP) probes
+"""**Tree of Attacks with Pruning (TAP) probes**
 
 These are use LLM-generated prompts to jailbreak a target.
 

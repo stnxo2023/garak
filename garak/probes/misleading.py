@@ -1,4 +1,4 @@
-"""Misleading claims
+"""**Misleading claims**
 
 Pose targets with false claims and check if they successfully debunk/reject them.
 
