@@ -97,11 +97,8 @@ class LiteLLMGenerator(Generator):
         "skip_seq_start",
         "skip_seq_end",
         "stop",
-<<<<<<< HEAD
         "verbose",
-=======
         "suppressed_params",
->>>>>>> main
     )
 
     def __init__(self, name: str = "", generations: int = 10, config_root=_config):
@@ -149,21 +146,6 @@ class LiteLLMGenerator(Generator):
             return []
 
         try:
-<<<<<<< HEAD
-            response = self.litellm.completion(
-                model=self.name,
-                messages=litellm_prompt,
-                temperature=self.temperature,
-                top_p=self.top_p,
-                n=generations_this_call,
-                stop=self.stop,
-                max_tokens=self.max_tokens,
-                frequency_penalty=self.frequency_penalty,
-                presence_penalty=self.presence_penalty,
-                api_base=self.api_base,
-                custom_llm_provider=self.provider,
-            )
-=======
             # Build parameters dynamically, respecting suppressed_params
             params = {
                 "model": self.name,
@@ -188,7 +170,6 @@ class LiteLLMGenerator(Generator):
                     params[param_name] = param_value
 
             response = litellm.completion(**params)
->>>>>>> main
         except (
             self.litellm.exceptions.AuthenticationError,  # authentication failed for detected or passed `provider`
             self.litellm.exceptions.BadRequestError,
