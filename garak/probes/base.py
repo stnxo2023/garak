@@ -3,10 +3,10 @@
 
 """**Base classes for probes**
 
-Probe plugins must inherit one of these. `Probe` serves as a template showing
+Probe plugins must inherit one of these. ``Probe`` serves as a template for showing
 what expectations there are for inheriting classes.
 
-Abstract and common-level probe classes belong here. Contact garak maintainers before adding new classes.
+Abstract and common-level probe classes belong here. Contact the garak maintainers before adding new classes.
 """
 
 import copy
@@ -665,11 +665,13 @@ class IterativeProbe(Probe):
 
     IterativeProbe assumes the probe generates a set of initial prompts, each of which are passed to the target model and the response is used for evaluation. The responses are also provided back to the probe and the probe uses the response to generate follow up prompts which are also passed to the target model and each of the responses are used for evaluation.
     This can continue until one of:
-        - max_calls_per_conv is reached
-        - The probe chooses to run the detector on the target response and stops when the detector detects a success
-        -The probe has a function, different from the detector for deciding when it thinks an attack will be successful and stops at that point.
+
+    - ``max_calls_per_conv`` is reached.
+    - The probe chooses to run the detector on the target response and stops when the detector detects a success.
+    - The probe has a function, different from the detector for deciding when the probe thinks an attack will be successful and stops at that point.
 
     Additional design considerations:
+
     1. Not all multiturn probes need this base class. A probe could directly construct a multiturn input where it only cares about how the target responds to the last turn (eg: prefill attacks) can just subclass Probe.
     2. Probes that inherit from IterativeProbe are allowed to manipulate the history in addition to generating new turns based on a target's response. For example if the response to the initial turn was a refusal, the probe can in the next attempt either pass in that history of old init turn + refusal + next turn or just pass a new init turn.
     3. An Attempt is created at every turn when the history is passed to the target. All these Attempts are collected and passed to the detector. The probe can use Attempt.notes to tell the detector to skip certain attempts but a special detector needs to be written that will pay attention to this value.
