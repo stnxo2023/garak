@@ -169,7 +169,7 @@ class LiteLLMGenerator(Generator):
                 if param_name not in self.suppressed_params:
                     params[param_name] = param_value
 
-            response = litellm.completion(**params)
+            response = self.litellm.completion(**params)
         except (
             self.litellm.exceptions.AuthenticationError,  # authentication failed for detected or passed `provider`
             self.litellm.exceptions.BadRequestError,
