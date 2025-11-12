@@ -1,19 +1,17 @@
 import importlib
-import os
 from pathlib import Path
 import yaml
 
 import pytest
 
-
 TOP_PATHS = ["probes", "detectors", "harnesses", "generators", "evaluators", "buffs"]
-DOC_SOURCE = os.path.join("docs", "source")
+DOC_SOURCE = Path("docs/source")
 
-m = {}
+module_names = {}
 for top_path in TOP_PATHS:
-    m[top_path] = [
-        str(i).split(os.sep)[2].replace(".py", "")
-        for i in Path(f"garak{os.sep}{top_path}").glob("*py")
+    module_names[top_path] = [
+        i.name.replace(".py", "")
+        for i in Path(f"garak/{top_path}").glob("*py")
         if not str(i).endswith("__init__.py")
     ]
 
@@ -22,101 +20,106 @@ ROOT_MODULES = list(Path("garak").glob("*py"))
 
 @pytest.mark.parametrize("category", TOP_PATHS)
 def test_top_docs(category: str):
-    file_path = os.path.join(DOC_SOURCE, f"garak.{category}.rst")
-    assert os.path.isfile(file_path)
-    assert os.path.getsize(file_path) > 0
+    file_path = DOC_SOURCE / f"garak.{category}.rst"
+    assert (
+        file_path.is_file()
+    ), "Top level category %s needs to have docs in %s but file is absent" % (
+        category,
+        file_path,
+    )
+    assert file_path.stat().st_size > 0, "Top level doc %s cannot be blank" % file_path
 
 
-@pytest.mark.parametrize("classname", m["probes"])
+@pytest.mark.parametrize("classname", module_names["probes"])
 def test_docs_probes(classname: str):
-    file_path = os.path.join(DOC_SOURCE, f"garak.probes.{classname}.rst")
-    assert os.path.isfile(
-        file_path
+    file_path = DOC_SOURCE / f"garak.probes.{classname}.rst"
+    assert (
+        file_path.is_file()
     ), f"There must be an entry for each probe family in the docs; missing {file_path}"
     assert (
-        os.path.getsize(file_path) > 0
+        file_path.stat().st_size
     ), "plugin docs cannot be empty. you can just use a stub to read python docstrings, look at existing doc files"
-    category_file = os.path.join(DOC_SOURCE, "probes.rst")
+    category_file = DOC_SOURCE / "probes.rst"
     target_doc = f"garak.probes.{classname}\n"
     assert (
         open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
     ), "probe docs must be linked to in probes.rst"
 
 
-@pytest.mark.parametrize("classname", m["detectors"])
+@pytest.mark.parametrize("classname", module_names["detectors"])
 def test_docs_detectors(classname: str):
-    file_path = os.path.join(DOC_SOURCE, f"garak.detectors.{classname}.rst")
-    assert os.path.isfile(
-        file_path
+    file_path = DOC_SOURCE / f"garak.detectors.{classname}.rst"
+    assert (
+        file_path.is_file()
     ), f"There must be an entry for each detector family in the docs; missing {file_path}"
     assert (
-        os.path.getsize(file_path) > 0
+        file_path.stat().st_size
     ), "plugin docs cannot be empty. you can just use a stub to read python docstrings, look at existing doc files"
-    category_file = os.path.join(DOC_SOURCE, "detectors.rst")
+    category_file = DOC_SOURCE / "detectors.rst"
     target_doc = f"garak.detectors.{classname}\n"
     assert (
         open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
     ), "detector docs must be linked to in detectors.rst"
 
 
-@pytest.mark.parametrize("classname", m["harnesses"])
+@pytest.mark.parametrize("classname", module_names["harnesses"])
 def test_docs_harnesses(classname: str):
-    file_path = os.path.join(DOC_SOURCE, f"garak.harnesses.{classname}.rst")
-    assert os.path.isfile(
-        file_path
+    file_path = DOC_SOURCE / f"garak.harnesses.{classname}.rst"
+    assert (
+        file_path.is_file()
     ), f"There must be an entry for each harness family in the docs; missing {file_path}"
     assert (
-        os.path.getsize(file_path) > 0
+        file_path.stat().st_size
     ), "plugin docs cannot be empty. you can just use a stub to read python docstrings, look at existing doc files"
-    category_file = os.path.join(DOC_SOURCE, "harnesses.rst")
+    category_file = DOC_SOURCE / "harnesses.rst"
     target_doc = f"garak.harnesses.{classname}\n"
     assert (
         open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
     ), "harness docs must be linked to in harnesses.rst"
 
 
-@pytest.mark.parametrize("classname", m["evaluators"])
+@pytest.mark.parametrize("classname", module_names["evaluators"])
 def test_docs_evaluators(classname: str):
-    file_path = os.path.join(DOC_SOURCE, f"garak.evaluators.{classname}.rst")
-    assert os.path.isfile(
-        file_path
+    file_path = DOC_SOURCE / f"garak.evaluators.{classname}.rst"
+    assert (
+        file_path.is_file()
     ), f"There must be an entry for each evaluator family in the docs; missing {file_path}"
     assert (
-        os.path.getsize(file_path) > 0
+        file_path.stat().st_size
     ), "plugin docs cannot be empty. you can just use a stub to read python docstrings, look at existing doc files"
-    category_file = os.path.join(DOC_SOURCE, "evaluators.rst")
+    category_file = DOC_SOURCE / "evaluators.rst"
     target_doc = f"garak.evaluators.{classname}\n"
     assert (
         open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
     ), "evaluator docs must be linked to in evaluators.rst"
 
 
-@pytest.mark.parametrize("classname", m["generators"])
+@pytest.mark.parametrize("classname", module_names["generators"])
 def test_docs_generators(classname: str):
-    file_path = os.path.join(DOC_SOURCE, f"garak.generators.{classname}.rst")
-    assert os.path.isfile(
-        file_path
+    file_path = DOC_SOURCE / f"garak.generators.{classname}.rst"
+    assert (
+        file_path.is_file()
     ), f"There must be an entry for each generator family in the docs; missing {file_path}"
     assert (
-        os.path.getsize(file_path) > 0
+        file_path.stat().st_size
     ), "plugin docs cannot be empty. you can just use a stub to read python docstrings, look at existing doc files"
-    category_file = os.path.join(DOC_SOURCE, "generators.rst")
+    category_file = DOC_SOURCE / "generators.rst"
     target_doc = f"garak.generators.{classname}\n"
     assert (
         open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
     ), "generator docs must be linked to in generators.rst"
 
 
-@pytest.mark.parametrize("classname", m["buffs"])
+@pytest.mark.parametrize("classname", module_names["buffs"])
 def test_docs_buffs(classname: str):
-    file_path = os.path.join(DOC_SOURCE, f"garak.buffs.{classname}.rst")
-    assert os.path.isfile(
-        file_path
+    file_path = DOC_SOURCE / f"garak.buffs.{classname}.rst"
+    assert (
+        file_path.is_file()
     ), f"There must be an entry for each buff family in the docs; missing {file_path}"
     assert (
-        os.path.getsize(file_path) > 0
+        file_path.stat().st_size
     ), "plugin docs cannot be empty. you can just use a stub to read python docstrings, look at existing doc files"
-    category_file = os.path.join(DOC_SOURCE, "buffs.rst")
+    category_file = DOC_SOURCE / "buffs.rst"
     target_doc = f"garak.buffs.{classname}\n"
     assert (
         open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
@@ -163,7 +166,7 @@ def doc_index_source_text():
 def test_root_modules_docs(doc_index_source_text, root_module: str):
     if not root_module.name.startswith("__"):
         assert f"{root_module.stem}.rst" in [
-            entry.name for entry in Path(f"docs{os.sep}source").glob("*rst")
+            entry.name for entry in Path("docs" / "source").glob("*rst")
         ], f"root module {root_module.name} must have documentation"
         assert (
             f" {root_module.stem}\n" in doc_index_source_text
@@ -200,3 +203,12 @@ def test_core_config_options_explained():
         assert (
             f"\n* ``{l2_node}`` - " in configurable_rst
         ), f"core config value '{l2_node}' must be documented in configurable.rst"
+
+
+@pytest.mark.parametrize("doc_source_entry", DOC_SOURCE.iterdir())
+def test_doc_src_extensions(doc_source_entry):
+    if doc_source_entry.is_file():
+        if doc_source_entry.name not in ("Makefile", "conf.py"):
+            assert doc_source_entry.suffix == ".rst", (
+                "Doc entry %s should be a .rst file" % doc_source_entry
+            )
