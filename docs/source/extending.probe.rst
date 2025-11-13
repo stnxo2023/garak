@@ -7,7 +7,7 @@ In this example, we're going to go over the key points of how to develop a new p
 Inheritance
 ***********
 
-All probes will inherit from ``garak.probes.base.Probe``, exposed at package level via ``garak.probes``.
+All probes inherit from ``garak.probes.base.Probe``, exposed at package level via ``garak.probes``.
 
 .. code-block:: python
 
@@ -17,14 +17,11 @@ All probes will inherit from ``garak.probes.base.Probe``, exposed at package lev
         """Probe to do something naughty to a language model"""
         ...
 
-Class docstrings are required in garak and enforce this requirement via a test required before merging.
+By inheriting from ``garak.probes.base.Probe``, probes can work nicely with ``Generator`` and ``Attempt`` objects in addition to ensuring that any ``Buff`` objects that you apply to a probe will work appropriately.
 
-Probes must always inherit from ``garak.probes.base.Probe``.
-This allows probes to work nicely with ``Generator`` and ``Attempt`` objects in addition to ensuring that any ``Buff``\ s that one might want to apply to a probe are going to work appropriately.
-
-The ``probe`` method of ``Probe`` objects is where the core logic of a probe lies.
-Ideally, one would need only to populate the ``prompts`` attribute of a ``Probe`` and let the ``probe`` method do the heavy lifting.
-However, if this logic is insufficient for a custom probe, this is where the majority of the work (and potential issues) tends to lie.
+The ``probe`` method of a ``Probe`` object provides the core logic of the probe.
+Ideally, you only need to populate the ``prompts`` attribute of a ``Probe`` and let the ``probe`` method do the heavy lifting.
+However, if this logic is insufficient for your probe, the ``probe`` method is where the majority of the work (and potential issues) tends to lie.
 
 .. code-block:: python
 
@@ -116,43 +113,47 @@ Many of these are decent defaults, though there are a few that we absolutely wan
         active = False
         ...
 
-Docs
-****
+Probe Documentation
+*******************
 
-All probes require documentation in garak.
-Without it, the tests won't pass.
-Add a dedicated ``.rst`` file in ``docs/source`` with the name ``garak.probes.module``, where ``module`` is the name of the file that your new probes went in.
-Have a look at other probe documentation for an example of the content; it should be something like:
+You must provide documentation for your probe.
+Class docstrings are required and are enforced by a test that must pass before merging.
 
-Also, add an entry in ``docs/source/probes.rst`` linking your new module file.
+#. Add an ``.rst`` file in the ``docs/source`` directory with the name ``garak.probes.<module>.rst``, where ``module`` matches the file name of your new probe.
 
-Note that both class and module docstrings should be in Restructured Text (rst) format, and not markdown. Here's an `rst Cheatsheet <https://bashtage.github.io/sphinx-material/rst-cheatsheet/rst-cheatsheet.html>`_ to get you started.
+   Refer to other probe documentation for an example of the content.
 
-Paragraph breaks are implemented using a whole blank line (e.g. ``\\n\\n``)
+   Also refer to the garak tests to ensure your documentation is correct.
+   The tests check that you added documentation, that the class docstrings are present, and that they link to the right places.
 
-Garak tests should help guide you to a correct configuration - they automatically test that there are docs and class docstrings, and that these link in the right places.
+#. Add an entry in ``docs/source/probes.rst`` and link to  your new module file.
 
-Module docstrings
+Both the class and module docstrings must be in ReStructuredText (RST) format, and not markdown.
+Refer to the `rst Cheatsheet <https://bashtage.github.io/sphinx-material/rst-cheatsheet/rst-cheatsheet.html>`_ or `ReStructuredText Primer <https://docutils.sourceforge.io/docs/user/rst/quickref.html>`_ to get you started.
+
+Paragraphs are separated by a blank lines, such as ``\\n\\n``.
+
+Module Docstrings
 =================
 
-In the code, add a module docstring to the Python module you're working on, if there isn't one there already.
-It should comprise the following parts:
+In the Python module you're working on, add a module docstring, if there isn't one already.
+Include the following parts:
 
 * Title, in bold/strong emphasis (``**``)
 * A description of the common technique/intent/source for all probes in this module (one sentence)
-* The inclusion criteria for items in this module, so that others can work out whether or not a new probe would belong here (1-3 sentences)
+* The inclusion criteria for items in this module, so that others can determine whether or not a new probe would belong in the module (1-3 sentences)
 * Further description (optional; one paragraph; 1-5 sentences)
 * Links to information about this kind of attack (optional)
 
-For example,
+Refer to the following example:
 
-.. code-block:: 
+.. code-block::
 
     """**ANSI Escape attack**
 
-    Try to get model to produce ANSI escape codes, which can disrupt downstream processing.
+    Try to make a model produce ANSI escape codes, which can disrupt downstream processing.
 
-    Probes in this module should all be trying to elicit ANSI escape codes or information suggesting that the target is capable of producing them.
+    Probes in this module should all try to elicit ANSI escape codes or information suggesting that the target is capable of producing them.
     There are a couple of different dimensions included:
 
     * the encoding can vary - raw binary, or an escaped version;
@@ -168,18 +169,18 @@ For example,
     * https://cwe.mitre.org/data/definitions/150.html
     """
 
-Class docstrings
+Class Docstrings
 ================
 
 Probe classes themselves must also have a docstring.
-The target structure for garak ``Probe`` class docs is:
+The target structure for garak ``Probe`` class docstrings include the following items:
 
 * Short description of the technique or intent of the probe (1 sentence, followed by a blank line)
 * Friendly general intro to the probe, in very simple English (1-4 sentences; short sentences; follow `Basic English <https://simple.wikipedia.org/wiki/Basic_English>`_ rules as much as possible, try this `tool <https://www.online-utility.org/english/simple_basic_helper.jsp>`_)
 * Example prompts generated by the probe (optional; in RST-formatted blockquote)
-* How the probe works, extended description (optional; may be multiple paragraphs)
+* How the probe works, extended description (optional; can be multiple paragraphs)
 * Link to source docs; include reference and hyperlink (optional; 1-2 lines)
-* For probes implementing work in a paper, the paper's abstract (optional; in RST-formatted blockquote)
+* For probes implementing work in a paper, include the paper's abstract (optional; in RST-formatted blockquote)
 
 
 Testing
