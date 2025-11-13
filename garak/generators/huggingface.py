@@ -171,12 +171,15 @@ class OptimumPipeline(Pipeline, HFCompatible):
     doc_uri = "https://huggingface.co/blog/optimum-nvidia"
     extra_dependency_names = ["optimum-nvidia"]
 
+    def _load_deps(self):
+        return super()._load_deps(["optimum.nvidia"])
+
     def _load_client(self):
         self._load_deps()
         if hasattr(self, "generator") and self.generator is not None:
             return
 
-        pipeline = self.optimum.nvidia.pipelines.pipeline
+        pipeline = self.optimum_nvidia.pipelines.pipeline
         from transformers import set_seed
 
         if self.seed is not None:
