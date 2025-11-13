@@ -15,11 +15,11 @@ import importlib
 GENERATORS = [
     "generators.huggingface.InferenceAPI",
     "generators.huggingface.InferenceEndpoint",
-#    "generators.mistral.MistralGenerator",
+    "generators.mistral.MistralGenerator",
     "generators.nvcf.NvcfChat",
     "generators.nvcf.NvcfCompletion",
-#    "generators.replicate.InferenceEndpoint",
-#    "generators.replicate.ReplicateGenerator",
+    "generators.replicate.InferenceEndpoint",
+    "generators.replicate.ReplicateGenerator",
 ]
 
 MODEL_NAME = "gpt-3.5-turbo-instruct"
@@ -32,7 +32,10 @@ def build_test_instance(module_klass):
     if hasattr(module_klass, "ENV_VAR"):
         stored_env = os.getenv(module_klass.ENV_VAR, None)
         os.environ[module_klass.ENV_VAR] = ENV_VAR
-    class_instance = module_klass(name=MODEL_NAME)
+    try:
+        class_instance = module_klass(name=MODEL_NAME)
+    except ModuleNotFoundError as mnfe:
+        pytest.skip(mnfe.args[0])
     if stored_env is not None:
         os.environ[module_klass.ENV_VAR] = stored_env
     else:
