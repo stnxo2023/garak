@@ -13,7 +13,7 @@ from httpx import TimeoutException
 
 def _give_up(error):
     return (
-        str(error.__class__) == "<class 'ollama._types.ResponseError'>"
+        not isinstance(error.__cause__, TimeoutException)
         and hasattr(error, "status_code")
         and error.status_code == 404
     )
