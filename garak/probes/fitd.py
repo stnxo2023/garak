@@ -1,11 +1,16 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""Foot In The Door probe
+"""**Foot In The Door**
 
 A multi-turn jailbreak that generates queries of increasing intensity from safe to adversarial, getting compliance from the model at each intermediate stage to obtain attack success with the adversarial prompt.
 
-Paper: http://arxiv.org/abs/2502.19820
+Probes in this module should implement FitD or an FitD variant.
+
+Further info:
+
+* http://arxiv.org/abs/2502.19820
+
 """
 
 import csv
