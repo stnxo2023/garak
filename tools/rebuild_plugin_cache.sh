@@ -10,7 +10,7 @@
 # abort on any failure
 set -e
 
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+if [[ "$OSTYPE" != "linux-gnu"* ]]; then
     echo "This script should be run under GNU Linux only"
     exit 1
 fi
