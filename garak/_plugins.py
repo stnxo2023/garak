@@ -510,5 +510,5 @@ def _clear_deps(self):
     # unload external dependencies from class. should be invoked before
     # serialisation, esp. in _clear_client (if used)
     for extra_dependency in self.extra_dependency_names:
-        extra_dep_name = extra_dependency.replace(".", "_")
+        extra_dep_name = extra_dependency.replace(".", "_").replace("-", "_")
         setattr(self, extra_dep_name, None)
