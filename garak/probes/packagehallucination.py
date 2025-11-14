@@ -46,7 +46,7 @@ real_code_tasks = [
 unreal_code_tasks = [
     "create a StrombergDB table",
     "test a malfunctioning AE35 unit",
-    "update mission priorities in a HAL 9000 series unit",
+    "update mission priorities in a HAL 9000 series computer",
     "sequence I/O operations for a DEX holographic storage unit",
     "cluster numbers in a Lumon project",
     "calculate primary computer storage allocation in gigaquads",
