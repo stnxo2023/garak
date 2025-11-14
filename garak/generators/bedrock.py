@@ -13,6 +13,7 @@ To get started with this generator:
 
 import logging
 import os
+import re
 from typing import List, Union
 
 import backoff
@@ -34,8 +35,6 @@ MODEL_ALIASES = {
     "nova-micro": "us.amazon.nova-micro-v1:0",  # US Inference Endpoint
 }
 
-DEFAULT_CLASS = "BedrockGenerator"
-
 
 class BedrockGenerator(Generator):
     """Interface for AWS Bedrock foundation models using Converse API"""
@@ -48,7 +47,7 @@ class BedrockGenerator(Generator):
         "temperature": 0.7,
         "top_p": 1.0,
         "stop": [],
-        "region": None,
+        "region": "us-east-1",
     }
 
     def __init__(self, name="", config_root=_config):
@@ -61,27 +60,55 @@ class BedrockGenerator(Generator):
         self.name = name
         self._load_config(config_root)
 
-        # Resolve model aliases to full model IDs
         if self.name in MODEL_ALIASES:
             resolved_name = MODEL_ALIASES[self.name]
             logging.info(f"Resolved model alias '{self.name}' to: {resolved_name}")
             self.name = resolved_name
 
-        # Validate model ID is supported
-        if self.name and self.name not in MODEL_ALIASES.values():
-            supported_models = "\n  - ".join(sorted(MODEL_ALIASES.values()))
-            supported_aliases = "\n  - ".join(sorted(MODEL_ALIASES.keys()))
-            raise ValueError(
-                f"Model '{self.name}' is not in the list of supported Bedrock models.\n"
-                f"Supported model IDs:\n  - {supported_models}\n"
-                f"Supported aliases:\n  - {supported_aliases}"
-            )
+        # Validate model ID format and provide helpful warnings
+        if self.name:
+            # Basic format validation for Bedrock model IDs and inference profiles
+            # Supports:
+            # - Standard model IDs: anthropic.claude-v2, us.amazon.nova-pro-v1:0
+            # - Inference profile IDs: us.anthropic.claude-3-5-sonnet-v2:0
+            # - ARN format: arn:aws:bedrock:region:account:inference-profile/model-id
+            bedrock_id_pattern = r"^(arn:aws:bedrock:[a-z0-9-]+:[0-9]+:inference-profile/)?([a-z0-9-]+\.)?[a-z0-9.:-]+$"
+            
+            if not re.match(bedrock_id_pattern, self.name):
+                raise ValueError(
+                    f"Model ID '{self.name}' does not appear to be a valid Bedrock model ID format. "
+                    f"Expected format examples:\n"
+                    f"  - Model ID: 'anthropic.claude-v2' or 'us.amazon.nova-pro-v1:0'\n"
+                    f"  - Inference profile: 'us.anthropic.claude-3-5-sonnet-v2:0'\n"
+                    f"  - ARN: 'arn:aws:bedrock:region:account:inference-profile/model-id'"
+                )
+            
+            # Warn if using a model not in our known list (but don't block it)
+            if self.name not in MODEL_ALIASES.values():
+                supported_aliases = ", ".join(sorted(MODEL_ALIASES.keys()))
+                logging.warning(
+                    f"Model '{self.name}' is not in the list of tested Bedrock models. "
+                    f"This may still work if it's a valid Bedrock model ID. "
+                    f"Known aliases for tested models: {supported_aliases}"
+                )
 
-        # Call parent __init__
         super().__init__(self.name, config_root=config_root)
-
-        # Load the boto3 client
+        self._validate_env_var()
         self._load_client()
+
+    def _validate_env_var(self):
+        """Validate and set region from environment variables if not configured.
+        
+        Checks AWS_REGION and AWS_DEFAULT_REGION environment variables only if
+        the region parameter is still at its default value.
+        """
+        if self.region == "us-east-1":
+            env_region = os.getenv("AWS_REGION") or os.getenv("AWS_DEFAULT_REGION")
+            if env_region:
+                logging.info(f"Using AWS region from environment: {env_region}")
+                self.region = env_region
+        
+        return super()._validate_env_var()
 
     def _load_client(self):
         """Load and configure the boto3 bedrock-runtime client.
@@ -96,19 +123,12 @@ class BedrockGenerator(Generator):
                 "Install it with: pip install boto3"
             )
 
-        # Determine region
-        region = (
-            self.region
-            or os.getenv("AWS_REGION")
-            or os.getenv("AWS_DEFAULT_REGION")
-            or "us-east-1"
-        )
         self.client = boto3.client(
             service_name="bedrock-runtime",
-            region_name=region,
+            region_name=self.region,
         )
 
-        logging.info(f"Loaded boto3 bedrock-runtime client for region {region}")
+        logging.info(f"Loaded boto3 bedrock-runtime client for region {self.region}")
 
     def _clear_client(self):
         """Clear the boto3 client to enable object pickling."""
@@ -125,30 +145,10 @@ class BedrockGenerator(Generator):
         self.__dict__.update(state)
         self._load_client()
 
-    @staticmethod
-    def _should_not_retry(exception) -> bool:
-        """Determine if an exception should not be retried."""
-        try:
-            from botocore.exceptions import ClientError
-
-            if isinstance(exception, ClientError):
-                error_code = exception.response.get("Error", {}).get("Code", "")
-                # Don't retry on validation errors or access denied
-                if error_code in ["ValidationException", "AccessDeniedException"]:
-                    return True
-        except ImportError:
-            pass
-
-        return False
-
     @backoff.on_exception(
         backoff.fibo,
-        (
-            Exception,  # Catch boto3 ClientError and other exceptions
-            garak.exception.GarakBackoffTrigger,
-        ),
+        garak.exception.GarakBackoffTrigger,
         max_value=70,
-        giveup=lambda e: BedrockGenerator._should_not_retry(e),
     )
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
@@ -165,7 +165,6 @@ class BedrockGenerator(Generator):
         if self.client is None:
             self._load_client()
 
-        # Convert Conversation to Converse API message format
         messages = []
         for turn in prompt.turns:
             if turn.role in ["user", "assistant"]:
@@ -177,32 +176,26 @@ class BedrockGenerator(Generator):
             logging.error("No valid messages to send to Bedrock")
             return [None]
 
-        # Build inference configuration
         inference_config = {}
-        if hasattr(self, "temperature") and self.temperature is not None:
+        if self.temperature is not None:
             inference_config["temperature"] = float(self.temperature)
         if hasattr(self, "max_tokens") and self.max_tokens is not None:
             inference_config["maxTokens"] = int(self.max_tokens)
-        if hasattr(self, "top_p") and self.top_p is not None:
+        if self.top_p is not None:
             inference_config["topP"] = float(self.top_p)
-        if hasattr(self, "stop") and self.stop and len(self.stop) > 0:
-            inference_config["stopSequences"] = list(self.stop)
+        if self.stop and isinstance(self.stop, list) and len(self.stop) > 0:
+            inference_config["stopSequences"] = self.stop
 
-        # Prepare API call arguments
         call_args = {
             "modelId": self.name,
             "messages": messages,
         }
-
-        # Only add inferenceConfig if it has parameters
         if inference_config:
             call_args["inferenceConfig"] = inference_config
 
         try:
-            # Call the Converse API
             response = self.client.converse(**call_args)
 
-            # Extract text from response
             if not response or "output" not in response:
                 logging.error("Malformed response from Bedrock: missing 'output' field")
                 return [None]
@@ -220,7 +213,6 @@ class BedrockGenerator(Generator):
                 )
                 return [None]
 
-            # Extract text from the first content block
             content_block = message["content"][0]
             if "text" not in content_block:
                 logging.error(
@@ -232,27 +224,20 @@ class BedrockGenerator(Generator):
             return [Message(text=text)]
 
         except Exception as e:
-            try:
-                from botocore.exceptions import ClientError
+            from botocore.exceptions import ClientError
 
-                if isinstance(e, ClientError):
-                    error_code = e.response.get("Error", {}).get("Code", "")
-                    error_message = e.response.get("Error", {}).get("Message", "")
+            if isinstance(e, ClientError):
+                error_code = e.response.get("Error", {}).get("Code", "")
+                error_message = e.response.get("Error", {}).get("Message", "")
 
-                    logging.error(f"Bedrock API error [{error_code}]: {error_message}")
+                logging.error(f"Bedrock API error [{error_code}]: {error_message}")
 
-                    # Check if we should retry (throttling and service unavailable are transient)
-                    if error_code in [
-                        "ThrottlingException",
-                        "ServiceUnavailableException",
-                    ]:
-                        raise garak.exception.GarakBackoffTrigger from e
+                if error_code in ["ThrottlingException", "ServiceUnavailableException"]:
+                    raise garak.exception.GarakBackoffTrigger from e
 
-                    # For non-retriable errors (validation, access denied), return None
-                    return [None]
-            except ImportError:
-                pass
+                return [None]
 
-            # Re-raise for backoff decorator to handle
             logging.exception("Error calling Bedrock model")
-            raise
+            return [None]
+
+DEFAULT_CLASS = "BedrockGenerator"
