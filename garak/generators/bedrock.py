@@ -65,31 +65,39 @@ class BedrockGenerator(Generator):
             logging.info(f"Resolved model alias '{self.name}' to: {resolved_name}")
             self.name = resolved_name
 
-        # Validate model ID format and provide helpful warnings
+        # Validate model ID format
         if self.name:
-            # Basic format validation for Bedrock model IDs and inference profiles
-            # Supports:
-            # - Standard model IDs: anthropic.claude-v2, us.amazon.nova-pro-v1:0
-            # - Inference profile IDs: us.anthropic.claude-3-5-sonnet-v2:0
-            # - ARN format: arn:aws:bedrock:region:account:inference-profile/model-id
-            bedrock_id_pattern = r"^(arn:aws:bedrock:[a-z0-9-]+:[0-9]+:inference-profile/)?([a-z0-9-]+\.)?[a-z0-9.:-]+$"
-            
-            if not re.match(bedrock_id_pattern, self.name):
-                raise ValueError(
-                    f"Model ID '{self.name}' does not appear to be a valid Bedrock model ID format. "
-                    f"Expected format examples:\n"
-                    f"  - Model ID: 'anthropic.claude-v2' or 'us.amazon.nova-pro-v1:0'\n"
-                    f"  - Inference profile: 'us.anthropic.claude-3-5-sonnet-v2:0'\n"
-                    f"  - ARN: 'arn:aws:bedrock:region:account:inference-profile/model-id'"
-                )
-            
-            # Warn if using a model not in our known list (but don't block it)
-            if self.name not in MODEL_ALIASES.values():
+            # Check if model is in our known aliases (already resolved)
+            if self.name in MODEL_ALIASES.values():
+                # Valid known model
+                pass
+            # Check if it's an ARN format
+            elif self.name.startswith("arn:aws:bedrock:"):
+                arn_pattern = r"^arn:aws:bedrock:[a-z0-9-]+:[0-9]+:inference-profile/[a-z0-9.:-]+$"
+                if not re.match(arn_pattern, self.name):
+                    raise ValueError(
+                        f"Model ID '{self.name}' appears to be an ARN but is not in the correct format. "
+                        f"Expected format: 'arn:aws:bedrock:region:account:inference-profile/model-id'"
+                    )
+            # Check if it matches standard Bedrock model ID format (must have provider.model structure)
+            elif "." in self.name:
+                # Standard model IDs should have format: provider.model-name or region.provider.model-name
+                bedrock_id_pattern = r"^([a-z0-9-]+\.)+[a-z0-9.:-]+$"
+                if not re.match(bedrock_id_pattern, self.name):
+                    raise ValueError(
+                        f"Model ID '{self.name}' does not appear to be a valid Bedrock model ID format. "
+                        f"Expected format examples:\n"
+                        f"  - Model ID: 'anthropic.claude-v2' or 'us.amazon.nova-pro-v1:0'\n"
+                        f"  - Inference profile: 'us.anthropic.claude-4-1-sonnet-v2:0'\n"
+                        f"  - ARN: 'arn:aws:bedrock:region:account:inference-profile/model-id'"
+                    )
+            else:
+                # No dots and not an ARN
                 supported_aliases = ", ".join(sorted(MODEL_ALIASES.keys()))
-                logging.warning(
-                    f"Model '{self.name}' is not in the list of tested Bedrock models. "
-                    f"This may still work if it's a valid Bedrock model ID. "
-                    f"Known aliases for tested models: {supported_aliases}"
+                raise ValueError(
+                    f"Model ID '{self.name}' is not in the list of supported Bedrock models. "
+                    f"Please use one of the known aliases: {supported_aliases}\n"
+                    f"Or provide a full Bedrock model ID (e.g., 'anthropic.claude-v2' or 'us.amazon.nova-pro-v1:0')"
                 )
 
         super().__init__(self.name, config_root=config_root)
