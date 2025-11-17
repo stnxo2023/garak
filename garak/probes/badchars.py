@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES.
-# SPDX-License-Identifier: Apache-2.0
-
 """Imperceptible perturbation probes inspired by the Bad Characters paper.
 
 Implements the "just try everything" strategy for invisible Unicode characters,
@@ -98,7 +95,7 @@ def _load_homoglyph_map() -> dict[str, List[str]]:
     except FileNotFoundError as exc:
         msg = (
             "Unable to load intentional.txt for homoglyph perturbations. "
-            "Run `git lfs pull` or reinstall data assets."
+            "Get data from - https://www.unicode.org/Public/security/latest/intentional.txt"
         )
         logging.error(msg)
         raise PluginConfigurationError(msg) from exc
@@ -148,12 +145,12 @@ class BadCharacters(garak.probes.Probe):
         if isinstance(categories, str):
             categories = [categories]
         self._enabled_categories = {
-            cat.lower()
-            for cat in categories
-            if isinstance(cat, str)
+            cat.lower() for cat in categories if isinstance(cat, str)
         }
         if not self._enabled_categories:
-            raise PluginConfigurationError("enabled_categories must include at least one entry")
+            raise PluginConfigurationError(
+                "enabled_categories must include at least one entry"
+            )
 
         payload_group = garak.payloads.load(self.payload_name)
         self._source_payloads = payload_group.payloads
@@ -216,9 +213,7 @@ class BadCharacters(garak.probes.Probe):
                 }
                 yield variant_text, metadata
 
-    def _generate_invisible_variants(
-        self, payload: str
-    ) -> Iterator[Tuple[str, dict]]:
+    def _generate_invisible_variants(self, payload: str) -> Iterator[Tuple[str, dict]]:
         positions = self._select_positions(len(payload), self.max_position_candidates)
         for count in range(1, self.perturbation_budget + 1):
             if len(positions) < count:
@@ -234,9 +229,7 @@ class BadCharacters(garak.probes.Probe):
                         },
                     }
 
-    def _generate_homoglyph_variants(
-        self, payload: str
-    ) -> Iterator[Tuple[str, dict]]:
+    def _generate_homoglyph_variants(self, payload: str) -> Iterator[Tuple[str, dict]]:
         candidate_positions = [
             idx for idx, ch in enumerate(payload) if ch in self._homoglyph_map
         ]
@@ -262,17 +255,13 @@ class BadCharacters(garak.probes.Probe):
                         },
                     }
 
-    def _generate_reordering_variants(
-        self, payload: str
-    ) -> Iterator[Tuple[str, dict]]:
+    def _generate_reordering_variants(self, payload: str) -> Iterator[Tuple[str, dict]]:
         if len(payload) < 2:
             return
         candidates = self._select_positions(
             len(payload) - 1, self.max_reorder_candidates, include_endpoint=False
         )
-        valid_indices = [
-            idx for idx in candidates if idx < len(payload) - 1
-        ]
+        valid_indices = [idx for idx in candidates if idx < len(payload) - 1]
         for count in range(1, min(self.perturbation_budget, len(valid_indices)) + 1):
             for combo in itertools.combinations(valid_indices, count):
                 if not self._non_overlapping(combo):
@@ -283,9 +272,7 @@ class BadCharacters(garak.probes.Probe):
                     "operations": {"positions": list(combo)},
                 }
 
-    def _generate_deletion_variants(
-        self, payload: str
-    ) -> Iterator[Tuple[str, dict]]:
+    def _generate_deletion_variants(self, payload: str) -> Iterator[Tuple[str, dict]]:
         positions = self._select_positions(len(payload), self.max_position_candidates)
         ascii_candidates = self._select_ascii(self.max_ascii_variants)
         for count in range(1, self.perturbation_budget + 1):
@@ -305,9 +292,7 @@ class BadCharacters(garak.probes.Probe):
                         },
                     }
 
-    def _inject_sequences(
-        self, payload: str, insertions: List[Tuple[int, str]]
-    ) -> str:
+    def _inject_sequences(self, payload: str, insertions: List[Tuple[int, str]]) -> str:
         result = payload
         offset = 0
         for position, value in sorted(insertions, key=lambda item: item[0]):
