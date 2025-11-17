@@ -169,10 +169,14 @@ Bundled Quick Configs
 ^^^^^^^^^^^^^^^^^^^^^
 
 Garak comes bundled with some quick configs that can be loaded directly using ``--config``.
-These don't need the ``.yml`` or ``.json`` extension when being requested. They include:
+
+**Note on extensions:** JSON configs can be loaded without the ``.json`` extension (e.g., ``--config fast``).
+YAML configs require the explicit ``.yaml`` extension (e.g., ``--config fast.yaml``).
+
+Bundled configs include:
 
 * ``broad`` - Run all active probes, just once each, for a rapid broad test
-* ``fast`` - Go through a selection of light probes; skip extended detectors (available as both YAML and JSON)
+* ``fast`` - Go through a selection of light probes; skip extended detectors
 * ``full`` - Select many probes, and multiple payloads; use a paraphrase buff to get multiple variations on each prompt
 * ``long_attack_gen`` - Focus on ``atkgen``, with many generations, to give a higher chance of breaking through (i.e. yielding toxicity)
 * ``notox`` - Scan without any toxicity-inducing probes
@@ -201,6 +205,7 @@ probes and run each prompt just once:
         probe_spec: latentinjection
 
 If we save this as ``latent1.yaml`` somewhere, then we can use it with ``garak --config latent1.yaml``.
+Note: YAML configs require the explicit ``.yaml`` extension.
 
 **JSON format:**
 
@@ -215,7 +220,8 @@ If we save this as ``latent1.yaml`` somewhere, then we can use it with ``garak -
       }
     }
 
-If we save this as ``latent1.json`` somewhere, then we can use it with ``garak --config latent1.json``.
+If we save this as ``latent1.json`` somewhere, then we can use it with ``garak --config latent1.json``
+or without the extension: ``garak --config latent1``.
 
 Using a Custom JSON Config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
