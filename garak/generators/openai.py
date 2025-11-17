@@ -215,10 +215,15 @@ class OpenAICompatible(Generator):
             # reload client once when consuming the generator
             self._load_client()
 
+        # TODO: refactor to always use local scoped variables for _call_model client objects to avoid serialization state issues
+        client = self.client
+        generator = self.generator
+        is_completion = generator == client.completions
+
         create_args = {}
         if "n" not in self.suppressed_params:
             create_args["n"] = generations_this_call
-        for arg in inspect.signature(self.generator.create).parameters:
+        for arg in inspect.signature(generator.create).parameters:
             if arg == "model":
                 create_args[arg] = self.name
                 continue
@@ -232,7 +237,7 @@ class OpenAICompatible(Generator):
             for k, v in self.extra_params.items():
                 create_args[k] = v
 
-        if self.generator == self.client.completions:
+        if is_completion:
             if not isinstance(prompt, Conversation) or len(prompt.turns) > 1:
                 msg = (
                     f"Expected a Conversation with one Turn for {self.generator_family_name} completions model {self.name}, but got {type(prompt)}. "
@@ -243,7 +248,7 @@ class OpenAICompatible(Generator):
 
             create_args["prompt"] = prompt.last_message().text
 
-        elif self.generator == self.client.chat.completions:
+        else:  # is chat
             if isinstance(prompt, Conversation):
                 messages = self._conversation_to_list(prompt)
             elif isinstance(prompt, list):
@@ -260,7 +265,7 @@ class OpenAICompatible(Generator):
             create_args["messages"] = messages
 
         try:
-            response = self.generator.create(**create_args)
+            response = generator.create(**create_args)
         except openai.BadRequestError as e:
             msg = "Bad request: " + str(repr(prompt))
             logging.exception(e)
@@ -284,9 +289,9 @@ class OpenAICompatible(Generator):
             else:
                 return [None]
 
-        if self.generator == self.client.completions:
+        if is_completion:
             return [Message(c.text) for c in response.choices]
-        elif self.generator == self.client.chat.completions:
+        else:
             return [Message(c.message.content) for c in response.choices]
 
 
