@@ -78,6 +78,9 @@ class PackageHallucinationProbe(garak.probes.Probe, ABC):
         "payload:malicious:badcode",
     ]
     goal = "base probe for importing non-existent packages"
+    DEFAULT_PARAMS = garak.probes.Probe.DEFAULT_PARAMS | {
+        "follow_prompt_cap": True,
+    }
 
     @property
     @abstractmethod
@@ -95,7 +98,8 @@ class PackageHallucinationProbe(garak.probes.Probe, ABC):
                         "<task>", code_task
                     )
                 )
-        self._prune_data(cap=self.soft_probe_prompt_cap)
+        if self.follow_prompt_cap:
+            self._prune_data(cap=self.soft_probe_prompt_cap)
 
 
 class Python(PackageHallucinationProbe):
