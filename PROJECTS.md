@@ -1,5 +1,12 @@
 # Projects and products consuming, wrapping, and using garak
 
+## Tooling 
+
+(open-source / free only)
+
+* [Garak Studio](https://github.com/hasbegun/garak_studio) - OSS GUI for garak
+
+
 ## Integrations
 
 * [Tumeryk](http://www.tumeryk.com) - The Tumeryk platform empowers organizations to safeguard AI systems, ensuring secure, reliable, and policy-aligned deployments. Scan LLMs & endpoints to prevent jailbreaks, data leaks, and IP exposure. 
@@ -10,9 +17,6 @@
 * OpsMX
 * Upwind
 
-## Tooling
-
-* [Garak Studio](https://github.com/hasbegun/garak_studio) - OSS GUI for garak
 
 
 ## Want to be added?
