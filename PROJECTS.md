@@ -4,7 +4,9 @@
 
 (open-source / free only)
 
-* [Garak Studio](https://github.com/hasbegun/garak_studio) - OSS GUI for garak
+* [TrustyAI Garak](https://github.com/trustyai-explainability/llama-stack-provider-trustyai-garak) (Apache) - Out-of-Tree Llama Stack Eval Provider for Garak Red Teaming
+* [Garak-MCP](https://github.com/EdenYavin/Garak-MCP) (MIT license) - MCP Server for garak
+<!-- * [Garak Studio](https://github.com/hasbegun/garak_studio) - OSS GUI for garak -->
 
 
 ## Integrations
@@ -21,4 +23,7 @@
 
 ## Want to be added?
 
-Want a project mentioned, or the description d? Send a pull request with details. We can't take an opinion on how good any of these are, so please use a neutral tone.
+Want a project mentioned, or the description updated? Send a pull request with details. Please use a [neutral tone](https://en.wikipedia.org/wiki/Wikipedia:Neutral_point_of_view).
+
+Inclusion on this page does not imply an endorsement by the maintainers or NVIDIA.
+
