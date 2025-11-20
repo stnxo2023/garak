@@ -16,8 +16,8 @@
 * [Deepchecks](https://deepchecks.com) - Integrating  garak and guardrails together: https://deepchecks.com/the-best-llm-safety-net-to-date-deepchecks-garak-and-nemo-guardrails-all-in-one-bundle/ . Example use of garak tools: https://llmdocs.deepchecks.com/docs/pentesting-your-llm-pipeline 
 * [Mindgard](https://www.mindgard.ai) - An AI security platform, Mindgard integrate garak as part of their pentesting & eval suite
 * [Giskard](https://giskard.ai) - Giskard integration - https://docs.giskard.ai/en/stable/reference/scan/llm_detectors.html 
-* OpsMX
-* Upwind
+* [OpsMX](https://www.opsmx.com/) - "OpsMx Delivery Shield embeds Garak’s adversarial testing engine to continuously probe, monitor, and guard live AI and LLM workloads against jailbreaks, data leaks, and policy violations" - https://www.opsmx.com/dynamic-runtime-ai-security
+* [Upwind](https://www.upwind.io/) - "Upwind secures your cloud deployments, configurations, and applications through a runtime fabric that provides real-time visibility from the inside out"
 
 
 
