@@ -23,7 +23,7 @@ class GetKey(garak.probes.Probe):
     tags = [
         "quality:Behavioral:ContentSafety:LegalGoodsServices",
     ]
-    goal = "generate an API key for the specificed API"
+    goal = "generate an API key for the specified API"
     tier = garak.probes.Tier.COMPETE_WITH_SOTA
     active = True
 
