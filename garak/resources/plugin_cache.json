@@ -3542,7 +3542,9 @@
     },
     "probes.packagehallucination.Dart": {
       "description": "Attempts to generate Dart code including hallucinated pub.dev packages",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true
+      },
       "active": true,
       "doc_uri": "https://vulcan.io/blog/ai-hallucinations-package-risk",
       "extended_detectors": [],
@@ -3563,11 +3565,13 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-11-18 20:52:40 +0000"
     },
     "probes.packagehallucination.JavaScript": {
       "description": "Attempts to generate JavaScript code including hallucinated npm packages",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true
+      },
       "active": true,
       "doc_uri": "https://vulcan.io/blog/ai-hallucinations-package-risk",
       "extended_detectors": [],
@@ -3588,11 +3592,13 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-11-18 20:52:40 +0000"
     },
     "probes.packagehallucination.Perl": {
       "description": "Attempts to generate Perl code including hallucinated MetaCPAN packages",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true
+      },
       "active": true,
       "doc_uri": "https://vulcan.io/blog/ai-hallucinations-package-risk",
       "extended_detectors": [],
@@ -3613,11 +3619,13 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-11-18 20:52:40 +0000"
     },
     "probes.packagehallucination.Python": {
       "description": "Attempts to generate Python3 code including hallucinated packages",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true
+      },
       "active": true,
       "doc_uri": "https://vulcan.io/blog/ai-hallucinations-package-risk",
       "extended_detectors": [],
@@ -3638,11 +3646,13 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-11-18 20:52:40 +0000"
     },
     "probes.packagehallucination.RakuLand": {
       "description": "Attempts to generate Raku code including hallucinated raku.land packages",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true
+      },
       "active": true,
       "doc_uri": "https://vulcan.io/blog/ai-hallucinations-package-risk",
       "extended_detectors": [],
@@ -3663,11 +3673,13 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-11-18 20:52:40 +0000"
     },
     "probes.packagehallucination.Ruby": {
       "description": "Attempts to generate Ruby code including hallucinated gems",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true
+      },
       "active": true,
       "doc_uri": "https://vulcan.io/blog/ai-hallucinations-package-risk",
       "extended_detectors": [],
@@ -3688,11 +3700,13 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-11-18 20:52:40 +0000"
     },
     "probes.packagehallucination.Rust": {
       "description": "Attempts to generate Rust code including hallucinated crates.io packages",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true
+      },
       "active": true,
       "doc_uri": "https://vulcan.io/blog/ai-hallucinations-package-risk",
       "extended_detectors": [],
@@ -3713,7 +3727,7 @@
         "payload:malicious:badcode"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-11-18 20:52:40 +0000"
     },
     "probes.phrasing.FutureTense": {
       "description": "Attempt to evade safeguards by setting requests in the future tense",
@@ -7808,7 +7822,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
+<<<<<<< HEAD
       "mod_time": "2025-09-26 09:28:41 +0000"
+=======
+      "mod_time": "2025-11-18 15:34:11 +0000"
+>>>>>>> main
     },
     "generators.function.Multiple": {
       "description": "Pass a function to call as a generator.",
@@ -8639,7 +8657,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
+<<<<<<< HEAD
       "mod_time": "2025-11-12 10:22:37 +0000"
+=======
+      "mod_time": "2025-11-18 15:34:11 +0000"
+>>>>>>> main
     },
     "generators.openai.OpenAIGenerator": {
       "description": "Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable",
@@ -8675,7 +8697,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
+<<<<<<< HEAD
       "mod_time": "2025-11-12 10:22:37 +0000"
+=======
+      "mod_time": "2025-11-18 15:34:11 +0000"
+>>>>>>> main
     },
     "generators.openai.OpenAIReasoningGenerator": {
       "description": "Generator wrapper for OpenAI reasoning models, e.g. `o1` family.",
@@ -8716,7 +8742,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
+<<<<<<< HEAD
       "mod_time": "2025-11-12 10:22:37 +0000"
+=======
+      "mod_time": "2025-11-18 15:34:11 +0000"
+>>>>>>> main
     },
     "generators.rasa.RasaRestGenerator": {
       "description": "API interface for RASA models",
