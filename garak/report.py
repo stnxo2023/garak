@@ -61,7 +61,7 @@ class Report:
         for record in self.records:
             if record["entry_type"] == "eval":
                 evals.append(record)
-            elif record["entry_type"] == "config":
+            elif record["entry_type"] == "start_run setup":
                 self.metadata = record
         if len(evals) == 0:
             raise ValueError("No evaluations to report 🤷")
@@ -92,11 +92,11 @@ class Report:
         if self.metadata is not None:
             report_template.affects = ac.Affects(
                 developer=[],
-                deployer=[self.metadata["target_type"]],
+                deployer=[self.metadata["plugins.target_type"]],
                 artifacts=[
                     ac.Artifact(
                         type=ae.ArtifactTypeEnum.model,
-                        name=self.metadata["target_name"],
+                        name=self.metadata["plugins.target_name"],
                     )
                 ],
             )
@@ -118,7 +118,7 @@ class Report:
 
             report.description = ac.LangValue(
                 lang="eng",
-                value=f"The model {self.metadata['target_name']} from {self.metadata['target_type']} was evaluated by the Garak LLM Vunerability scanner using the probe `{probe}`.",
+                value=f"The model {self.metadata['plugins.target_name']} from {self.metadata['plugins.target_type']} was evaluated by the Garak LLM Vunerability scanner using the probe `{probe}`.",
             )
             report.problemtype = ac.Problemtype(
                 classof=ae.ClassEnum.llm,
@@ -143,6 +143,7 @@ class Report:
                 ]  # supports only avid taxonomy for now
                 report.impact = ac.Impact(
                     avid=ac.AvidTaxonomy(
+                        vuln_id=None,
                         risk_domain=pd.Series([tag[1].title() for tag in tags_split])
                         .drop_duplicates()
                         .tolist(),  # unique values
