@@ -191,7 +191,7 @@ class BedrockGenerator(Generator):
             inference_config["maxTokens"] = int(self.max_tokens)
         if self.top_p is not None:
             inference_config["topP"] = float(self.top_p)
-        if self.stop and isinstance(self.stop, list) and len(self.stop) > 0:
+        if self.stop:
             inference_config["stopSequences"] = self.stop
 
         call_args = {
