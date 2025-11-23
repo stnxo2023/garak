@@ -173,12 +173,7 @@ class BedrockGenerator(Generator):
         if self.client is None:
             self._load_client()
 
-        messages = []
-        for turn in prompt.turns:
-            if turn.role in ["user", "assistant"]:
-                messages.append(
-                    {"role": turn.role, "content": [{"text": turn.content.text}]}
-                )
+        messages = self._conversation_to_list(prompt)
 
         if not messages:
             logging.error("No valid messages to send to Bedrock")
