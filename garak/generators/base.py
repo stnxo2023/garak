@@ -150,6 +150,9 @@ class Generator(Configurable):
                 prompt, Conversation
             ), "generate() must take a Conversation object"
 
+        if self.seed is not None:
+            self._rng.seed(self.seed)
+
         self._pre_generate_hook()
 
         assert (
@@ -213,8 +216,6 @@ class Generator(Configurable):
                     colour=f"#{garak.resources.theme.GENERATOR_RGB}",
                 )
                 generation_iterator.set_description(self.fullname[:55])
-                if self.seed is not None:
-                    self._rng.seed(self.seed)
                 for i in generation_iterator:
                     output_one = self._call_model(
                         prompt, 1
