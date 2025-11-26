@@ -76,6 +76,52 @@
       "tier": 1,
       "mod_time": "2025-11-12 13:51:11 +0000"
     },
+    "probes.apikey.CompleteKey": {
+      "description": "Will the system try to complete an API key, when given a partial one?",
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true
+      },
+      "active": true,
+      "doc_uri": "",
+      "extended_detectors": [],
+      "goal": "generate an API key for the specificed API",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "apikey.ApiKey",
+      "tags": [
+        "quality:Behavioral:ContentSafety:LegalGoodsServices"
+      ],
+      "tier": 2,
+      "mod_time": "2025-11-20 12:06:11 +0000"
+    },
+    "probes.apikey.GetKey": {
+      "description": "Will the system return secret looking strings, when asked for an API key?",
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true
+      },
+      "active": true,
+      "doc_uri": "",
+      "extended_detectors": [],
+      "goal": "generate an API key for the specified API",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "apikey.ApiKey",
+      "tags": [
+        "quality:Behavioral:ContentSafety:LegalGoodsServices"
+      ],
+      "tier": 2,
+      "mod_time": "2025-11-20 12:06:11 +0000"
+    },
     "probes.atkgen.Tox": {
       "description": "Automatic attack generation, trying to elicit toxic outputs from the model.",
       "DEFAULT_PARAMS": {
@@ -5247,6 +5293,25 @@
       "tags": [],
       "mod_time": "2025-10-27 07:44:01 +0000"
     },
+    "detectors.apikey.ApiKey": {
+      "description": "Is there a possible API key present?",
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
+      "accuracy": null,
+      "active": true,
+      "doc_uri": null,
+      "lang_spec": "*",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "tags": [],
+      "mod_time": "2025-11-21 14:10:30 +0000"
+    },
     "detectors.base.Detector": {
       "description": "Base class for objects that define a way of detecting a probe hit / LLM failure",
       "DEFAULT_PARAMS": {
@@ -7788,7 +7853,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-09-29 12:57:35 +0000"
+      "mod_time": "2025-11-24 18:37:43 +0000"
     },
     "generators.cohere.CohereGenerator": {
       "description": "Interface to Cohere's python library for their text2text model.",
@@ -7944,7 +8009,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-11-12 10:22:37 +0000"
+      "mod_time": "2025-11-20 21:42:02 +0000"
     },
     "generators.guardrails.NeMoGuardrails": {
       "description": "Generator wrapper for NeMo Guardrails.",
@@ -8309,7 +8374,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-08-22 12:13:12 +0000"
+      "mod_time": "2025-11-20 21:42:02 +0000"
     },
     "generators.nim.NVMultimodal": {
       "description": "Wrapper for text and image / audio to text NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
@@ -8356,7 +8421,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-11-12 10:22:37 +0000"
+      "mod_time": "2025-11-20 21:42:02 +0000"
     },
     "generators.nim.NVOpenAIChat": {
       "description": "Wrapper for NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
@@ -8400,7 +8465,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-11-12 10:22:37 +0000"
+      "mod_time": "2025-11-20 21:42:02 +0000"
     },
     "generators.nim.NVOpenAICompletion": {
       "description": "Wrapper for NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
@@ -8444,7 +8509,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-11-12 10:22:37 +0000"
+      "mod_time": "2025-11-20 21:42:02 +0000"
     },
     "generators.nim.Vision": {
       "description": "Wrapper for text and image to text NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
@@ -8490,7 +8555,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-11-12 10:22:37 +0000"
+      "mod_time": "2025-11-20 21:42:02 +0000"
     },
     "generators.nvcf.NvcfChat": {
       "description": "Wrapper for NVIDIA Cloud Functions Chat models via NGC. Expects NVCF_API_KEY environment variable.",
