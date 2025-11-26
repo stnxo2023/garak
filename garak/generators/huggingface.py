@@ -163,51 +163,6 @@ class Pipeline(Generator, HFCompatible):
         )
 
 
-class OptimumPipeline(Pipeline, HFCompatible):
-    """Get text generations from a locally-run Hugging Face pipeline using NVIDIA Optimum"""
-
-    generator_family_name = "NVIDIA Optimum Hugging Face 🤗 pipeline"
-    supports_multiple_generations = True
-    doc_uri = "https://huggingface.co/blog/optimum-nvidia"
-    extra_dependency_names = ["optimum-nvidia"]
-
-    def _load_deps(self):
-        return super()._load_deps(["optimum.nvidia"])
-
-    def _load_client(self):
-        self._load_deps()
-        if hasattr(self, "generator") and self.generator is not None:
-            return
-
-        pipeline = self.optimum_nvidia.pipelines.pipeline
-        from transformers import set_seed
-
-        if self.seed is not None:
-            set_seed(self.seed)
-
-        import torch.cuda
-
-        if not torch.cuda.is_available():
-            message = "OptimumPipeline needs CUDA, but torch.cuda.is_available() returned False; quitting"
-            logging.critical(message)
-            raise GarakException(message)
-
-        self.use_fp8 = False
-        if _config.loaded:
-            if "use_fp8" in _config.plugins.generators.OptimumPipeline:
-                self.use_fp8 = True
-
-        pipline_kwargs = self._gather_hf_params(hf_constructor=pipeline)
-        self.generator = pipeline("text-generation", **pipline_kwargs)
-        if not hasattr(self, "deprefix_prompt"):
-            self.deprefix_prompt = self.name in models_to_deprefix
-        if _config.loaded:
-            if _config.run.deprefix is True:
-                self.deprefix_prompt = True
-
-        self._set_hf_context_len(self.generator.model.config)
-
-
 class InferenceAPI(Generator):
     """Get text generations from Hugging Face Inference API"""
 
