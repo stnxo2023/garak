@@ -40,7 +40,13 @@ class _Swap:
 
 
 def _render_swaps(elements: Sequence) -> str:
-    """Recursively expand swap objects into bidi control sequences."""
+    """Recursively expand swap objects into bidi control sequences.
+
+    The sequence mirrors the bidi swap function from Boucher et al.
+    ("Bad Characters," arXiv:2106.09898) and the imperceptible reference
+    implementation: it forces two adjacent code points to render in reverse
+    order while containing all directionality side effects.
+    """
 
     rendered: List[str] = []
     for element in elements:
