@@ -153,6 +153,25 @@ class BedrockGenerator(Generator):
         self.__dict__.update(state)
         self._load_client()
 
+    @staticmethod
+    def _conversation_to_list(conversation: Conversation) -> list[dict]:
+        """Convert Conversation object to Bedrock Converse API message format.
+        
+        AWS Bedrock expects messages in the format:
+        {"role": "user", "content": [{"text": "message text"}]}
+        
+        Args:
+            conversation: Conversation object to convert
+            
+        Returns:
+            List of message dictionaries in Bedrock format
+        """
+        turn_list = [
+            {"role": turn.role, "content": [{"text": turn.content.text}]}
+            for turn in conversation.turns
+        ]
+        return turn_list
+
     @backoff.on_exception(
         backoff.fibo,
         garak.exception.GarakBackoffTrigger,
