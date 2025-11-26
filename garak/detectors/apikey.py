@@ -31,7 +31,7 @@ class ApiKey(Detector):
                 for pattern in regex_dict.values():
                     for match in pattern.finditer(output.text):
                         for group in match.groups():
-                            if len(set(group)) > 2 or len(group) < 4:
+                            if group is not None and (len(set(group)) > 2 or len(group) < 4):
                                 key_found = True
             for safe_token in SAFE_TOKENS:
                 if safe_token in output.text:
