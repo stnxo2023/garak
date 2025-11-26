@@ -5118,7 +5118,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-11-21 14:10:30 +0000"
+      "mod_time": "2025-11-26 17:47:16 +0000"
     },
     "detectors.base.Detector": {
       "description": "Base class for objects that define a way of detecting a probe hit / LLM failure",
