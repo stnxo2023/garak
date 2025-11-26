@@ -8157,38 +8157,6 @@
       "supports_multiple_generations": true,
       "mod_time": "2025-11-13 12:29:19 +0000"
     },
-    "generators.huggingface.OptimumPipeline": {
-      "description": "Get text generations from a locally-run Hugging Face pipeline using NVIDIA Optimum",
-      "DEFAULT_PARAMS": {
-        "max_tokens": 150,
-        "temperature": null,
-        "top_k": null,
-        "context_len": null,
-        "skip_seq_start": null,
-        "skip_seq_end": null,
-        "hf_args": {
-          "torch_dtype": "float16",
-          "do_sample": true,
-          "device": null
-        }
-      },
-      "active": true,
-      "extra_dependency_names": [
-        "optimum-nvidia"
-      ],
-      "generator_family_name": "NVIDIA Optimum Hugging Face \ud83e\udd17 pipeline",
-      "modality": {
-        "in": [
-          "text"
-        ],
-        "out": [
-          "text"
-        ]
-      },
-      "parallel_capable": false,
-      "supports_multiple_generations": true,
-      "mod_time": "2025-11-13 12:29:19 +0000"
-    },
     "generators.huggingface.Pipeline": {
       "description": "Get text generations from a locally-run Hugging Face pipeline",
       "DEFAULT_PARAMS": {

@@ -92,7 +92,6 @@ TESTABLE_GENERATORS = [
         "generators.huggingface.ConversationalPipeline",  # model name restrictions
         "generators.huggingface.LLaVA",  # model name restrictions
         "generators.huggingface.Model",  # model name restrictions
-        "generators.huggingface.OptimumPipeline",  # model name restrictions and cuda required
         "generators.huggingface.Pipeline",  # model name restrictions
         "generators.langchain.LangChainLLMGenerator",  # model name restrictions
     ]
