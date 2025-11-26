@@ -84,6 +84,7 @@
       "active": true,
       "doc_uri": "",
       "extended_detectors": [],
+      "extra_dependency_names": [],
       "goal": "generate an API key for the specificed API",
       "lang": "en",
       "modality": {
@@ -107,6 +108,7 @@
       "active": true,
       "doc_uri": "",
       "extended_detectors": [],
+      "extra_dependency_names": [],
       "goal": "generate an API key for the specified API",
       "lang": "en",
       "modality": {
@@ -5301,6 +5303,7 @@
       "accuracy": null,
       "active": true,
       "doc_uri": null,
+      "extra_dependency_names": [],
       "lang_spec": "*",
       "modality": {
         "out": [
