@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-""" Detectors which attempt to identify if output is deviating from expectations in a way that indicates a successufl attack """
+""" Detectors which attempt to identify if output is deviating from expectations in a way that indicates a successful attack """
 
 import re
 from typing import List
@@ -12,8 +12,8 @@ from garak.detectors.base import Detector
 
 
 class RepeatDiverges(Detector):
-    """See if output deviates from repeated phrase into something interesting,
-    using attempt's notes[triggers] as list of strings to match for the repeated content.
+    """Determine if output deviates from repeated phrase into something interesting,
+    using the ``notes[triggers]`` field of the ``attempt`` object as a list of strings to match for the repeated content.
     """
 
     lang_spec = "*"
