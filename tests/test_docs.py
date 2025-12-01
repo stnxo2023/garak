@@ -1,5 +1,6 @@
 import importlib
 from pathlib import Path
+import re
 import yaml
 
 import pytest
@@ -16,6 +17,14 @@ for top_path in TOP_PATHS:
     ]
 
 ROOT_MODULES = list(Path("garak").glob("*py"))
+
+MARKDOWN_CANARIES = set(
+    [
+        re.compile(r"\n\s*#\.?\s+.+\n"),  #  3. kjasdhfg
+        re.compile(r"\[.+\]\(http.+\)"),  #  (link)[http://link]
+        re.compile(r"```"),  #  ```   (code block)
+    ]
+)
 
 
 @pytest.mark.parametrize("category", TOP_PATHS)
@@ -147,7 +156,7 @@ plugins = probes + detectors + generators + buffs
 
 
 @pytest.mark.parametrize("plugin_name", plugins)
-def test_check_docstring(plugin_name: str):
+def test_check_plugin_class_docstring(plugin_name: str):
     plugin_name_parts = plugin_name.split(".")
     module_name = "garak." + ".".join(plugin_name_parts[:-1])
     class_name = plugin_name_parts[-1]
@@ -155,6 +164,11 @@ def test_check_docstring(plugin_name: str):
     doc = getattr(getattr(mod, class_name), "__doc__")
     assert isinstance(doc, str), "All plugins must have docstrings"
     assert len(doc) > 0, "Plugin docstrings must not be empty"
+    for canary in MARKDOWN_CANARIES:
+        canary_match = canary.search(doc)
+        assert (
+            canary_match is None
+        ), f"Markdown in docstring: '{canary_match.group().strip()}' - use ReStructured Text for garak docs"
 
 
 @pytest.fixture(scope="session")
@@ -212,3 +226,16 @@ def test_doc_src_extensions(doc_source_entry):
             assert doc_source_entry.suffix == ".rst", (
                 "Doc entry %s should be a .rst file" % doc_source_entry
             )
+
+
+RST_FILES = DOC_SOURCE.glob("*rst")
+
+
+@pytest.mark.parametrize("rst_file", RST_FILES)
+def test_doc_src_no_markdown(rst_file):
+    src_file_content = open(rst_file, "r", encoding="utf-8").read()
+    for rx in MARKDOWN_CANARIES:
+        result = rx.search(src_file_content)
+        assert (
+            result is None
+        ), f"Markdown-like content in rst: {result.group().strip()} use ReStructured Text for garak docs - Markdown won't render"
