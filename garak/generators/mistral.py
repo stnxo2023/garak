@@ -1,3 +1,5 @@
+""" Support `Mistral <https://mistral.ai>`_ hosted endpoints  """
+
 import backoff
 from typing import List
 from mistralai import Mistral, models
