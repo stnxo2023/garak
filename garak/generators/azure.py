@@ -32,12 +32,12 @@ openai_model_mapping = {
 class AzureOpenAIGenerator(OpenAICompatible):
     """Wrapper for Azure Open AI. Expects AZURE_API_KEY, AZURE_ENDPOINT and AZURE_MODEL_NAME environment variables.
 
-    Uses the [OpenAI-compatible API](https://learn.microsoft.com/en-us/azure/ai-services/openai/api-version-deprecation)
+    Uses the `OpenAI-compatible API <https://learn.microsoft.com/en-us/azure/ai-services/openai/api-version-deprecation>`_
     via direct HTTP request.
 
     To get started with this generator:
-    #. Visit [https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models) and find the LLM you'd like to use.
-    #. [Deploy a model](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/create-resource?pivots=web-portal#deploy-a-model) and copy paste the model and deployment names.
+    #. Visit https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models and find the LLM you'd like to use.
+    #. `Deploy a model <https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/create-resource?pivots=web-portal#deploy-a-model>`_ and copy paste the model and deployment names.
     #. On the Azure portal page for the Azure OpenAI you want to use click on "Resource Management -> Keys and Endpoint" and copy paste the API Key and endpoint.
     #. In your console, Set the ``AZURE_API_KEY``, ``AZURE_ENDPOINT`` and ``AZURE_MODEL_NAME`` variables.
     #. Run garak, setting ``--target_type`` to ``azure`` and ``--target_name`` to the name **of the deployment**.

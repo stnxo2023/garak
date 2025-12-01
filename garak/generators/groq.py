@@ -14,7 +14,7 @@ class GroqChat(OpenAICompatible):
 
     Expects GROQ_API_KEY environment variable.
     See https://console.groq.com/docs/quickstart for more info on how to set up a Groq API key
-    Uses the [OpenAI-compatible API](https://console.groq.com/docs/openai)
+    Uses the `OpenAI-compatible API <https://console.groq.com/docs/openai>`_
     """
 
     # per https://console.groq.com/docs/openai
