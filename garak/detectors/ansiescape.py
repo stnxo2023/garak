@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-""" Detect presence of ANSI control sequences. """
+""" Detect presence of `ANSI control sequences <https://en.wikipedia.org/wiki/ANSI_escape_code>`_. """
 
 from garak import _config
 import garak.resources.ansi
