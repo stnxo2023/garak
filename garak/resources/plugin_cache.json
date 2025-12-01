@@ -1243,7 +1243,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.encoding.InjectAtbash": {
       "description": "Atbash Probe Credit: Nakul-Rajpal",
@@ -1276,7 +1276,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.encoding.InjectBase16": {
       "description": "Probe for susceptibility to base16 encoded injections\"",
@@ -1309,7 +1309,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.encoding.InjectBase2048": {
       "description": "Probe for susceptibility to Base2048 encoding injections",
@@ -1342,7 +1342,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.encoding.InjectBase32": {
       "description": "Probe for susceptibility to base32 encoded injections",
@@ -1375,7 +1375,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.encoding.InjectBase64": {
       "description": "Probe for susceptibility to base64 encoded injections",
@@ -1408,7 +1408,7 @@
         "payload:generic"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.encoding.InjectBraille": {
       "description": "Probe for susceptibility to Braille encoding injections. Credit Wally#3422",
@@ -1441,7 +1441,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.encoding.InjectEcoji": {
       "description": "Probe for susceptibility to Ecoji encoding.",
@@ -1474,7 +1474,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.encoding.InjectHex": {
       "description": "Probe for susceptibility to hex encoded injections",
@@ -1507,7 +1507,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.encoding.InjectLeet": {
       "description": "Probe for susceptibility to 31337 encoding.",
@@ -1540,7 +1540,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.encoding.InjectMime": {
       "description": "Probe for susceptibility to MIME encoding injections",
@@ -1573,7 +1573,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.encoding.InjectMorse": {
       "description": "Probe for susceptibility to Morse encoding. Credit Wally#3422",
@@ -1606,7 +1606,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.encoding.InjectNato": {
       "description": "Probe for susceptibility to Nato phonetic alphabet encoding.",
@@ -1639,7 +1639,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.encoding.InjectQP": {
       "description": "Probe for susceptibility to QP encoded injections",
@@ -1672,7 +1672,7 @@
         "payload:generic"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.encoding.InjectROT13": {
       "description": "Probe for susceptibility to ROT13 encoding injections",
@@ -1705,7 +1705,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.encoding.InjectSneakyBits": {
       "description": "Probe for susceptibility to unicode variant selector ASCII smuggling",
@@ -1738,7 +1738,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.encoding.InjectUU": {
       "description": "Probe for susceptibility to UU encoded injections",
@@ -1771,7 +1771,7 @@
         "payload:generic"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.encoding.InjectUnicodeTagChars": {
       "description": "Probe for susceptibility to unicode tag ASCII smuggling",
@@ -1805,7 +1805,7 @@
         "payload:generic"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.encoding.InjectUnicodeVariantSelectors": {
       "description": "Probe for susceptibility to unicode variant selector ASCII smuggling",
@@ -1838,7 +1838,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.encoding.InjectZalgo": {
       "description": "Probe for susceptibility to Zalgo encoding.",
@@ -1871,7 +1871,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.exploitation.JinjaTemplatePythonInjection": {
       "description": "Attempts to execute Python code via Jinja templating",
@@ -4725,7 +4725,7 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.web_injection.MarkdownImageExfil": {
       "description": "Can we get the model to write embedded assets exfiltrating text in the URI?",
@@ -4758,7 +4758,7 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.web_injection.MarkdownURIImageExfilExtended": {
       "description": "Generalized implementation of data exfiltration exploits through Markdown URIs.",
@@ -4787,7 +4787,7 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.web_injection.MarkdownURINonImageExfilExtended": {
       "description": "Generalized implementation of data exfiltration exploits through Markdown URIs.",
@@ -4816,7 +4816,7 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.web_injection.MarkdownXSS": {
       "description": "Perform cross site scripting attacks using Markdown Javascript rendering via prompt injection.",
@@ -4848,7 +4848,7 @@
         "cwe:79"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.web_injection.PlaygroundMarkdownExfil": {
       "description": "Markdown image URI exfil exploit published 2023 Sept 29.",
@@ -4879,7 +4879,7 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.web_injection.StringAssemblyDataExfil": {
       "description": "Prompt injection for manipulating state",
@@ -4908,7 +4908,7 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "probes.web_injection.TaskXSS": {
       "description": "Perform cross site scripting attacks via prompt injection.",
@@ -4943,7 +4943,7 @@
         "cwe:79"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     }
   },
   "detectors": {
@@ -5041,7 +5041,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-09-16 15:38:35 +0000"
+      "mod_time": "2025-12-01 15:56:16 +0000"
     },
     "detectors.ansiescape.Raw": {
       "description": "pick up raw ANSI escape sequences",
@@ -5061,7 +5061,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-09-16 15:38:35 +0000"
+      "mod_time": "2025-12-01 15:56:16 +0000"
     },
     "detectors.any.AnyNonspaceOutput": {
       "description": "Hit if there's any non-space output",
@@ -5399,7 +5399,7 @@
       "mod_time": "2025-09-29 18:48:25 +0000"
     },
     "detectors.divergence.RepeatDiverges": {
-      "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
+      "description": "Determine if output deviates from repeated phrase into something interesting,",
       "DEFAULT_PARAMS": {
         "skip": false
       },
@@ -5415,7 +5415,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-10-27 20:22:44 +0000"
+      "mod_time": "2025-12-01 13:54:09 +0000"
     },
     "detectors.divergence.RepeatedToken": {
       "description": "Garak-compatible detector for repeated token hallucinations.",
@@ -5439,7 +5439,7 @@
         "quality:Security:PromptStability",
         "payload:unwanted:denial_of_service"
       ],
-      "mod_time": "2025-10-27 20:22:44 +0000"
+      "mod_time": "2025-12-01 13:54:09 +0000"
     },
     "detectors.encoding.DecodeApprox": {
       "description": "Is there a partial hash decoding?",
@@ -5743,7 +5743,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-11-04 02:55:32 +0000"
+      "mod_time": "2025-12-01 11:07:45 +0000"
     },
     "detectors.judge.Refusal": {
       "description": "Uses the configured model to detect if the responses is a refusal to answer",
@@ -5765,7 +5765,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-11-04 02:55:32 +0000"
+      "mod_time": "2025-12-01 11:07:45 +0000"
     },
     "detectors.judge.RefusalOnlyAdversarial": {
       "description": "Uses the configured model to detect if the responses is a refusal to answer",
@@ -5787,7 +5787,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-11-04 02:55:32 +0000"
+      "mod_time": "2025-12-01 11:07:45 +0000"
     },
     "detectors.knownbadsignatures.EICAR": {
       "description": "Is the EICAR test string present?",
@@ -7530,7 +7530,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-09-25 15:10:32 +0000"
+      "mod_time": "2025-12-01 13:54:09 +0000"
     },
     "generators.base.Generator": {
       "description": "Base class for objects that wrap an LLM or other text-to-text service",
@@ -7730,7 +7730,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-11-20 21:42:02 +0000"
+      "mod_time": "2025-12-01 10:48:29 +0000"
     },
     "generators.guardrails.NeMoGuardrails": {
       "description": "Generator wrapper for NeMo Guardrails.",
@@ -7980,7 +7980,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-06-17 16:15:39 +0000"
+      "mod_time": "2025-12-01 11:07:45 +0000"
     },
     "generators.litellm.LiteLLMGenerator": {
       "description": "Generator wrapper using LiteLLM to allow access to different providers using the OpenAI API format.",
@@ -8037,7 +8037,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-08-26 14:02:31 +0000"
+      "mod_time": "2025-12-01 11:07:45 +0000"
     },
     "generators.nemo.NeMoGenerator": {
       "description": "Wrapper for the NVIDIA NeMo models via NGC. Expects NGC_API_KEY and ORG_ID environment variables.",
@@ -8752,7 +8752,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-08-08 14:23:52 +0000"
+      "mod_time": "2025-12-01 11:07:45 +0000"
     }
   },
   "harnesses": {
