@@ -152,7 +152,7 @@ buffs = [classname for (classname, active) in _plugins.enumerate_plugins("buffs"
 # evaluators = [
 #    classname for (classname, active) in _plugins.enumerate_plugins("evaluators")
 # ]
-plugins = probes + detectors + generators + buffs
+plugins = sorted(probes + detectors + generators + buffs)
 
 
 @pytest.mark.parametrize("plugin_name", plugins)
@@ -162,8 +162,27 @@ def test_check_plugin_class_docstring(plugin_name: str):
     class_name = plugin_name_parts[-1]
     mod = importlib.import_module(module_name)
     doc = getattr(getattr(mod, class_name), "__doc__")
-    assert isinstance(doc, str), "All plugins must have docstrings"
-    assert len(doc) > 0, "Plugin docstrings must not be empty"
+    assert isinstance(doc, str), "All plugin classes must have docstrings"
+    assert len(doc) > 0, "Plugin class docstrings must not be empty"
+    for canary in MARKDOWN_CANARIES:
+        canary_match = canary.search(doc)
+        assert (
+            canary_match is None
+        ), f"Markdown in docstring: '{canary_match.group().strip()}' - use ReStructured Text for garak docs"
+
+
+PLUGIN_GROUPS = sorted(
+    list(set([".".join(plugin_name.split(".")[:2]) for plugin_name in plugins]))
+)
+
+
+@pytest.mark.parametrize("plugin_group", PLUGIN_GROUPS)
+def test_check_plugin_module_docstring(plugin_group: str):
+    module_name = "garak." + plugin_group
+    mod = importlib.import_module(module_name)
+    doc = getattr(mod, "__doc__")
+    assert isinstance(doc, str), "All plugin groups/modules must have docstrings"
+    assert len(doc) > 0, "Plugin group/module docstrings must not be empty"
     for canary in MARKDOWN_CANARIES:
         canary_match = canary.search(doc)
         assert (
