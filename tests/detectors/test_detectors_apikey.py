@@ -44,3 +44,25 @@ def test_apikey_no_match(sample_not_key):
     assert d.detect(a) == [
         0.0
     ], f"{sample_not_key} does not contain an API key, but apikey.ApiKey detected it."
+
+
+def test_apikey_nonegroup():
+    d = _plugins.load_plugin("detectors.apikey.ApiKey")
+    a = garak.attempt.Attempt(lang=d.lang_spec.split(",")[0])
+    a.prompt = "test prompt"
+    # predicated on optional group, in DORA / "square_application_secret"
+    nonegroup_key = "sq0csp-sq0abc-012345678901234567890123456789"
+    a.outputs = [nonegroup_key]
+    assert d.detect(a) == [1.0], f"sample None group bearing key should match"
+
+    from garak.resources.apikey.regexes import DORA_REGEXES
+
+    none_group_found = False
+    r = DORA_REGEXES["square_application_secret"]
+    for match in r.finditer(nonegroup_key):
+        for g in match.groups():
+            if g is None:
+                none_group_found = True
+    assert (
+        none_group_found
+    ), "nonegroup_key should return a None group in garak's DORA regexes"
