@@ -20,7 +20,7 @@ ROOT_MODULES = list(Path("garak").glob("*py"))
 
 MARKDOWN_CANARIES = set(
     [
-        re.compile(r"\[.+\]\((http|java).+\)"),  #  [link](http://link)
+        re.compile(r"(^|[^`])\!?\[.+\]\((http|java).+\)"),  #  [link](http://link)
         re.compile(r"```"),  #  ```   (code block)
     ]
 )
