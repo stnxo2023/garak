@@ -597,8 +597,7 @@ class TreeSearchProbe(Probe):
             for s in node_results:
                 if s is None:
                     updated_results.append(None)
-                    continue
-                if s > self.per_generation_threshold:
+                elif s > self.per_generation_threshold:
                     updated_results.append(1.0)
                 else:
                     updated_results.append(0.0)
