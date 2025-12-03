@@ -20,8 +20,7 @@ ROOT_MODULES = list(Path("garak").glob("*py"))
 
 MARKDOWN_CANARIES = set(
     [
-        #        re.compile(r"\n\s*#\.?\s+.+\n"),  #  3. kjasdhfg
-        re.compile(r"\[.+\]\(http.+\)"),  #  (link)[http://link]
+        re.compile(r"(^|[^`!])\!?\[.+\]\((http|java).+\)"),  #  [link](http://link)
         re.compile(r"```"),  #  ```   (code block)
     ]
 )
@@ -165,7 +164,7 @@ def test_check_plugin_class_docstring(plugin_name: str):
     assert isinstance(doc, str), "All plugin classes must have docstrings"
     assert len(doc) > 0, "Plugin class docstrings must not be empty"
     for canary in MARKDOWN_CANARIES:
-        canary_match = canary.search(doc)
+        canary_match = canary.search(doc, re.I)
         assert (
             canary_match is None
         ), f"Markdown in docstring: '{canary_match.group().strip()}' - use ReStructured Text for garak docs"
@@ -184,7 +183,7 @@ def test_check_plugin_module_docstring(plugin_group: str):
     assert isinstance(doc, str), "All plugin groups/modules must have docstrings"
     assert len(doc) > 0, "Plugin group/module docstrings must not be empty"
     for canary in MARKDOWN_CANARIES:
-        canary_match = canary.search(doc)
+        canary_match = canary.search(doc, re.I)
         assert (
             canary_match is None
         ), f"Markdown in docstring: '{canary_match.group().strip()}' - use ReStructured Text for garak docs"
@@ -252,9 +251,9 @@ RST_FILES = DOC_SOURCE.glob("*rst")
 
 @pytest.mark.parametrize("rst_file", RST_FILES)
 def test_doc_src_no_markdown(rst_file):
-    src_file_content = open(rst_file, "r", encoding="utf-8").read()
-    for rx in MARKDOWN_CANARIES:
-        result = rx.search(src_file_content)
+    rst_file_content = open(rst_file, "r", encoding="utf-8").read()
+    for canary in MARKDOWN_CANARIES:
+        canary_match = canary.search(rst_file_content, re.I)
         assert (
-            result is None
+            canary_match is None
         ), f"Markdown-like content in rst: {result.group().strip()} use ReStructured Text for garak docs - Markdown won't render"
