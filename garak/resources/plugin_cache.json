@@ -4725,7 +4725,7 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-02 12:00:12 +0000"
     },
     "probes.web_injection.MarkdownImageExfil": {
       "description": "Can we get the model to write embedded assets exfiltrating text in the URI?",
@@ -4758,7 +4758,7 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-02 12:00:12 +0000"
     },
     "probes.web_injection.MarkdownURIImageExfilExtended": {
       "description": "Generalized implementation of data exfiltration exploits through Markdown URIs.",
@@ -4787,7 +4787,7 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-02 12:00:12 +0000"
     },
     "probes.web_injection.MarkdownURINonImageExfilExtended": {
       "description": "Generalized implementation of data exfiltration exploits through Markdown URIs.",
@@ -4816,7 +4816,7 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-02 12:00:12 +0000"
     },
     "probes.web_injection.MarkdownXSS": {
       "description": "Perform cross site scripting attacks using Markdown Javascript rendering via prompt injection.",
@@ -4848,7 +4848,7 @@
         "cwe:79"
       ],
       "tier": 1,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-02 12:00:12 +0000"
     },
     "probes.web_injection.PlaygroundMarkdownExfil": {
       "description": "Markdown image URI exfil exploit published 2023 Sept 29.",
@@ -4879,7 +4879,7 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-02 12:00:12 +0000"
     },
     "probes.web_injection.StringAssemblyDataExfil": {
       "description": "Prompt injection for manipulating state",
@@ -4908,7 +4908,7 @@
         "cwe:352"
       ],
       "tier": 1,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-02 12:00:12 +0000"
     },
     "probes.web_injection.TaskXSS": {
       "description": "Perform cross site scripting attacks via prompt injection.",
@@ -4943,7 +4943,7 @@
         "cwe:79"
       ],
       "tier": 1,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-02 12:00:12 +0000"
     }
   },
   "detectors": {
