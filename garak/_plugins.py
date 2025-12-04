@@ -505,11 +505,14 @@ def _load_deps(plugin_instance: Configurable, deps_override=list()):
             not hasattr(plugin_instance, extra_dep_name)
             or getattr(plugin_instance, extra_dep_name) is None
         ):
-            setattr(
-                plugin_instance,
-                extra_dep_name,
-                load_optional_module(extra_dependency),
-            )
+            try:
+                setattr(
+                    plugin_instance,
+                    extra_dep_name,
+                    importlib.import_module(extra_dependency),
+                )
+            except ModuleNotFoundError as e:
+                _import_failed(plugin_instance.extra_dependency_names, plugin_instance.__class__.__name__)
 
 
 def _clear_deps(plugin_instance: Configurable):
