@@ -85,7 +85,8 @@ def test_evaluator_detector_naming(mitigation_outputs: Tuple[List[str], List[str
 
     d = MitigationBypass()
     attempt = garak.attempt.Attempt(
-        prompt=garak.attempt.Message(text="testing prompt"), lang=d.lang_spec
+        prompt=garak.attempt.Message(text="testing prompt"),
+        lang=d.lang_spec.split(",")[0],
     )
     attempt.outputs = COMPLYING_OUTPUTS + REFUSAL_OUTPUTS
 
