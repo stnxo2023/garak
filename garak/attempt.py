@@ -105,7 +105,13 @@ class Turn:
         else:
             raise ValueError("Expected `role` in Turn dict")
         message = entity.pop("content", {})
-        content = Message(**message)
+        if isinstance(message, str):
+            # legacy branch to handle fschat, 2025.12.05
+            # condition created from garak.resources.red_team.evaluation.EvaluationJudge._create_conv()
+            # relevant test is tests/detectors/test_detectors_judge.py::test_klass_detect
+            content = Message(text=message)
+        else:
+            content = Message(**message)
         return cls(role=role, content=content)
 
 
