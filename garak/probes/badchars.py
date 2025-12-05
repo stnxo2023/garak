@@ -378,6 +378,10 @@ class BadCharacters(garak.probes.Probe):
         return f"{flattened[: limit - 1]}…"
 
     def _downsample_prompts(self) -> None:
+        """Downsample prompts while keeping category balance and seedable shuffling.
+
+        Differs from Probe._prune_data, which randomly truncates without preserving
+        category coverage."""
         if not self.prompts:
             return
         cap = self.soft_probe_prompt_cap
