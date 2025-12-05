@@ -254,7 +254,7 @@ def test_yaml_param_settings(param):
     importlib.reload(_config)
 
     option, value = param
-    with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
+    with tempfile.NamedTemporaryFile(buffering=0, delete=False, suffix=".yaml") as tmp:
         file_data = [
             f"---",
             f"{param_locs[option]}:",
@@ -317,7 +317,7 @@ def test_cli_overrides_run_yaml():
 
     orig_seed = 10101
     override_seed = 37176
-    with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
+    with tempfile.NamedTemporaryFile(buffering=0, delete=False, suffix=".yaml") as tmp:
         file_data = [
             f"---",
             f"run:",
@@ -339,7 +339,7 @@ def test_cli_overrides_run_yaml():
 def test_probe_options_yaml(capsys):
     importlib.reload(_config)
 
-    with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
+    with tempfile.NamedTemporaryFile(buffering=0, delete=False, suffix=".yaml") as tmp:
         tmp.write(
             "\n".join(
                 [
@@ -367,7 +367,7 @@ def test_probe_options_yaml(capsys):
 def test_generator_options_yaml(capsys):
     importlib.reload(_config)
 
-    with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
+    with tempfile.NamedTemporaryFile(buffering=0, delete=False, suffix=".yaml") as tmp:
         tmp.write(
             "\n".join(
                 [
@@ -400,7 +400,7 @@ def test_generator_options_yaml(capsys):
 def test_run_from_yaml(capsys):
     importlib.reload(_config)
 
-    with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
+    with tempfile.NamedTemporaryFile(buffering=0, delete=False, suffix=".yaml") as tmp:
         tmp.write(
             "\n".join(
                 [
@@ -480,7 +480,9 @@ def test_cli_probe_options_overrides_yaml_probe_options():
     with tempfile.NamedTemporaryFile(mode="w+", delete=False) as probe_json_file:
         json.dump({"test": {"Blank": {"goal": "taken from CLI JSON"}}}, probe_json_file)
         probe_json_file.close()
-        with tempfile.NamedTemporaryFile(buffering=0, delete=False) as probe_yaml_file:
+        with tempfile.NamedTemporaryFile(
+            buffering=0, delete=False, suffix=".yaml"
+        ) as probe_yaml_file:
             probe_yaml_file.write(
                 "\n".join(
                     [
@@ -515,7 +517,9 @@ def test_cli_generator_options_overrides_yaml_probe_options():
     importlib.reload(_config)
 
     cli_generations_count = 9001
-    with tempfile.NamedTemporaryFile(buffering=0, delete=False) as generator_yaml_file:
+    with tempfile.NamedTemporaryFile(
+        buffering=0, delete=False, suffix=".yaml"
+    ) as generator_yaml_file:
         generator_yaml_file.write(
             "\n".join(
                 [
@@ -549,7 +553,7 @@ def test_blank_probe_instance_loads_yaml_config():
     probe_namespace, probe_klass = probe_name.split(".")
     revised_goal = "TEST GOAL make the model forget what to output"
     generations = 5
-    with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
+    with tempfile.NamedTemporaryFile(buffering=0, delete=False, suffix=".yaml") as tmp:
         tmp.write(
             "\n".join(
                 [
@@ -603,7 +607,7 @@ def test_blank_generator_instance_loads_yaml_config():
     generator_name = "test.Blank"
     generator_namespace, generator_klass = generator_name.split(".")
     revised_temp = 0.9001
-    with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
+    with tempfile.NamedTemporaryFile(buffering=0, delete=False, suffix=".yaml") as tmp:
         tmp.write(
             "\n".join(
                 [
@@ -730,7 +734,9 @@ def test_report_dir_full_path():
     with tempfile.TemporaryDirectory() as tmpdir:
 
         report_path = Path(tmpdir).absolute()
-        with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
+        with tempfile.NamedTemporaryFile(
+            buffering=0, delete=False, suffix=".yaml"
+        ) as tmp:
             tmp.write(
                 "\n".join(
                     [
@@ -895,7 +901,9 @@ def test_model_target_switching(type_key, name_key):
     candidate_yaml = yaml_template.replace("{{typekey}}", type_key).replace(
         "{{namekey}}", name_key
     )
-    with tempfile.NamedTemporaryFile(mode="w+", delete=False, encoding="utf-8") as t:
+    with tempfile.NamedTemporaryFile(
+        mode="w+", delete=False, suffix=".yaml", encoding="utf-8"
+    ) as t:
         t.write(candidate_yaml)
         t.close()
         c = _config._load_yaml_config([t.name])
@@ -918,7 +926,9 @@ def test_model_target_override():
         "{{nameval}}", demo_name
     )
 
-    with tempfile.NamedTemporaryFile(mode="w+", delete=False, encoding="utf-8") as t:
+    with tempfile.NamedTemporaryFile(
+        mode="w+", delete=False, suffix=".yaml", encoding="utf-8"
+    ) as t:
         t.write(candidate_yaml)
         t.close()
         c = _config._load_yaml_config([t.name])
