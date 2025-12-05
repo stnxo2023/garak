@@ -162,7 +162,7 @@ def _load_yaml_config(settings_filenames) -> dict:
     config = nested_dict()
     for settings_filename in settings_filenames:
         with open(settings_filename, encoding="utf-8") as settings_file:
-            if settings_filename.endswith((".yaml", ".yml")):
+            if settings_filename.lower().endswith((".yaml", ".yml")):
                 settings = yaml.safe_load(settings_file)
             else:
                 settings = json.load(settings_file)
@@ -334,7 +334,7 @@ def load_config(
         if os.path.isfile(run_config_filename):
             settings_files.append(run_config_filename)
         # If explicit extension, check bundled
-        elif run_config_filename.endswith((".json", ".yaml", ".yml")):
+        elif run_config_filename.lower().endswith((".json", ".yaml", ".yml")):
             bundled = str(transient.package_dir / "configs" / run_config_filename)
             if os.path.isfile(bundled):
                 settings_files.append(bundled)

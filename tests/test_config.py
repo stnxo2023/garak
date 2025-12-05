@@ -1189,3 +1189,103 @@ def test_site_yml_config_works():
     finally:
         if site_yml.exists():
             site_yml.unlink()
+
+
+def test_uppercase_json_extension_works():
+    importlib.reload(_config)
+
+    json_config = {
+        "system": {},
+        "run": {"generations": 15},
+        "plugins": {},
+        "reporting": {},
+    }
+
+    test_json_path = _config.transient.package_dir / "configs" / "test_uppercase.JSON"
+
+    try:
+        with open(test_json_path, "w", encoding="utf-8") as f:
+            json.dump(json_config, f)
+
+        # Uppercase .JSON extension should work
+        garak.cli.main(["--config", "test_uppercase.JSON", "--list_config"])
+
+        assert _config.run.generations == 15
+    finally:
+        if test_json_path.exists():
+            test_json_path.unlink()
+
+
+def test_uppercase_yaml_extension_works():
+    importlib.reload(_config)
+
+    yaml_config_content = """
+system: {}
+run:
+  generations: 16
+plugins: {}
+reporting: {}
+"""
+
+    test_yaml_path = _config.transient.package_dir / "configs" / "test_uppercase.YAML"
+
+    try:
+        test_yaml_path.write_text(yaml_config_content)
+
+        # Uppercase .YAML extension should work
+        garak.cli.main(["--config", "test_uppercase.YAML", "--list_config"])
+
+        assert _config.run.generations == 16
+    finally:
+        if test_yaml_path.exists():
+            test_yaml_path.unlink()
+
+
+def test_uppercase_yml_extension_works():
+    importlib.reload(_config)
+
+    yml_config_content = """
+system: {}
+run:
+  generations: 17
+plugins: {}
+reporting: {}
+"""
+
+    test_yml_path = _config.transient.package_dir / "configs" / "test_uppercase.YML"
+
+    try:
+        test_yml_path.write_text(yml_config_content)
+
+        # Uppercase .YML extension should work
+        garak.cli.main(["--config", "test_uppercase.YML", "--list_config"])
+
+        assert _config.run.generations == 17
+    finally:
+        if test_yml_path.exists():
+            test_yml_path.unlink()
+
+
+def test_mixed_case_yaml_extension_works():
+    importlib.reload(_config)
+
+    yaml_config_content = """
+system: {}
+run:
+  generations: 18
+plugins: {}
+reporting: {}
+"""
+
+    test_yaml_path = _config.transient.package_dir / "configs" / "test_mixedcase.Yaml"
+
+    try:
+        test_yaml_path.write_text(yaml_config_content)
+
+        # Mixed case .Yaml extension should work
+        garak.cli.main(["--config", "test_mixedcase.Yaml", "--list_config"])
+
+        assert _config.run.generations == 18
+    finally:
+        if test_yaml_path.exists():
+            test_yaml_path.unlink()

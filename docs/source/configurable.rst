@@ -172,6 +172,7 @@ Garak comes bundled with some quick configs that can be loaded directly using ``
 
 **Note on extensions:** JSON configs can be loaded without the ``.json`` extension (e.g., ``--config fast``).
 YAML configs require the explicit ``.yaml`` or ``.yml`` extension (e.g., ``--config fast.yaml`` or ``--config fast.yml``).
+Extensions are case-insensitive, so ``.JSON``, ``.YAML``, and ``.YML`` are also accepted.
 
 Bundled configs include:
 
@@ -205,7 +206,7 @@ probes and run each prompt just once:
         probe_spec: latentinjection
 
 If we save this as ``latent1.yaml`` somewhere, then we can use it with ``garak --config latent1.yaml``.
-Note: YAML configs require the explicit ``.yaml`` or ``.yml`` extension.
+Note: YAML configs require the explicit ``.yaml`` or ``.yml`` extension (case-insensitive).
 
 **JSON format:**
 
