@@ -7,6 +7,7 @@ import tempfile
 import os
 
 from garak import _config, _plugins
+from garak.attempt import Message, Attempt
 
 
 NON_PROMPT_PROBES = [
@@ -14,6 +15,7 @@ NON_PROMPT_PROBES = [
     "probes.tap.TAP",
     "probes.suffix.BEAST",
     "probes.suffix.GCG",
+    "probes.fitd.FITD",
 ]
 ATKGEN_PROMPT_PROBES = ["probes.atkgen.Tox"]
 VISUAL_PROBES = [
@@ -54,6 +56,83 @@ def probe_pre_req(classname):
     # since this does not go through cli generations must be set
     _, module, klass = classname.split(".")
     _config.plugins.probes[module][klass]["generations"] = 1
+
+
+RESPONSE_SAMPLES = [
+    (
+        [
+            Message("text to translate", lang="fr"),
+            Message("text to translate", lang="fr"),
+            Message("text to translate", lang="fr"),
+        ],
+        "probes.base.Probe",
+    ),
+    (
+        [
+            Message("text to translate", lang="fr"),
+            None,
+            None,
+        ],
+        "probes.base.Probe",
+    ),
+    (
+        [
+            None,
+            Message("text to translate", lang="fr"),
+            None,
+        ],
+        "probes.base.Probe",
+    ),
+    (
+        [
+            None,
+            None,
+            Message("text to translate", lang="fr"),
+            None,
+        ],
+        "probes.base.Probe",
+    ),
+]
+
+
+@pytest.mark.parametrize("responses, classname", RESPONSE_SAMPLES)
+def test_base_postprocess_attempt(responses, mocker):
+    """Validate processing of reverse translation for various response cases"""
+    import garak.langservice
+    import garak.probes.base
+    from garak.langproviders.local import Passthru
+
+    null_provider = Passthru(
+        {
+            "langproviders": {
+                "local": {
+                    "language": "en,en",
+                }
+            }
+        }
+    )
+
+    mocker.patch.object(
+        garak.langservice, "get_langprovider", return_value=null_provider
+    )
+
+    prompt_mock = mocker.patch.object(
+        null_provider,
+        "get_text",
+        wraps=null_provider.get_text,
+    )
+
+    a = Attempt(prompt="just a test attempt", lang="fr")
+    a.outputs = responses
+    p = garak.probes.base.Probe()
+    p.lang = "en"
+    r = p._postprocess_attempt(a)
+    assert prompt_mock.called
+    assert len(r.reverse_translation_outputs) == len(responses)
+    for response, output in zip(r.reverse_translation_outputs, r.outputs):
+        assert type(response) == type(
+            output
+        ), "translation index outputs should align with output types"
 
 
 """
@@ -162,6 +241,8 @@ def test_multi_modal_probe_translation(classname, mocker):
         expected_provision_calls += len(probe_instance.attempt_descrs) * 2
 
     assert prompt_mock.call_count == expected_provision_calls
+    for prompt in probe_instance.prompts:
+        assert isinstance(prompt.text, str)
 
 
 @pytest.mark.parametrize("classname", PROBES)

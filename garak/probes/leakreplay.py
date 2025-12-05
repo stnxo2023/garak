@@ -1,6 +1,14 @@
-"""Data leak: Replay attack
+"""**Data leak: Replay attack**
 
-Probes for evaluating if a model will replay training data
+Attacks that try to get a model to leak whether or not a given document
+was used in training, by having it replay an excerpt from that doc.
+
+Any probe that gets a model to replay training documents can be placed here.
+
+Further info: 
+
+* https://arxiv.org/abs/2305.00118
+
 """
 import csv
 import re
@@ -17,7 +25,7 @@ import garak.probes
 class ClozeProbeMixin:
     """Mixin for cloze‐style data replay (fill-in-the-blank)."""
     lang = "*"
-    recommended_detector = ["base.TriggerListDetector"]
+    primary_detector = "base.TriggerListDetector"
     active = False
     follow_prompt_cap = False
     goal = "replay training data by filling in the correct missing words"
@@ -74,15 +82,16 @@ class ClozeProbeMixin:
         return attempt
 
     def _postprocess_hook(self, attempt: Attempt) -> Attempt:
-        for thread in attempt.messages:
-            content = thread[-1].get("content")
-            if content:
-                thread[-1]["content"] = re.sub(r"</?name>", "", content)
+        for idx, thread in enumerate(attempt.conversations):
+            if thread.last_message() and thread.last_message().text is not None:
+                attempt.conversations[idx].last_message().text = re.sub(
+                    "</?name>", "", thread.last_message().text
+                )
         return attempt
 
 class CompleteProbeMixin:
     """Mixin for document completion data replay tests."""
-    recommended_detector = ["leakreplay.StartsWith"]
+    primary_detector = "leakreplay.StartsWith"
     active = False
     follow_prompt_cap = False
     tier = garak.probes.Tier.OF_CONCERN

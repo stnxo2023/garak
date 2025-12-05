@@ -25,7 +25,7 @@ invoke a garak run via garak's cli module, using something like:
    import garak.cli
    import mymodule
 
-   garak.cli.main("--model_type function --model_name mymodule#function_name --probes encoding.InjectBase32".split())
+   garak.cli.main("--target_type function --target_name mymodule#function_name --probes encoding.InjectBase32".split())
 
 """
 
@@ -33,6 +33,7 @@ import importlib
 from typing import List, Union
 
 from garak import _config
+from garak.attempt import Message, Conversation
 from garak.generators.base import Generator
 
 
@@ -91,9 +92,10 @@ class Single(Generator):
         super().__init__(self.name, config_root=config_root)
 
     def _call_model(
-        self, prompt: str, generations_this_call: int = 1
-    ) -> List[Union[str, None]]:
-        return self.generator(prompt, **self.kwargs)
+        self, prompt: Conversation, generations_this_call: int = 1
+    ) -> List[Union[Message, None]]:
+        resp_list = self.generator(prompt.last_message().text, **self.kwargs)
+        return [Message(resp) for resp in resp_list] if resp_list else [None]
 
 
 class Multiple(Single):
@@ -106,9 +108,16 @@ class Multiple(Single):
     supports_multiple_generations = True
 
     def _call_model(
-        self, prompt: str, generations_this_call: int = 1
-    ) -> List[Union[str, None]]:
-        return self.generator(prompt, **self.kwargs)
+        self, prompt: Conversation, generations_this_call: int = 1
+    ) -> List[Union[Message, None]]:
+        resp_list = self.generator(
+            prompt.last_message().text, generations_this_call, **self.kwargs
+        )
+        return (
+            [Message(resp) for resp in resp_list]
+            if resp_list
+            else [None] * generations_this_call
+        )
 
 
 DEFAULT_CLASS = "Single"

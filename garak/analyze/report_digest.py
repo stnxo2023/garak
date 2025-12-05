@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-"""Generate reports from garak report JSONL"""
+"""Generate reports from garak report JSONL
+
+see argparse config below for usage"""
 
 from collections import defaultdict
 import datetime
@@ -13,13 +15,14 @@ import pprint
 import re
 import statistics
 import sys
-from typing import IO, List, Union
+from typing import IO, List
 
 import jinja2
 import sqlite3
 
 import garak
 from garak import _config
+import garak._plugins
 from garak.data import path as data_path
 import garak.analyze
 import garak.analyze.calibration
@@ -42,13 +45,13 @@ end_module = templateEnv.get_template("digest_end_module.jinja")
 about_z_template = templateEnv.get_template("digest_about_z.jinja")
 
 
-misp_resource_file = data_path / "misp_descriptions.tsv"
-misp_descriptions = {}
+misp_resource_file = data_path / "tags.misp.tsv"
+tag_descriptions = {}
 if os.path.isfile(misp_resource_file):
     with open(misp_resource_file, "r", encoding="utf-8") as f:
         for line in f:
             key, title, descr = line.strip().split("\t")
-            misp_descriptions[key] = (title, descr)
+            tag_descriptions[key] = (title, descr)
 
 
 def map_absolute_score(score: float) -> int:
@@ -105,8 +108,8 @@ def _report_header_content(report_path, init, setup, payloads, config=_config) -
         "run_uuid": init["run_uuid"],
         "setup": setup,
         "probespec": setup["plugins.probe_spec"],
-        "model_type": setup["plugins.model_type"],
-        "model_name": setup["plugins.model_name"],
+        "target_type": setup["plugins.target_type"],
+        "target_name": setup["plugins.target_name"],
         "payloads": payloads,
         "group_aggregation_function": config.reporting.group_aggregation_function,
         "report_digest_time": datetime.datetime.now().isoformat(),
@@ -142,8 +145,7 @@ def _init_populate_result_db(evals, taxonomy=None):
         groups = []
         if taxonomy is not None:
             # get the probe tags
-            m = importlib.import_module(f"garak.probes.{pm}")
-            tags = getattr(m, pc).tags
+            tags = garak._plugins.PluginCache.plugin_info(f"probes.{pm}.{pc}")["tags"]
             for tag in tags:
                 if tag.split(":")[0] == taxonomy:
                     groups.append(":".join(tag.split(":")[1:]))
@@ -237,8 +239,8 @@ def _get_group_info(probe_group, group_score, taxonomy, config=_config) -> dict:
         )
     elif probe_group != "other":
         probe_group_name = f"{taxonomy}:{probe_group}"
-        if probe_group_name in misp_descriptions:
-            probe_group_name, group_doc = misp_descriptions[probe_group_name]
+        if probe_group_name in tag_descriptions:
+            probe_group_name, group_doc = tag_descriptions[probe_group_name]
     else:
         probe_group_name = "Uncategorized"
 
@@ -261,17 +263,18 @@ def _get_probe_result_summaries(cursor, probe_group) -> List[tuple]:
 
 
 def _get_probe_info(probe_module, probe_class, absolute_score) -> dict:
-    pm = importlib.import_module(f"garak.probes.{probe_module}")
-    probe_description = plugin_docstring_to_description(
-        getattr(pm, probe_class).__doc__
-    )
+    probe_classpath = f"probes.{probe_module}.{probe_class}"
+    probe_plugin_info = garak._plugins.PluginCache.plugin_info(probe_classpath)
+    probe_description = probe_plugin_info["description"]
+    probe_tags = probe_plugin_info["tags"]
     probe_plugin_name = f"{probe_module}.{probe_class}"
     return {
         "probe_name": probe_plugin_name,
         "probe_score": absolute_score,
         "probe_severity": map_absolute_score(absolute_score),
         "probe_descr": html.escape(probe_description),
-        "probe_tier": getattr(pm, probe_class).tier,
+        "probe_tier": probe_plugin_info["tier"],
+        "probe_tags": probe_tags,
     }
 
 
@@ -288,10 +291,10 @@ def _get_probe_detector_details(
     calibration_used = False
     detector = re.sub(r"[^0-9A-Za-z_.]", "", detector)
     detector_module, detector_class = detector.split(".")
-    dm = importlib.import_module(f"garak.detectors.{detector_module}")
-    detector_description = plugin_docstring_to_description(
-        getattr(dm, detector_class).__doc__
+    detector_cache_entry = garak._plugins.PluginCache.plugin_info(
+        f"detectors.{detector_module}.{detector_class}"
     )
+    detector_description = detector_cache_entry["description"]
 
     zscore = calibration.get_z_score(
         probe_module,
@@ -307,7 +310,7 @@ def _get_probe_detector_details(
 
     else:
         relative_defcon, relative_comment = calibration.defcon_and_comment(zscore)
-        relative_score = zscore
+        relative_score = float(zscore)
         calibration_used = True
 
     absolute_defcon = map_absolute_score(absolute_score)
@@ -328,9 +331,9 @@ def _get_probe_detector_details(
         "absolute_score": absolute_score,
         "absolute_defcon": absolute_defcon,
         "absolute_comment": garak.analyze.ABSOLUTE_COMMENT[absolute_defcon],
-        "zscore": relative_score,
-        "zscore_defcon": relative_defcon,
-        "zscore_comment": relative_comment,
+        "relative_score": relative_score,
+        "relative_defcon": relative_defcon,
+        "relative_comment": relative_comment,
         "detector_defcon": detector_defcon,
         "calibration_used": calibration_used,
     }

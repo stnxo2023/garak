@@ -15,8 +15,8 @@ class Fail(Detector):
 
     lang_spec = "*"
 
-    def detect(self, attempt: Attempt) -> List[float]:
-        return [1.0] * len(attempt.all_outputs)
+    def detect(self, attempt: Attempt) -> List[float | None]:
+        return [1.0] * len(attempt.outputs)
 
 
 class Pass(Detector):
@@ -24,8 +24,8 @@ class Pass(Detector):
 
     lang_spec = "*"
 
-    def detect(self, attempt: Attempt) -> List[float]:
-        return [0.0] * len(attempt.all_outputs)
+    def detect(self, attempt: Attempt) -> List[float | None]:
+        return [0.0] * len(attempt.outputs)
 
 
 class Passthru(Detector):
@@ -37,7 +37,7 @@ class Passthru(Detector):
         "skip": True,
     }
 
-    def detect(self, attempt: Attempt) -> List[float]:
+    def detect(self, attempt: Attempt) -> List[float | None]:
         assert (
             len(attempt.detector_results) > 0
         ), "Only use passthru on attempts that already have detector scores"
@@ -50,5 +50,5 @@ class Random(Detector):
 
     lang_spec = "*"
 
-    def detect(self, attempt: Attempt) -> List[float]:
-        return [random.random() for _ in range(len(attempt.all_outputs))]
+    def detect(self, attempt: Attempt) -> List[float | None]:
+        return [random.random() for _ in range(len(attempt.outputs))]

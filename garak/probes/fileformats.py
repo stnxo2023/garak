@@ -1,9 +1,13 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""File formats probe, looking for potentially vulnerable files.
+"""**File formats**
 
-Checks in the model background for file types that may have known weaknesses."""
+Look at files associated with the target for potentially vulnerable items.
+
+Probes in this module should examine files associated with the target, rather than inference.
+
+The probes check in the model background for file types that may have known weaknesses."""
 
 import logging
 from typing import Iterable

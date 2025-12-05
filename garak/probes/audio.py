@@ -1,16 +1,18 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""Audio attack probes.
+"""**Audio attack probes**
 
 Probes designed to test audio-to-text models and the audio component of multimodal models.
+
+This module is for audio-modality probes only.
 """
 
 import logging
 from typing import Iterable
 
-import garak.attempt
 from garak import _config
+from garak.attempt import Attempt, Message
 import garak.probes
 from garak.exception import GarakException
 
@@ -22,7 +24,7 @@ class AudioAchillesHeel(garak.probes.Probe):
     """
 
     lang = "en"
-    recommended_detector = ["mitigation.MitigationBypass"]
+    primary_detector = "mitigation.MitigationBypass"
     tags = [
         "avid-effect:security:S0403",
         "avid-effect:performance:P0204",
@@ -89,10 +91,10 @@ class AudioAchillesHeel(garak.probes.Probe):
             if filename.is_file()
         ]
 
-    def probe(self, generator) -> Iterable[garak.attempt.Attempt]:
-        self.prompts = [
-            {"text": self.text_prompt, "audio": str(file_path)}
-            for file_path in self.audio
-        ]
+    def probe(self, generator) -> Iterable[Attempt]:
+        self.prompts = []
+        for file_path in self.audio:
+            m = Message(text=self.text_prompt, lang=self.lang, data_path=str(file_path))
+            self.prompts.append(m)
 
         return super().probe(generator)

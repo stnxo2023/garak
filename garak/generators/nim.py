@@ -1,37 +1,38 @@
 # SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""NVIDIA Inference Microservice LLM interface"""
+"""NVIDIA NIM Microservice LLM Interface"""
 
 import logging
-import random
 from typing import List, Union
 
 import openai
 
 from garak import _config
+from garak.attempt import Message, Turn, Conversation
 from garak.exception import GarakException
 from garak.generators.openai import OpenAICompatible
 
 
 class NVOpenAIChat(OpenAICompatible):
-    """Wrapper for NVIDIA-hosted NIMs. Expects NIM_API_KEY environment variable.
+    """Wrapper for NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.
 
-    Uses the [OpenAI-compatible API](https://docs.nvidia.com/ai-enterprise/nim-llm/latest/openai-api.html)
-    via direct HTTP request.
+    Connects to the v1/chat/completions endpoint.
+    You must set the NIM_API_KEY environment variable even if you connect to a self-hosted NIM.
 
     To get started with this generator:
-    #. Visit [https://build.nvidia.com/explore/reasoning](build.nvidia.com/explore/reasoning)
-    and find the LLM you'd like to use.
-    #. On the page for the LLM you want to use (e.g. [mixtral-8x7b-instruct](https://build.nvidia.com/mistralai/mixtral-8x7b-instruct)),
-    click "Get API key" key above the code snippet. You may need to create an
-    account. Copy this key.
-    #. In your console, Set the ``NIM_API_KEY`` variable to this API key. On
-    Linux, this might look like ``export NIM_API_KEY="nvapi-xXxXxXx"``.
-    #. Run garak, setting ``--model_name`` to ``nim`` and ``--model_type`` to
-    the name of the model on [build.nvidia.com](https://build.nvidia.com/)
-    - e.g. ``mistralai/mixtral-8x7b-instruct-v0.1``.
 
+    #. Visit https://build.nvidia.com/explore/reasoning and find the LLM you'd like to use.
+    #. On the page for the LLM you want to use (such as `mixtral-8x7b-instruct <https://build.nvidia.com/mistralai/mixtral-8x7b-instruct>`__),
+       click **Get API key** above the code snippet.
+
+       You might need to create an account if you don't have one yet.
+       Copy this key.
+    #. In your console, set the ``NIM_API_KEY`` variable to this API key.
+
+       On Linux, this might look like ``export NIM_API_KEY="nvapi-xXxXxXx"``.
+    #. Run garak, setting ``--target_type 'nim.NVIDIAOpenAIChat'`` and ``--target_name`` to
+       the name of the model on build.nvidia.com, such as ``--target_name 'mistralai/mixtral-8x7b-instruct-v0.1'``.
     """
 
     # per https://docs.nvidia.com/ai-enterprise/nim-llm/latest/openai-api.html
@@ -56,28 +57,28 @@ class NVOpenAIChat(OpenAICompatible):
         self.client = openai.OpenAI(base_url=self.uri, api_key=self.api_key)
         if self.name in ("", None):
             raise ValueError(
-                "NIMs require model name to be set, e.g. --model_name mistralai/mistral-8x7b-instruct-v0.1\nCurrent models:\n"
+                "NIMs require model name to be set, e.g. --target_name mistralai/mistral-8x7b-instruct-v0.1\nCurrent models:\n"
                 + "\n - ".join(
                     sorted([entry.id for entry in self.client.models.list().data])
                 )
             )
         self.generator = self.client.chat.completions
 
-    def _prepare_prompt(self, prompt):
+    def _prepare_prompt(self, prompt: Conversation) -> Conversation:
         return prompt
 
     def _call_model(
-        self, prompt: str | List[dict], generations_this_call: int = 1
-    ) -> List[Union[str, None]]:
+        self, prompt: Conversation, generations_this_call: int = 1
+    ) -> List[Union[Message, None]]:
         assert (
             generations_this_call == 1
         ), "generations_per_call / n > 1 is not supported"
 
         if self.vary_seed_each_call:
-            self.seed = random.randint(0, 65535)
+            self.seed = self._rng.randint(0, 65535)
 
         if self.vary_temp_each_call:
-            self.temperature = random.random()
+            self.temperature = self._rng.random()
 
         prompt = self._prepare_prompt(prompt)
         if prompt is None:
@@ -90,8 +91,11 @@ class NVOpenAIChat(OpenAICompatible):
             msg = "Model call didn't match endpoint expectations, see log"
             logging.critical(msg, exc_info=uee)
             raise GarakException(f"🛑 {msg}") from uee
-        #        except openai.NotFoundError as oe:
-        except Exception as oe:  # too broad
+        except openai.NotFoundError as nfe:
+            msg = "NIM endpoint not found. Is the model name spelled correctly and the endpoint URI correct?"
+            logging.critical(msg, exc_info=nfe)
+            raise GarakException(f"🛑 {msg}") from nfe
+        except Exception as oe:
             msg = "NIM generation failed. Is the model name spelled correctly?"
             logging.critical(msg, exc_info=oe)
             raise GarakException(f"🛑 {msg}") from oe
@@ -107,25 +111,24 @@ class NVOpenAIChat(OpenAICompatible):
 
 
 class NVOpenAICompletion(NVOpenAIChat):
-    """Wrapper for NVIDIA-hosted NIMs. Expects NIM_API_KEY environment variable.
+    """Wrapper for NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.
 
-    Uses the [OpenAI-compatible API](https://docs.nvidia.com/ai-enterprise/nim-llm/latest/openai-api.html)
-    via direct HTTP request.
-
-    This generator supports only ``completion`` and NOT ``chat``-format models.
+    Connects to the v1/completions endpoint.
+    You must set the NIM_API_KEY environment variable even if you connect to a self-hosted NIM.
 
     To get started with this generator:
-    #. Visit [build.nvidia.com/explore/reasoning](build.nvidia.com/explore/reasoning)
-    and find the LLM you'd like to use.
-    #. On the page for the LLM you want to use (e.g. [mixtral-8x7b-instruct](https://build.nvidia.com/mistralai/mixtral-8x7b-instruct)),
-    click "Get API key" key above the code snippet. You may need to create an
-    account. Copy this key.
-    #. In your console, Set the ``NIM_API_KEY`` variable to this API key. On
-    Linux, this might look like ``export NIM_API_KEY="nvapi-xXxXxXx"``.
-    #. Run garak, setting ``--model_name`` to ``nim`` and ``--model_type`` to
-    the name of the model on [build.nvidia.com](https://build.nvidia.com/)
-    - e.g. ``mistralai/mixtral-8x7b-instruct-v0.1``.
 
+    #. Visit https://build.nvidia.com/explore/reasoning and find the LLM you'd like to use.
+    #. On the page for the LLM you want to use (such as `mixtral-8x7b-instruct <https://build.nvidia.com/mistralai/mixtral-8x7b-instruct>`__),
+       click **Get API key** above the code snippet.
+
+       You might need to create an account if you don't have one yet.
+       Copy this key.
+    #. In your console, set the ``NIM_API_KEY`` variable to this API key.
+
+       On Linux, this might look like ``export NIM_API_KEY="nvapi-xXxXxXx"``.
+    #. Run garak, setting ``--target_type 'nim.NVIDIAOpenAIChat'`` and ``--target_name`` to
+       the name of the model on build.nvidia.com, such as ``--target_name 'mistralai/mixtral-8x7b-instruct-v0.1'``.
     """
 
     def _load_client(self):
@@ -134,11 +137,28 @@ class NVOpenAICompletion(NVOpenAIChat):
 
 
 class NVMultimodal(NVOpenAIChat):
-    """Wrapper for text + image / audio to text NIMs. Expects NIM_API_KEY environment variable.
+    """Wrapper for text and image / audio to text NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.
 
-    Expects keys to be a dict with keys 'text' (required), and 'image' or 'audio' (optional).
-    Message is sent with 'role' and 'content' where content is structured as text
-    followed by <img> and/or <audio> tags ala https://build.nvidia.com/microsoft/phi-4-multimodal-instruct
+    You must set the NIM_API_KEY environment variable even if you connect to a self-hosted NIM.
+
+    Expects keys to be a dict with keys ``text`` (required), and ``image`` or ``audio`` (optional).
+    Message is sent with ``role`` and ``content`` where ``content`` is structured as text
+    followed by ``<img>`` and/or ``<audio>`` tags.
+    Refer to https://build.nvidia.com/microsoft/phi-4-multimodal-instruct for an example.
+
+    To get started with this generator:
+
+    #. Visit https://build.nvidia.com/explore/reasoning and find the LLM you'd like to use.
+    #. On the page for the LLM you want to use (such as `phi-4-multimodal-instruct <https://build.nvidia.com/microsoft/phi-4-multimodal-instruct>`__),
+       click **Get API key** above the code snippet.
+
+       You might need to create an account if you don't have one yet.
+       Copy this key.
+    #. In your console, set the ``NIM_API_KEY`` variable to this API key.
+
+       On Linux, this might look like ``export NIM_API_KEY="nvapi-xXxXxXx"``.
+    #. Run garak, setting ``--target_type 'nim.NVMultimodal'`` and ``--target_name`` to
+       the name of the model on build.nvidia.com, such as ``--target_name 'microsoft/phi-4-multimodal-instruct-v0.1'``.
     """
 
     DEFAULT_PARAMS = NVOpenAIChat.DEFAULT_PARAMS | {
@@ -148,66 +168,59 @@ class NVMultimodal(NVOpenAIChat):
 
     modality = {"in": {"text", "image", "audio"}, "out": {"text"}}
 
-    def _prepare_prompt(self, prompt: Union[str, dict]) -> str:
-        import base64
-        from pathlib import Path
+    def _prepare_prompt(self, conv: Conversation) -> Conversation:
+        from dataclasses import asdict
 
-        if isinstance(prompt, str):
-            text = prompt
-        elif isinstance(prompt, dict):
-            try:
-                prompt_string = prompt["text"]
-                data_len = 0
-            except KeyError as e:
-                logging.error("`prompt` input requires 'text' field for Generator %s" % self.name, exc_info=e)
-                raise KeyError("`prompt` input requires 'text' field for Generator %s" % self.name)
+        prepared_conv = Conversation()
 
-            if "image" in prompt.keys() and prompt["image"] is not None:
-                img_extension = Path(prompt["image"]).suffix.replace(".", "")
-                if img_extension == "jpg":  # image/jpg is not a valid mimetype
-                    image_extension = "jpeg"
-                with open(prompt["image"], "rb") as f:
-                    image_b64 = base64.b64encode(f.read()).decode()
-                prompt_string += (
-                    f'<img src="data:image/{img_extension};base64,{image_b64}" />'
+        for turn in conv.turns:
+            msg = turn.content
+            # only manipulate the copy
+            prepared_msg = Message(**asdict(msg))
+
+            text = msg.text
+
+            # guessing a default in the case of direct data
+            image_extension = "image/jpg"
+            # should this use mime/type detection on the actually data vs a default guess?
+
+            if msg.data is not None:
+                import base64
+
+                if msg.data_path is not None:
+                    image_extension, _ = msg.data_type
+
+                image_b64 = base64.b64encode(msg.data).decode()
+
+                if len(image_b64) > self.max_input_len:
+                    big_img_filename = "<direct data>"
+                    if msg.data_path is not None:
+                        big_img_filename = msg.data_path
+                    logging.error(
+                        "Request for %s exceeds length limit. To upload larger files, use the assets API (not yet supported)",
+                        big_img_filename,
+                    )
+                    return None
+
+                text = (
+                    text + f' <img src="data:{image_extension};base64,{image_b64}" />'
                 )
-                data_len += len(image_b64)
-            else:
-                prompt["image"] = None
-            if "audio" in prompt.keys() and prompt["audio"] is not None:
-                audio_extension = Path(prompt["audio"]).suffix.replace(".", "")
-                with open(prompt["audio"], "rb") as f:
-                    audio_b64 = base64.b64encode(f.read()).decode()
-                prompt_string += (
-                    f'<audio src="data:audio/{audio_extension};base64,{audio_b64}" />'
-                )
-                data_len += len(audio_b64)
-            else:
-                prompt["audio"] = None
+            prepared_msg.text = text
 
-            if data_len > self.max_input_len:
-                msg = (f"Data exceeds length limit. `max_input_len` is {self.max_input_len}. "
-                       f"Current data size is {data_len}. "
-                       f"To upload larger images or audio files, use the assets API (not yet supported)")
-                if prompt["image"] is not None:
-                    msg += f" Image file: {prompt['image']}"
-                if prompt["audio"] is not None:
-                    msg += f" Audio file: {prompt['audio']}"
-                logging.error(msg)
-                return None
-            text = prompt_string
+        prepared_conv.turns.append(Turn(turn.role, prepared_msg))
 
-        else:
-            raise TypeError(f"{self.name} accepts `str` and `dict` type inputs but got {type(prompt)} instead.")
-
-        return text
+        return prepared_conv
 
 
 class Vision(NVMultimodal):
-    """Wrapper for text+image to text NIMs. Expects NIM_API_KEY environment variable.
+    """Wrapper for text and image to text NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.
+
+    You must set the NIM_API_KEY environment variable even if you connect to a self-hosted NIM.
 
     Following generators.huggingface.LLaVa, expects prompts to be a dict with keys
-    "text" and "image"; text holds the text prompt, image holds a path to the image."""
+    ``text`` and ``image``.
+    The ``text`` key specifies the text prompt, and the ``image`` key specifies the path to the image.
+    """
 
     modality = {"in": {"text", "image"}, "out": {"text"}}
 
