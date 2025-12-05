@@ -105,10 +105,7 @@ class Turn:
         else:
             raise ValueError("Expected `role` in Turn dict")
         message = entity.pop("content", {})
-        if isinstance(message, str):
-            content = Message(message, str)
-        else:
-            content = Message(**message)
+        content = Message(**message)
         return cls(role=role, content=content)
 
 
