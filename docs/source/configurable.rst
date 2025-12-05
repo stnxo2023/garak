@@ -29,7 +29,7 @@ the priority of which values go where. The hierarchy is as follows:
 
 1. Values given at the command line
 2. Config values given in a YAML or JSON file passed via ``--config``
-3. Values in a YAML or JSON site config, ``garak.site.yaml`` or ``garak.site.json``, placed in the config directory (``XDG_CONFIG_DIR``, which is ``~/.config/garak/`` on Linux; see XDG spec for details)
+3. Values in a YAML or JSON site config, ``garak.site.yaml``, ``garak.site.yml``, or ``garak.site.json``, placed in the config directory (``XDG_CONFIG_DIR``, which is ``~/.config/garak/`` on Linux; see XDG spec for details)
 4. Fixed values kept in the garak core config - don't edit this. Package updates will overwrite it, and you might break your garak install. It's in ``garak/resources`` if you want to take a look.
 5. Default values specified in plugin code
 
@@ -171,7 +171,7 @@ Bundled Quick Configs
 Garak comes bundled with some quick configs that can be loaded directly using ``--config``.
 
 **Note on extensions:** JSON configs can be loaded without the ``.json`` extension (e.g., ``--config fast``).
-YAML configs require the explicit ``.yaml`` extension (e.g., ``--config fast.yaml``).
+YAML configs require the explicit ``.yaml`` or ``.yml`` extension (e.g., ``--config fast.yaml`` or ``--config fast.yml``).
 
 Bundled configs include:
 
@@ -205,7 +205,7 @@ probes and run each prompt just once:
         probe_spec: latentinjection
 
 If we save this as ``latent1.yaml`` somewhere, then we can use it with ``garak --config latent1.yaml``.
-Note: YAML configs require the explicit ``.yaml`` extension.
+Note: YAML configs require the explicit ``.yaml`` or ``.yml`` extension.
 
 **JSON format:**
 
