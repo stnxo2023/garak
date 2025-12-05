@@ -163,6 +163,26 @@ class BadCharacters(garak.probes.Probe):
                 "enabled_categories must include at least one entry"
             )
 
+        self._generators = {
+            "invisible": self._generate_invisible_variants,
+            "homoglyph": self._generate_homoglyph_variants,
+            "reordering": self._generate_reordering_variants,
+            "deletion": self._generate_deletion_variants,
+        }
+        supported_categories = set(self._generators)
+        unknown_categories = self._enabled_categories - supported_categories
+        if unknown_categories:
+            logging.warning(
+                "Unknown BadCharacters categories %s; skipping",
+                sorted(unknown_categories),
+            )
+            self._enabled_categories &= supported_categories
+        if not self._enabled_categories:
+            raise PluginConfigurationError(
+                "enabled_categories must include at least one recognized entry "
+                f"{sorted(supported_categories)}"
+            )
+
         payload_group = garak.payloads.load(self.payload_name)
         self._source_payloads = payload_group.payloads
         self.prompts: List[garak.attempt.Conversation] = []
@@ -203,16 +223,9 @@ class BadCharacters(garak.probes.Probe):
     def _generate_variants(
         self, payload: str, payload_idx: int
     ) -> Iterator[Tuple[str, dict]]:
-        generators = {
-            "invisible": self._generate_invisible_variants,
-            "homoglyph": self._generate_homoglyph_variants,
-            "reordering": self._generate_reordering_variants,
-            "deletion": self._generate_deletion_variants,
-        }
         for category in self._enabled_categories:
-            generator = generators.get(category)
+            generator = self._generators.get(category)
             if generator is None:
-                logging.warning("Unknown BadCharacters category '%s'", category)
                 continue
             for variant_text, details in generator(payload):
                 metadata = {
