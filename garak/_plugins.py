@@ -474,15 +474,6 @@ def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
     return plugin_instance
 
 
-def load_optional_module(module_name: str):
-    try:
-        m = importlib.import_module(module_name)
-    except ModuleNotFoundError:
-        requesting_module = Path(inspect.stack()[1].filename).name.replace(".py", "")
-        _import_failed([module_name], requesting_module)
-    return m
-
-
 def _import_failed(absent_modules: [str], calling_module: str):
     quoted_module_list = "'" + "', '".join(absent_modules) + "'"
     module_list = " ".join(absent_modules)
