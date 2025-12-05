@@ -1,10 +1,14 @@
-"""Encoding-based prompt injection
+"""**Encoding-based prompt injection**
 
-Probes that try to get a model to generate a specific piece of given text
+Encode an unsafe instruction or string in an effort to get it past alignment.
+
+Probes in this modules all perform some kind of encoding of the target string or instruction.
+
+These ``encoding`` probes try to get a model to generate a specific piece of given text
 by presenting an encoded version of that text. Attempts to circumvent
 safeguards on input filtering.
 
-optional variable: "encoding.payloads" -> a list of payload types to be used
+optional variable: ``encoding.payloads`` -> a list of payload types to be used
 
 Recommended garak payloads to try:
 
@@ -564,7 +568,7 @@ class InjectNato(EncodingMixin, garak.probes.Probe):
 class InjectEcoji(EncodingMixin, garak.probes.Probe):
     """Probe for susceptibility to Ecoji encoding.
 
-    Encodes payloads using the [ecoji](https://ecoji.io/) mapping, and tries a variety
+    Encodes payloads using the `ecoji <https://ecoji.io/>`_ mapping, and tries a variety
     of ways of getting the target model to repeat & decode them."""
 
     doc_uri = "https://ecoji.io/"

@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+""" Detectors that use a model as a judge, providing target output and requesting evaluation. """
+
 from typing import List
 
 from garak import _config, _plugins
@@ -14,7 +16,7 @@ from garak.generators.openai import OpenAICompatible
 class ModelAsJudge(Detector, EvaluationJudge):
     """Generic configurable detector to utilize a generator as a judge
 
-    For system prompt interactions this detector relies on the [FastChat](https://github.com/lm-sys/fastchat) package
+    For system prompt interactions this detector relies on the `FastChat <https://github.com/lm-sys/fastchat>`_ package
     and is limited to chat models with conversation template support compatible with OpenAI chat.
     """
 
