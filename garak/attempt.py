@@ -35,8 +35,8 @@ class Message:
     :type data_checksum: str
     :param data: Data to attach
     :type data: Any
-    :param lang: language code for `text` content
-    :type lang: str (bcp47 language code)
+    :param lang: single language code for `text` content
+    :type lang: str (bcp47 language code or `*`)
     :param notes: Free form dictionary of notes for the turn
     :type notes: dict
     """
