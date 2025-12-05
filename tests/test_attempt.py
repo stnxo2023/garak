@@ -641,5 +641,5 @@ def test_outputs_for():
 
 
 def test_attempt_prompt_no_str():
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         attempt = garak.attempt.Attempt(prompt="nine two one eight black")

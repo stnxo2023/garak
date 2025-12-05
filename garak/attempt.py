@@ -225,11 +225,6 @@ class Attempt:
         if prompt is not None:
             if isinstance(prompt, Conversation):
                 self.conversations = [prompt]
-            elif isinstance(prompt, str):
-                raise ValueError(
-                    "attempt Prompt must be Message or Conversation, not string"
-                )
-                # msg = Message(text=prompt, lang=lang)
             elif isinstance(prompt, Message):
                 msg = prompt
             else:
@@ -334,20 +329,14 @@ class Attempt:
             raise TypeError("prompt cannot be changed once set")
         if value is None:
             raise TypeError("'None' prompts are not valid")
-        if isinstance(value, str):
-            # note this does not contain a lang
-            raise TypeError(
-                "Attempt.prompt must be Message or Conversation, not bare string"
-            )
-            # self._prompt = Conversation([Turn("user", Message(text=value))])
         if isinstance(value, Message):
             # make a copy to store an immutable object
             self._prompt = Conversation([Turn("user", Message(**asdict(value)))])
-        if isinstance(value, Conversation):
+        elif isinstance(value, Conversation):
             # make a copy to store an immutable object
             self._prompt = Conversation.from_dict(asdict(value))
-        if not hasattr(self, "_prompt"):
-            raise TypeError("prompt must be a Conversation, Message or str object")
+        else:
+            raise TypeError("Attempt prompt must be Message or Conversation")
         self.conversations = [Conversation.from_dict(asdict(self._prompt))]
 
     @outputs.setter
