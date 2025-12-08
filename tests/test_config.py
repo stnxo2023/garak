@@ -173,6 +173,30 @@ def clear_xdg_env(request):
     request.addfinalizer(restore_xdg_env)
 
 
+@pytest.fixture
+def temp_package_dir(request):
+    original_package_dir = _config.transient.package_dir
+
+    tmpdir = tempfile.mkdtemp()
+    configs_dir = Path(tmpdir) / "configs"
+    configs_dir.mkdir()
+
+    # Copy resources directory so garak.core.yaml is available
+    src_resources = original_package_dir / "resources"
+    dst_resources = Path(tmpdir) / "resources"
+    shutil.copytree(src_resources, dst_resources)
+
+    _config.transient.package_dir = Path(tmpdir)
+
+    def restore_package_dir():
+        _config.transient.package_dir = original_package_dir
+        shutil.rmtree(tmpdir, ignore_errors=True)
+
+    request.addfinalizer(restore_package_dir)
+
+    return Path(tmpdir)
+
+
 # environment variables adjust transient values
 def test_xdg_support(override_xdg_env):
     test_path = Path(override_xdg_env)
@@ -961,7 +985,7 @@ def test_site_config_ambiguity_error():
             site_yaml.unlink()
 
 
-def test_extension_less_config_finds_json():
+def test_extension_less_config_finds_json(temp_package_dir):
     json_config = {
         "system": {},
         "run": {"generations": 7},
@@ -969,21 +993,17 @@ def test_extension_less_config_finds_json():
         "reporting": {},
     }
 
-    test_json_path = _config.transient.package_dir / "configs" / "test_json_config.json"
+    test_json_path = temp_package_dir / "configs" / "test_json_config.json"
 
-    try:
-        with open(test_json_path, "w", encoding="utf-8") as f:
-            json.dump(json_config, f)
+    with open(test_json_path, "w", encoding="utf-8") as f:
+        json.dump(json_config, f)
 
-        garak.cli.main(["--config", "test_json_config", "--list_config"])
+    garak.cli.main(["--config", "test_json_config", "--list_config"])
 
-        assert _config.run.generations == 7
-    finally:
-        if test_json_path.exists():
-            test_json_path.unlink()
+    assert _config.run.generations == 7
 
 
-def test_extension_less_requires_explicit_yaml():
+def test_extension_less_requires_explicit_yaml(temp_package_dir):
     yaml_config_content = """
 system: {}
 run:
@@ -992,22 +1012,18 @@ plugins: {}
 reporting: {}
 """
 
-    test_yaml_path = _config.transient.package_dir / "configs" / "test_yaml_only.yaml"
+    test_yaml_path = temp_package_dir / "configs" / "test_yaml_only.yaml"
 
-    try:
-        test_yaml_path.write_text(yaml_config_content)
+    test_yaml_path.write_text(yaml_config_content)
 
-        # Extension-less should error when only YAML exists
-        with pytest.raises(
-            FileNotFoundError, match="YAML needs explicit .yaml/.yml extension"
-        ):
-            garak.cli.main(["--config", "test_yaml_only", "--list_config"])
-    finally:
-        if test_yaml_path.exists():
-            test_yaml_path.unlink()
+    # Extension-less should error when only YAML exists
+    with pytest.raises(
+        FileNotFoundError, match="YAML needs explicit .yaml/.yml extension"
+    ):
+        garak.cli.main(["--config", "test_yaml_only", "--list_config"])
 
 
-def test_extension_less_bundled_json_works():
+def test_extension_less_bundled_json_works(temp_package_dir):
     json_config = {
         "system": {},
         "run": {"generations": 9},
@@ -1015,20 +1031,14 @@ def test_extension_less_bundled_json_works():
         "reporting": {},
     }
 
-    test_json_path = (
-        _config.transient.package_dir / "configs" / "test_bundled_json.json"
-    )
+    test_json_path = temp_package_dir / "configs" / "test_bundled_json.json"
 
-    try:
-        with open(test_json_path, "w", encoding="utf-8") as f:
-            json.dump(json_config, f)
+    with open(test_json_path, "w", encoding="utf-8") as f:
+        json.dump(json_config, f)
 
-        # Bundled JSON should work extension-less
-        garak.cli.main(["--config", "test_bundled_json", "--list_config"])
-        assert _config.run.generations == 9
-    finally:
-        if test_json_path.exists():
-            test_json_path.unlink()
+    # Bundled JSON should work extension-less
+    garak.cli.main(["--config", "test_bundled_json", "--list_config"])
+    assert _config.run.generations == 9
 
 
 def test_extension_less_warns_on_direct_path_ambiguity(caplog):
@@ -1066,7 +1076,7 @@ reporting: {}
         assert _config.run.generations == 12
 
 
-def test_explicit_yaml_extension_works():
+def test_explicit_yaml_extension_works(temp_package_dir):
     yaml_config_content = """
 system: {}
 run:
@@ -1075,23 +1085,17 @@ plugins: {}
 reporting: {}
 """
 
-    test_yaml_path = (
-        _config.transient.package_dir / "configs" / "test_explicit_yaml.yaml"
-    )
+    test_yaml_path = temp_package_dir / "configs" / "test_explicit_yaml.yaml"
 
-    try:
-        test_yaml_path.write_text(yaml_config_content)
+    test_yaml_path.write_text(yaml_config_content)
 
-        # Explicit .yaml extension should work
-        garak.cli.main(["--config", "test_explicit_yaml.yaml", "--list_config"])
+    # Explicit .yaml extension should work
+    garak.cli.main(["--config", "test_explicit_yaml.yaml", "--list_config"])
 
-        assert _config.run.generations == 11
-    finally:
-        if test_yaml_path.exists():
-            test_yaml_path.unlink()
+    assert _config.run.generations == 11
 
 
-def test_explicit_yml_extension_works():
+def test_explicit_yml_extension_works(temp_package_dir):
     yml_config_content = """
 system: {}
 run:
@@ -1100,18 +1104,14 @@ plugins: {}
 reporting: {}
 """
 
-    test_yml_path = _config.transient.package_dir / "configs" / "test_explicit_yml.yml"
+    test_yml_path = temp_package_dir / "configs" / "test_explicit_yml.yml"
 
-    try:
-        test_yml_path.write_text(yml_config_content)
+    test_yml_path.write_text(yml_config_content)
 
-        # Explicit .yml extension should work
-        garak.cli.main(["--config", "test_explicit_yml.yml", "--list_config"])
+    # Explicit .yml extension should work
+    garak.cli.main(["--config", "test_explicit_yml.yml", "--list_config"])
 
-        assert _config.run.generations == 12
-    finally:
-        if test_yml_path.exists():
-            test_yml_path.unlink()
+    assert _config.run.generations == 12
 
 
 @pytest.mark.usefixtures("allow_site_config")
@@ -1130,7 +1130,7 @@ def test_site_yml_config_works():
             site_yml.unlink()
 
 
-def test_uppercase_json_extension_works():
+def test_uppercase_json_extension_works(temp_package_dir):
     json_config = {
         "system": {},
         "run": {"generations": 15},
@@ -1138,22 +1138,18 @@ def test_uppercase_json_extension_works():
         "reporting": {},
     }
 
-    test_json_path = _config.transient.package_dir / "configs" / "test_uppercase.JSON"
+    test_json_path = temp_package_dir / "configs" / "test_uppercase.JSON"
 
-    try:
-        with open(test_json_path, "w", encoding="utf-8") as f:
-            json.dump(json_config, f)
+    with open(test_json_path, "w", encoding="utf-8") as f:
+        json.dump(json_config, f)
 
-        # Uppercase .JSON extension should work
-        garak.cli.main(["--config", "test_uppercase.JSON", "--list_config"])
+    # Uppercase .JSON extension should work
+    garak.cli.main(["--config", "test_uppercase.JSON", "--list_config"])
 
-        assert _config.run.generations == 15
-    finally:
-        if test_json_path.exists():
-            test_json_path.unlink()
+    assert _config.run.generations == 15
 
 
-def test_uppercase_yaml_extension_works():
+def test_uppercase_yaml_extension_works(temp_package_dir):
     yaml_config_content = """
 system: {}
 run:
@@ -1162,21 +1158,17 @@ plugins: {}
 reporting: {}
 """
 
-    test_yaml_path = _config.transient.package_dir / "configs" / "test_uppercase.YAML"
+    test_yaml_path = temp_package_dir / "configs" / "test_uppercase.YAML"
 
-    try:
-        test_yaml_path.write_text(yaml_config_content)
+    test_yaml_path.write_text(yaml_config_content)
 
-        # Uppercase .YAML extension should work
-        garak.cli.main(["--config", "test_uppercase.YAML", "--list_config"])
+    # Uppercase .YAML extension should work
+    garak.cli.main(["--config", "test_uppercase.YAML", "--list_config"])
 
-        assert _config.run.generations == 16
-    finally:
-        if test_yaml_path.exists():
-            test_yaml_path.unlink()
+    assert _config.run.generations == 16
 
 
-def test_uppercase_yml_extension_works():
+def test_uppercase_yml_extension_works(temp_package_dir):
     yml_config_content = """
 system: {}
 run:
@@ -1185,21 +1177,17 @@ plugins: {}
 reporting: {}
 """
 
-    test_yml_path = _config.transient.package_dir / "configs" / "test_uppercase.YML"
+    test_yml_path = temp_package_dir / "configs" / "test_uppercase.YML"
 
-    try:
-        test_yml_path.write_text(yml_config_content)
+    test_yml_path.write_text(yml_config_content)
 
-        # Uppercase .YML extension should work
-        garak.cli.main(["--config", "test_uppercase.YML", "--list_config"])
+    # Uppercase .YML extension should work
+    garak.cli.main(["--config", "test_uppercase.YML", "--list_config"])
 
-        assert _config.run.generations == 17
-    finally:
-        if test_yml_path.exists():
-            test_yml_path.unlink()
+    assert _config.run.generations == 17
 
 
-def test_mixed_case_yaml_extension_works():
+def test_mixed_case_yaml_extension_works(temp_package_dir):
     yaml_config_content = """
 system: {}
 run:
@@ -1208,15 +1196,11 @@ plugins: {}
 reporting: {}
 """
 
-    test_yaml_path = _config.transient.package_dir / "configs" / "test_mixedcase.Yaml"
+    test_yaml_path = temp_package_dir / "configs" / "test_mixedcase.Yaml"
 
-    try:
-        test_yaml_path.write_text(yaml_config_content)
+    test_yaml_path.write_text(yaml_config_content)
 
-        # Mixed case .Yaml extension should work
-        garak.cli.main(["--config", "test_mixedcase.Yaml", "--list_config"])
+    # Mixed case .Yaml extension should work
+    garak.cli.main(["--config", "test_mixedcase.Yaml", "--list_config"])
 
-        assert _config.run.generations == 18
-    finally:
-        if test_yaml_path.exists():
-            test_yaml_path.unlink()
+    assert _config.run.generations == 18
