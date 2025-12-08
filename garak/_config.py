@@ -156,16 +156,22 @@ def _combine_into(d: dict, combined: dict) -> dict:
     return combined
 
 
-def _load_yaml_config(settings_filenames) -> dict:
+def _load_config_files(settings_filenames) -> dict:
     global config_files
     config_files += settings_filenames
     config = nested_dict()
     for settings_filename in settings_filenames:
         with open(settings_filename, encoding="utf-8") as settings_file:
-            if settings_filename.lower().endswith((".yaml", ".yml")):
-                settings = yaml.safe_load(settings_file)
-            else:
+            try:
                 settings = json.load(settings_file)
+            except json.JSONDecodeError:
+                settings_file.seek(0)
+                try:
+                    settings = yaml.safe_load(settings_file)
+                except yaml.YAMLError as e:
+                    message = f"Failed to parse config file {settings_filename} as JSON or YAML: {e}"
+                    logging.error(message)
+                    raise ValueError(message) from e
             if settings is not None:
                 if _key_exists(settings, "api_key"):
                     if platform.system() == "Windows":
@@ -220,7 +226,7 @@ def _load_yaml_config(settings_filenames) -> dict:
 
 def _store_config(settings_files) -> None:
     global system, run, plugins, reporting, version
-    settings = _load_yaml_config(settings_files)
+    settings = _load_config_files(settings_files)
     system = _set_settings(system, settings["system"])
     run = _set_settings(run, settings["run"])
     run.user_agent = run.user_agent.replace("{version}", version)
