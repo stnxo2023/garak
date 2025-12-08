@@ -32,7 +32,7 @@ def test_up_detector_default_strings(up_detector):
 
     for response in default_responses:
         attempt = Attempt(
-            prompt=Message("test"), lang=up_detector.lang_spec.split(",")[0]
+            prompt=Message(text="test", lang=up_detector.lang_spec.split(",")[0])
         )
         attempt.outputs = [response]
         results = up_detector.detect(attempt)
