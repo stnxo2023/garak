@@ -277,7 +277,7 @@ def test_attempt_set_prompt_var():
 def test_attempt_constructor_prompt():
     test_text = "Plain Simple Garak"
     constructor_attempt = garak.attempt.Attempt(
-        prompt=garak.attempt.Message(test_text, lang="*"), lang="*"
+        prompt=garak.attempt.Message(test_text, lang="*")
     )
     assert constructor_attempt.prompt == garak.attempt.Conversation(
         [garak.attempt.Turn("user", garak.attempt.Message(test_text, lang="*"))]
@@ -459,18 +459,14 @@ def test_attempt_all_outputs():
 
 def test_attempt_message_prompt_init():
     test_prompt = "Enabran Tain"
-    att = garak.attempt.Attempt(
-        prompt=garak.attempt.Message(test_prompt, lang="*"), lang="*"
-    )
+    att = garak.attempt.Attempt(prompt=garak.attempt.Message(test_prompt, lang="*"))
     assert att.prompt == garak.attempt.Conversation(
         [garak.attempt.Turn("user", garak.attempt.Message(text=test_prompt, lang="*"))]
     )
 
 
 def test_json_serialize():
-    att = garak.attempt.Attempt(
-        prompt=garak.attempt.Message("well hello", lang="*"), lang="*"
-    )
+    att = garak.attempt.Attempt(prompt=garak.attempt.Message("well hello", lang="*"))
     att.outputs = [garak.attempt.Message("output one"), None]
 
     att_dict = att.as_dict()

@@ -262,7 +262,6 @@ class Probe(Configurable):
             seq=seq,
             prompt=prompt,
             notes=notes,
-            lang=lang,
         )
 
         new_attempt = self._attempt_prestore_hook(new_attempt, seq)

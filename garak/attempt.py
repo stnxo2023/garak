@@ -178,8 +178,6 @@ class Attempt:
     :type seq: int
     :param conversations: conversation turn histories
     :type conversations: List(Conversation)
-    :param lang: Language code for prompt as sent to the target
-    :type lang: str, valid BCP47
     :param reverse_translation_outputs: The reverse translation of output based on the original language of the probe
     :param reverse_translation_outputs: List(str)
 
@@ -218,7 +216,6 @@ class Attempt:
         detector_results=None,
         goal=None,
         seq=-1,
-        lang=None,  # language code for prompt as sent to the target
         reverse_translation_outputs=None,
     ) -> None:
         self.uuid = uuid.uuid4()
@@ -294,6 +291,7 @@ class Attempt:
 
     @property
     def lang(self):
+        """Language of first Message determines the language of the attempt"""
         return self.prompt.turns[-1].content.lang
 
     @property
