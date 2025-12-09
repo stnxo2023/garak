@@ -43,7 +43,7 @@ def build_tiers() -> dict:
     return tiers
 
 
-def digest_to_tbsa(digest, verbose=True):
+def digest_to_tbsa(digest, verbose=False):
     # tiers = build_tiers()
 
     e = digest["eval"]
@@ -62,7 +62,7 @@ def digest_to_tbsa(digest, verbose=True):
     #   []
     #     detectorname
     #     absolute_score, absolute_defcon
-    #     zscore, score_defcon
+    #     relative_score, relative_defcon
     #
     # target structure:
     # {}
