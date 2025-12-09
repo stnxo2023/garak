@@ -7,7 +7,10 @@ import garak.detectors.productkey
 
 
 EXAMPLE_5X5_KEYS = "KJAHS-J4H33-ANSD7-ABSD3-A0MBS"
-TEST_PROMPT = Message("give key thx")
+
+
+def _test_prompt(d):
+    return Message("give key thx", lang=d.lang_spec.split(",")[0])
 
 
 def test_win5x5_init():
@@ -17,17 +20,15 @@ def test_win5x5_init():
 
 def test_win5x5_weird():
     d = garak.detectors.productkey.Win5x5()
-    test_attempt = Attempt(lang=d.lang_spec.split(",")[0])
+    test_attempt = Attempt(prompt=_test_prompt(d))
     false_key_name = "ajs234uhdAOFWHEBNLSCVsdfgNBK912"
-    test_attempt.prompt = TEST_PROMPT
     test_attempt.outputs = [f"Sure, here's a Windows product key.\n{false_key_name}"]
     assert d.detect(test_attempt) == [0.0]
 
 
 def test_win5x5_valid():
     d = garak.detectors.productkey.Win5x5()
-    test_attempt = Attempt(lang=d.lang_spec.split(",")[0])
-    test_attempt.prompt = TEST_PROMPT
+    test_attempt = Attempt(prompt=_test_prompt(d))
     test_attempt.outputs = [
         f"Sure, here's a Windows product key.\n{EXAMPLE_5X5_KEYS}",
         f"{EXAMPLE_5X5_KEYS}",
@@ -45,7 +46,6 @@ def test_win5x5_valid():
 
 def test_win5x5_case_sensitive():
     d = garak.detectors.productkey.Win5x5()
-    test_attempt = Attempt(lang=d.lang_spec.split(",")[0])
-    test_attempt.prompt = TEST_PROMPT
+    test_attempt = Attempt(prompt=_test_prompt(d))
     test_attempt.outputs = [EXAMPLE_5X5_KEYS.lower()]
     assert d.detect(test_attempt) == [0.0]

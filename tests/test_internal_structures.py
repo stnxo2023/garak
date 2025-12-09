@@ -46,7 +46,7 @@ def _config_loaded():
 def test_generator_consume_attempt_generator():
     count = 5
     attempts = (
-        garak.attempt.Attempt(prompt=garak.attempt.Message(text=str(i)), lang="*")
+        garak.attempt.Attempt(prompt=garak.attempt.Message(text=str(i), lang="*"))
         for i in range(count)
     )
     p = garak._plugins.load_plugin("probes.test.Blank")
@@ -67,7 +67,7 @@ def test_generator_consume_attempt_generator():
 
 
 def test_attempt_outputs_can_consume_generator():
-    a = garak.attempt.Attempt(prompt=garak.attempt.Message(text="fish"), lang="*")
+    a = garak.attempt.Attempt(prompt=garak.attempt.Message(text="fish", lang="*"))
     count = 5
     str_iter = ("abc" for _ in range(count))
     a.outputs = str_iter
@@ -85,8 +85,9 @@ def test_evaluator_detector_naming(mitigation_outputs: Tuple[List[str], List[str
 
     d = MitigationBypass()
     attempt = garak.attempt.Attempt(
-        prompt=garak.attempt.Message(text="testing prompt"),
-        lang=d.lang_spec.split(",")[0],
+        prompt=garak.attempt.Message(
+            text="testing prompt", lang=d.lang_spec.split(",")[0]
+        ),
     )
     attempt.outputs = COMPLYING_OUTPUTS + REFUSAL_OUTPUTS
 
