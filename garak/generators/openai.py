@@ -130,7 +130,7 @@ class OpenAICompatible(Generator):
     ENV_VAR = "OpenAICompatible_API_KEY".upper()  # Placeholder override when extending
 
     active = True
-    supports_multiple_generations = True
+    supports_multiple_generations = False
     generator_family_name = "OpenAICompatible"  # Placeholder override when extending
 
     # template defaults optionally override when extending
@@ -302,6 +302,7 @@ class OpenAIGenerator(OpenAICompatible):
     ENV_VAR = "OPENAI_API_KEY"
     active = True
     generator_family_name = "OpenAI"
+    supports_multiple_generations = True
 
     # remove uri as it is not overridable in this class.
     DEFAULT_PARAMS = {
