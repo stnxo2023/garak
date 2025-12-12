@@ -65,6 +65,10 @@ authors = [
   { name = "Gal Moshkovitz" },
   { name = "Jack Smith" },
   { name = "Paul A. Parkanzky" },
+  { name = "Leif Hancox-Li" },
+  { name = "Fabrizio Rocco" },
+  { name = "Sai Chandra Pandraju" },
+  { name = "Harish Kolla" },
 ]
 license = "Apache-2.0"
 license-files = ["LICENSE"]
