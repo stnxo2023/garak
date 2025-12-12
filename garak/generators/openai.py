@@ -130,7 +130,7 @@ class OpenAICompatible(Generator):
     ENV_VAR = "OpenAICompatible_API_KEY".upper()  # Placeholder override when extending
 
     active = True
-    supports_multiple_generations = True
+    supports_multiple_generations = False
     generator_family_name = "OpenAICompatible"  # Placeholder override when extending
 
     # template defaults optionally override when extending
@@ -222,8 +222,10 @@ class OpenAICompatible(Generator):
         is_completion = generator == client.completions
 
         create_args = {}
-        if "n" not in self.suppressed_params:
+        if self.supports_multiple_generations:
             create_args["n"] = generations_this_call
+        elif "n" not in self.suppressed_params:
+            create_args["n"] = 1
         for arg in inspect.signature(generator.create).parameters:
             if arg == "model":
                 create_args[arg] = self.name
@@ -302,6 +304,7 @@ class OpenAIGenerator(OpenAICompatible):
     ENV_VAR = "OPENAI_API_KEY"
     active = True
     generator_family_name = "OpenAI"
+    supports_multiple_generations = True
 
     # remove uri as it is not overridable in this class.
     DEFAULT_PARAMS = {
