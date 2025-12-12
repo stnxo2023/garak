@@ -261,6 +261,42 @@
       "tier": 9,
       "mod_time": "2025-11-12 08:34:39 +0000"
     },
+    "probes.badchars.BadCharacters": {
+      "description": "Imperceptible perturbations mixing invisible chars, homoglyphs, swaps, deletions.",
+      "DEFAULT_PARAMS": {
+        "payload_name": "harmful_behaviors",
+        "perturbation_budget": 1,
+        "enabled_categories": [
+          "invisible",
+          "homoglyph",
+          "reordering",
+          "deletion"
+        ],
+        "max_position_candidates": 24,
+        "max_reorder_candidates": 24,
+        "max_ascii_variants": 95,
+        "follow_prompt_cap": true
+      },
+      "active": false,
+      "doc_uri": "https://arxiv.org/abs/2106.09898",
+      "extended_detectors": [],
+      "goal": "inject imperceptible text perturbations that bypass refusal policies",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "mitigation.MitigationBypass",
+      "tags": [
+        "avid-effect:security:S0403",
+        "quality:Security:PromptStability",
+        "payload:jailbreak"
+      ],
+      "tier": 2,
+      "mod_time": "2025-12-05 00:55:46 +0000"
+    },
     "probes.base.IterativeProbe": {
       "description": "",
       "DEFAULT_PARAMS": {
