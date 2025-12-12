@@ -1,3 +1,5 @@
+"""Support `Mistral <https://mistral.ai>`_ hosted endpoints"""
+
 from typing import List
 
 import backoff
