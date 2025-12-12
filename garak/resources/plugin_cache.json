@@ -281,7 +281,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2025-12-03 09:48:37 +0000"
+      "mod_time": "2025-12-08 11:49:01 +0000"
     },
     "probes.base.Probe": {
       "description": "Base class for objects that define and execute LLM evaluations",
@@ -300,7 +300,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2025-12-03 09:48:37 +0000"
+      "mod_time": "2025-12-08 11:49:01 +0000"
     },
     "probes.base.TreeSearchProbe": {
       "DEFAULT_PARAMS": {
@@ -324,7 +324,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2025-12-03 09:48:37 +0000"
+      "mod_time": "2025-12-08 11:49:01 +0000"
     },
     "probes.continuation.ContinueSlursReclaimedSlurs": {
       "description": "Continue partial word with slur or reclaimed slur.",
@@ -1243,7 +1243,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-12 19:16:05 +0000"
     },
     "probes.encoding.InjectAtbash": {
       "description": "Atbash Probe Credit: Nakul-Rajpal",
@@ -1276,7 +1276,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-12 19:16:05 +0000"
     },
     "probes.encoding.InjectBase16": {
       "description": "Probe for susceptibility to base16 encoded injections\"",
@@ -1309,7 +1309,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-12 19:16:05 +0000"
     },
     "probes.encoding.InjectBase2048": {
       "description": "Probe for susceptibility to Base2048 encoding injections",
@@ -1342,7 +1342,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-12 19:16:05 +0000"
     },
     "probes.encoding.InjectBase32": {
       "description": "Probe for susceptibility to base32 encoded injections",
@@ -1375,7 +1375,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-12 19:16:05 +0000"
     },
     "probes.encoding.InjectBase64": {
       "description": "Probe for susceptibility to base64 encoded injections",
@@ -1408,7 +1408,7 @@
         "payload:generic"
       ],
       "tier": 1,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-12 19:16:05 +0000"
     },
     "probes.encoding.InjectBraille": {
       "description": "Probe for susceptibility to Braille encoding injections. Credit Wally#3422",
@@ -1441,7 +1441,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-12 19:16:05 +0000"
     },
     "probes.encoding.InjectEcoji": {
       "description": "Probe for susceptibility to Ecoji encoding.",
@@ -1474,7 +1474,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-12 19:16:05 +0000"
     },
     "probes.encoding.InjectHex": {
       "description": "Probe for susceptibility to hex encoded injections",
@@ -1507,7 +1507,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-12 19:16:05 +0000"
     },
     "probes.encoding.InjectLeet": {
       "description": "Probe for susceptibility to 31337 encoding.",
@@ -1540,7 +1540,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-12 19:16:05 +0000"
     },
     "probes.encoding.InjectMime": {
       "description": "Probe for susceptibility to MIME encoding injections",
@@ -1573,7 +1573,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-12 19:16:05 +0000"
     },
     "probes.encoding.InjectMorse": {
       "description": "Probe for susceptibility to Morse encoding. Credit Wally#3422",
@@ -1606,7 +1606,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-12 19:16:05 +0000"
     },
     "probes.encoding.InjectNato": {
       "description": "Probe for susceptibility to Nato phonetic alphabet encoding.",
@@ -1639,7 +1639,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-12 19:16:05 +0000"
     },
     "probes.encoding.InjectQP": {
       "description": "Probe for susceptibility to QP encoded injections",
@@ -1672,7 +1672,7 @@
         "payload:generic"
       ],
       "tier": 1,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-12 19:16:05 +0000"
     },
     "probes.encoding.InjectROT13": {
       "description": "Probe for susceptibility to ROT13 encoding injections",
@@ -1705,7 +1705,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-12 19:16:05 +0000"
     },
     "probes.encoding.InjectSneakyBits": {
       "description": "Probe for susceptibility to unicode variant selector ASCII smuggling",
@@ -1738,7 +1738,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-12 19:16:05 +0000"
     },
     "probes.encoding.InjectUU": {
       "description": "Probe for susceptibility to UU encoded injections",
@@ -1771,7 +1771,7 @@
         "payload:generic"
       ],
       "tier": 1,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-12 19:16:05 +0000"
     },
     "probes.encoding.InjectUnicodeTagChars": {
       "description": "Probe for susceptibility to unicode tag ASCII smuggling",
@@ -1805,7 +1805,7 @@
         "payload:generic"
       ],
       "tier": 1,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-12 19:16:05 +0000"
     },
     "probes.encoding.InjectUnicodeVariantSelectors": {
       "description": "Probe for susceptibility to unicode variant selector ASCII smuggling",
@@ -1838,7 +1838,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-12 19:16:05 +0000"
     },
     "probes.encoding.InjectZalgo": {
       "description": "Probe for susceptibility to Zalgo encoding.",
@@ -1871,7 +1871,7 @@
         "payload:generic"
       ],
       "tier": 2,
-      "mod_time": "2025-12-01 10:48:29 +0000"
+      "mod_time": "2025-12-12 19:16:05 +0000"
     },
     "probes.exploitation.JinjaTemplatePythonInjection": {
       "description": "Attempts to execute Python code via Jinja templating",
@@ -5137,7 +5137,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-10-27 20:22:44 +0000"
+      "mod_time": "2025-12-05 10:25:59 +0000"
     },
     "detectors.base.FileDetector": {
       "description": "Detector subclass for processing attempts whose outputs are filenames for checking",
@@ -5157,7 +5157,7 @@
       "recall": 0.0,
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2025-10-27 20:22:44 +0000"
+      "mod_time": "2025-12-05 10:25:59 +0000"
     },
     "detectors.base.HFDetector": {
       "description": "Detector using a Hugging Face model",
@@ -5184,7 +5184,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-10-27 20:22:44 +0000"
+      "mod_time": "2025-12-05 10:25:59 +0000"
     },
     "detectors.base.StringDetector": {
       "description": "Subclass of Detector using list of substrings as detection triggers",
@@ -5204,7 +5204,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-10-27 20:22:44 +0000"
+      "mod_time": "2025-12-05 10:25:59 +0000"
     },
     "detectors.base.TriggerListDetector": {
       "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
@@ -5223,7 +5223,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-10-27 20:22:44 +0000"
+      "mod_time": "2025-12-05 10:25:59 +0000"
     },
     "detectors.continuation.Continuation": {
       "description": "Detect if model intiates / continues a trigger word",
@@ -5511,7 +5511,7 @@
         "cwe:1426",
         "cwe:1427"
       ],
-      "mod_time": "2025-10-16 17:28:10 +0000"
+      "mod_time": "2025-11-10 10:50:22 +0000"
     },
     "detectors.exploitation.PythonCodeExecution": {
       "description": "Detect the presence of python that will execute commands on the system.",
@@ -5542,7 +5542,7 @@
         "cwe:1426",
         "cwe:1427"
       ],
-      "mod_time": "2025-10-16 17:28:10 +0000"
+      "mod_time": "2025-11-10 10:50:22 +0000"
     },
     "detectors.exploitation.SQLiEcho": {
       "description": "Detect if the system echoes the provided SQL injection.",
@@ -5552,7 +5552,7 @@
       "accuracy": null,
       "active": true,
       "doc_uri": "https://cwe.mitre.org/data/definitions/89.html",
-      "lang_spec": "en",
+      "lang_spec": "*",
       "modality": {
         "out": [
           "text"
@@ -5571,7 +5571,7 @@
         "cwe:1426",
         "cwe:1427"
       ],
-      "mod_time": "2025-10-16 17:28:10 +0000"
+      "mod_time": "2025-11-10 10:50:22 +0000"
     },
     "detectors.exploitation.SQLiSuccess": {
       "description": "Detect if the system returns a \"SUCCESS\" message.",
@@ -5582,7 +5582,7 @@
       "accuracy": null,
       "active": true,
       "doc_uri": "https://cwe.mitre.org/data/definitions/89.html",
-      "lang_spec": "en",
+      "lang_spec": "*",
       "modality": {
         "out": [
           "text"
@@ -5601,7 +5601,7 @@
         "cwe:1426",
         "cwe:1427"
       ],
-      "mod_time": "2025-10-16 17:28:10 +0000"
+      "mod_time": "2025-11-10 10:50:22 +0000"
     },
     "detectors.fileformats.FileIsExecutable": {
       "description": "Magic check if file is portable or linear executable (exe/dll/vxd/..)",
@@ -5743,7 +5743,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-12-01 11:07:45 +0000"
+      "mod_time": "2025-12-05 09:50:31 +0000"
     },
     "detectors.judge.Refusal": {
       "description": "Uses the configured model to detect if the responses is a refusal to answer",
@@ -5765,7 +5765,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-12-01 11:07:45 +0000"
+      "mod_time": "2025-12-05 09:50:31 +0000"
     },
     "detectors.judge.RefusalOnlyAdversarial": {
       "description": "Uses the configured model to detect if the responses is a refusal to answer",
@@ -5787,7 +5787,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-12-01 11:07:45 +0000"
+      "mod_time": "2025-12-05 09:50:31 +0000"
     },
     "detectors.knownbadsignatures.EICAR": {
       "description": "Is the EICAR test string present?",
@@ -7529,7 +7529,7 @@
         ]
       },
       "parallel_capable": true,
-      "supports_multiple_generations": true,
+      "supports_multiple_generations": false,
       "mod_time": "2025-12-01 13:54:09 +0000"
     },
     "generators.base.Generator": {
@@ -8398,8 +8398,8 @@
         ]
       },
       "parallel_capable": true,
-      "supports_multiple_generations": true,
-      "mod_time": "2025-11-18 15:34:11 +0000"
+      "supports_multiple_generations": false,
+      "mod_time": "2025-12-12 17:00:49 +0000"
     },
     "generators.openai.OpenAIGenerator": {
       "description": "Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable",
@@ -8434,7 +8434,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-11-18 15:34:11 +0000"
+      "mod_time": "2025-12-12 17:00:49 +0000"
     },
     "generators.openai.OpenAIReasoningGenerator": {
       "description": "Generator wrapper for OpenAI reasoning models, e.g. `o1` family.",
@@ -8474,7 +8474,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-11-18 15:34:11 +0000"
+      "mod_time": "2025-12-12 17:00:49 +0000"
     },
     "generators.rasa.RasaRestGenerator": {
       "description": "API interface for RASA models",
