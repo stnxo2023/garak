@@ -222,8 +222,10 @@ class OpenAICompatible(Generator):
         is_completion = generator == client.completions
 
         create_args = {}
-        if "n" not in self.suppressed_params:
+        if self.supports_multiple_generations:
             create_args["n"] = generations_this_call
+        elif "n" not in self.suppressed_params:
+            create_args["n"] = 1
         for arg in inspect.signature(generator.create).parameters:
             if arg == "model":
                 create_args[arg] = self.name
