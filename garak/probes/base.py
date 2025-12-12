@@ -206,7 +206,11 @@ class Probe(Configurable):
         return attempt
 
     def _mint_attempt(
-        self, prompt=None, seq=None, notes=None, lang="*"
+        self,
+        prompt: str | garak.attempt.Message | garak.attempt.Conversation | None = None,
+        seq=None,
+        notes=None,
+        lang="*",
     ) -> garak.attempt.Attempt:
         """function for creating a new attempt given a prompt"""
         turns = []
@@ -258,7 +262,6 @@ class Probe(Configurable):
             seq=seq,
             prompt=prompt,
             notes=notes,
-            lang=lang,
         )
 
         new_attempt = self._attempt_prestore_hook(new_attempt, seq)
@@ -379,7 +382,7 @@ class Probe(Configurable):
             colour=f"#{garak.resources.theme.LANGPROVIDER_RGB}",
             desc="Preparing prompts",
         )
-        if isinstance(prompts[0], str):
+        if isinstance(prompts[0], str):  # self.prompts can be strings
             localized_prompts = self.langprovider.get_text(
                 prompts, notify_callback=preparation_bar.update
             )
