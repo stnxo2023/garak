@@ -283,10 +283,10 @@ def gpt_mutate(mutation_generator, sentence: str) -> str:
                 Turn(role="system", content=Message(text=system_msg)),
                 Turn(role="user", content=Message(text=user_message)),
             ])
-            response = mutation_generator.generate(prompt=conv)
-            response_text = response[0].text if isinstance(response[0], Message) else str(response[0])
-            revised_sentence = response_text.replace("\n", "")
-            received = True
+            response = mutation_generator.generate(prompt=conv)[0]
+            if response and response.text:
+                revised_sentence = response.text.replace("\n", "")
+                received = True
         except Exception as e:
             logger.error(e)
             error = sys.exc_info()[0]

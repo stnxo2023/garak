@@ -269,7 +269,7 @@ def main(arguments=None) -> None:
     parser.add_argument(
         "--generate_autodan",
         action="store_true",
-        help="generate AutoDAN prompts; requires --prompt_options with JSON containing a prompt and target",
+        help='generate AutoDAN prompts; requires --probe_options with JSON containing a prompt and target, e.g. \'{"probe": {"prompt": "...", "target": "..."}}\'',
     )
 
     parser.add_argument(
@@ -611,7 +611,7 @@ def main(arguments=None) -> None:
                 from garak.resources.autodan import autodan_generate
 
                 try:
-                    probe_options = parse_cli_plugin_config("probe", args)
+                    probe_options = _config.plugins.probes.get("probe", None)
                     if probe_options is None:
                         raise ValueError("probe_options is None")
                     prompt = probe_options["prompt"]
@@ -619,9 +619,9 @@ def main(arguments=None) -> None:
                 except Exception as e:
                     print(
                         "AutoDAN generation requires --probe_options with a .json containing a `prompt` and `target` "
-                        "string"
+                        'string, e.g. \'{"probe": {"prompt": "...", "target": "..."}}\''
                     )
-                    raise SystemExit(1)
+                    raise
                 autodan_generate(generator=generator, prompt=prompt, target=target)
 
             command.start_run()  # start the run now that all config validation is complete

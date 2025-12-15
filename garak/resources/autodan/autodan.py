@@ -181,8 +181,9 @@ def autodan_generate(
             adv_prefix = best_new_adv_prefix
             conv = Conversation(turns=[Turn(role="user", content=Message(text=adv_prefix))])
             gen_output = generator.generate(prompt=conv)[0]
-            gen_str = gen_output.text if isinstance(gen_output, Message) else str(gen_output)
-            success = check_for_attack_success(gen_str, REJECTION_STRINGS)
+            success = False
+            if gen_output and gen_output.text:
+                success = check_for_attack_success(gen_output.text, REJECTION_STRINGS)
             if success:
                 logger.info(
                     f"Found a successful AutoDAN prompt!\n{adv_prefix}\nAppending to {out_path}."
