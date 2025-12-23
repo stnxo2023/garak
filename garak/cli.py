@@ -266,11 +266,6 @@ def main(arguments=None) -> None:
         action="store_true",
         help="Enter interactive probing mode",
     )
-    parser.add_argument(
-        "--generate_autodan",
-        action="store_true",
-        help='generate AutoDAN prompts; requires --probe_options with JSON containing a prompt and target, e.g. \'{"probe": {"prompt": "...", "target": "..."}}\'',
-    )
 
     parser.add_argument(
         "--fix",
@@ -606,23 +601,6 @@ def main(arguments=None) -> None:
                     f"This run can be sped up 🥳 Generator '{generator.fullname}' supports parallelism! Consider using `--parallel_attempts 16` (or more) to greatly accelerate your run. 🐌",
                     logging=logging,
                 )
-
-            if "generate_autodan" in args and args.generate_autodan:
-                from garak.resources.autodan import autodan_generate
-
-                try:
-                    probe_options = _config.plugins.probes.get("probe", None)
-                    if probe_options is None:
-                        raise ValueError("probe_options is None")
-                    prompt = probe_options["prompt"]
-                    target = probe_options["target"]
-                except Exception as e:
-                    print(
-                        "AutoDAN generation requires --probe_options with a .json containing a `prompt` and `target` "
-                        'string, e.g. \'{"probe": {"prompt": "...", "target": "..."}}\''
-                    )
-                    raise
-                autodan_generate(generator=generator, prompt=prompt, target=target)
 
             command.start_run()  # start the run now that all config validation is complete
             print(f"📜 reporting to {_config.transient.report_filename}")
