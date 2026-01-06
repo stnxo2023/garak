@@ -97,34 +97,15 @@ for p in _config.reporting_params:
 
 @pytest.fixture(autouse=True)
 def reload_config(request):
-    # Close any open files before reloading to prevent ResourceWarnings
-    if _config.transient.reportfile is not None:
-        try:
-            _config.transient.reportfile.close()
-        except Exception:
-            pass
-    if _config.transient.hitlogfile is not None:
-        try:
-            _config.transient.hitlogfile.close()
-        except Exception:
-            pass
-
-    importlib.reload(_config)
-
     def reload():
         if _config.transient.reportfile is not None:
-            try:
-                _config.transient.reportfile.close()
-            except Exception:
-                pass
-        if _config.transient.hitlogfile is not None:
-            try:
-                _config.transient.hitlogfile.close()
-            except Exception:
-                pass
+            _config.transient.reportfile.close()
+            if os.path.exists(_config.transient.report_filename):
+                os.remove(_config.transient.report_filename)
         importlib.reload(_config)
 
     request.addfinalizer(reload)
+    reload()
 
 
 @pytest.fixture
@@ -285,10 +266,6 @@ def test_cli_spec_settings(param):
 def test_cli_shortform():
     garak.cli.main(["-s", "444", "--list_config"])
     assert _config.run.seed == 444
-    if _config.transient.reportfile is not None:
-        _config.transient.reportfile.close()
-        if os.path.exists(_config.transient.report_filename):
-            os.remove(_config.transient.report_filename)
 
     garak.cli.main(
         ["-g", "444", "--list_config"]
