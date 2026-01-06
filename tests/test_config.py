@@ -97,11 +97,33 @@ for p in _config.reporting_params:
 
 @pytest.fixture(autouse=True)
 def reload_config(request):
+    # Close any open files before reloading to prevent ResourceWarnings
+    if _config.transient.reportfile is not None:
+        try:
+            _config.transient.reportfile.close()
+        except Exception:
+            pass
+    if _config.transient.hitlogfile is not None:
+        try:
+            _config.transient.hitlogfile.close()
+        except Exception:
+            pass
+
     importlib.reload(_config)
-    
+
     def reload():
+        if _config.transient.reportfile is not None:
+            try:
+                _config.transient.reportfile.close()
+            except Exception:
+                pass
+        if _config.transient.hitlogfile is not None:
+            try:
+                _config.transient.hitlogfile.close()
+            except Exception:
+                pass
         importlib.reload(_config)
-    
+
     request.addfinalizer(reload)
 
 
@@ -1003,7 +1025,7 @@ def test_extension_less_config_finds_json(temp_package_dir):
     assert _config.run.generations == 7
 
 
-def test_extension_less_requires_explicit_yaml(temp_package_dir):
+def test_extension_less_requires_explicit_yaml(temp_package_dir, capsys):
     yaml_config_content = """
 system: {}
 run:
@@ -1017,10 +1039,13 @@ reporting: {}
     test_yaml_path.write_text(yaml_config_content)
 
     # Extension-less should error when only YAML exists
-    with pytest.raises(
-        FileNotFoundError, match="YAML needs explicit .yaml/.yml extension"
-    ):
+    with pytest.raises(SystemExit) as exc_info:
         garak.cli.main(["--config", "test_yaml_only", "--list_config"])
+
+    # Verify exit code and error message
+    assert exc_info.value.code == 1
+    captured = capsys.readouterr()
+    assert "YAML needs explicit .yaml/.yml extension" in captured.out
 
 
 def test_extension_less_bundled_json_works(temp_package_dir):
