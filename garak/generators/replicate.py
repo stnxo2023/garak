@@ -51,7 +51,6 @@ class ReplicateGenerator(Generator):
         self.client = self.replicate
 
     def _load_client(self):
-        self._load_deps()
         self.client = self.replicate
 
     @backoff.on_exception(backoff.fibo, GeneratorBackoffTrigger, max_value=70)

@@ -70,7 +70,6 @@ class Pipeline(Generator, HFCompatible):
         self._load_client()
 
     def _load_client(self):
-        self._load_deps()
         if hasattr(self, "generator") and self.generator is not None:
             return
 
@@ -354,7 +353,6 @@ class Model(Pipeline, HFCompatible):
     supports_multiple_generations = True
 
     def _load_client(self):
-        self._load_deps()
         if hasattr(self, "model") and self.model is not None:
             return
 

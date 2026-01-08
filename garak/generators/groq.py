@@ -40,7 +40,6 @@ class GroqChat(OpenAICompatible):
     generator_family_name = "Groq"
 
     def _load_client(self):
-        self._load_deps()
         self.client = openai.OpenAI(base_url=self.uri, api_key=self.api_key)
         if self.name in ("", None):
             raise ValueError(

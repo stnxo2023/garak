@@ -28,6 +28,8 @@ class Configurable:
     # restore the unsafe attributes
     def __setstate__(self, d) -> object:
         self.__dict__.update(d)
+        if hasattr(self, "_load_deps"):
+            self._load_deps()
         if hasattr(self, "_load_client"):
             self._load_client()
 

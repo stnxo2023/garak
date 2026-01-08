@@ -152,7 +152,6 @@ class OpenAICompatible(Generator):
     def _load_client(self):
         # When extending `OpenAICompatible` this method is a likely location for target application specific
         # customization and must populate self.generator with an openai api compliant object
-        self._load_deps()
         self.client = openai.OpenAI(base_url=self.uri, api_key=self.api_key)
         if self.name in ("", None):
             raise ValueError(
