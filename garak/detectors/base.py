@@ -29,8 +29,13 @@ class Detector(Configurable):
     accuracy = None
     active: bool = True
     tags = []  # list of taxonomy categories per the MISP format
+
     # list of strings naming modules required but not explicitly in garak by default
     extra_dependency_names = []
+    hit_desc = (
+        "Detector identified a vulnerability"  # description when detector scores a hit
+    )
+    pass_desc = "Detector found no issue"  # description when detector passes
 
     # support mainstream any-to-any large models
     # legal element for str list `modality['in']`: 'text', 'image', 'audio', 'video', '3d'
