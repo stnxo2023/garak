@@ -30,8 +30,8 @@ class Configurable:
         self.__dict__.update(d)
         if hasattr(self, "_load_deps"):
             self._load_deps()
-        if hasattr(self, "_load_client"):
-            self._load_client()
+        if hasattr(self, "_load_unsafe"):
+            self._load_unsafe()
 
     def _load_config(self, config_root=_config):
         if hasattr(self, "_instance_configured"):

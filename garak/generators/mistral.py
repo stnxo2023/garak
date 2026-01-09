@@ -27,12 +27,12 @@ class MistralGenerator(Generator):
 
     _unsafe_attributes = ["client"]
 
-    def _load_client(self):
+    def _load_unsafe(self):
         self.client = self.mistralai.Mistral(api_key=self.api_key)
 
     def __init__(self, name="", config_root=_config):
         super().__init__(name, config_root)
-        self._load_client()
+        self._load_unsafe()
 
     @backoff.on_exception(backoff.fibo, GeneratorBackoffTrigger, max_value=70)
     def _call_model(

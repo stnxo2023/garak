@@ -105,7 +105,7 @@ class BedrockGenerator(Generator):
 
         super().__init__(self.name, config_root=config_root)
         self._validate_env_var()
-        self._load_client()
+        self._load_unsafe()
 
     def _validate_env_var(self):
         """Validate and set region from environment variables if not configured.
@@ -121,7 +121,7 @@ class BedrockGenerator(Generator):
 
         return super()._validate_env_var()
 
-    def _load_client(self):
+    def _load_unsafe(self):
         """Load and configure the boto3 bedrock-runtime client.
 
         Uses boto3's standard credential chain for authentication.
@@ -171,7 +171,7 @@ class BedrockGenerator(Generator):
             List of Message objects containing the generated text, or [None] on error
         """
         if self.client is None:
-            self._load_client()
+            self._load_unsafe()
 
         messages = self._conversation_to_list(prompt)
 

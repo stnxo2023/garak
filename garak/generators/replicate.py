@@ -50,7 +50,7 @@ class ReplicateGenerator(Generator):
             os.environ[self.ENV_VAR] = self.api_key
         self.client = self.replicate
 
-    def _load_client(self):
+    def _load_unsafe(self):
         self.client = self.replicate
 
     @backoff.on_exception(backoff.fibo, GeneratorBackoffTrigger, max_value=70)
@@ -58,7 +58,7 @@ class ReplicateGenerator(Generator):
         self, prompt: Conversation, generations_this_call: int = 1
     ) -> List[Union[Message, None]]:
         if self.client is None:
-            self._load_client()
+            self._load_unsafe()
         try:
             response_iterator = self.client.run(
                 self.name,
@@ -93,7 +93,7 @@ class InferenceEndpoint(ReplicateGenerator):
         self, prompt: Conversation, generations_this_call: int = 1
     ) -> List[Union[Message, None]]:
         if self.client is None:
-            self._load_client()
+            self._load_unsafe()
         deployment = self.client.deployments.get(self.name)
         try:
             prediction = deployment.predictions.create(

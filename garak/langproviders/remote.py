@@ -49,7 +49,7 @@ class RivaTranslator(LangProvider):
 
     _unsafe_attributes = ["client"]
 
-    def _load_client(self):
+    def _load_unsafe(self):
         self._load_langprovider()
 
     def _load_langprovider(self):
@@ -145,7 +145,7 @@ class DeeplTranslator(LangProvider):
             )  # exception handling is intentionally not implemented to raise on invalid config for remote services.
             self._tested = True
 
-    def _load_client(self):
+    def _load_unsafe(self):
         self._load_langprovider()
 
     def _translate(self, text: str) -> str:
@@ -228,7 +228,7 @@ class GoogleTranslator(LangProvider):
             )  # exception handling is intentionally not implemented to raise on invalid config for remote services.
             self._tested = True
 
-    def _load_client(self):
+    def _load_unsafe(self):
         self._load_langprovider()
 
     def _translate(self, text: str) -> str:
