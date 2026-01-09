@@ -159,11 +159,6 @@ class OpenAICompatible(Generator):
             )
         self.generator = self.client.chat.completions
 
-    def _clear_client(self):
-        self.generator = None
-        self.client = None
-        self._clear_deps()
-
     def _validate_config(self):
         pass
 
@@ -186,9 +181,6 @@ class OpenAICompatible(Generator):
         self._validate_config()
 
         super().__init__(self.name, config_root=config_root)
-
-        # clear client config to enable object to `pickle`
-        self._clear_client()
 
     # noinspection PyArgumentList
     @backoff.on_exception(

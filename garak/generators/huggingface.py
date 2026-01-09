@@ -104,11 +104,6 @@ class Pipeline(Generator, HFCompatible):
 
         self._set_hf_context_len(self.generator.model.config)
 
-    def _clear_client(self):
-        self._clear_deps()
-        self.generator = None
-        self.tokenizer = None
-
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
     ) -> List[Union[Message, None]]:
@@ -398,13 +393,6 @@ class Model(Pipeline, HFCompatible):
         )
         self.generation_config.eos_token_id = self.model.config.eos_token_id
         self.generation_config.pad_token_id = self.model.config.eos_token_id
-
-    def _clear_client(self):
-        self._clear_deps()
-        self.model = None
-        self.config = None
-        self.tokenizer = None
-        self.generation_config = None
 
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
