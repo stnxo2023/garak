@@ -44,8 +44,6 @@ class Detector(Configurable):
 
     _run_params = {"seed"}
 
-    _load_deps = _plugins._load_deps
-
     def _set_description(self):
         if "description" not in dir(self):
             try:

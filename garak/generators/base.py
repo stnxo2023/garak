@@ -46,8 +46,6 @@ class Generator(Configurable):
     supports_multiple_generations = (
         False  # can more than one generation be extracted per request?
     )
-    # list of strings naming modules required but not explicitly in garak by default
-    extra_dependency_names = []
 
     def __init__(self, name="", config_root=_config):
         self._load_config(config_root)
@@ -72,8 +70,6 @@ class Generator(Configurable):
         )
         logging.info("generator init: %s", self)
         self._load_deps()
-
-    _load_deps = _plugins._load_deps
 
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
