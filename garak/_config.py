@@ -157,9 +157,12 @@ def _combine_into(d: dict, combined: dict) -> dict:
 
 def _load_yaml_config(settings_filenames) -> dict:
     global config_files
-    config_files += settings_filenames
     config = nested_dict()
     for settings_filename in settings_filenames:
+        if settings_filename in config_files:
+            logging.debug("Skipping already-loaded config: %s", settings_filename)
+            continue
+        config_files.append(settings_filename)
         with open(settings_filename, encoding="utf-8") as settings_file:
             settings = yaml.safe_load(settings_file)
             if settings is not None:
@@ -289,8 +292,6 @@ def load_config(
     # would be good to bubble up things from run_config, e.g. generator, probe(s), detector(s)
     # and then not have cli be upset when these are not given as cli params
     global loaded
-    global config_files
-    config_files = []  # reset to avoid duplicates when load_base_config() was called first
 
     settings_files = [str(transient.package_dir / "resources" / "garak.core.yaml")]
 
