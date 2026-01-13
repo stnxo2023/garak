@@ -76,8 +76,8 @@ const DetectorLollipopChart = ({
     if (match) onProbeClick(match);
   };
 
-  // Empty state
-  if (visible.length === 0) {
+  // Empty state - show when no entries or all entries are N/A
+  if (visible.length === 0 || visible.every(d => d.zscore === null)) {
     return (
       <Flex paddingTop="density-2xl">
         <StatusMessage
