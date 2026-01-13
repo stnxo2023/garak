@@ -42,7 +42,7 @@ function toChartDetector(entry: GroupedDetectorEntry): ChartDetector {
   return {
     label: entry.label,
     probeName: entry.probeName,
-    zscore: entry.zscore ?? 0,
+    zscore: entry.zscore,
     detector_score: entry.detector_score,
     comment: entry.comment,
     color: entry.color,

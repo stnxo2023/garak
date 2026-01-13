@@ -29,10 +29,25 @@ describe("useTooltipFormatter", () => {
     });
 
     expect(output).toContain("Score: —");
-    expect(output).toContain("Z-score:");
+    expect(output).toContain("Z-score: N/A");
     expect(output).toContain(
       'Comment: <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: #666; margin-right: 6px; vertical-align: middle;"></span>Unavailable'
     );
+  });
+
+  it("displays N/A for null zscore", () => {
+    const format = useTooltipFormatter();
+    const output = format({
+      detectorType: "Test Detector",
+      data: {
+        detector_score: 50.0,
+        zscore: null,
+        comment: "Unavailable",
+        itemStyle: { color: "#999" },
+      },
+    });
+
+    expect(output).toContain("Z-score: N/A");
   });
 
   it("includes DEFCON information when detector_defcon is available", () => {
