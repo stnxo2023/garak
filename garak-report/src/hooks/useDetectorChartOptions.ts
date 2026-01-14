@@ -162,9 +162,6 @@ export function useDetectorChartOptions(
       },
       xAxis: {
         type: "value",
-        name: "Z-Score",
-        nameLocation: "middle",
-        nameGap: 30,
         min: CHART_DIMENSIONS.zscore.min,
         max: CHART_DIMENSIONS.zscore.max,
         nameTextStyle: { color: textColor },

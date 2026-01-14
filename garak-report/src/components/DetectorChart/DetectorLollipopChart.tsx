@@ -8,8 +8,10 @@
  * @license Apache-2.0
  */
 
+import { useRef, useState, useCallback } from "react";
 import ReactECharts from "echarts-for-react";
-import { Divider, Flex, Stack, StatusMessage, Text } from "@kui/react";
+import { Button, Divider, Flex, Stack, StatusMessage, Text, Tooltip } from "@kui/react";
+import { Info } from "lucide-react";
 import type { Probe } from "../../types/ProbesChart";
 import type { GroupedDetectorEntry } from "../../hooks/useGroupedDetectors";
 import type { EChartsTooltipParams } from "../../types/echarts.d";
@@ -49,6 +51,9 @@ const DetectorLollipopChart = ({
   onProbeClick,
   isDark,
 }: DetectorLollipopChartProps) => {
+  const chartRef = useRef<ReactECharts>(null);
+  const [zeroXPosition, setZeroXPosition] = useState<number | null>(null);
+
   const { option, visible, chartHeight } = useDetectorChartOptions(
     probe,
     detectorType,
@@ -56,6 +61,21 @@ const DetectorLollipopChart = ({
     hideUnavailable,
     isDark
   );
+
+  /** Calculate the pixel X position of 0 on the chart after render */
+  const handleChartReady = useCallback(() => {
+    if (chartRef.current) {
+      const chart = chartRef.current.getEchartsInstance();
+      try {
+        const pos = chart.convertToPixel("grid", [0, 0]);
+        if (pos && pos[0]) {
+          setZeroXPosition(pos[0]);
+        }
+      } catch {
+        // Chart not ready yet, ignore
+      }
+    }
+  }, []);
 
   /**
    * Handles click events on chart elements or axis labels.
@@ -128,10 +148,54 @@ const DetectorLollipopChart = ({
 
       {/* Chart */}
       <ReactECharts
+        ref={chartRef}
         option={option}
         style={{ height: chartHeight }}
         onEvents={{ click: handleClick }}
+        onChartReady={handleChartReady}
       />
+
+      {/* Z-Score axis label with info tooltip - positioned at x=0 on chart */}
+      <Flex
+        align="center"
+        gap="density-xxs"
+        style={{
+          position: "relative",
+          left: zeroXPosition != null ? `${zeroXPosition}px` : "50%",
+          transform: "translateX(-50%)",
+          width: "fit-content",
+          marginTop: "-4px",
+        }}
+      >
+        <Text kind="label/regular/sm">Z-Score</Text>
+        <Tooltip
+          slotContent={
+            <Stack gap="density-xxs">
+              <Text kind="body/bold/sm">Understanding Z-Scores</Text>
+              <Text kind="body/regular/sm">
+                Positive Z-scores mean better than average, negative Z-scores mean worse than average.
+              </Text>
+              <Text kind="body/regular/sm">
+                "Average" is determined over a bag of models of varying sizes, updated periodically.
+              </Text>
+              <Text kind="body/regular/sm">
+                For any probe, roughly two-thirds of models get a Z-score between -1.0 and +1.0.
+              </Text>
+              <Text kind="body/regular/sm">
+                The middle 10% of models score -0.125 to +0.125. This is labeled "competitive".
+              </Text>
+              <Text kind="body/regular/sm">
+                A Z-score of +1.0 means the score was one standard deviation better than the mean
+                score other models achieved for this probe & metric.
+              </Text>
+            </Stack>
+          }
+        >
+          <Button kind="tertiary" size="small">
+            <Info size={14} />
+          </Button>
+        </Tooltip>
+      </Flex>
     </>
   );
 };
