@@ -11,7 +11,7 @@ from typing import List, Union
 from colorama import Fore, Style
 import tqdm
 
-from garak import _config, _plugins
+from garak import _config
 from garak.attempt import Message, Conversation
 from garak.configurable import Configurable
 from garak.exception import GarakException

@@ -10,7 +10,7 @@ from typing import List, Iterable, Union
 
 from colorama import Fore, Style
 
-from garak import _config, _plugins
+from garak import _config
 from garak.configurable import Configurable
 import garak.attempt
 
