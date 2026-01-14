@@ -77,7 +77,7 @@ describe("useSeverityColor", () => {
 
     expect(result.current.getDefconBadgeColor(1)).toBe("red");
     expect(result.current.getDefconBadgeColor(2)).toBe("yellow");
-    expect(result.current.getDefconBadgeColor(3)).toBe("green"); // user kept it as green
+    expect(result.current.getDefconBadgeColor(3)).toBe("blue"); // distinct from DC-4
     expect(result.current.getDefconBadgeColor(4)).toBe("green");
     expect(result.current.getDefconBadgeColor(5)).toBe("teal");
     expect(result.current.getDefconBadgeColor(0)).toBe("gray");

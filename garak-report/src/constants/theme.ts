@@ -48,7 +48,7 @@ export const CSS_COLOR_VARS = {
 export const DEFCON_BADGE_COLORS = {
   1: "red",
   2: "yellow",
-  3: "green", // Changed from 'green' to make more distinct from DC-4
+  3: "blue", // Distinct from DC-4 (green)
   4: "green",
   5: "teal",
   default: "gray",
