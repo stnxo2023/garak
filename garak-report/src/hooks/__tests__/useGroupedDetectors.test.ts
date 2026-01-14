@@ -116,6 +116,30 @@ describe("useGroupedDetectors", () => {
     expect(grouped["det-A"]).toHaveLength(2);
   });
 
+  it("includes detector sections from all probes even if selected probe lacks them", () => {
+    // probeC has det-B which probeA doesn't have
+    const probeC: Probe = {
+      probe_name: "module.category3",
+      summary: { probe_name: "module.category3", probe_score: 0.5, probe_severity: 2, probe_descr: "", probe_tier: 1 },
+      detectors: [
+        { detector_name: "det-B", detector_descr: "other", absolute_score: 0.8, zscore: 0.5, zscore_comment: "low", detector_defcon: 3, calibration_used: true },
+      ],
+    };
+
+    // Select probeA (which only has det-A), but allProbes includes probeC (which has det-B)
+    const { result } = renderHook(() => useGroupedDetectors(probeA, [probeA, probeC]));
+
+    // Both detector sections should exist
+    expect(Object.keys(result.current)).toContain("det-A");
+    expect(Object.keys(result.current)).toContain("det-B");
+
+    // probeA should show as N/A in det-B since it doesn't have that detector
+    const detBEntries = result.current["det-B"];
+    const probeAEntry = detBEntries.find(e => e.probeName === probeA.probe_name);
+    expect(probeAEntry?.unavailable).toBe(true);
+    expect(probeAEntry?.zscore).toBeNull();
+  });
+
   it("sets correct label and zscore values", () => {
     const { result } = renderHook(() => useGroupedDetectors(probeA, [probeA, probeB]));
 

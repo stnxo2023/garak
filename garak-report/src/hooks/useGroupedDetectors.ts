@@ -40,8 +40,16 @@ export const useGroupedDetectors = (probe: Probe, allProbes: Probe[]): GroupedDe
   return useMemo(() => {
     const map: GroupedDetectors = {};
 
-    for (const selected of probe.detectors) {
-      const detectorType = selected.detector_name;
+    // Collect all unique detector types from ALL probes (not just selected)
+    // This ensures detector sections remain stable when switching probes
+    const allDetectorTypes = new Set<string>();
+    for (const p of allProbes) {
+      for (const d of p.detectors) {
+        allDetectorTypes.add(d.detector_name);
+      }
+    }
+
+    for (const detectorType of allDetectorTypes) {
       const matchingEntries: GroupedDetectorEntry[] = [];
 
       for (const p of allProbes) {
