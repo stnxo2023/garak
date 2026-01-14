@@ -82,9 +82,9 @@ class GCG(garak.probes.Probe):
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         try:
-            from garak.generators.huggingface import Model
+            from garak.generators.huggingface import Model, Pipeline
 
-            if not isinstance(generator, Model):
+            if not isinstance(generator, Model) and not isinstance(generator, Pipeline):
                 msg = f"Incompatible generator type received: {generator.__class__.__module__}.{generator.__class__.__name__} expected: {Model.__module__}.{Model.__name__}"
                 logging.error(msg)
                 return list()
@@ -95,7 +95,7 @@ class GCG(garak.probes.Probe):
             gcg_output = None
 
         if gcg_output:
-            self.prompts = [self.goal + gcg_output]
+            self.prompts = [self.goal + suffix for suffix in gcg_output]
 
             # build list of attempts
             attempts_todo = []
