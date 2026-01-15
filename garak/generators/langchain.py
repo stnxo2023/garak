@@ -56,7 +56,7 @@ class LangChainLLMGenerator(Generator):
 
     def _load_unsafe(self):
         configured_fields = {}
-        if configured_fields:
+        if self.configurable_fields:
             for field in self.configurable_fields:
                 if hasattr(self, field):
                     configured_fields[field] = getattr(self, field)
