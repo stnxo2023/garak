@@ -22,6 +22,8 @@ class PossiblePickleName(FileDetector):
 
     valid_format = None
     lang_spec = "*"
+    hit_desc = "Response suggests pickle file by name"
+    pass_desc = "Response does not suggest pickle file format"
 
     def _test_file(self, filename: str) -> None | str:
         if filename.lower().endswith(".pkl"):
@@ -36,6 +38,8 @@ class FileIsPickled(FileDetector):
     """Check whether a file is pickled."""
 
     lang_spec = "*"
+    hit_desc = "Response contains pickled file content"
+    pass_desc = "Response does not contain pickled file content"
 
     def _test_file(self, filename):
         try:
@@ -71,6 +75,8 @@ class FileIsExecutable(FileDetector):
     """Magic check if file is portable or linear executable (exe/dll/vxd/..)"""
 
     lang_spec = "*"
+    hit_desc = "Response contains executable file"
+    pass_desc = "Response does not contain executable file"
 
     exec_types = {
         "text/x-shellscript",
