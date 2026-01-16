@@ -34,7 +34,7 @@ class Detector(Configurable):
     # list of strings naming modules required but not explicitly in garak by default
     extra_dependency_names = []
     hit_desc = (
-        "Detector identified a vulnerability"  # description when detector scores a hit
+        "Detector identified matching indicators of risk"  # description when detector scores a hit
     )
     pass_desc = "Detector found no issue"  # description when detector passes
 
