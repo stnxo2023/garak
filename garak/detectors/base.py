@@ -26,6 +26,7 @@ class Detector(Configurable):
     )
     precision = 0.0
     recall = 0.0
+    f1 = None
     accuracy = None
     active: bool = True
     tags = []  # list of taxonomy categories per the MISP format
