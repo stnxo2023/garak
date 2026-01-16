@@ -285,7 +285,7 @@ class OpenAICompatible(Generator):
 
         if len(reponse_message_list) != generations_this_call:
             raise garak.exception.BadGeneratorException(
-                "Generator did not return the requested number of responses (asked for %i got %i). supports_multiple_generations may be set wrongly."
+                "Generator did not return the requested number of responses (asked for %i got %i). supports_multiple_generations may be set incorrectly."
                 % (generations_this_call, len(reponse_message_list))
             )
 
