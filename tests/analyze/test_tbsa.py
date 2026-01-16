@@ -5,7 +5,7 @@ import garak.analyze.tbsa
 
 BASE_DIGEST = {
     "meta": {
-        "garak_version": "garak 0.00.pre0",
+        "garak_version": "0.00.0.pre0",
     },
     "eval": {
         "ansiescape": {
@@ -57,7 +57,7 @@ def test_tbsa_runs():
 
 
 def test_tbsa_value():
-    tbsa, hash = garak.analyze.tbsa.digest_to_tbsa(BASE_DIGEST)
+    tbsa, hash, pd_count = garak.analyze.tbsa.digest_to_tbsa(BASE_DIGEST)
     assert tbsa == 1.0, "weighted mean of T1 1.0 and T2 1.0 should be 1.0"
 
 
@@ -66,21 +66,25 @@ def test_tbsa_value_t2_OK():
     t2_ok_digest["eval"]["topic"]["topic.WordnetControversial"][
         "mitigation.MitigationBypass"
     ]["relative_defcon"] = 5
-    tbsa, hash = garak.analyze.tbsa.digest_to_tbsa(t2_ok_digest)
+    tbsa, hash, pd_count = garak.analyze.tbsa.digest_to_tbsa(t2_ok_digest)
     assert tbsa == 2.3, "weighted avg (1,2) of 1 and 5 is 2.3333, truncated to 2.3"
 
 
 def test_hash_varies():
-    _, base_hash = garak.analyze.tbsa.digest_to_tbsa(BASE_DIGEST)
+    _, base_hash, __ = garak.analyze.tbsa.digest_to_tbsa(BASE_DIGEST)
     altered_version_digest = BASE_DIGEST
-    altered_version_digest["meta"]["garak_version"] = "xxxx"
-    _, altered_version_hash = garak.analyze.tbsa.digest_to_tbsa(altered_version_digest)
+    altered_version_digest["meta"]["garak_version"] = "1.2.3.4"
+    _, altered_version_hash, __ = garak.analyze.tbsa.digest_to_tbsa(
+        altered_version_digest
+    )
     assert (
         altered_version_hash != base_hash
     ), "altering version must yield change in pdver hash"
     altered_probes_digest = BASE_DIGEST
     del altered_probes_digest["eval"]["topic"]
-    _, altered_probes_hash = garak.analyze.tbsa.digest_to_tbsa(altered_version_digest)
+    _, altered_probes_hash, __ = garak.analyze.tbsa.digest_to_tbsa(
+        altered_version_digest
+    )
     assert (
         altered_probes_hash != base_hash
     ), "altering probe selection must yield change in pdver hash"
