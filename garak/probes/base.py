@@ -304,7 +304,7 @@ class Probe(Configurable):
         )
         if len(this_attempt.outputs) != self.generations:
             raise garak.exception.BadGeneratorException(
-                "Generator did not return the requested number of responses (asked for %i got %i). supports_multiple_generations may be set wrongly."
+                "Generator did not return the requested number of responses (asked for %i got %i). supports_multiple_generations may be set incorrectly."
                 % (self.generations, len(this_attempt.outputs))
             )
         if self.post_buff_hook:
