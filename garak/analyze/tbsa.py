@@ -250,6 +250,12 @@ def main(argv=None) -> None:
         action="store_true",
         help="Hide the hash of probe/detector pairs & version",
     )
+    parser.add_argument(
+        "-j",
+        "--json_output",
+        required=False,
+        help="Path to write JSON result object to",
+    )
     args = parser.parse_args(argv)
     report_path = args.report_path
     if not report_path:
@@ -279,6 +285,17 @@ def main(argv=None) -> None:
     print(f"🔑 Version/probe hash: {pdver_hash}")
     code = garak.resources.theme.EMOJI_SCALE_COLOUR_SQUARE[int(tbsa) - 1]
     print(f"{code} TBSA: {tbsa}")
+
+    if args.json_output:
+        with open(args.json_output, "w", encoding="utf-8") as json_outfile:
+            results = {
+                "tbsa": tbsa,
+                "version_probe_hash": pdver_hash,
+                "probe_detector_pairs_contributing": pd_count,
+                "infile": args.report_path,
+                "run_id": digest["meta"]["run_uuid"],
+            }
+            json_outfile.write(json.dumps(results))
 
 
 if __name__ == "__main__":
