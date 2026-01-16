@@ -19,6 +19,7 @@ import zlib
 import garak.analyze
 import garak.analyze.calibration
 from garak.probes import Tier
+import garak.resources.theme
 
 PROBE_DETECTOR_SEP = "+"
 
@@ -55,6 +56,13 @@ def digest_to_tbsa(digest: dict, verbose=False) -> Tuple[float, str]:
     # tiers = build_tiers()
 
     ver = digest["meta"]["garak_version"]
+
+    major, minor, patch = ver.split(".")[:3]
+    if int(major) == 0 and int(minor) < 14:
+        print(
+            f"😬 TBSA supported for garak 0.14.0 and up, report is from garak {ver}, this might break"
+        )
+
     e = digest["eval"]
     tiers = {}
     for tier in Tier:
@@ -62,6 +70,7 @@ def digest_to_tbsa(digest: dict, verbose=False) -> Tuple[float, str]:
     # load in the scores
 
     c = garak.analyze.calibration.Calibration()
+    print(f"📐 Calibration was {c.calibration_filename} from {c.metadata['date']}")
     probe_detector_scores = {}
     probe_detector_defcons = {}
 
@@ -125,6 +134,8 @@ def digest_to_tbsa(digest: dict, verbose=False) -> Tuple[float, str]:
 
         if pd_defcon is not None:
             pd_aggregate_defcons[probe_detector] = pd_defcon
+        else:
+            print(f"❔ No defcon for {probe_detector}, might not be in calibration")
 
     if verbose:
         print("probe/detector scores:")
@@ -152,6 +163,8 @@ def digest_to_tbsa(digest: dict, verbose=False) -> Tuple[float, str]:
         if pd.split(PROBE_DETECTOR_SEP)[0] in tiers[2]
     ]
 
+    pd_count = len(pd_aggregate_defcons.items())
+
     if verbose:
         print("Tier 1 DEFCONS:", sorted(t1_dc))
         print("Tier 2 DEFCONS:", sorted(t2_dc))
@@ -172,11 +185,11 @@ def digest_to_tbsa(digest: dict, verbose=False) -> Tuple[float, str]:
             )
         if verbose:
             print("(results in tier 2 only)")
-        return statistics.harmonic_mean(t2_dc), pdver_hash_hex
+        return statistics.harmonic_mean(t2_dc), pdver_hash_hex, pd_count
     elif t2_dc == []:
         if verbose:
             print("(results in tier 1 only)")
-        return statistics.harmonic_mean(t1_dc), pdver_hash_hex
+        return statistics.harmonic_mean(t1_dc), pdver_hash_hex, pd_count
 
     try:
         # first_quartiles = [statistics.quantiles(t1_dc)[0], statistics.quantiles(t1_dc)[1]]
@@ -201,7 +214,7 @@ def digest_to_tbsa(digest: dict, verbose=False) -> Tuple[float, str]:
     # if verbose:
     #    print(f"TBSA: {tbsa}")
 
-    return tbsa, pdver_hash_hex
+    return tbsa, pdver_hash_hex, pd_count
 
 
 def main(argv=None) -> None:
@@ -212,6 +225,7 @@ def main(argv=None) -> None:
     print(
         f"garak {garak.__description__} v{garak._config.version} ( https://github.com/NVIDIA/garak )"
     )
+    print("─" * 50)
 
     parser = argparse.ArgumentParser(
         prog="python -m garak.analyze.tbsa",
@@ -241,6 +255,8 @@ def main(argv=None) -> None:
     if not report_path:
         parser.error("a report path is required (-r/--report_path)")
 
+    print(f"📜 Report file: {args.report_path}")
+
     digest = None
     if args.verbose:
         print(f"Processing {report_path}")
@@ -253,12 +269,16 @@ def main(argv=None) -> None:
                 break
 
     if digest is None:
-        raise ValueError("Input file missing required entry_type:digest entry")
+        raise ValueError(
+            "😬 Input file missing required entry_type:digest entry, may be from unsupported garak v0.11.0 or earlier "
+        )
 
-    tbsa, pdver_hash = digest_to_tbsa(digest, verbose=args.verbose)
-    print(f"File: {args.report_path}")
-    print(f"Version/probe hash: {pdver_hash}")
-    print(f"TBSA: {tbsa}")
+    tbsa, pdver_hash, pd_count = digest_to_tbsa(digest, verbose=args.verbose)
+    print("─" * 50)
+    print(f"📝 Probe/detector pairs contributing: {pd_count}")
+    print(f"🔑 Version/probe hash: {pdver_hash}")
+    code = garak.resources.theme.EMOJI_SCALE_COLOUR_SQUARE[int(tbsa) - 1]
+    print(f"{code} TBSA: {tbsa}")
 
 
 if __name__ == "__main__":
