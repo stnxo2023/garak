@@ -317,9 +317,9 @@ class OpenAIGenerator(OpenAICompatible):
         ):  # handle model names -MMDDish suffix
             self.generator = self.client.completions
         else:
-            print(
-                f"❔ No {self.generator_family_name} API defined for '{self.name}' in generators/openai.py - please add one! Assuming chat model"
-            )
+            msg = f"❔ No {self.generator_family_name} API defined for '{self.name}' in generators/openai.py - please add one! Assuming chat model"
+            print(msg)
+            logging.info(msg)
             self.generator = self.client.chat.completions
 
         if self.__class__.__name__ == "OpenAIGenerator" and self.name.startswith("o"):
