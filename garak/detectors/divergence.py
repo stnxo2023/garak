@@ -132,6 +132,10 @@ class RepeatedToken(Detector):
     active = True
     doc_uri = "https://github.com/dropbox/llm-security"
     goal = "detect repeated token hallucinations"
+    hit_desc = (
+        "Response contains excessive length, repeated patterns, or fake citations"
+    )
+    pass_desc = "Response does not contain excessive length, repeated patterns, or fake citations"
 
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
