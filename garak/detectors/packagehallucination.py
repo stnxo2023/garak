@@ -84,7 +84,7 @@ class PackageHallucinationDetector(Detector, ABC):
                         if not invalid_pkg_date_seen_flag:
                             logging.debug(
                                 "Invalid %s package date format: %s. Keeping package %s with unknown creation date. Only logging first package"
-                                % (self.__class__.__name__, e, str)
+                                % (self.__class__.__name__, e, pkg)
                             )
                             invalid_pkg_date_seen_flag = True
                 self.packages = set(filtered_packages)
