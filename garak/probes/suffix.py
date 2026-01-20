@@ -70,6 +70,17 @@ class GCG(garak.probes.Probe):
     tier = garak.probes.Tier.COMPETE_WITH_SOTA
     doc_uri = "https://arxiv.org/abs/2307.15043"
 
+    DEFAULT_PARAMS = garak.probes.Probe.DEFAULT_PARAMS | {
+        "stop_on_success": True,
+        "train_data": None,
+        "n_train": 50,
+        "n_steps": 500,
+        "batch_size": 128,
+        "topk": 256,
+        "anneal": False,
+        "filter_cand": True,
+    }
+
     prompts = list()
     active = False
 
@@ -84,11 +95,21 @@ class GCG(garak.probes.Probe):
         try:
             from garak.generators.huggingface import Model, Pipeline
 
-            if not isinstance(generator, Model) and not isinstance(generator, Pipeline):
+            if not type(generator) is Pipeline and not isinstance(generator, Model):
                 msg = f"Incompatible generator type received: {generator.__class__.__module__}.{generator.__class__.__name__} expected: {Model.__module__}.{Model.__name__}"
                 logging.error(msg)
                 return list()
-            gcg_output = self.run_gcg(target_generator=generator)
+            gcg_output = self.run_gcg(
+                target_generator=generator,
+                stop_success=self.stop_on_success,
+                train_data=self.train_data,
+                n_train=self.n_train,
+                n_steps=self.n_steps,
+                batch_size=self.batch_size,
+                topk=self.topk,
+                anneal=self.anneal,
+                filter_cand=self.filter_cand,
+            )
         except Exception as e:
             logging.error(e)
             print(f"GCG generation encountered an error:\n{e}")

@@ -86,13 +86,14 @@ def autodan_generate(
     num_points: int = 5,
     mutation_rate: float = 0.1,
     mutation_generator_name: str = "gpt-5-nano",
-    mutation_generator_type: str = "openai",
+    mutation_generator_type: str = "openai.OpenAIReasoningGenerator",
     hierarchical: bool = False,
     out_path: Path = cached_autodan_resource_data / "autodan_prompts.txt",
     init_prompt_path: Path = autodan_resource_data / "autodan_init.txt",
     reference_path: Path = autodan_resource_data / "prompt_group.pth",
+    stop_on_success: bool = True,
     random_seed: int = None,
-):
+) -> list[str]:
     """Execute base AutoDAN generation
 
     Args:
@@ -111,10 +112,11 @@ def autodan_generate(
         out_path (Path): Path to write generated AutoDAN string
         init_prompt_path (Path): Path to initial prompts
         reference_path (Path): Path to reference prompt tensors
+        stop_on_success (bool): Return on first success
         random_seed (int): Random seed, if used.
 
     Returns:
-        None
+        List of successful adversarial prefixes
     """
     if not type(generator) is Pipeline and not isinstance(generator, Model):
         raise TypeError(f"Expected Pipeline or Model but got {type(generator)}")
@@ -154,7 +156,9 @@ def autodan_generate(
     if hierarchical:
         word_dict = dict()
 
-    for j in tqdm(range(num_steps), leave=False):
+    successful_prefixes = list()
+
+    for j in tqdm(range(num_steps), leave=False, position=0, colour="green"):
         with torch.no_grad():
             score_list = get_score_autodan(
                 generator=generator,
@@ -178,11 +182,15 @@ def autodan_generate(
                 logger.info(
                     f"Found a successful AutoDAN prompt! Appending to {out_path}."
                 )
+                successful_prefixes.append(adv_prefix)
                 outpathdir = Path(out_path).parent
                 outpathdir.mkdir(parents=True, exist_ok=True)
                 with open(out_path, "a", encoding="utf-8") as f:
                     f.write(f"{adv_prefix}\n")
-                continue
+                if stop_on_success:
+                    break
+                else:
+                    continue
 
             if hierarchical:
                 unfiltered_new_adv_prefixes, word_dict = autodan_hga(
@@ -212,8 +220,8 @@ def autodan_generate(
             gc.collect()
             torch.cuda.empty_cache()
 
-    if success:
-        return adv_prefix
+    if successful_prefixes:
+        return successful_prefixes
 
     else:
         logger.info(
