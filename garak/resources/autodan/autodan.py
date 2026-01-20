@@ -1,9 +1,11 @@
+# SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import argparse
 from logging import getLogger
 import os
 from pathlib import Path
 import torch
-import torch.nn as nn
 from tqdm import tqdm
 import numpy as np
 
