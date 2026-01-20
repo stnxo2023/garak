@@ -87,6 +87,7 @@ def autodan_generate(
     mutation_rate: float = 0.1,
     mutation_generator_name: str = "gpt-5-nano",
     mutation_generator_type: str = "openai.OpenAIReasoningGenerator",
+
     hierarchical: bool = False,
     out_path: Path = cached_autodan_resource_data / "autodan_prompts.txt",
     init_prompt_path: Path = autodan_resource_data / "autodan_init.txt",
