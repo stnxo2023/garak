@@ -13,7 +13,7 @@ What is TBSA?
 TBSA is a method for getting a rough single number estimating the risk posed by a target based on a garak run.
 
 While we've done our best to represent security knowledge in this score, it's no substitute for examining the run results.
-Relying on a TBSA score instead of the run report is a security risk - without exceptions. Do not do this, do not let other people do this.
+Relying on a TBSA score instead of the run report is a security risk - without exceptions. **Do not do this, do not let other people do this**.
 
 
 How is TBSA calculated?
