@@ -6,7 +6,7 @@ Tier-Based Score Aggregation
 Assessing LLM & LLM system security is difficult.
 The information that comes from security testing a large language using adversarial techniques is non-trivial to convert to scalar values. 
 Mapping this information to scalar values, and aggregating those values, must be done in a way that fosters security-aware decision making, requiring an interdisciplinary approach. 
-Garak provides a multi-stage scoring and aggregation method, esulting in many granularities of measurement including a single, final aggregate, TBSA (Tier-Biased Score Aggregate).
+Garak provides a multi-stage scoring and aggregation method, resulting in many granularities of measurement including a single, final aggregate, TBSA (Tier-Biased Score Aggregate).
 
 What is TBSA?
 -------------
