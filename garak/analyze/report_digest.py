@@ -127,7 +127,7 @@ def _init_populate_result_db(evals, taxonomy=None):
         pm, pc = eval["probe"].split(".")
         detector = eval["detector"].replace("detector.", "")
         passes = eval["passed"]
-        instances = eval["total"]
+        instances = eval["total_evaluated"]
         score = passes / instances if instances else 0
         groups = []
         if taxonomy is not None:
