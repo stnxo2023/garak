@@ -43,14 +43,6 @@ def _process_file_body(in_file, out_file, aggregate_uuid) -> dict | None:
         out_file.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
-p = argparse.ArgumentParser(
-    description="aggregate multiple similar garak reports into one jsonl"
-)
-p.add_argument("-o", "--output", help="output filename", required=True)
-p.add_argument("infiles", nargs="+", help="garak jsonl reports to be aggregated")
-a = p.parse_args()
-
-
 def model_target_depr_notice(entry):
     import garak.command
 
@@ -90,6 +82,7 @@ def main(argv=None) -> None:
     )
     p.add_argument("-o", "--output_path", help="Output filename", required=True)
     p.add_argument("infiles", nargs="+", help="garak jsonl reports to be aggregated")
+    print("pre parse args")
     a = p.parse_args(argv)
 
     # get the list of files
