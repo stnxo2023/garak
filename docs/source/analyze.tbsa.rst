@@ -19,7 +19,7 @@ Relying on a TBSA score instead of the run report is a security risk - without e
 How is TBSA calculated?
 -----------------------
 
-The criteria tries to match are:
+The criteria considered are:
 
 * **Single** There should be an aggregation available that leads to single result for a security test. This makes is possible for top-level comparisons to be made between both different systems, and the same system at different times.
 * **Scalar** Quantitative, scalar score (though not necessarily in a metric space)
