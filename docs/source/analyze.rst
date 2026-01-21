@@ -4,6 +4,10 @@ Run analysis
 Processing run results is a core part of getting actionable information out of a ``garak`` run.
 We provide a range of scripts and constructs under ``garak.analyze`` that assist in this.
 
+Note that these tools expect the report JSONL format from the same version of garak.
+For example, scripts in garak.analyze under v0.14.0 expect to receive data generated under garak 0.14.0.
+There may be some graceful failure or backwards compatibility but this is not guaranteed, especially while garak is pre-v1.0.
+
 garak.analyze.aggregate_reports
 -------------------------------
 
