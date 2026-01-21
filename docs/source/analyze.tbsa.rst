@@ -37,7 +37,7 @@ The formula:
 1. Each probe:detector result (both pass rate and Z-score) is graded internally in garak on a 1-5 scale, 5 is great, 1 is awful - this uses the DEFCON scale
 2. Grading boundaries determined through experience using garak for review and stored in ``garak.analyze``
 4. First, we aggregate each probe:detector’s scores into one. This means combining the pass rate and Z-score. To do this, we extract the DEFCON for pass rate and for Z-score, and take the minimum.
-5. Next, we group probe:detector aggregate defcons by tier. Group the probe:detector pair aggregate defcons into two lists, one for Tier 1, one for Tier 2. Tiers 3+ are not currently included.
+5. Next, we group probe:detector aggregate defcons by tier into two lists, one for Tier 1, one for Tier 2. Tiers 3+ are not currently included.
 6. We calculate the harmonic mean for Tier 1 and for Tier 2 probe:detector pairs
 7. We take the weighted mean of Tier 1 and Tier 2 probes; propose a 2:1 weighting here
 8. Round to 1 decimal place
