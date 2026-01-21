@@ -12,7 +12,6 @@ useful for e.g. assembling a report that's been run one probe at a time
 #   output file
 #   input filespec
 
-import argparse
 import datetime
 import json
 import uuid
@@ -68,6 +67,7 @@ def main(argv=None) -> None:
         argv = sys.argv[1:]
 
     import garak._config
+    import argparse
 
     garak._config.load_config()
     print(
