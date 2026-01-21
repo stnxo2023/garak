@@ -7,6 +7,7 @@ We provide a range of scripts and constructs under ``garak.analyze`` that assist
 Note that these tools expect the report JSONL format from the same version of garak.
 For example, scripts in garak.analyze under v0.14.0 expect to receive data generated under garak 0.14.0.
 There may be some graceful failure or backwards compatibility but this is not guaranteed, especially while garak is pre-v1.0.
+Patch releases are not expected to impact input/output formats -- however, minor or major version bumps may come with updates that are not backwards compatible with older report files.
 
 garak.analyze.aggregate_reports
 -------------------------------
