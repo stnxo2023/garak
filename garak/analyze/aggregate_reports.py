@@ -82,7 +82,6 @@ def main(argv=None) -> None:
     )
     p.add_argument("-o", "--output_path", help="Output filename", required=True)
     p.add_argument("infiles", nargs="+", help="garak jsonl reports to be aggregated")
-    print("pre parse args")
     a = p.parse_args(argv)
 
     # get the list of files
