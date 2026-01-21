@@ -55,7 +55,7 @@ You'll get a number between 1.0 and 5.0; higher scores are better.
 
 Only compare TBSA scores between the same version and config of garak.
 
-How do I use TBSA?
+How do I get a TBSA?
 ------------------
 
 .. code-block:: bash
