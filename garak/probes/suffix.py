@@ -92,6 +92,8 @@ class GCG(garak.probes.Probe):
         super().__init__(config_root=config_root)
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
+        self.generator = generator
+
         try:
             from garak.generators.huggingface import Model, Pipeline
 
