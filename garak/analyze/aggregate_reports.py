@@ -12,7 +12,6 @@ useful for e.g. assembling a report that's been run one probe at a time
 #   output file
 #   input filespec
 
-import argparse
 import datetime
 import json
 import uuid
@@ -43,14 +42,6 @@ def _process_file_body(in_file, out_file, aggregate_uuid) -> dict | None:
         out_file.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
-p = argparse.ArgumentParser(
-    description="aggregate multiple similar garak reports into one jsonl"
-)
-p.add_argument("-o", "--output", help="output filename", required=True)
-p.add_argument("infiles", nargs="+", help="garak jsonl reports to be aggregated")
-a = p.parse_args()
-
-
 def model_target_depr_notice(entry):
     import garak.command
 
@@ -76,6 +67,7 @@ def main(argv=None) -> None:
         argv = sys.argv[1:]
 
     import garak._config
+    import argparse
 
     garak._config.load_config()
     print(
