@@ -410,7 +410,7 @@ class AutoDAN(
                 random_seed=self.random_seed,
             )
         except Exception as e:
-            logging.error(e)
+            logging.exception(e)
             print(f"AutoDAN generation encountered an error:\n{e}")
             autodan_outputs = None
 
