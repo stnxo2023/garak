@@ -79,7 +79,7 @@ def run_gcg(
     )
 
     logger.info("Beginning GCG generation")
-    adv_suffix, _, success = attack.run(
+    adv_suffix = attack.run(
         n_steps=n_steps,
         batch_size=batch_size,
         topk=topk,
@@ -88,7 +88,7 @@ def run_gcg(
         filter_cand=filter_cand,
     )
 
-    if success:
+    if adv_suffix:
         return adv_suffix
     else:
         return None

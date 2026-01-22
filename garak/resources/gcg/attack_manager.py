@@ -587,7 +587,7 @@ class GCGAttack:
         anneal_from=0.0,
         stop_on_success=True,
         filter_cand=True,
-    ):
+    ) -> list[str]:
         successful_suffixes = list()
         pbar = tqdm(
             desc="Running GCG Attack",
