@@ -80,7 +80,7 @@ class LangChainLLMGenerator(Generator):
         """
         conv = self._conversation_to_list(prompt)
         resp = self.generator.invoke(conv)
-        return [Message(resp.content)]
+        return [Message(resp.content)] if hasattr(resp, "content") else [None]
 
 
 DEFAULT_CLASS = "LangChainLLMGenerator"
