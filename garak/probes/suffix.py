@@ -113,7 +113,7 @@ class GCG(garak.probes.Probe):
                 filter_cand=self.filter_cand,
             )
         except Exception as e:
-            logging.error(e)
+            logging.exception(e)
             print(f"GCG generation encountered an error:\n{e}")
             gcg_output = None
 
