@@ -85,11 +85,7 @@ export function useDetectorChartOptions(
     () =>
       entries
         .map(toChartDetector)
-        .sort((a, b) => {
-          if (a.zscore == null) return 1;
-          if (b.zscore == null) return -1;
-          return a.zscore - b.zscore;
-        }),
+        .sort((a, b) => b.label.localeCompare(a.label)), // Reverse alphabetical (A at bottom, Z at top)
     [entries]
   );
 

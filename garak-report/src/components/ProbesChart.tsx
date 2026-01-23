@@ -35,7 +35,14 @@ const ProbesChart = ({
   const { getSeverityColorByLevel, getSeverityLabelByLevel } = useSeverityColor();
 
   const probesData = useMemo(() => {
-    return module.probes.map(probe => {
+    // Sort probes alphabetically by class name for consistent ordering
+    const sortedProbes = [...module.probes].sort((a, b) => {
+      const nameA = (a.summary?.probe_name ?? a.probe_name).split('.').slice(1).join('.');
+      const nameB = (b.summary?.probe_name ?? b.probe_name).split('.').slice(1).join('.');
+      return nameA.localeCompare(nameB);
+    });
+
+    return sortedProbes.map(probe => {
       const score = probe.summary?.probe_score ?? 0;
       const name = probe.summary?.probe_name ?? probe.probe_name;
       const severity = probe.summary?.probe_severity;
