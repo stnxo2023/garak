@@ -67,39 +67,4 @@ describe("useProbeTooltip", () => {
     expect(tooltip).toContain("DEFCON: <strong>DC-1</strong>");
   });
 
-  it("includes prompt and fail counts when available", () => {
-    const dataWithCounts = [
-      {
-        ...sampleData[0],
-        summary: {
-          ...sampleData[0].summary,
-          prompt_count: 100,
-          fail_count: 25,
-        },
-      },
-    ];
-    const { result } = renderHook(() => useProbeTooltip(dataWithCounts));
-    const tooltip = result.current({ name: "probe-1", value: 50 });
-
-    expect(tooltip).toContain("Prompts: 100");
-    expect(tooltip).toContain("Failures: 25");
-  });
-
-  it("includes only prompt count when fail count is not available", () => {
-    const dataWithPromptsOnly = [
-      {
-        ...sampleData[0],
-        summary: {
-          ...sampleData[0].summary,
-          prompt_count: 100,
-          fail_count: null,
-        },
-      },
-    ];
-    const { result } = renderHook(() => useProbeTooltip(dataWithPromptsOnly));
-    const tooltip = result.current({ name: "probe-1", value: 50 });
-
-    expect(tooltip).toContain("Prompts: 100");
-    expect(tooltip).not.toContain("Failures");
-  });
 });

@@ -108,22 +108,6 @@ const DetectorLollipopChart = ({
         <Divider />
       </Flex>
 
-      {/* Probe counts - always shown */}
-      {(probe.summary?.prompt_count != null || probe.summary?.fail_count != null) && (
-        <Flex gap="density-md" paddingTop="density-sm">
-          {probe.summary.fail_count != null && (
-            <Text kind="label/regular/sm">
-              Failures: <strong>{probe.summary.fail_count}</strong>
-            </Text>
-          )}
-          {probe.summary.prompt_count != null && (
-            <Text kind="label/regular/sm">
-              Prompts: <strong>{probe.summary.prompt_count}</strong>
-            </Text>
-          )}
-        </Flex>
-      )}
-
       {/* Empty state */}
       {isEmpty ? (
         <Flex paddingTop="density-2xl">

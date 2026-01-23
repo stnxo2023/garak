@@ -47,13 +47,12 @@ export const useGroupedDetectors = (probe: Probe, allProbes: Probe[]): GroupedDe
 
       for (const p of allProbes) {
         const match = p.detectors.find(d => d.detector_name === detectorType);
-        // Support both old (zscore) and new (relative_score) field names
-        const relativeScore = match?.relative_score ?? match?.zscore;
+        const relativeScore = match?.relative_score;
         const zMissing = relativeScore == null || isNaN(relativeScore);
 
         const color = zMissing
           ? theme.colors.tk150
-          : getSeverityColorByComment(match!.relative_comment ?? match!.zscore_comment ?? "");
+          : getSeverityColorByComment(match!.relative_comment ?? "");
 
         const parts = p.probe_name.split(".");
         const label = parts.length > 1 ? parts.slice(1).join(".") : parts[0];
@@ -63,14 +62,17 @@ export const useGroupedDetectors = (probe: Probe, allProbes: Probe[]): GroupedDe
           label,
           zscore: zMissing ? null : relativeScore!,
           detector_score: match?.absolute_score ? match.absolute_score * 100 : null,
-          comment: match?.relative_comment ?? match?.zscore_comment ?? "Unavailable",
-          attempt_count: match?.attempt_count ?? null,
-          hit_count: match?.hit_count ?? null,
+          comment: match?.relative_comment ?? "Unavailable",
+          // Support both new (total_evaluated/passed) and old (attempt_count/hit_count) field names
+          total_evaluated: match?.total_evaluated ?? match?.attempt_count ?? null,
+          passed: match?.passed ?? (match?.attempt_count != null && match?.hit_count != null 
+            ? match.attempt_count - match.hit_count 
+            : null),
           color: color,
           unavailable: zMissing,
           detector_defcon: match?.detector_defcon ?? null,
           absolute_defcon: match?.absolute_defcon ?? null,
-          zscore_defcon: match?.relative_defcon ?? match?.zscore_defcon ?? null,
+          relative_defcon: match?.relative_defcon ?? null,
         });
       }
 

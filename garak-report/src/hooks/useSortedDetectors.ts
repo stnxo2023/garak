@@ -10,17 +10,17 @@
 import type { Detector } from "../types/ProbesChart";
 
 /**
- * Provides a function to sort detectors by Z-score (ascending).
- * Null/undefined Z-scores are sorted to the end.
+ * Provides a function to sort detectors by relative score (ascending).
+ * Null/undefined scores are sorted to the end.
  *
  * @returns Sort function for detector arrays
  */
 export function useSortedDetectors() {
   return function sortDetectors(entries: Detector[]): Detector[] {
     return [...entries].sort((a, b) => {
-      if (a.zscore == null) return 1;
-      if (b.zscore == null) return -1;
-      return a.zscore - b.zscore;
+      if (a.relative_score == null) return 1;
+      if (b.relative_score == null) return -1;
+      return a.relative_score - b.relative_score;
     });
   };
 }

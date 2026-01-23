@@ -46,12 +46,15 @@ function toChartDetector(entry: GroupedDetectorEntry): ChartDetector {
     detector_score: entry.detector_score,
     comment: entry.comment,
     color: entry.color,
-    attempt_count: entry.attempt_count,
-    hit_count: entry.hit_count,
+    // Convert source names to display names (compute failures from passed)
+    attempt_count: entry.total_evaluated,
+    hit_count: entry.total_evaluated != null && entry.passed != null 
+      ? entry.total_evaluated - entry.passed 
+      : null,
     unavailable: entry.unavailable,
     detector_defcon: entry.detector_defcon,
     absolute_defcon: entry.absolute_defcon,
-    zscore_defcon: entry.zscore_defcon,
+    relative_defcon: entry.relative_defcon,
   };
 }
 

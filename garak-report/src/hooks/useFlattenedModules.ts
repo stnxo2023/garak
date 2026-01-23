@@ -49,13 +49,13 @@ function buildDetector(name: string, data: EvalDetectorData): Detector | null {
     relative_score: data.relative_score ?? 0,
     relative_defcon: data.relative_defcon ?? 5,
     relative_comment: data.relative_comment ?? "",
-    zscore: data.zscore,
-    zscore_defcon: data.zscore_defcon,
-    zscore_comment: data.zscore_comment,
     detector_defcon: data.detector_defcon ?? 5,
     calibration_used: data.calibration_used ?? false,
-    attempt_count: data.attempt_count,
-    hit_count: data.hit_count,
+    // Support both new (total_evaluated/passed) and old (attempt_count/hit_count) field names
+    total_evaluated: data.total_evaluated ?? data.attempt_count,
+    passed: data.passed ?? (data.attempt_count != null && data.hit_count != null 
+      ? data.attempt_count - data.hit_count 
+      : undefined),
   };
 }
 

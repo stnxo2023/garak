@@ -18,17 +18,15 @@ export type Detector = {
   absolute_score: number;
   absolute_defcon: number;
   absolute_comment: string;
-  // Relative/Z-score fields (renamed in backend)
   relative_score: number;
   relative_defcon: number;
   relative_comment: string;
-  // Legacy field names for backward compatibility
-  zscore?: number;
-  zscore_defcon?: number;
-  zscore_comment?: string;
   detector_defcon: number;
   calibration_used: boolean;
-  // New count fields
+  // New field names (from source)
+  total_evaluated?: number;
+  passed?: number;
+  // Legacy field names (for backward compatibility with old data)
   attempt_count?: number;
   hit_count?: number;
 };
@@ -100,7 +98,7 @@ export type ChartDetector = {
   unavailable?: boolean;
   detector_defcon?: number | null;
   absolute_defcon?: number | null;
-  zscore_defcon?: number | null;
+  relative_defcon?: number | null;
 };
 
 /**

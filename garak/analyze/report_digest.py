@@ -401,18 +401,6 @@ def build_digest(report_filename: str, config=_config):
                 probe_module, probe_class, group_absolute_score
             )
 
-            # fetch counts for this probe
-            counts_row = cursor.execute(
-                "select sum(instances) as total, sum(passes) as passed from results where probe_module=? and probe_class=? and probe_group=?;",
-                (probe_module, probe_class, probe_group),
-            ).fetchone()
-            if counts_row:
-                total_attempts = counts_row[0] or 0
-                passed_attempts = counts_row[1] or 0
-                fail_attempts = total_attempts - passed_attempts
-                probe_info["prompt_count"] = total_attempts
-                probe_info["fail_count"] = fail_attempts
-
             report_digest["eval"][probe_group][f"{probe_module}.{probe_class}"][
                 "_summary"
             ] = probe_info
@@ -428,14 +416,14 @@ def build_digest(report_filename: str, config=_config):
                     probe_info["probe_tier"],
                 )
 
-                # add attempt / hit counts for detector
+                # add counts for detector (using original field names from eval records)
                 det_counts = cursor.execute(
                     "select instances, passes from results where probe_module=? and probe_class=? and detector=? and probe_group=? limit 1;",
                     (probe_module, probe_class, detector, probe_group),
                 ).fetchone()
                 if det_counts:
-                    probe_detector_result["attempt_count"] = det_counts[0]
-                    probe_detector_result["hit_count"] = det_counts[0] - det_counts[1]
+                    probe_detector_result["total_evaluated"] = det_counts[0]
+                    probe_detector_result["passed"] = det_counts[1]
 
                 report_digest["eval"][probe_group][f"{probe_module}.{probe_class}"][
                     detector

@@ -41,13 +41,13 @@ it("sets detector_score to null if absolute_score is 0", () => {
   expect(result.current["det-A"][0].detector_score).toBeNull();
 });
 
-it("defaults comment to 'Unavailable' when zscore_comment is missing", () => {
+it("defaults comment to 'Unavailable' when relative_comment is missing", () => {
   const modifiedProbe: Probe = {
     ...probeA,
     detectors: [
       {
         ...probeA.detectors[0],
-        zscore_comment: undefined as unknown as string,
+        relative_comment: undefined as unknown as string,
       },
     ],
   };
@@ -73,9 +73,9 @@ const probeA: Probe = {
       absolute_score: 0.7,
       absolute_defcon: 2,
       absolute_comment: "high",
-      zscore: 1.2,
-      zscore_defcon: 2,
-      zscore_comment: "high",
+      relative_score: 1.2,
+      relative_defcon: 2,
+      relative_comment: "high",
       detector_defcon: 2,
       calibration_used: true,
     },
@@ -98,9 +98,9 @@ const probeB: Probe = {
       absolute_score: 0.5,
       absolute_defcon: 3,
       absolute_comment: "low",
-      zscore: NaN, // invalid
-      zscore_defcon: 3,
-      zscore_comment: "Unavailable",
+      relative_score: NaN, // invalid
+      relative_defcon: 3,
+      relative_comment: "Unavailable",
       detector_defcon: 3,
       calibration_used: false,
     },
@@ -122,7 +122,7 @@ describe("useGroupedDetectors", () => {
       probe_name: "module.category3",
       summary: { probe_name: "module.category3", probe_score: 0.5, probe_severity: 2, probe_descr: "", probe_tier: 1 },
       detectors: [
-        { detector_name: "det-B", detector_descr: "other", absolute_score: 0.8, zscore: 0.5, zscore_comment: "low", detector_defcon: 3, calibration_used: true },
+        { detector_name: "det-B", detector_descr: "other", absolute_score: 0.8, relative_score: 0.5, relative_comment: "low", detector_defcon: 3, calibration_used: true },
       ],
     };
 

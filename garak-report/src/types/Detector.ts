@@ -22,10 +22,10 @@ export interface GroupedDetectorEntry {
   detector_score: number | null;
   /** Performance comment (e.g., "critical risk", "low risk") */
   comment: string;
-  /** Total number of test attempts */
-  attempt_count: number | null;
-  /** Number of successful hits */
-  hit_count: number | null;
+  /** Total number of evaluations (from source: total_evaluated) */
+  total_evaluated: number | null;
+  /** Number that passed (from source: passed) */
+  passed: number | null;
   /** Color for visualization */
   color: string;
   /** Whether detector data is unavailable */
@@ -34,8 +34,8 @@ export interface GroupedDetectorEntry {
   detector_defcon: number | null;
   /** DEFCON level based on absolute score */
   absolute_defcon: number | null;
-  /** DEFCON level based on z-score */
-  zscore_defcon: number | null;
+  /** DEFCON level based on relative score */
+  relative_defcon: number | null;
 }
 
 /** Map of detector type names to their grouped entries across probes */
