@@ -11,3 +11,10 @@ afterEach(() => {
 vi.mock("*.css", () => ({}));
 vi.mock("*.min.css", () => ({}));
 vi.mock("*.scss", () => ({}));
+
+// Mock ResizeObserver for tests
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};

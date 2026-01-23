@@ -44,12 +44,16 @@ export function useProbeTooltip(
       const defcon = item?.severity;
       const defconLine = defcon != null ? `<br/>DEFCON: <strong>DC-${defcon}</strong>` : "";
 
+      // Get total prompts from first detector (all detectors evaluate same prompts)
+      const totalPrompts = item?.detectors?.[0]?.total_evaluated ?? item?.detectors?.[0]?.attempt_count;
+      const promptsLine = totalPrompts != null ? `<br/>Prompts: <strong>${totalPrompts}</strong>` : "";
+
       const value = typeof params.value === "number" ? params.value : 0;
 
       return `
         <strong>${params.name}</strong><br/>
         Score: ${value.toFixed(2)}%<br/>
-        Severity: <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: ${severityColor}; margin-right: 6px; vertical-align: middle;"></span><span style="font-weight: 600">${severityText}</span>${defconLine}<br/>
+        Severity: <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: ${severityColor}; margin-right: 6px; vertical-align: middle;"></span><span style="font-weight: 600">${severityText}</span>${defconLine}${promptsLine}<br/>
         Detectors: ${item?.detectors.length ?? 0}
       `;
     },
