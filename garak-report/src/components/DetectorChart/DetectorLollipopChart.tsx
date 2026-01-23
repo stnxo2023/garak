@@ -96,33 +96,11 @@ const DetectorLollipopChart = ({
     if (match) onProbeClick(match);
   };
 
-  // Empty state - show when no entries or all entries are N/A
-  if (visible.length === 0 || visible.every(d => d.zscore === null)) {
-    return (
-      <Flex paddingTop="density-2xl">
-        <StatusMessage
-          size="small"
-          slotMedia={<i className="nv-icons-fill-warning"></i>}
-          slotHeading="No Data Available"
-          slotSubheading={
-            <Stack gap="density-sm">
-              <Text kind="label/regular/md">
-                All detector results for this comparison are unavailable (N/A).
-              </Text>
-              <Text kind="label/regular/sm">
-                Try unchecking "Hide N/A" to see unavailable entries, change DEFCON levels or select
-                a different detector.
-              </Text>
-            </Stack>
-          }
-        />
-      </Flex>
-    );
-  }
+  const isEmpty = visible.length === 0 || visible.every(d => d.zscore === null);
 
   return (
     <>
-      {/* Chart header */}
+      {/* Chart header - always shown */}
       <Flex align="center" gap="density-xxs">
         <Text kind="mono/sm">{probe.probe_name}</Text>
         <Text kind="mono/sm">//</Text>
@@ -130,7 +108,7 @@ const DetectorLollipopChart = ({
         <Divider />
       </Flex>
 
-      {/* Probe counts */}
+      {/* Probe counts - always shown */}
       {(probe.summary?.prompt_count != null || probe.summary?.fail_count != null) && (
         <Flex gap="density-md" paddingTop="density-sm">
           {probe.summary.fail_count != null && (
@@ -146,56 +124,80 @@ const DetectorLollipopChart = ({
         </Flex>
       )}
 
-      {/* Chart */}
-      <ReactECharts
-        ref={chartRef}
-        option={option}
-        style={{ height: chartHeight }}
-        onEvents={{ click: handleClick }}
-        onChartReady={handleChartReady}
-      />
+      {/* Empty state */}
+      {isEmpty ? (
+        <Flex paddingTop="density-2xl">
+          <StatusMessage
+            size="small"
+            slotMedia={<i className="nv-icons-fill-warning"></i>}
+            slotHeading="No Data Available"
+            slotSubheading={
+              <Stack gap="density-sm">
+                <Text kind="label/regular/md">
+                  All detector results for this comparison are unavailable (N/A).
+                </Text>
+                <Text kind="label/regular/sm">
+                  Try unchecking "Hide N/A" to see unavailable entries, change DEFCON levels or select
+                  a different detector.
+                </Text>
+              </Stack>
+            }
+          />
+        </Flex>
+      ) : (
+        <>
+          {/* Chart */}
+          <ReactECharts
+            ref={chartRef}
+            option={option}
+            style={{ height: chartHeight }}
+            onEvents={{ click: handleClick }}
+            onChartReady={handleChartReady}
+          />
 
-      {/* Z-Score axis label with info tooltip - positioned at x=0 on chart */}
-      <Flex
-        align="center"
-        gap="density-xxs"
-        style={{
-          position: "relative",
-          left: zeroXPosition != null ? `${zeroXPosition}px` : "50%",
-          transform: "translateX(-50%)",
-          width: "fit-content",
-          marginTop: "-4px",
-        }}
-      >
-        <Text kind="label/regular/sm">Z-Score</Text>
-        <Tooltip
-          slotContent={
-            <Stack gap="density-xxs">
-              <Text kind="body/bold/sm">Understanding Z-Scores</Text>
-              <Text kind="body/regular/sm">
-                Positive Z-scores mean better than average, negative Z-scores mean worse than average.
-              </Text>
-              <Text kind="body/regular/sm">
-                "Average" is determined over a bag of models of varying sizes, updated periodically.
-              </Text>
-              <Text kind="body/regular/sm">
-                For any probe, roughly two-thirds of models get a Z-score between -1.0 and +1.0.
-              </Text>
-              <Text kind="body/regular/sm">
-                The middle 10% of models score -0.125 to +0.125. This is labeled "competitive".
-              </Text>
-              <Text kind="body/regular/sm">
-                A Z-score of +1.0 means the score was one standard deviation better than the mean
-                score other models achieved for this probe & metric.
-              </Text>
-            </Stack>
-          }
-        >
-          <Button kind="tertiary" size="small">
-            <Info size={14} />
-          </Button>
-        </Tooltip>
-      </Flex>
+          {/* Z-Score axis label with info tooltip - positioned at x=0 on chart */}
+          <Flex
+            align="center"
+            gap="density-xxs"
+            style={{
+              position: "relative",
+              left: zeroXPosition != null ? `${zeroXPosition}px` : "50%",
+              transform: "translateX(-50%)",
+              width: "fit-content",
+              marginTop: "-4px",
+            }}
+          >
+            <Text kind="label/regular/sm">Z-Score</Text>
+            <Tooltip
+              slotContent={
+                <Stack gap="density-xxs">
+                  <Text kind="body/bold/sm">Understanding Z-Scores</Text>
+                  <Text kind="body/regular/sm">
+                    Positive Z-scores mean better than average, negative Z-scores mean worse than average.
+                  </Text>
+                  <Text kind="body/regular/sm">
+                    "Average" is determined over a bag of models of varying sizes, updated periodically.
+                  </Text>
+                  <Text kind="body/regular/sm">
+                    For any probe, roughly two-thirds of models get a Z-score between -1.0 and +1.0.
+                  </Text>
+                  <Text kind="body/regular/sm">
+                    The middle 10% of models score -0.125 to +0.125. This is labeled "competitive".
+                  </Text>
+                  <Text kind="body/regular/sm">
+                    A Z-score of +1.0 means the score was one standard deviation better than the mean
+                    score other models achieved for this probe & metric.
+                  </Text>
+                </Stack>
+              }
+            >
+              <Button kind="tertiary" size="small">
+                <Info size={14} />
+              </Button>
+            </Tooltip>
+          </Flex>
+        </>
+      )}
     </>
   );
 };
