@@ -163,7 +163,7 @@ class AttackPrompt:
 
         if max_new_tokens > 32:
             logger.warning(
-                "WARNING: max_new_tokens > 32 may cause testing to slow down."
+                "suffix.GCG: max_new_tokens > 32 may cause testing to slow down."
             )
         self.model.generation_config.max_new_tokens = max_new_tokens
 
@@ -299,11 +299,11 @@ class AttackPrompt:
                 filtered_ids.append(ids[i])
 
         if not filtered_ids:
-            raise RuntimeError(
-                "No token sequences were the same after decoding and re-encoding. "
-                "Consider setting the probe-level parameter `filter_ids=False` or trying "
-                "a different `control_init` for GCG."
-            )
+            msg = """suffix.GCG: No token sequences were the same after decoding and re-encoding. \
+            Consider setting the probe-level parameter `filter_ids=False` or trying \
+            a different `control_init` for GCG."""
+            logging.error(msg)
+            raise RuntimeError(msg)
 
         return torch.stack(filtered_ids).to(self.device)
 
@@ -498,11 +498,6 @@ class AttackPrompt:
             if jailbroken:
                 self.success = True
 
-        if self.success:
-            logger.info("Found a jailbreak!")
-        else:
-            logger.info("No successful jailbreak found!")
-
         return self.control, self.goal, best_loss, steps, self.success
 
 
@@ -557,7 +552,7 @@ class GCGAttack:
 
         if not self.generator.tokenizer.chat_template:
             logger.warning(
-                "Tokenizer does not have a chat template. Setting chat template to empty."
+                "suffix.GCG: Tokenizer does not have a chat template. Setting chat template to empty."
             )
             self.generator.tokenizer.chat_template = (
                 "{% for message in messages %}{{ message['content'] }}{% endfor %}"
@@ -633,13 +628,15 @@ class GCGAttack:
 
             pbar.update(1)
             if success:
-                logger.info(f"Writing successful jailbreak to {str(self.outfile)}")
+                logger.info(
+                    f"suffix.GCG: Writing successful jailbreak to {str(self.outfile)}"
+                )
                 with open(self.outfile, "a", encoding="utf-8") as f:
                     f.write(f"{optim_str}\n")
                 successful_suffixes.append((optim_str, goal_str))
             else:
                 logger.info(
-                    f"No successful jailbreak found for target: {prompt.target}"
+                    f"suffix.GCG: No successful jailbreak found for target: {prompt.target}"
                 )
 
         return successful_suffixes

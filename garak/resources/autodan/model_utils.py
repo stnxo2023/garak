@@ -79,6 +79,7 @@ class AutoDanPrefixManager:
         elif isinstance(generator, Model):
             self.model = generator.model
         else:
+            logger.critical(f"Expected Pipeline or Model but got {type(generator)}")
             raise TypeError(f"Expected Pipeline or Model but got {type(generator)}")
         self.device = generator.device
         self.tokenizer = generator.tokenizer

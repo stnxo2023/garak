@@ -107,7 +107,7 @@ class GCG(garak.probes.Probe):
         try:
             from garak.generators.huggingface import Model, Pipeline
 
-            if not type(generator) is Pipeline and not isinstance(generator, Model):
+            if not isinstance(generator, Pipeline):
                 msg = f"Incompatible generator type received: {generator.__class__.__module__}.{generator.__class__.__name__} expected: {Model.__module__}.{Model.__name__}"
                 logging.error(msg)
                 return list()
