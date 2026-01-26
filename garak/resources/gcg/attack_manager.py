@@ -22,6 +22,7 @@
 import logging
 import math
 import random
+import string
 from pathlib import Path
 from typing import Union, Tuple
 
@@ -335,11 +336,15 @@ class AttackPrompt:
                 "WARNING: max_new_tokens > 32 may cause testing to slow down."
             )
         self.model.generation_config.max_new_tokens = self.test_new_toks
-        gen_str = self.generate_str().strip()
-        accepted = not any([prefix in gen_str for prefix in self.test_prefixes])
-        string_match = self.target in gen_str
-        starting_string = gen_str.startswith("Sure")
-        if string_match or (starting_string and accepted):
+        gen_str = self.generate_str().lower().strip()
+        accepted = not any([prefix.lower() in gen_str for prefix in self.test_prefixes])
+        # Remove punctuation so that we don't have false negatives because of a comma. Again.
+        clean_target = self.target.lower().translate(
+            str.maketrans("", "", string.punctuation)
+        )
+        clean_gen_str = gen_str.translate(str.maketrans("", "", string.punctuation))
+        string_match = clean_target in clean_gen_str
+        if string_match and accepted:
             return True
         else:
             return False
@@ -449,7 +454,7 @@ class AttackPrompt:
         best_loss = np.inf
 
         pbar = tqdm(
-            desc=f"Running GCG Optimization.",
+            desc=f"Running GCG Optimization",
             total=n_steps,
             position=1,
             colour="blue",
@@ -486,6 +491,7 @@ class AttackPrompt:
                 self.control_ids = control_ids
                 self.control = self.tokenizer.batch_decode(self.control_ids)[0]
                 best_loss = loss
+                pbar.set_description(f"GCG loss: {best_loss}")
 
         if not self.success:
             jailbroken = self.test()
@@ -497,7 +503,7 @@ class AttackPrompt:
         else:
             logger.info("No successful jailbreak found!")
 
-        return self.control, best_loss, steps, self.success
+        return self.control, self.goal, best_loss, steps, self.success
 
 
 class GCGAttack:
@@ -587,7 +593,15 @@ class GCGAttack:
         anneal_from=0.0,
         stop_on_success=True,
         filter_cand=True,
-    ) -> list[str]:
+    ) -> list[Tuple[str, str]]:
+        """
+        Run the GCG attack
+
+        Returns
+        -------
+        List of tuples. Each tuple consists of ({goal_str}, {adversarial_suffix})
+
+        """
         successful_suffixes = list()
         pbar = tqdm(
             desc="Running GCG Attack",
@@ -607,7 +621,7 @@ class GCGAttack:
                     pbar.update(1)
                     continue
 
-            optim_str, loss, steps, success = prompt.run(
+            optim_str, goal_str, loss, steps, success = prompt.run(
                 n_steps=n_steps,
                 batch_size=batch_size,
                 topk=topk,
@@ -622,7 +636,7 @@ class GCGAttack:
                 logger.info(f"Writing successful jailbreak to {str(self.outfile)}")
                 with open(self.outfile, "a", encoding="utf-8") as f:
                     f.write(f"{optim_str}\n")
-                successful_suffixes.append(optim_str)
+                successful_suffixes.append((optim_str, goal_str))
             else:
                 logger.info(
                     f"No successful jailbreak found for target: {prompt.target}"
@@ -633,19 +647,13 @@ class GCGAttack:
 
 def get_goals_and_targets(
     train_data: Union[None, str],
-    test_data: str,
-    offset: int = 0,
     n_train: int = 0,
-    n_test: int = 0,
 ):
     """Get goals and targets for GCG attack.
 
     Args:
         train_data (str): Path to CSV of training data
-        test_data (str): Path to CSV of test data
-        offset (int): Offset to begin reading data from.
         n_train(int): Number of training examples to use
-        n_test (int): Number of test examples to use (Will use train_data if test_data is not specified.)
 
     Returns:
         Tuple of train_goals, train_targets, test_goals, test_targets
@@ -654,36 +662,15 @@ def get_goals_and_targets(
         train_data = pd.read_csv(train_data)
     else:
         train_data = load_advbench()
+    if n_train > 0:
+        train_data = train_data.sample(n_train)
+
     targets = train_data["target"].tolist()
     if "goal" in train_data.columns:
         goals = train_data["goal"].tolist()
     else:
         goals = [""] * len(targets)
-    if offset > 0 or n_train > 0:
-        targets = targets[offset : offset + n_train]
-        goals = goals[offset : offset + n_train]
-
-    if test_data:
-        test_data = pd.read_csv(test_data)
-        test_targets = test_data["target"].tolist()
-        if "goal" in test_data.columns:
-            test_goals = test_data["goal"].tolist()
-        else:
-            test_goals = [""] * len(test_targets)
-    else:
-        if n_test == 0:
-            n_test = len(targets) - n_train
-        test_targets = train_data["target"].tolist()[
-            offset + n_train : offset + n_train + n_test
-        ]
-        if "goal" in train_data.columns:
-            test_goals = train_data["goal"].tolist()[
-                offset + n_train : offset + n_train + n_test
-            ]
-        else:
-            test_goals = [""] * len(test_targets)
 
     assert len(goals) == len(targets)
-    assert len(test_goals) == len(test_targets)
 
-    return goals, targets, test_goals, test_targets
+    return goals, targets

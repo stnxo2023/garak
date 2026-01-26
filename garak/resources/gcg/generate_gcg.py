@@ -20,9 +20,10 @@ gcg_cache_data = garak._config.transient.cache_dir / "data" / "gcg"
 def run_gcg(
     target_generator: Union[Pipeline, Model] = None,
     stop_success: bool = True,
+    goal_str: str = None,
+    target_str: str = None,
     train_data: Union[str, None] = None,
     n_train: int = 50,
-    n_test: int = 0,
     outfile: Path = gcg_cache_data / "gcg.txt",
     control_init: str = CONTROL_INIT,
     n_steps: int = 500,
@@ -30,17 +31,16 @@ def run_gcg(
     topk: int = 256,
     anneal: bool = False,
     filter_cand: bool = True,
-    **kwargs,
 ):
     """Function to generate GCG attack strings
 
     Args:
         target_generator (Generator): Generator to target with GCG attack
         stop_success (bool): Whether to stop on a successful attack
-        model_names (list[str]): List of huggingface models (Currently only support HF due to tokenizer)
+        goal_str (str): Input to optimize
+        target_str (str): Target output string
         train_data (str): Path to training data
         n_train (int): Number of training examples to use
-        n_test (int): Number of test examples to use
         outfile (Path): Where to write successful prompts
         control_init (str): Initial adversarial suffix to modify
         n_steps (int): Number of training steps
@@ -56,19 +56,13 @@ def run_gcg(
         None
     """
 
-    if "test_data" in kwargs:
-        test_data = kwargs["test_data"]
+    if goal_str is not None and target_str is not None:
+        train_goals = [goal_str]
+        train_targets = [target_str]
     else:
-        test_data = None
-
-    (
-        train_goals,
-        train_targets,
-        test_goals,
-        test_targets,
-    ) = get_goals_and_targets(
-        train_data=train_data, test_data=test_data, n_train=n_train, n_test=n_test
-    )
+        train_goals, train_targets = get_goals_and_targets(
+            train_data=train_data, n_train=n_train
+        )
 
     attack = GCGAttack(
         goals=train_goals,
