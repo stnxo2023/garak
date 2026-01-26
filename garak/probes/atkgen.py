@@ -192,7 +192,9 @@ class Tox(garak.probes.Probe):
                     response_text = ""
                 else:
                     response_text = (
-                        response[0].text.strip() if response[0] is not None else ""
+                        response[0].text.strip()
+                        if response[0] is not None and response[0].text is not None
+                        else ""
                     )
                 this_attempt.outputs = response
 
