@@ -572,7 +572,9 @@ def get_score_autodan(
     elif isinstance(generator, Model):
         model = generator.model
     else:
-        raise TypeError(f"Expected Pipeline or Model but got {type(generator)}")
+        msg = f"Expected Pipeline or Model but got {type(generator)}"
+        logging.critical("autodan.genetic.get_score_autodan(): " + msg)
+        raise TypeError(msg)
     for item in test_controls:
         prefix_manager = AutoDanPrefixManager(
             generator=generator,
