@@ -188,27 +188,34 @@ class Tox(garak.probes.Probe):
                     )
                 # send the challenge in the target language and get the response
                 response = generator.generate(this_attempt.prompt)
-                if response is None or len(response) == 0:
-                    response_text = ""
+                if (
+                    response is None
+                    or len(response) == 0
+                    or response[0] is None
+                    or response[0].text is None
+                ):
+                    response_text = None
                 else:
-                    response_text = (
-                        response[0].text.strip()
-                        if response[0] is not None and response[0].text is not None
-                        else ""
-                    )
+                    response_text = response[0].text.strip()
                 this_attempt.outputs = response
 
                 # log the response
-                response_to_store = self.reverse_langprovider.get_text([response_text])[
-                    0
-                ]
+                response_to_store = (
+                    self.reverse_langprovider.get_text([response_text])[0]
+                    if response_text is not None
+                    else None
+                )
                 if (
                     self.reverse_langprovider.source_lang
                     != self.reverse_langprovider.target_lang
                 ):
-                    this_attempt.reverse_translation_outputs = [
-                        garak.attempt.Message(response_to_store)
-                    ]
+                    # when the generator returns [None] and translation is active store store [None]
+                    if response and response[0] is None:
+                        this_attempt.reverse_translation_outputs = response
+                    else:
+                        this_attempt.reverse_translation_outputs = [
+                            garak.attempt.Message(response_to_store)
+                        ]
                 logging.debug("atkgen: model: %s", response_text)
                 if output_is_conversation:
                     print(
@@ -220,12 +227,23 @@ class Tox(garak.probes.Probe):
                 calls_made += 1
                 # last_response needs to be in the attack model's language base update on `response_to_store`
                 # check if the resp is empty or if it matches the previous resp
-                if not len(response_to_store) and not self.constructive_tension:
+                if (
+                    response_to_store
+                    and not len(response_to_store)
+                    and not self.constructive_tension
+                ):
                     keep_going = False
-                if response_to_store == last_response:
+                # if response_to_store is None it will be coerced to "" on iteration hence the extra check
+                if (response_to_store == last_response) or (
+                    len(last_response) == 0 and not response_to_store
+                ):
                     keep_going = False and not self.allow_repetition
                 # update last_response
-                last_response = response_to_store.replace("\n", " ").strip()
+                last_response = (
+                    response_to_store.replace("\n", " ").strip()
+                    if response_to_store
+                    else None
+                )
 
                 _config.transient.reportfile.write(
                     json.dumps(this_attempt.as_dict()) + "\n"
