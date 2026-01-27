@@ -26,34 +26,8 @@
         "pass_f1": 0.6666666666666666
       }
     },
-    "exploitation.JinjaTemplateDetector": {
-      "metrics": {
-        "accuracy": 1.0,
-        "hit_precision": 1.0,
-        "hit_recall": 1.0,
-        "hit_f1": 1.0,
-        "hit_sensitivity": 1.0,
-        "hit_specificity": 1.0,
-        "pass_precision": 1.0,
-        "pass_recall": 1.0,
-        "pass_f1": 1.0
-      }
-    },
     "exploitation.PythonCodeExecution": {
       "metrics": {
-        "accuracy": 0.5,
-        "hit_precision": 0.0,
-        "hit_recall": 0.0,
-        "hit_f1": 0.0,
-        "hit_sensitivity": 0.0,
-        "hit_specificity": 1.0,
-        "pass_precision": 0.5,
-        "pass_recall": 1.0,
-        "pass_f1": 0.6666666666666666
-      }
-    },
-    "exploitation.SQLiEcho": {
-      "metrics": {
         "accuracy": 1.0,
         "hit_precision": 1.0,
         "hit_recall": 1.0,
@@ -63,58 +37,6 @@
         "pass_precision": 1.0,
         "pass_recall": 1.0,
         "pass_f1": 1.0
-      }
-    },
-    "exploitation.SQLiSuccess": {
-      "metrics": {
-        "accuracy": 0.75,
-        "hit_precision": 0.6666666666666666,
-        "hit_recall": 1.0,
-        "hit_f1": 0.8,
-        "hit_sensitivity": 1.0,
-        "hit_specificity": 0.5,
-        "pass_precision": 1.0,
-        "pass_recall": 0.5,
-        "pass_f1": 0.6666666666666666
-      }
-    },
-    "goodside.RileyIsnt": {
-      "metrics": {
-        "accuracy": 0.0,
-        "hit_precision": 0.0,
-        "hit_recall": 0.0,
-        "hit_f1": 0.0,
-        "hit_sensitivity": 0.0,
-        "hit_specificity": 0.0,
-        "pass_precision": 0.0,
-        "pass_recall": 0.0,
-        "pass_f1": 0.0
-      }
-    },
-    "lmrc.Anthro": {
-      "metrics": {
-        "accuracy": 1.0,
-        "hit_precision": 1.0,
-        "hit_recall": 1.0,
-        "hit_f1": 1.0,
-        "hit_sensitivity": 1.0,
-        "hit_specificity": 0.0,
-        "pass_precision": 0.0,
-        "pass_recall": 0.0,
-        "pass_f1": 0.0
-      }
-    },
-    "lmrc.QuackMedicine": {
-      "metrics": {
-        "accuracy": 0.0,
-        "hit_precision": 0.0,
-        "hit_recall": 0.0,
-        "hit_f1": 0.0,
-        "hit_sensitivity": 0.0,
-        "hit_specificity": 0.0,
-        "pass_precision": 0.0,
-        "pass_recall": 0.0,
-        "pass_f1": 0.0
       }
     },
     "malwaregen.AnyCode": {
@@ -130,275 +52,53 @@
         "pass_f1": 1.0
       }
     },
-    "misleading.MustContradictNLI": {
-      "metrics": {
-        "accuracy": 0.0,
-        "hit_precision": 0.0,
-        "hit_recall": 0.0,
-        "hit_f1": 0.0,
-        "hit_sensitivity": 0.0,
-        "hit_specificity": 0.0,
-        "pass_precision": 0.0,
-        "pass_recall": 0.0,
-        "pass_f1": 0.0
-      }
-    },
-    "misleading.MustRefuteClaimKW": {
-      "metrics": {
-        "accuracy": 1.0,
-        "hit_precision": 1.0,
-        "hit_recall": 1.0,
-        "hit_f1": 1.0,
-        "hit_sensitivity": 1.0,
-        "hit_specificity": 1.0,
-        "pass_precision": 1.0,
-        "pass_recall": 1.0,
-        "pass_f1": 1.0
-      }
-    },
-    "misleading.MustRefuteClaimModel": {
-      "metrics": {
-        "accuracy": 0.6111111111111112,
-        "hit_precision": 0.6666666666666666,
-        "hit_recall": 0.4444444444444444,
-        "hit_f1": 0.5333333333333333,
-        "hit_sensitivity": 0.4444444444444444,
-        "hit_specificity": 0.7777777777777778,
-        "pass_precision": 0.5833333333333334,
-        "pass_recall": 0.7777777777777778,
-        "pass_f1": 0.6666666666666666
-      }
-    },
     "mitigation.MitigationBypass": {
       "metrics": {
-        "accuracy": 0.6532235556795981,
-        "hit_precision": 0.5997818974918212,
-        "hit_recall": 0.9210159084566006,
-        "hit_f1": 0.7264722069345075,
-        "hit_sensitivity": 0.9210159084566006,
+        "accuracy": 0.6533631035445158,
+        "hit_precision": 0.5998546247501363,
+        "hit_recall": 0.921295004186436,
+        "hit_f1": 0.7266123706801674,
+        "hit_sensitivity": 0.921295004186436,
         "hit_specificity": 0.3854312029025956,
-        "pass_precision": 0.8299278846153846,
+        "pass_precision": 0.830426939266386,
         "pass_recall": 0.3854312029025956,
-        "pass_f1": 0.526396035829998,
+        "pass_f1": 0.5264963781929088,
         "hit_f1_ci": {
-          "mean": 0.7265022203624228,
-          "ci_lower": 0.7200526510729304,
-          "ci_upper": 0.7329125803369609,
-          "ci_width": 0.012859929264030567,
+          "mean": 0.7266036740429815,
+          "ci_lower": 0.7201670685506444,
+          "ci_upper": 0.732868655214754,
+          "ci_width": 0.012701586664109588,
           "n_samples": 7166
         },
         "pass_f1_ci": {
-          "mean": 0.5263947291714534,
-          "ci_lower": 0.5098861812225753,
-          "ci_upper": 0.5421697604304525,
-          "ci_width": 0.03228357920787717,
+          "mean": 0.526467147004592,
+          "ci_lower": 0.5099615321374689,
+          "ci_upper": 0.5424949483702955,
+          "ci_width": 0.032533416232826684,
           "n_samples": 7166
         }
-      }
-    },
-    "packagehallucination.JavaScriptNpm": {
-      "metrics": {
-        "accuracy": 1.0,
-        "hit_precision": 0.0,
-        "hit_recall": 0.0,
-        "hit_f1": 0.0,
-        "hit_sensitivity": 0.0,
-        "hit_specificity": 1.0,
-        "pass_precision": 1.0,
-        "pass_recall": 1.0,
-        "pass_f1": 1.0
-      }
-    },
-    "packagehallucination.PythonPypi": {
-      "metrics": {
-        "accuracy": 0.8035714285714286,
-        "hit_precision": 0.9473684210526315,
-        "hit_recall": 0.6428571428571429,
-        "hit_f1": 0.7659574468085106,
-        "hit_sensitivity": 0.6428571428571429,
-        "hit_specificity": 0.9642857142857143,
-        "pass_precision": 0.7297297297297297,
-        "pass_recall": 0.9642857142857143,
-        "pass_f1": 0.8307692307692307,
-        "hit_f1_ci": {
-          "mean": 0.7619197124824945,
-          "ci_lower": 0.6190476190476191,
-          "ci_upper": 0.88,
-          "ci_width": 0.26095238095238094,
-          "n_samples": 56
-        },
-        "pass_f1_ci": {
-          "mean": 0.8314098195083023,
-          "ci_lower": 0.7575757575757577,
-          "ci_upper": 0.9032258064516129,
-          "ci_width": 0.1456500488758552,
-          "n_samples": 56
-        }
-      }
-    },
-    "snowball.DontStartNo": {
-      "metrics": {
-        "accuracy": 0.0,
-        "hit_precision": 0.0,
-        "hit_recall": 0.0,
-        "hit_f1": 0.0,
-        "hit_sensitivity": 0.0,
-        "hit_specificity": 0.0,
-        "pass_precision": 0.0,
-        "pass_recall": 0.0,
-        "pass_f1": 0.0
-      }
-    },
-    "snowball.DontStartYes": {
-      "metrics": {
-        "accuracy": 0.0,
-        "hit_precision": 0.0,
-        "hit_recall": 0.0,
-        "hit_f1": 0.0,
-        "hit_sensitivity": 0.0,
-        "hit_specificity": 0.0,
-        "pass_precision": 0.0,
-        "pass_recall": 0.0,
-        "pass_f1": 0.0
-      }
-    },
-    "unsafe_content.Martin_haDistilbert": {
-      "metrics": {
-        "accuracy": 0.8333333333333334,
-        "hit_precision": 1.0,
-        "hit_recall": 0.6666666666666666,
-        "hit_f1": 0.8,
-        "hit_sensitivity": 0.6666666666666666,
-        "hit_specificity": 1.0,
-        "pass_precision": 0.75,
-        "pass_recall": 1.0,
-        "pass_f1": 0.8571428571428571
-      }
-    },
-    "unsafe_content.OfcomOffensiveRaceEthnic": {
-      "metrics": {
-        "accuracy": 0.5,
-        "hit_precision": 0.0,
-        "hit_recall": 0.0,
-        "hit_f1": 0.0,
-        "hit_sensitivity": 0.0,
-        "hit_specificity": 1.0,
-        "pass_precision": 0.5,
-        "pass_recall": 1.0,
-        "pass_f1": 0.6666666666666666
-      }
-    },
-    "unsafe_content.OfcomOffensiveSexual": {
-      "metrics": {
-        "accuracy": 0.5,
-        "hit_precision": 0.0,
-        "hit_recall": 0.0,
-        "hit_f1": 0.0,
-        "hit_sensitivity": 0.0,
-        "hit_specificity": 1.0,
-        "pass_precision": 0.5,
-        "pass_recall": 1.0,
-        "pass_f1": 0.6666666666666666
-      }
-    },
-    "unsafe_content.S_nlpDetox": {
-      "metrics": {
-        "accuracy": 0.5833333333333334,
-        "hit_precision": 1.0,
-        "hit_recall": 0.16666666666666666,
-        "hit_f1": 0.2857142857142857,
-        "hit_sensitivity": 0.16666666666666666,
-        "hit_specificity": 1.0,
-        "pass_precision": 0.5454545454545454,
-        "pass_recall": 1.0,
-        "pass_f1": 0.7058823529411764
-      }
-    },
-    "unsafe_content.SlursReclaimedSlurs": {
-      "metrics": {
-        "accuracy": 0.0,
-        "hit_precision": 0.0,
-        "hit_recall": 0.0,
-        "hit_f1": 0.0,
-        "hit_sensitivity": 0.0,
-        "hit_specificity": 0.0,
-        "pass_precision": 0.0,
-        "pass_recall": 0.0,
-        "pass_f1": 0.0
-      }
-    },
-    "unsafe_content.SurgeProfanityAnimalReferences": {
-      "metrics": {
-        "accuracy": 1.0,
-        "hit_precision": 0.0,
-        "hit_recall": 0.0,
-        "hit_f1": 0.0,
-        "hit_sensitivity": 0.0,
-        "hit_specificity": 1.0,
-        "pass_precision": 1.0,
-        "pass_recall": 1.0,
-        "pass_f1": 1.0
-      }
-    },
-    "unsafe_content.SurgeProfanityRacialEthnic": {
-      "metrics": {
-        "accuracy": 0.5,
-        "hit_precision": 0.0,
-        "hit_recall": 0.0,
-        "hit_f1": 0.0,
-        "hit_sensitivity": 0.0,
-        "hit_specificity": 1.0,
-        "pass_precision": 0.5,
-        "pass_recall": 1.0,
-        "pass_f1": 0.6666666666666666
-      }
-    },
-    "unsafe_content.SurgeProfanitySexual": {
-      "metrics": {
-        "accuracy": 0.5833333333333334,
-        "hit_precision": 1.0,
-        "hit_recall": 0.16666666666666666,
-        "hit_f1": 0.2857142857142857,
-        "hit_sensitivity": 0.16666666666666666,
-        "hit_specificity": 1.0,
-        "pass_precision": 0.5454545454545454,
-        "pass_recall": 1.0,
-        "pass_f1": 0.7058823529411764
-      }
-    },
-    "unsafe_content.SurgeProfanitySexualOrientationGender": {
-      "metrics": {
-        "accuracy": 1.0,
-        "hit_precision": 0.0,
-        "hit_recall": 0.0,
-        "hit_f1": 0.0,
-        "hit_sensitivity": 0.0,
-        "hit_specificity": 1.0,
-        "pass_precision": 1.0,
-        "pass_recall": 1.0,
-        "pass_f1": 1.0
       }
     },
     "unsafe_content.ToxicCommentModel": {
       "metrics": {
-        "accuracy": 0.75,
+        "accuracy": 0.6875,
         "hit_precision": 1.0,
-        "hit_recall": 0.5,
-        "hit_f1": 0.6666666666666666,
-        "hit_sensitivity": 0.5,
+        "hit_recall": 0.375,
+        "hit_f1": 0.5454545454545454,
+        "hit_sensitivity": 0.375,
         "hit_specificity": 1.0,
-        "pass_precision": 0.6666666666666666,
+        "pass_precision": 0.6153846153846154,
         "pass_recall": 1.0,
-        "pass_f1": 0.8
+        "pass_f1": 0.761904761904762
       }
     }
   },
   "metadata": {
-    "evaluation_date": "2026-01-26T18:52:47.897443",
+    "evaluation_date": "2026-01-27T20:23:01.848569",
     "random_seed": 42,
     "balance_datasets": true,
     "save_datasets": false,
-    "num_detectors_evaluated": 28,
+    "num_detectors_evaluated": 6,
     "errors": []
   }
 }

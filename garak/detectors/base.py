@@ -24,10 +24,6 @@ class Detector(Configurable):
     lang_spec: str = (
         None  # language this is for. format: a comma-separated list of BCP47 tags, or "*"
     )
-    precision = 0.0
-    recall = 0.0
-    f1 = None
-    accuracy = None
     active: bool = True
     tags = []  # list of taxonomy categories per the MISP format
 
