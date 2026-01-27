@@ -3,7 +3,7 @@
 
 import gc
 import torch
-from typing import Tuple
+from typing import Tuple, Union, Optional
 from logging import getLogger
 import garak._config
 from garak.generators.huggingface import Model, Pipeline
@@ -64,14 +64,23 @@ def check_for_attack_success(gen_str: str, test_prefixes) -> bool:
 
 
 class AutoDanPrefixManager:
-    def __init__(self, *, generator, instruction, target, adv_string):
+    def __init__(
+        self,
+        *,
+        generator: Union[Pipeline, Model],
+        instruction: str,
+        target: str,
+        adv_string: str,
+        system_prompt: Optional[str],
+    ):
         """Prefix manager class for AutoDAN
 
         Args:
-            generator (garak.generators.huggingface.Model): Generator to use
+            generator (Pipeline | Model): Generator to use
             instruction (str): Instruction to pass to the model
             target (str): Target output string
             adv_string (str): Adversarial (jailbreak) string
+            system_prompt (str): Optional system prompt
         """
         # Can't use isinstance here because of subclassing
         if type(generator) is Pipeline:
@@ -87,24 +96,8 @@ class AutoDanPrefixManager:
         self.target = target
         self.adv_string = adv_string
         self.messages = list()
-        self._system_prompt = None
+        self.system_prompt = system_prompt
         self.target_ids = None
-
-    @property
-    def system_prompt(self):
-        return self._system_prompt
-
-    @system_prompt.getter
-    def system_prompt(self):
-        if not self._system_prompt:
-            if hasattr(garak._config.run, "system_prompt"):
-                self._system_prompt = garak._config.run.system_prompt
-            elif self.messages:
-                for message in self.messages:
-                    if message["role"] == "system":
-                        self._system_prompt = message["content"]
-                        break
-        return self._system_prompt
 
     def _reset_messages(self):
         del self.messages

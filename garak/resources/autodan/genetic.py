@@ -12,7 +12,7 @@ from collections import defaultdict, OrderedDict
 import sys
 import time
 from logging import getLogger
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List, Union
 
 import garak.generators
 from garak.resources.api import nltk
@@ -63,11 +63,11 @@ def autodan_ga(
     score_list: list,
     num_elites: int,
     batch_size: int,
-    crossover_rate=0.5,
-    num_points=5,
-    mutation=0.01,
-    if_softmax=True,
-    mutation_generator=None,
+    crossover_rate: float = 0.5,
+    num_points: int = 5,
+    mutation: float = 0.01,
+    if_softmax: bool = True,
+    mutation_generator: garak.generators.Generator = None,
 ) -> list:
     """Genetic algorithm for creating AutoDAN samples.
 
@@ -548,7 +548,8 @@ def get_score_autodan(
     generator: Pipeline | Model,
     instruction: str,
     target: str,
-    test_controls: Optional[list[str]] = None,
+    test_controls: Optional[List[str]] = None,
+    system_prompt: Optional[str] = None
 ) -> list[float]:
     """Get AutoDAN score for the instruction
 
@@ -557,6 +558,7 @@ def get_score_autodan(
         instruction (str): Instruction to be given to the model
         target (str): Target output
         test_controls (list): List of test jailbreak strings
+        system_prompt (str): Optional system prompt
 
     Returns:
         list of loss values.
@@ -573,7 +575,7 @@ def get_score_autodan(
         model = generator.model
     else:
         msg = f"Expected Pipeline or Model but got {type(generator)}"
-        logging.critical("autodan.genetic.get_score_autodan(): " + msg)
+        logger.critical("autodan.genetic.get_score_autodan(): " + msg)
         raise TypeError(msg)
     for item in test_controls:
         prefix_manager = AutoDanPrefixManager(
@@ -581,6 +583,7 @@ def get_score_autodan(
             instruction=instruction,
             target=target,
             adv_string=item,
+            system_prompt=system_prompt
         )
         input_ids, attention_mask = prefix_manager.get_input_ids(adv_string=item)
         input_ids_list.append(input_ids)

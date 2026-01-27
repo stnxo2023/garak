@@ -24,7 +24,7 @@ import math
 import random
 import string
 from pathlib import Path
-from typing import Union, Tuple
+from typing import Union, Tuple, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -118,7 +118,8 @@ class AttackPrompt:
         self,
         goal: str,
         target: str,
-        generator,
+        generator: Union[Pipeline, Model],
+        system_prompt: Optional[str] = None,
         control_init: str = "! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !",
         test_prefixes: list = REJECTION_STRINGS,
         max_new_tokens: int = 16,
@@ -157,7 +158,7 @@ class AttackPrompt:
         self.device = generator.device
         self.test_prefixes = test_prefixes
         self.messages = list()
-        self._system_prompt = ""
+        self.system_prompt = system_prompt
         self.best_loss = np.inf
         self.success = False
 
@@ -178,26 +179,10 @@ class AttackPrompt:
 
         self._update_ids()
 
-    @property
-    def system_prompt(self):
-        return self._system_prompt
-
-    @system_prompt.getter
-    def system_prompt(self):
-        if not self._system_prompt:
-            if hasattr(garak._config.run, "system_prompt"):
-                self._system_prompt = garak._config.run.system_prompt
-            elif self.messages:
-                for message in self.messages:
-                    if message["role"] == "system":
-                        self._system_prompt = message["content"]
-                        break
-        return self._system_prompt
-
     def _reset_messages(self):
         del self.messages
         self.messages = list()
-        if self.system_prompt:
+        if self.system_prompt is not None:
             self.messages.append({"role": "system", "content": self.system_prompt})
 
     def _gcg_loss(
@@ -509,6 +494,7 @@ class GCGAttack:
         goals: list[str],
         targets: list[str],
         generator: Union[Model, Pipeline],
+        system_prompt: str = None,
         control_init: str = "! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !",
         test_prefixes: list[str] = REJECTION_STRINGS,
         outfile: Union[Path, str] = None,
@@ -524,6 +510,8 @@ class GCGAttack:
             The list of targets of the attack
         generator: Model | Pipeline
             Target generator to attack
+        system_prompt: str, optional
+            System prompt to use, if any.
         control_init : str, optional
             A string used to control the attack (default is "! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !")
         test_prefixes : list, optional
@@ -541,9 +529,11 @@ class GCGAttack:
         self.generator = generator
         self.test_prefixes = test_prefixes
         self.outfile = outfile
+        self.system_prompt = system_prompt
         self.prompts = self.build_prompts(
             goals=goals,
             targets=targets,
+            system_prompt=system_prompt,
             control_init=control_init,
             test_prefixes=test_prefixes,
             max_new_tokens=max_new_tokens,
@@ -560,8 +550,9 @@ class GCGAttack:
 
     def build_prompts(
         self,
-        goals: list[str],
-        targets: list[str],
+        goals: List[str],
+        targets: List[str],
+        system_prompt: Optional[str],
         control_init: str,
         test_prefixes: list[str],
         max_new_tokens: int,

@@ -107,6 +107,11 @@ class GCG(garak.probes.Probe):
         try:
             from garak.generators.huggingface import Model, Pipeline
 
+            if hasattr(self, "system_prompt"):
+                system_prompt = self.system_prompt
+            else:
+                system_prompt = None
+
             if not isinstance(generator, Pipeline):
                 msg = f"Incompatible generator type received: {generator.__class__.__module__}.{generator.__class__.__name__} expected: {Model.__module__}.{Model.__name__}"
                 logging.error(msg)
@@ -123,6 +128,7 @@ class GCG(garak.probes.Probe):
                 topk=self.topk,
                 anneal=self.anneal,
                 filter_cand=self.filter_cand,
+                system_prompt=system_prompt,
             )
         except Exception as e:
             logging.exception(e)

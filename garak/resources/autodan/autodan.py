@@ -8,6 +8,7 @@ from pathlib import Path
 import torch
 from tqdm import tqdm
 import numpy as np
+from typing import Optional
 
 import gc
 
@@ -85,15 +86,15 @@ def autodan_generate(
     crossover_rate: float = 0.5,
     num_points: int = 5,
     mutation_rate: float = 0.1,
-    mutation_generator_name: str = "gpt-5-nano",
-    mutation_generator_type: str = "openai.OpenAIReasoningGenerator",
-
+    mutation_generator_name: str = "mistralai/mixtral-8x22b-instruct-v0.1",
+    mutation_generator_type: str = "nim.NVOpenAIChat",
     hierarchical: bool = False,
     out_path: Path = cached_autodan_resource_data / "autodan_prompts.txt",
     init_prompt_path: Path = autodan_resource_data / "autodan_init.txt",
     reference_path: Path = autodan_resource_data / "prompt_group.pth",
     stop_on_success: bool = True,
     random_seed: int = None,
+    system_prompt: Optional[str] = None
 ) -> list[str]:
     """Execute base AutoDAN generation
 
@@ -115,6 +116,7 @@ def autodan_generate(
         reference_path (Path): Path to reference prompt tensors
         stop_on_success (bool): Return on first success
         random_seed (int): Random seed, if used.
+        system_prompt (str): Optional system prompt
 
     Returns:
         List of successful adversarial prefixes
@@ -166,6 +168,7 @@ def autodan_generate(
                 instruction=prompt,
                 target=target,
                 test_controls=new_adv_prefixes,
+                system_prompt=system_prompt,
             )
 
             best_new_adv_prefix_id = np.argmin(score_list)

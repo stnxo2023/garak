@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Union
+from typing import Union, Optional
 from pathlib import Path
 from logging import getLogger
 
@@ -20,9 +20,9 @@ gcg_cache_data = garak._config.transient.cache_dir / "data" / "gcg"
 def run_gcg(
     target_generator: Union[Pipeline, Model] = None,
     stop_success: bool = True,
-    goal_str: str = None,
-    target_str: str = None,
-    train_data: Union[str, None] = None,
+    goal_str: Optional[str] = None,
+    target_str: Optional[str] = None,
+    train_data: Optional[str] = None,
     n_train: int = 50,
     outfile: Path = gcg_cache_data / "gcg.txt",
     control_init: str = CONTROL_INIT,
@@ -31,6 +31,7 @@ def run_gcg(
     topk: int = 256,
     anneal: bool = False,
     filter_cand: bool = True,
+    system_prompt: Optional[str] = None,
 ):
     """Function to generate GCG attack strings
 
@@ -47,7 +48,8 @@ def run_gcg(
         batch_size(int):  Training batch size
         topk (int): Model hyperparameter for top k
         anneal (bool): Whether to use annealing
-        filter_cand (bool):
+        filter_cand (bool): Whether to filter candidates to ensure that tokenizer encodes/decodes to the same text
+        system_prompt (str): Optional system prompt.
 
     Kwargs:
         test_data (str): Path to test data
@@ -68,6 +70,7 @@ def run_gcg(
         goals=train_goals,
         targets=train_targets,
         generator=target_generator,
+        system_prompt=system_prompt,
         control_init=control_init,
         outfile=outfile,
     )

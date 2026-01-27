@@ -379,7 +379,6 @@ class AutoDAN(
         "red_team_model_config": {},
         "hierarchical": False,
         "stop_on_success": True,
-        "random_seed": None,
     }
 
     def __init__(self, config_root=_config):
@@ -392,6 +391,11 @@ class AutoDAN(
             from garak.resources.autodan import autodan_generate
 
             self.autodan = autodan_generate
+
+        if hasattr(self, "system_prompt"):
+            system_prompt = self.system_prompt
+        else:
+            system_prompt = None
 
         try:
             autodan_outputs = self.autodan(
@@ -408,7 +412,8 @@ class AutoDAN(
                 mutation_generator_type=self.red_team_model_type,
                 hierarchical=self.hierarchical,
                 stop_on_success=self.stop_on_success,
-                random_seed=self.random_seed,
+                random_seed=self.seed,
+                system_prompt=system_prompt,
             )
         except Exception as e:
             logging.exception(e)
