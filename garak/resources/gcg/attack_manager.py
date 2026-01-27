@@ -601,8 +601,13 @@ class GCGAttack:
                 jailbroken = prompt.test()
                 if jailbroken:
                     logger.info(f"Writing successful jailbreak to {str(self.outfile)}")
-                    with open(self.outfile, "a", encoding="utf-8") as f:
-                        f.write(f"{prompt.control}\n")
+                    try:
+                        with open(self.outfile, "a", encoding="utf-8") as f:
+                            f.write(f"{prompt.control}\n")
+                    except FileNotFoundError as e:
+                        logger.error(f"Failed to open {self.outfile}: {e}")
+                    except PermissionError as e:
+                        logger.error(f"Failed to open {self.outfile}: {e}")
                     successful_suffixes.append(prompt.control)
                     pbar.update(1)
                     continue
@@ -622,8 +627,13 @@ class GCGAttack:
                 logger.info(
                     f"suffix.GCG: Writing successful jailbreak to {str(self.outfile)}"
                 )
-                with open(self.outfile, "a", encoding="utf-8") as f:
-                    f.write(f"{optim_str}\n")
+                try:
+                    with open(self.outfile, "a", encoding="utf-8") as f:
+                        f.write(f"{optim_str}\n")
+                except FileNotFoundError as e:
+                    logger.error(f"Failed to open {self.outfile}: {e}")
+                except PermissionError as e:
+                    logger.error(f"Failed to open {self.outfile}: {e}")
                 successful_suffixes.append((optim_str, goal_str))
             else:
                 logger.info(

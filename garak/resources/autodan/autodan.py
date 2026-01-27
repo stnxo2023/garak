@@ -94,7 +94,7 @@ def autodan_generate(
     reference_path: Path = autodan_resource_data / "prompt_group.pth",
     stop_on_success: bool = True,
     random_seed: int = None,
-    system_prompt: Optional[str] = None
+    system_prompt: Optional[str] = None,
 ) -> list[str]:
     """Execute base AutoDAN generation
 
@@ -189,8 +189,13 @@ def autodan_generate(
                 successful_prefixes.append(adv_prefix)
                 outpathdir = Path(out_path).parent
                 outpathdir.mkdir(parents=True, exist_ok=True)
-                with open(out_path, "a", encoding="utf-8") as f:
-                    f.write(f"{adv_prefix}\n")
+                try:
+                    with open(out_path, "a", encoding="utf-8") as f:
+                        f.write(f"{adv_prefix}\n")
+                except FileNotFoundError as e:
+                    logger.error(f"Failed to open {out_path}: {e}")
+                except PermissionError as e:
+                    logger.error(f"Failed to open {out_path}: {e}")
                 if stop_on_success:
                     break
                 else:

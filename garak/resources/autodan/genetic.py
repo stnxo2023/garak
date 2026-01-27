@@ -549,7 +549,7 @@ def get_score_autodan(
     instruction: str,
     target: str,
     test_controls: Optional[List[str]] = None,
-    system_prompt: Optional[str] = None
+    system_prompt: Optional[str] = None,
 ) -> list[float]:
     """Get AutoDAN score for the instruction
 
@@ -583,7 +583,7 @@ def get_score_autodan(
             instruction=instruction,
             target=target,
             adv_string=item,
-            system_prompt=system_prompt
+            system_prompt=system_prompt,
         )
         input_ids, attention_mask = prefix_manager.get_input_ids(adv_string=item)
         input_ids_list.append(input_ids)
