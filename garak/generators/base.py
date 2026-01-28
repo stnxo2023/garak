@@ -179,8 +179,6 @@ class Generator(Configurable):
             )
 
         else:
-            outputs = []
-
             if (
                 hasattr(self, "parallel_requests")
                 and self.parallel_requests
