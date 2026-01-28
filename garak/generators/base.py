@@ -156,13 +156,15 @@ class Generator(Configurable):
 
         self._pre_generate_hook()
 
-        assert (
-            generations_this_call >= 0
-        ), f"Unexpected value for generations_per_call: {generations_this_call}"
+        outputs = []
 
         if generations_this_call == 0:
             logging.debug("generate() called with generations_this_call = 0")
             return []
+
+        assert (
+            isinstance(generations_this_call, int) and generations_this_call < 0
+        ), f"Unexpected value for generations_per_call: {generations_this_call}"
 
         if generations_this_call == 1:
             outputs = self._call_model(prompt, 1)
