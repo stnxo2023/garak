@@ -332,7 +332,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2026-01-16 10:41:37 +0000"
+      "mod_time": "2026-01-28 08:20:25 +0000"
     },
     "probes.base.Probe": {
       "description": "Base class for objects that define and execute LLM evaluations",
@@ -352,7 +352,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2026-01-16 10:41:37 +0000"
+      "mod_time": "2026-01-28 08:20:25 +0000"
     },
     "probes.base.TreeSearchProbe": {
       "DEFAULT_PARAMS": {
@@ -377,7 +377,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2026-01-16 10:41:37 +0000"
+      "mod_time": "2026-01-28 08:20:25 +0000"
     },
     "probes.continuation.ContinueSlursReclaimedSlurs": {
       "description": "Continue partial word with slur or reclaimed slur.",
@@ -7898,7 +7898,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-01-14 19:54:36 +0000"
+      "mod_time": "2026-01-28 10:38:34 +0000"
     },
     "generators.bedrock.BedrockGenerator": {
       "description": "Interface for AWS Bedrock foundation models using Converse API",
