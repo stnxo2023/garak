@@ -41,7 +41,9 @@ The formula:
 
 Now you have a score in the range 1.0-5.0 where higher is better.
 
-NB: No garak score is stable over time. This is intended behaviour. Measuring TBSA using the same target and config but different versions of garak will lead to change, with the most likely one being a worsening TBSA as version number increases.
+NB: No garak score is stable over time. 
+This is intended behaviour. 
+Measuring TBSA using the same target and config but different versions of garak will lead to change, with the most likely outcome being a worsening TBSA as version number increases.
 
 
 When should I use TBSA?
