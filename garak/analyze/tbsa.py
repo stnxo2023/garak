@@ -284,7 +284,7 @@ def main(argv=None) -> None:
     print(f"📝 Probe/detector pairs contributing: {pd_count}")
     print(f"🔑 Version/probe hash: {pdver_hash}")
     code = garak.resources.theme.EMOJI_SCALE_COLOUR_SQUARE[int(tbsa) - 1]
-    print(f"{code} TBSA: {tbsa}")
+    print(f"{code} TBSA: {tbsa:0.1f}")
 
     if args.json_output:
         with open(args.json_output, "w", encoding="utf-8") as json_outfile:
