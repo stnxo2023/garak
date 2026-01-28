@@ -263,6 +263,9 @@ def main(argv=None) -> None:
 
     print(f"📜 Report file: {args.report_path}")
 
+    if args.json_output:
+        print(f"📜 JSON output to: {args.json_output}")
+
     digest = None
     if args.verbose:
         print(f"Processing {report_path}")
@@ -287,6 +290,7 @@ def main(argv=None) -> None:
     print(f"{code} TBSA: {tbsa:0.1f}")
 
     if args.json_output:
+
         with open(args.json_output, "w", encoding="utf-8") as json_outfile:
             results = {
                 "tbsa": tbsa,
