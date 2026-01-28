@@ -163,7 +163,7 @@ class Generator(Configurable):
             return []
 
         assert (
-            isinstance(generations_this_call, int) and generations_this_call < 0
+            isinstance(generations_this_call, int) and generations_this_call > 0
         ), f"Unexpected value for generations_per_call: {generations_this_call}"
 
         if generations_this_call == 1:
