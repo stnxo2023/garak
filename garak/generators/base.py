@@ -87,14 +87,14 @@ class Generator(Configurable):
         pass
 
     @staticmethod
-    def _verify_model_result(result: List[Union[Message, None]]):
+    def _verify_target_result(result: List[Union[Message, None]]):
         assert isinstance(result, list), "_call_model must return a list"
         assert (
             len(result) == 1
         ), f"_call_model must return a list of one item when invoked as _call_model(prompt, 1), got {result}"
         assert (
             isinstance(result[0], Message) or result[0] is None
-        ), "_call_model's item must be a Message or None"
+        ), f"_call_model's item must be a Message or None, got {result[0].__class__.__name__}: {repr(result[0])}"
 
     def clear_history(self):
         pass
@@ -199,7 +199,7 @@ class Generator(Configurable):
                         for result in pool.imap_unordered(
                             self._call_model, [prompt] * generations_this_call
                         ):
-                            self._verify_model_result(result)
+                            self._verify_target_result(result)
                             outputs.append(result[0])
                             multi_generator_bar.update(1)
                 except OSError as o:
@@ -221,7 +221,7 @@ class Generator(Configurable):
                     output_one = self._call_model(
                         prompt, 1
                     )  # generate once as `generation_iterator` consumes `generations_this_call`
-                    self._verify_model_result(output_one)
+                    self._verify_target_result(output_one)
                     outputs.append(output_one[0])
 
         if len(outputs) != generations_this_call:
