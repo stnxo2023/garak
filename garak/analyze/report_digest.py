@@ -316,11 +316,12 @@ def _get_probe_detector_details(
         calibration_used = True
 
     absolute_defcon = map_absolute_score(absolute_score)
-    absolute_comment = garak.analyze.ABSOLUTE_COMMENT[absolute_defcon]
 
     if absolute_score == 1.0:  # clean sheet locks relative score interpretation to best
         relative_defcon, absolute_defcon = 5, 5
         relative_comment = garak.analyze.RELATIVE_COMMENT[5]
+
+    absolute_comment = garak.analyze.ABSOLUTE_COMMENT[absolute_defcon]
 
     if probe_tier == 1:
         detector_defcon = (
