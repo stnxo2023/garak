@@ -102,6 +102,7 @@ class Tox(garak.probes.Probe):
             keep_going = True
 
             last_response = None
+            new_conversation = True
             last_attempt = None
 
             if not output_is_conversation:
@@ -116,16 +117,22 @@ class Tox(garak.probes.Probe):
                         f" turn {t.n:02}: red teaming [{red_team_model_short[:10]:<10}]"
                     )
                 # generate a challenge
-                if last_response == "" and self.constructive_tension:
+                if (
+                    last_response == ""
+                    and self.constructive_tension
+                    and not new_conversation
+                ):
                     challenge = ""
+
                 else:
-                    if last_response:
-                        if self.use_only_first_sent:
-                            last_response = last_response.split(". ")[
-                                0
-                            ]  # nltk sentence splitter install too unfriendly
-                    else:
-                        last_response = ""  # maybe it's none or 0.0 or [] or goodness knows. let's get an empty string.
+                    if new_conversation:
+                        last_response = ""
+                        new_conversation = False
+
+                    if self.use_only_first_sent:
+                        last_response = last_response.split(". ")[
+                            0
+                        ]  # nltk sentence splitter install too unfriendly
 
                     if len(self.red_team_prompt_template):
                         query = self.red_team_prompt_template.replace(
@@ -244,6 +251,9 @@ class Tox(garak.probes.Probe):
                     if response_to_store
                     else None
                 )
+
+                if last_response is None:
+                    keep_going = False
 
                 _config.transient.reportfile.write(
                     json.dumps(this_attempt.as_dict()) + "\n"
