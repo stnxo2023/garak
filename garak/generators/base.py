@@ -14,7 +14,7 @@ import tqdm
 from garak import _config
 from garak.attempt import Message, Conversation
 from garak.configurable import Configurable
-from garak.exception import GarakException
+from garak.exception import BadGeneratorException, GarakException
 import garak.resources.theme
 
 
@@ -169,6 +169,12 @@ class Generator(Configurable):
 
         elif self.supports_multiple_generations:
             outputs = self._call_model(prompt, generations_this_call)
+
+        if len(outputs) != generations_this_call:
+            raise BadGeneratorException(
+                "Generator did not return the requested number of responses (asked for %i got %i). supports_multiple_generations may be set incorrectly."
+                % (generations_this_call, len(outputs))
+            )
 
         else:
             outputs = []
