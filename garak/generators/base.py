@@ -172,12 +172,6 @@ class Generator(Configurable):
         elif self.supports_multiple_generations:
             outputs = self._call_model(prompt, generations_this_call)
 
-        if len(outputs) != generations_this_call:
-            raise BadGeneratorException(
-                "Generator did not return the requested number of responses (asked for %i got %i). supports_multiple_generations may be set incorrectly."
-                % (generations_this_call, len(outputs))
-            )
-
         else:
             if (
                 hasattr(self, "parallel_requests")
@@ -229,6 +223,12 @@ class Generator(Configurable):
                     )  # generate once as `generation_iterator` consumes `generations_this_call`
                     self._verify_model_result(output_one)
                     outputs.append(output_one[0])
+
+        if len(outputs) != generations_this_call:
+            raise BadGeneratorException(
+                "Generator did not return the requested number of responses (asked for %i got %i). supports_multiple_generations may be set incorrectly."
+                % (generations_this_call, len(outputs))
+            )
 
         outputs = self._post_generate_hook(outputs)
 
