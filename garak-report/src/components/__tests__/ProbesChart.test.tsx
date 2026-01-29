@@ -68,21 +68,17 @@ vi.mock("../../hooks/useSeverityColor", () => ({
 // Define interface for mock DetectorsView props
 interface MockDetectorsViewProps {
   "data-testid"?: string;
-  probe?: { summary?: { probe_name?: string } };
-  allProbes?: unknown[];
-  setSelectedProbe?: (probe: null) => void;
+  probe?: { probe_name?: string; summary?: { probe_name?: string }; detectors?: unknown[] };
+  isDark?: boolean;
 }
 
 // Mock DetectorsView
 vi.mock("../DetectorsView", () => ({
   __esModule: true,
-  default: ({ "data-testid": dataTestId, probe, allProbes, setSelectedProbe }: MockDetectorsViewProps) => (
+  default: ({ "data-testid": dataTestId, probe }: MockDetectorsViewProps) => (
     <div data-testid={dataTestId ?? "detectors-view"}>
-      <div data-testid="detector-probe-name">{probe?.summary?.probe_name}</div>
-      <div data-testid="detector-all-probes-count">{allProbes?.length}</div>
-      <button onClick={() => setSelectedProbe?.(null)} data-testid="detector-clear-btn">
-        Clear
-      </button>
+      <div data-testid="detector-probe-name">{probe?.summary?.probe_name ?? probe?.probe_name}</div>
+      <div data-testid="detector-count">{probe?.detectors?.length ?? 0}</div>
     </div>
   ),
 }));
@@ -406,39 +402,6 @@ describe("ProbesChart", () => {
 
       // Check DetectorsView receives correct props
       expect(screen.getByTestId("detector-probe-name")).toHaveTextContent("probe-1");
-      expect(screen.getByTestId("detector-all-probes-count")).toHaveTextContent("1");
-
-      // Test that DetectorsView can clear selection
-      const clearButton = screen.getByTestId("detector-clear-btn");
-      fireEvent.click(clearButton);
-      expect(setSelectedProbe).toHaveBeenCalledWith(null);
-    });
-
-    it("passes all probes to DetectorsView", () => {
-      const multiProbeProps = {
-        ...baseProps,
-        module: {
-          ...baseProps.module,
-          probes: [
-            ...baseProps.module.probes,
-            {
-              probe_name: "probe-2",
-              summary: {
-                probe_name: "probe-2",
-                probe_score: 0.3,
-                probe_severity: 1,
-                probe_descr: "Second probe",
-                probe_tier: 1,
-              },
-              detectors: [],
-            },
-          ],
-        },
-        selectedProbe: baseProps.module.probes[0],
-      };
-
-      render(<ProbesChart {...multiProbeProps} />);
-      expect(screen.getByTestId("detector-all-probes-count")).toHaveTextContent("2");
     });
   });
 

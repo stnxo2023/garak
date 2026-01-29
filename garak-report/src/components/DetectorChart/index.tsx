@@ -10,3 +10,4 @@
 export { default as DetectorChartHeader } from "./DetectorChartHeader";
 export { default as DetectorFilters } from "./DetectorFilters";
 export { default as DetectorLollipopChart } from "./DetectorLollipopChart";
+export { default as DetectorResultsTable } from "./DetectorResultsTable";

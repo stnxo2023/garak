@@ -1,6 +1,7 @@
 /**
  * @file useDetectorChartOptions.ts
  * @description Hook to build ECharts options for detector lollipop chart.
+ *              Displays Z-score comparison across detectors within a single probe.
  * @module hooks
  *
  * @copyright NVIDIA Corporation 2023-2026
@@ -8,144 +9,136 @@
  */
 
 import { useMemo } from "react";
-import type { Probe, ChartDetector, ChartPointData, ChartLineData } from "../types/ProbesChart";
-import type { GroupedDetectorEntry } from "../types/Detector";
+import type { Detector } from "../types/ProbesChart";
 import { useTooltipFormatter } from "./useTooltipFormatter";
-import { useDetectorsChartSeries } from "./useDetectorsChartSeries";
 import useSeverityColor from "./useSeverityColor";
 import {
   THEME_COLORS,
   CHART_DIMENSIONS,
   CHART_SYMBOL_SIZES,
   CHART_LINE_WIDTHS,
-  CHART_BORDER_WIDTHS,
-  CHART_SHADOW,
-  CHART_OPACITY,
 } from "../constants";
 
 /** Return type for detector chart options hook */
 export interface DetectorChartOptionsResult {
   /** ECharts option configuration */
   option: Record<string, unknown>;
-  /** Visible entries after filtering */
-  visible: ChartDetector[];
-  /** Chart height based on visible entries */
+  /** Chart height based on number of detectors */
   chartHeight: number;
+  /** Whether there is data to display */
+  hasData: boolean;
 }
 
-/**
- * Converts GroupedDetectorEntry to ChartDetector format.
- * @param entry - Grouped detector entry
- * @returns Chart-compatible detector data
- */
-function toChartDetector(entry: GroupedDetectorEntry): ChartDetector {
-  return {
-    label: entry.label,
-    probeName: entry.probeName,
-    zscore: entry.zscore,
-    detector_score: entry.detector_score,
-    comment: entry.comment,
-    color: entry.color,
-    // Convert source names to display names (compute failures from passed)
-    attempt_count: entry.total_evaluated,
-    hit_count: entry.total_evaluated != null && entry.passed != null 
-      ? entry.total_evaluated - entry.passed 
-      : null,
-    unavailable: entry.unavailable,
-    detector_defcon: entry.detector_defcon,
-    absolute_defcon: entry.absolute_defcon,
-    relative_defcon: entry.relative_defcon,
-  };
+/** Internal chart data structure */
+interface ChartDetectorData {
+  name: string;
+  zscore: number | null;
+  detector_score: number | null;
+  comment: string;
+  color: string;
+  defcon: number;
+  total: number;
+  failed: number;
 }
 
 /**
  * Builds ECharts options for detector lollipop chart visualization.
+ * Shows Z-score comparison across detectors within a single probe.
  *
- * @param probe - Currently selected probe
- * @param detectorType - Type of detector being visualized
- * @param entries - Detector entries to display
- * @param hideUnavailable - Whether to hide N/A entries
+ * @param detectors - Detectors from the selected probe
  * @param isDark - Whether dark theme is active
- * @returns Chart options, visible entries, and computed height
+ * @returns Chart options, height, and data availability flag
  */
 export function useDetectorChartOptions(
-  probe: Probe,
-  detectorType: string,
-  entries: GroupedDetectorEntry[],
-  hideUnavailable: boolean,
+  detectors: Detector[],
   isDark?: boolean
 ): DetectorChartOptionsResult {
-  const buildSeries = useDetectorsChartSeries();
   const formatTooltip = useTooltipFormatter();
-  const { getDefconColor } = useSeverityColor();
+  const { getSeverityColorByComment, getDefconColor } = useSeverityColor();
   const textColor = isDark ? THEME_COLORS.text.dark : THEME_COLORS.text.light;
 
-  // Convert and sort entries by zscore
-  const sortedDetectors = useMemo(
-    () =>
-      entries
-        .map(toChartDetector)
-        .sort((a, b) => b.label.localeCompare(a.label)), // Reverse alphabetical (A at bottom, Z at top)
-    [entries]
-  );
+  // Convert detectors to chart data format
+  const chartData = useMemo<ChartDetectorData[]>(() => {
+    return detectors.map((d) => {
+      const zscore = d.relative_score;
+      const zscoreIsValid = zscore != null && typeof zscore === "number" && !isNaN(zscore);
+      const total = d.total_evaluated ?? d.attempt_count ?? 0;
+      const passed = d.passed ?? (total - (d.hit_count ?? 0));
+      const failed = total - passed;
 
-  const { pointSeries, lineSeries, naSeries, visible } = useMemo(
-    () => buildSeries(sortedDetectors, hideUnavailable),
-    [buildSeries, sortedDetectors, hideUnavailable]
-  );
+      return {
+        name: d.detector_name,
+        zscore: zscoreIsValid ? zscore : null,
+        detector_score: d.absolute_score != null ? d.absolute_score * 100 : null,
+        comment: d.relative_comment ?? "Unknown",
+        color: zscoreIsValid
+          ? getSeverityColorByComment(d.relative_comment ?? "")
+          : "#999999", // Gray for unavailable
+        defcon: d.detector_defcon ?? 5,
+        total,
+        failed,
+      };
+    }).sort((a, b) => b.name.localeCompare(a.name)); // Reverse alpha for A at bottom
+  }, [detectors, getSeverityColorByComment]);
 
+  // Check if we have any valid data
+  const hasData = chartData.some((d) => d.zscore !== null);
+
+  // Build Y-axis labels with counts
   const yAxisLabels = useMemo(
     () =>
-      visible.map(d => {
-        let label = d.label;
-        if (d.attempt_count != null && d.hit_count != null) {
-          label = `${d.label} (${d.hit_count}/${d.attempt_count})`;
+      chartData.map((d) => {
+        if (d.total > 0) {
+          return `${d.name} (${d.failed}/${d.total})`;
         }
-        return label;
+        return d.name;
       }),
-    [visible]
+    [chartData]
   );
 
-  // Check if selected probe is in visible array
-  const selectedProbeInVisible = useMemo(
-    () => visible.some(d => d.probeName === probe.probe_name),
-    [visible, probe.probe_name]
-  );
+  // Build series data
+  const { pointData, lineData } = useMemo(() => {
+    const points: unknown[] = [];
+    const lines: unknown[] = [];
 
-  // Build enhanced series with selection highlighting
-  const option = useMemo(() => {
-    const enhancedPointData: ChartPointData[] = pointSeries.data.map((point, index) => {
-      const isSelected = selectedProbeInVisible && visible[index]?.probeName === probe.probe_name;
-      const detectorDefcon = visible[index]?.detector_defcon ?? 0;
+    chartData.forEach((d, index) => {
+      if (d.zscore === null) return;
 
-      return {
-        ...point,
-        symbolSize: isSelected ? CHART_SYMBOL_SIZES.selected : CHART_SYMBOL_SIZES.normal,
+      // Point (dot at the end of lollipop)
+      points.push({
+        value: [d.zscore, index],
+        name: d.name,
+        zscore: d.zscore,
+        detector_score: d.detector_score,
+        comment: d.comment,
         itemStyle: {
-          ...point.itemStyle,
-          borderWidth: isSelected ? CHART_BORDER_WIDTHS.selected : CHART_BORDER_WIDTHS.normal,
-          borderColor: isSelected ? getDefconColor(detectorDefcon) : "transparent",
-          shadowBlur: isSelected ? CHART_SHADOW.blur.selected : CHART_SHADOW.blur.normal,
-          shadowColor: isSelected ? getDefconColor(detectorDefcon) : "transparent",
+          color: d.color,
+          borderWidth: 2,
+          borderColor: getDefconColor(d.defcon),
         },
-      };
-    });
+        symbolSize: CHART_SYMBOL_SIZES.normal,
+      });
 
-    const enhancedLineData: ChartLineData[] = lineSeries.data.map((line, index) => {
-      const isSelected = selectedProbeInVisible && visible[index]?.probeName === probe.probe_name;
-      const detectorDefcon = visible[index]?.detector_defcon ?? 0;
-      const originalColor = line.itemStyle?.color ?? line.value[2] ?? "#999";
-
-      return {
-        ...line,
+      // Line (stem from 0 to value)
+      lines.push({
+        value: [d.zscore, index, d.color],
+        name: d.name,
+        zscore: d.zscore,
+        detector_score: d.detector_score,
+        comment: d.comment,
         lineStyle: {
-          width: isSelected ? CHART_LINE_WIDTHS.selected : CHART_LINE_WIDTHS.normal,
-          color: isSelected ? getDefconColor(detectorDefcon) : originalColor,
+          width: CHART_LINE_WIDTHS.normal,
+          color: d.color,
         },
-      };
+      });
     });
 
-    return {
+    return { pointData: points, lineData: lines };
+  }, [chartData, getDefconColor]);
+
+  // Build chart option
+  const option = useMemo(
+    () => ({
       grid: {
         containLabel: CHART_DIMENSIONS.detectorGrid.containLabel,
         left: CHART_DIMENSIONS.detectorGrid.left,
@@ -155,8 +148,8 @@ export function useDetectorChartOptions(
       },
       tooltip: {
         trigger: "item",
-        formatter: (params: { data: ChartDetector }) =>
-          formatTooltip({ data: params.data, detectorType }),
+        formatter: (params: { data: { name: string; zscore: number | null; detector_score: number | null; comment: string | null } }) =>
+          formatTooltip({ data: { ...params.data, detector_score: params.data.detector_score ?? undefined, comment: params.data.comment ?? undefined }, detectorType: params.data.name }),
         confine: true,
       },
       xAxis: {
@@ -175,81 +168,72 @@ export function useDetectorChartOptions(
       yAxis: {
         type: "category",
         data: yAxisLabels,
-        triggerEvent: true,
         axisLabel: {
           fontSize: CHART_DIMENSIONS.axis.fontSize,
           color: textColor,
           rich: {
-            selected1: {
-              fontWeight: "bold",
-              fontSize: CHART_DIMENSIONS.axis.fontSize,
-              color: getDefconColor(1),
-            },
-            selected2: {
-              fontWeight: "bold",
-              fontSize: CHART_DIMENSIONS.axis.fontSize,
-              color: getDefconColor(2),
-            },
-            selected3: {
-              fontWeight: "bold",
-              fontSize: CHART_DIMENSIONS.axis.fontSize,
-              color: getDefconColor(3),
-            },
-            selected4: {
-              fontWeight: "bold",
-              fontSize: CHART_DIMENSIONS.axis.fontSize,
-              color: getDefconColor(4),
-            },
-            selected5: {
-              fontWeight: "bold",
-              fontSize: CHART_DIMENSIONS.axis.fontSize,
-              color: getDefconColor(5),
-            },
-            dimmed: {
-              fontSize: CHART_DIMENSIONS.axis.fontSize,
-              color: textColor,
-              opacity: CHART_OPACITY.dimmed,
-            },
+            // Defcon-colored styles for labels
+            dc1: { fontWeight: "bold", color: getDefconColor(1) },
+            dc2: { fontWeight: "bold", color: getDefconColor(2) },
+            dc3: { fontWeight: "bold", color: getDefconColor(3) },
+            dc4: { fontWeight: "bold", color: getDefconColor(4) },
+            dc5: { fontWeight: "bold", color: getDefconColor(5) },
           },
           formatter: (value: string, index: number) => {
-            const isSelected =
-              selectedProbeInVisible && visible[index]?.probeName === probe.probe_name;
-            const detectorDefcon = visible[index]?.detector_defcon ?? 0;
-
-            if (!isSelected) {
-              return `{dimmed|${value}}`;
-            }
-
-            return `{selected${detectorDefcon}|${value}}`;
+            const detector = chartData[index];
+            if (!detector) return value;
+            const defcon = detector.defcon;
+            return `{dc${defcon}|${value}}`;
           },
         },
         axisLine: { lineStyle: { color: textColor } },
       },
       series: [
-        { ...lineSeries, data: enhancedLineData },
-        { ...pointSeries, data: enhancedPointData },
-        naSeries,
+        // Line series (stems)
+        {
+          type: "custom",
+          renderItem: (
+            _params: { coordSys: { x: number; width: number } },
+            api: {
+              value: (dim: number) => number;
+              coord: (val: [number, number]) => [number, number];
+              style: () => Record<string, unknown>;
+            }
+          ) => {
+            const xValue = api.value(0);
+            const yValue = api.value(1);
+            const start = api.coord([0, yValue]);
+            const end = api.coord([xValue, yValue]);
+
+            return {
+              type: "line",
+              shape: {
+                x1: start[0],
+                y1: start[1],
+                x2: end[0],
+                y2: end[1],
+              },
+              style: api.style(),
+            };
+          },
+          encode: { x: 0, y: 1 },
+          data: lineData,
+        },
+        // Point series (dots)
+        {
+          type: "scatter",
+          symbolSize: CHART_SYMBOL_SIZES.normal,
+          data: pointData,
+        },
       ],
-    };
-  }, [
-    pointSeries,
-    lineSeries,
-    naSeries,
-    selectedProbeInVisible,
-    visible,
-    probe.probe_name,
-    getDefconColor,
-    formatTooltip,
-    detectorType,
-    textColor,
-    isDark,
-    yAxisLabels,
-  ]);
+    }),
+    [chartData, yAxisLabels, pointData, lineData, formatTooltip, getDefconColor, textColor, isDark]
+  );
 
   const chartHeight = Math.max(
     CHART_DIMENSIONS.detector.minHeight,
-    CHART_DIMENSIONS.detector.rowHeight * visible.length + CHART_DIMENSIONS.detector.extraSpace
+    CHART_DIMENSIONS.detector.rowHeight * chartData.length + CHART_DIMENSIONS.detector.extraSpace
   );
 
-  return { option, visible, chartHeight };
+  return { option, chartHeight, hasData };
 }

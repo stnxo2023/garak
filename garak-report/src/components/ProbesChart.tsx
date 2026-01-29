@@ -89,8 +89,6 @@ const ProbesChart = ({
           {selectedProbe && (
             <DetectorsView
               probe={selectedProbe}
-              allProbes={module.probes}
-              setSelectedProbe={setSelectedProbe}
               isDark={isDark}
               data-testid="detectors-view"
             />

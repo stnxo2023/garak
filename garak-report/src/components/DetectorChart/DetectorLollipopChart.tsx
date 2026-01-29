@@ -1,6 +1,6 @@
 /**
  * @file DetectorLollipopChart.tsx
- * @description Lollipop chart showing Z-score comparison across probes for a detector type.
+ * @description Lollipop chart showing Z-score comparison across detectors within a probe.
  *              Displays horizontal lines from zero to Z-score value with dot endpoints.
  * @module components/DetectorChart
  *
@@ -12,53 +12,36 @@ import { useRef, useState, useCallback } from "react";
 import ReactECharts from "echarts-for-react";
 import { Button, Divider, Flex, Stack, StatusMessage, Text, Tooltip } from "@kui/react";
 import { Info } from "lucide-react";
-import type { Probe } from "../../types/ProbesChart";
-import type { GroupedDetectorEntry } from "../../hooks/useGroupedDetectors";
-import type { EChartsTooltipParams } from "../../types/echarts.d";
+import type { Probe, Detector } from "../../types/ProbesChart";
 import { useDetectorChartOptions } from "../../hooks/useDetectorChartOptions";
 
 /** Props for DetectorLollipopChart component */
 interface DetectorLollipopChartProps {
   /** Currently selected probe */
   probe: Probe;
-  /** All probes for cross-comparison */
-  allProbes: Probe[];
-  /** Detector type name being visualized */
-  detectorType: string;
-  /** Filtered detector entries to display */
-  entries: GroupedDetectorEntry[];
-  /** Whether to hide N/A entries */
-  hideUnavailable: boolean;
-  /** Callback when a probe is clicked */
-  onProbeClick: (probe: Probe) => void;
+  /** Detectors to display (from the probe) */
+  detectors: Detector[];
   /** Theme mode for styling */
   isDark?: boolean;
 }
 
 /**
- * Lollipop chart comparing Z-scores across probes for a specific detector type.
- * Highlights the selected probe and handles click interactions for probe switching.
+ * Lollipop chart comparing Z-scores across detectors within a probe.
+ * Shows relative performance of each detector against the average.
  *
  * @param props - Component props
- * @returns Lollipop chart with click handling, or empty state message
+ * @returns Lollipop chart, or empty state message if no data
  */
 const DetectorLollipopChart = ({
   probe,
-  allProbes,
-  detectorType,
-  entries,
-  hideUnavailable,
-  onProbeClick,
+  detectors,
   isDark,
 }: DetectorLollipopChartProps) => {
   const chartRef = useRef<ReactECharts>(null);
   const [zeroXPosition, setZeroXPosition] = useState<number | null>(null);
 
-  const { option, visible, chartHeight } = useDetectorChartOptions(
-    probe,
-    detectorType,
-    entries,
-    hideUnavailable,
+  const { option, chartHeight, hasData } = useDetectorChartOptions(
+    detectors,
     isDark
   );
 
@@ -77,39 +60,18 @@ const DetectorLollipopChart = ({
     }
   }, []);
 
-  /**
-   * Handles click events on chart elements or axis labels.
-   */
-  const handleClick = (params: EChartsTooltipParams) => {
-    let clickedLabel = params.name;
-
-    // Handle axis label clicks
-    if (params.componentType === "yAxis") {
-      clickedLabel = params.value as string;
-      const match = clickedLabel.match(/^(.+?)\s*\(\d+\/\d+\)$/);
-      if (match) {
-        clickedLabel = match[1];
-      }
-    }
-
-    const match = allProbes.find(p => p.probe_name.includes(clickedLabel));
-    if (match) onProbeClick(match);
-  };
-
-  const isEmpty = visible.length === 0 || visible.every(d => d.zscore === null);
-
   return (
     <>
-      {/* Chart header - always shown */}
+      {/* Chart header */}
       <Flex align="center" gap="density-xxs">
         <Text kind="mono/sm">{probe.probe_name}</Text>
         <Text kind="mono/sm">//</Text>
-        <Text kind="title/sm">{detectorType}</Text>
+        <Text kind="title/sm">Z-Score Comparison</Text>
         <Divider />
       </Flex>
 
       {/* Empty state */}
-      {isEmpty ? (
+      {!hasData ? (
         <Flex paddingTop="density-2xl">
           <StatusMessage
             size="small"
@@ -118,11 +80,7 @@ const DetectorLollipopChart = ({
             slotSubheading={
               <Stack gap="density-sm">
                 <Text kind="label/regular/md">
-                  All detector results for this comparison are unavailable (N/A).
-                </Text>
-                <Text kind="label/regular/sm">
-                  Try unchecking "Hide N/A" to see unavailable entries, change DEFCON levels or select
-                  a different detector.
+                  No detector results are available for this probe.
                 </Text>
               </Stack>
             }
@@ -135,7 +93,6 @@ const DetectorLollipopChart = ({
             ref={chartRef}
             option={option}
             style={{ height: chartHeight }}
-            onEvents={{ click: handleClick }}
             onChartReady={handleChartReady}
           />
 

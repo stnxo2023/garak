@@ -1,157 +1,122 @@
 /**
  * @file useDetectorChartOptions.test.ts
- * @description Tests for detector chart options hook, including sorting behavior.
+ * @description Tests for detector chart options hook.
  */
 
 import { renderHook } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { useDetectorChartOptions } from "../useDetectorChartOptions";
-import type { Probe } from "../../types/ProbesChart";
-import type { GroupedDetectorEntry } from "../../types/Detector";
+import type { Detector } from "../../types/ProbesChart";
 
 // Mock dependencies
 vi.mock("../useTooltipFormatter", () => ({
   useTooltipFormatter: () => () => "tooltip",
 }));
 
-vi.mock("../useDetectorsChartSeries", () => ({
-  useDetectorsChartSeries: () => (detectors: unknown[]) => ({
-    pointSeries: { data: [] },
-    lineSeries: { data: [] },
-    naSeries: { data: [] },
-    visible: detectors,
-  }),
-}));
-
 vi.mock("../useSeverityColor", () => ({
   default: () => ({
+    getSeverityColorByComment: () => "#00ff00",
     getDefconColor: () => "#ff0000",
   }),
 }));
 
-describe("useDetectorChartOptions", () => {
-  const mockProbe: Probe = {
-    probe_name: "test.TestProbe",
-    summary: {
-      probe_name: "test.TestProbe",
-      probe_score: 0.5,
-      probe_severity: 2,
-      probe_descr: "Test",
-      probe_tier: 1,
-    },
-    detectors: [],
-  };
+const createMockDetector = (overrides: Partial<Detector> = {}): Detector => ({
+  detector_name: "test.Detector",
+  detector_descr: "Test detector",
+  absolute_score: 0.9,
+  absolute_defcon: 5,
+  absolute_comment: "minimal risk",
+  relative_score: 0.5,
+  relative_defcon: 5,
+  relative_comment: "average",
+  detector_defcon: 5,
+  calibration_used: true,
+  total_evaluated: 100,
+  passed: 90,
+  ...overrides,
+});
 
-  it("sorts entries alphabetically by label", () => {
-    const entries: GroupedDetectorEntry[] = [
-      {
-        probeName: "test.Zebra",
-        label: "Zebra",
-        zscore: 1.0,
-        detector_score: 50,
-        comment: "test",
-        total_evaluated: 100,
-        passed: 50,
-        color: "#000",
-        unavailable: false,
-        detector_defcon: 2,
-        absolute_defcon: 2,
-        relative_defcon: 2,
-      },
-      {
-        probeName: "test.Alpha",
-        label: "Alpha",
-        zscore: 0.5,
-        detector_score: 80,
-        comment: "test",
-        total_evaluated: 100,
-        passed: 80,
-        color: "#000",
-        unavailable: false,
-        detector_defcon: 3,
-        absolute_defcon: 3,
-        relative_defcon: 3,
-      },
-      {
-        probeName: "test.Middle",
-        label: "Middle",
-        zscore: -0.5,
-        detector_score: 30,
-        comment: "test",
-        total_evaluated: 100,
-        passed: 30,
-        color: "#000",
-        unavailable: false,
-        detector_defcon: 1,
-        absolute_defcon: 1,
-        relative_defcon: 1,
-      },
+describe("useDetectorChartOptions", () => {
+  it("returns chart options for detectors", () => {
+    const detectors: Detector[] = [
+      createMockDetector({ detector_name: "detector.A" }),
+      createMockDetector({ detector_name: "detector.B" }),
     ];
 
-    const { result } = renderHook(() =>
-      useDetectorChartOptions(mockProbe, "test.Detector", entries, false, false)
-    );
+    const { result } = renderHook(() => useDetectorChartOptions(detectors, false));
 
-    // Verify entries are sorted reverse alphabetically (Z at top, A at bottom)
-    // This makes the chart read naturally with A at bottom when rendered
-    expect(result.current.visible[0].label).toBe("Zebra");
-    expect(result.current.visible[1].label).toBe("Middle");
-    expect(result.current.visible[2].label).toBe("Alpha");
+    expect(result.current.option).toBeDefined();
+    expect(result.current.chartHeight).toBeGreaterThan(0);
+    expect(result.current.hasData).toBe(true);
   });
 
-  it("maintains alphabetical order regardless of zscore values", () => {
-    const entries: GroupedDetectorEntry[] = [
-      {
-        probeName: "test.Charlie",
-        label: "Charlie",
-        zscore: 5.0, // highest zscore
-        detector_score: 90,
-        comment: "test",
-        total_evaluated: 100,
-        passed: 90,
-        color: "#000",
-        unavailable: false,
-        detector_defcon: 4,
-        absolute_defcon: 4,
-        relative_defcon: 4,
-      },
-      {
-        probeName: "test.Alpha",
-        label: "Alpha",
-        zscore: -5.0, // lowest zscore
-        detector_score: 10,
-        comment: "test",
-        total_evaluated: 100,
-        passed: 10,
-        color: "#000",
-        unavailable: false,
-        detector_defcon: 1,
-        absolute_defcon: 1,
-        relative_defcon: 1,
-      },
-      {
-        probeName: "test.Bravo",
-        label: "Bravo",
-        zscore: 0.0,
-        detector_score: 50,
-        comment: "test",
-        total_evaluated: 100,
-        passed: 50,
-        color: "#000",
-        unavailable: false,
-        detector_defcon: 2,
-        absolute_defcon: 2,
-        relative_defcon: 2,
-      },
+  it("sorts detectors reverse alphabetically (Z at top, A at bottom)", () => {
+    const detectors: Detector[] = [
+      createMockDetector({ detector_name: "zebra.Detector" }),
+      createMockDetector({ detector_name: "alpha.Detector" }),
+      createMockDetector({ detector_name: "middle.Detector" }),
     ];
 
-    const { result } = renderHook(() =>
-      useDetectorChartOptions(mockProbe, "test.Detector", entries, false, false)
+    const { result } = renderHook(() => useDetectorChartOptions(detectors, false));
+
+    // Y-axis data should be reverse alphabetical for natural chart reading
+    const yAxisData = result.current.option.yAxis?.data as string[];
+    expect(yAxisData[0]).toContain("zebra.Detector");
+    expect(yAxisData[1]).toContain("middle.Detector");
+    expect(yAxisData[2]).toContain("alpha.Detector");
+  });
+
+  it("returns hasData=false when no detectors have valid zscore", () => {
+    const detectors: Detector[] = [
+      createMockDetector({
+        detector_name: "detector.A",
+        relative_score: "n/a" as unknown as number, // invalid zscore
+      }),
+    ];
+
+    const { result } = renderHook(() => useDetectorChartOptions(detectors, false));
+
+    expect(result.current.hasData).toBe(false);
+  });
+
+  it("includes failed count in y-axis labels", () => {
+    const detectors: Detector[] = [
+      createMockDetector({
+        detector_name: "test.Detector",
+        total_evaluated: 100,
+        passed: 85,
+      }),
+    ];
+
+    const { result } = renderHook(() => useDetectorChartOptions(detectors, false));
+
+    // 100 total - 85 passed = 15 failed
+    const yAxisData = result.current.option.yAxis?.data as string[];
+    expect(yAxisData[0]).toContain("(15/100)");
+  });
+
+  it("handles empty detector array", () => {
+    const detectors: Detector[] = [];
+
+    const { result } = renderHook(() => useDetectorChartOptions(detectors, false));
+
+    expect(result.current.hasData).toBe(false);
+    expect(result.current.chartHeight).toBeGreaterThan(0);
+  });
+
+  it("adjusts chart height based on number of detectors", () => {
+    const fewDetectors: Detector[] = [createMockDetector()];
+    const manyDetectors: Detector[] = Array.from({ length: 10 }, (_, i) =>
+      createMockDetector({ detector_name: `detector.${i}` })
     );
 
-    // Should be reverse alphabetical (Charlie, Bravo, Alpha), NOT by zscore
-    expect(result.current.visible[0].label).toBe("Charlie");
-    expect(result.current.visible[1].label).toBe("Bravo");
-    expect(result.current.visible[2].label).toBe("Alpha");
+    const { result: fewResult } = renderHook(() =>
+      useDetectorChartOptions(fewDetectors, false)
+    );
+    const { result: manyResult } = renderHook(() =>
+      useDetectorChartOptions(manyDetectors, false)
+    );
+
+    expect(manyResult.current.chartHeight).toBeGreaterThan(fewResult.current.chartHeight);
   });
 });
