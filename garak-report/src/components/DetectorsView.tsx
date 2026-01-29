@@ -16,7 +16,6 @@ import { DetectorLollipopChart } from "./DetectorChart";
 import DetectorResultsTable from "./DetectorChart/DetectorResultsTable";
 import DefconBadge from "./DefconBadge";
 import useSeverityColor from "../hooks/useSeverityColor";
-import { formatRate } from "../utils/formatPercentage";
 
 /**
  * Panel displaying probe analysis with detector breakdown.
@@ -46,7 +45,6 @@ const DetectorsView = ({
 
   // Use data directly from backend - no calculations
   const probeSeverity = probe.summary?.probe_severity ?? 5;
-  const probeScore = probe.summary?.probe_score;
   const promptCount = probe.summary?.prompt_count;
   const severityLabel = getSeverityLabelByLevel(probeSeverity);
 
@@ -69,16 +67,11 @@ const DetectorsView = ({
             </Text>
           )}
 
-          <Flex gap="density-sm" align="center">
-            {probeScore != null && (
-              <Text kind="title/md">{formatRate(probeScore)} pass rate</Text>
-            )}
-            {promptCount != null && (
-              <Badge color="gray" kind="outline">
-                {promptCount.toLocaleString()} prompts
-              </Badge>
-            )}
-          </Flex>
+          {promptCount != null && (
+            <Badge color="gray" kind="outline">
+              {promptCount.toLocaleString()} prompts
+            </Badge>
+          )}
         </Stack>
 
         {/* Detector Breakdown */}

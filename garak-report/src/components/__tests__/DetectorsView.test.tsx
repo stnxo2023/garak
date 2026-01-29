@@ -122,7 +122,7 @@ describe("DetectorsView", () => {
     expect(screen.getByText("Test probe description")).toBeInTheDocument();
   });
 
-  it("displays pass rate when probe score is available", () => {
+  it("displays prompt count when available", () => {
     const probe = createMockProbe({
       summary: {
         probe_name: "test.Probe",
@@ -130,11 +130,12 @@ describe("DetectorsView", () => {
         probe_severity: 4,
         probe_descr: "Test",
         probe_tier: 1,
+        prompt_count: 100,
       },
     });
     render(<DetectorsView probe={probe} />);
 
-    expect(screen.getByText(/85.*pass rate/)).toBeInTheDocument();
+    expect(screen.getByText(/100.*prompts/)).toBeInTheDocument();
   });
 
   it("renders DEFCON badge with correct level", () => {
