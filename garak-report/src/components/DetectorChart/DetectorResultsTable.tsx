@@ -46,10 +46,13 @@ const DetectorResultsTable = ({
           const isHovered = hoveredDetector === detector.detector_name;
           const isFaded = hoveredDetector !== null && !isHovered;
           
-          // ALL values direct from backend - ZERO business logic
+          // Get values from backend
           const total = detector.total_evaluated ?? detector.attempt_count ?? 0;
-          const failures = detector.hit_count ?? 0;
-          const passRate = detector.absolute_score ?? 0;  // Backend-computed pass rate!
+          const passRate = detector.absolute_score ?? 0;  // Backend-computed pass rate
+          
+          // Failures: use hit_count if available, otherwise derive from passed
+          // Backend provides either hit_count (failures) or passed (successes)
+          const failures = detector.hit_count ?? (total - (detector.passed ?? total));
           
           // Presentation formatting only (decimal to percentage for display)
           const passPercent = passRate * 100;

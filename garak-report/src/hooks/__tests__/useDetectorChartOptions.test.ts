@@ -79,20 +79,21 @@ describe("useDetectorChartOptions", () => {
     expect(result.current.hasData).toBe(false);
   });
 
-  it("includes failed count in y-axis labels", () => {
+  it("shows detector names in y-axis labels (without counts)", () => {
     const detectors: Detector[] = [
       createMockDetector({
         detector_name: "test.Detector",
         total_evaluated: 100,
-        hit_count: 15, // failures come directly from hit_count
+        hit_count: 15,
       }),
     ];
 
     const { result } = renderHook(() => useDetectorChartOptions(detectors, false));
 
-    // Y-axis label shows failures/total format
+    // Y-axis labels show just detector names (counts are in results table)
     const yAxisData = result.current.option.yAxis?.data as string[];
-    expect(yAxisData[0]).toContain("(15/100)");
+    expect(yAxisData[0]).toBe("test.Detector");
+    expect(yAxisData[0]).not.toContain("(");
   });
 
   it("handles empty detector array", () => {

@@ -65,9 +65,10 @@ export function useDetectorChartOptions(
       const zscore = d.relative_score;
       const zscoreIsValid = zscore != null && typeof zscore === "number" && !isNaN(zscore);
       
-      // ALL from backend - ZERO business logic
+      // Get values from backend
       const total = d.total_evaluated ?? d.attempt_count ?? 0;
-      const failures = d.hit_count ?? 0;
+      // Failures: use hit_count if available, otherwise derive from passed
+      const failures = d.hit_count ?? (total - (d.passed ?? total));
 
       return {
         name: d.detector_name,
@@ -87,15 +88,9 @@ export function useDetectorChartOptions(
   // Check if we have any valid data
   const hasData = chartData.some((d) => d.zscore !== null);
 
-  // Build Y-axis labels with counts (failures/total - direct from backend)
+  // Build Y-axis labels (just detector names - counts shown in results table)
   const yAxisLabels = useMemo(
-    () =>
-      chartData.map((d) => {
-        if (d.total > 0) {
-          return `${d.name} (${d.failed}/${d.total})`;
-        }
-        return d.name;
-      }),
+    () => chartData.map((d) => d.name),
     [chartData]
   );
 
