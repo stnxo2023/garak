@@ -126,8 +126,8 @@ vi.mock("echarts-for-react", () => ({
 
     return (
       <div data-testid="echarts" onClick={() => onEvents?.click?.({ name: mockClickName })}>
-        MockChart
-      </div>
+      MockChart
+    </div>
     );
   },
 }));
@@ -272,7 +272,7 @@ describe("ProbesChart", () => {
       };
 
       render(<ProbesChart {...propsWithMultipleProbes} />);
-
+      
       // Should render chart with multiple probes
       expect(screen.getByTestId("echarts")).toBeInTheDocument();
       expect(screen.getByText("Probe scores")).toBeInTheDocument();
@@ -302,7 +302,7 @@ describe("ProbesChart", () => {
       };
 
       render(<ProbesChart {...propsWithPartialData} />);
-
+      
       // Should render without crashing
       expect(screen.getByTestId("echarts")).toBeInTheDocument();
     });
@@ -337,9 +337,9 @@ describe("ProbesChart", () => {
   describe("Tooltip and info functionality", () => {
     it("renders info button with tooltip content", () => {
       render(<ProbesChart {...baseProps} />);
-
+      
       expect(screen.getByTestId("tooltip")).toBeInTheDocument();
-
+      
       // Check tooltip content is present
       expect(screen.getByTestId("tooltip-content")).toBeInTheDocument();
       expect(screen.getByText("What are Probes?")).toBeInTheDocument();
@@ -352,7 +352,7 @@ describe("ProbesChart", () => {
           /The probe score shows the percentage of prompts that successfully triggered the failure mode/
         )
       ).toBeInTheDocument();
-
+      
       // Check ColorLegend is rendered in tooltip
       expect(screen.getByTestId("color-legend")).toBeInTheDocument();
     });
@@ -366,7 +366,7 @@ describe("ProbesChart", () => {
   describe("Grid layout behavior", () => {
     it("renders single column grid when no probe is selected", () => {
       render(<ProbesChart {...baseProps} />);
-
+      
       const grid = screen.getByTestId("grid");
       expect(grid).toBeInTheDocument();
       expect(grid).toHaveAttribute("cols", "1");
@@ -380,7 +380,7 @@ describe("ProbesChart", () => {
       };
 
       render(<ProbesChart {...selectedProps} />);
-
+      
       const grid = screen.getByTestId("grid");
       expect(grid).toBeInTheDocument();
       expect(grid).toHaveAttribute("cols", "2");
@@ -408,7 +408,7 @@ describe("ProbesChart", () => {
   describe("Probe selection and interaction", () => {
     it("selects probe when chart bar is clicked", () => {
       const setSelectedProbe = vi.fn();
-
+      
       render(<ProbesChart {...baseProps} setSelectedProbe={setSelectedProbe} />);
 
       fireEvent.click(screen.getByTestId("echarts"));
@@ -418,7 +418,7 @@ describe("ProbesChart", () => {
     it("deselects probe when same probe is clicked again", () => {
       const setSelectedProbe = vi.fn();
       const selectedProbe = baseProps.module.probes[0];
-
+      
       render(
         <ProbesChart
           {...baseProps}
@@ -463,7 +463,7 @@ describe("ProbesChart", () => {
 
       fireEvent.click(screen.getByTestId("echarts"));
       expect(setSelectedProbe).toHaveBeenCalledWith(multiProbeProps.module.probes[1]);
-
+      
       // Reset mock for other tests
       mockClickName = "probe-1";
     });
@@ -479,7 +479,7 @@ describe("ProbesChart", () => {
       fireEvent.click(screen.getByTestId("echarts"));
       // Should not call setSelectedProbe for non-existent probe
       expect(setSelectedProbe).not.toHaveBeenCalled();
-
+      
       // Reset mock for other tests
       mockClickName = "probe-1";
     });
@@ -589,7 +589,7 @@ describe("ProbesChart", () => {
     it("maintains state consistency during rapid interactions", () => {
       const setSelectedProbe = vi.fn();
       const probe1 = baseProps.module.probes[0];
-
+      
       const { rerender } = render(
         <ProbesChart {...baseProps} setSelectedProbe={setSelectedProbe} />
       );

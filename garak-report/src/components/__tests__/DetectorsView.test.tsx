@@ -138,12 +138,8 @@ describe("DetectorsView", () => {
 
     render(<DetectorsView probe={probe} />);
 
-    // Table headers
-    expect(screen.getByText("Detector")).toBeInTheDocument();
-    expect(screen.getByText("DEFCON")).toBeInTheDocument();
-    expect(screen.getByText("Passed")).toBeInTheDocument();
-    expect(screen.getByText("Failed")).toBeInTheDocument();
-    expect(screen.getByText("Total")).toBeInTheDocument();
+    // Results heading
+    expect(screen.getByText("Results")).toBeInTheDocument();
 
     // Detector names
     expect(screen.getByText("detector.One")).toBeInTheDocument();
@@ -179,7 +175,7 @@ describe("DetectorsView", () => {
     expect(screen.getByText("No Data Available")).toBeInTheDocument();
   });
 
-  it("calculates failed count correctly from total and passed", () => {
+  it("displays passed and total counts correctly", () => {
     const probe = createMockProbe({
       detectors: [
         createMockDetector({
@@ -192,9 +188,8 @@ describe("DetectorsView", () => {
 
     render(<DetectorsView probe={probe} />);
 
-    // 100 total - 85 passed = 15 failed
+    // Shows passed/total format
     expect(screen.getByText("85")).toBeInTheDocument(); // passed
-    expect(screen.getByText("15")).toBeInTheDocument(); // failed
     expect(screen.getByText("100")).toBeInTheDocument(); // total
   });
 

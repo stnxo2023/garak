@@ -12,17 +12,19 @@ import { useRef, useState, useCallback } from "react";
 import ReactECharts from "echarts-for-react";
 import { Button, Divider, Flex, Stack, StatusMessage, Text, Tooltip } from "@kui/react";
 import { Info } from "lucide-react";
-import type { Probe, Detector } from "../../types/ProbesChart";
+import type { Detector } from "../../types/ProbesChart";
 import { useDetectorChartOptions } from "../../hooks/useDetectorChartOptions";
 
 /** Props for DetectorLollipopChart component */
 interface DetectorLollipopChartProps {
-  /** Currently selected probe */
-  probe: Probe;
   /** Detectors to display (from the probe) */
   detectors: Detector[];
   /** Theme mode for styling */
   isDark?: boolean;
+  /** Currently hovered detector name (for linked highlighting) */
+  hoveredDetector?: string | null;
+  /** Callback when detector is hovered */
+  onHoverDetector?: (name: string | null) => void;
 }
 
 /**
@@ -33,16 +35,18 @@ interface DetectorLollipopChartProps {
  * @returns Lollipop chart, or empty state message if no data
  */
 const DetectorLollipopChart = ({
-  probe,
   detectors,
   isDark,
+  hoveredDetector,
+  onHoverDetector,
 }: DetectorLollipopChartProps) => {
   const chartRef = useRef<ReactECharts>(null);
   const [zeroXPosition, setZeroXPosition] = useState<number | null>(null);
 
   const { option, chartHeight, hasData } = useDetectorChartOptions(
     detectors,
-    isDark
+    isDark,
+    hoveredDetector
   );
 
   /** Calculate the pixel X position of 0 on the chart after render */
@@ -61,28 +65,29 @@ const DetectorLollipopChart = ({
   }, []);
 
   return (
-    <>
-      {/* Chart header */}
-      <Flex align="center" gap="density-xxs">
-        <Text kind="mono/sm">{probe.probe_name}</Text>
-        <Text kind="mono/sm">//</Text>
-        <Text kind="title/sm">Z-Score Comparison</Text>
-        <Divider />
-      </Flex>
+    <Stack gap="density-lg">
+      {/* Section header */}
+      <Stack gap="density-xs">
+        <Flex align="center" gap="density-xxs">
+          <Text kind="title/sm">Relative Performance</Text>
+          <Divider />
+        </Flex>
+        <Text kind="body/regular/sm" style={{ color: "var(--color-tk-400)" }}>
+          Compared against calibration models
+        </Text>
+      </Stack>
 
       {/* Empty state */}
       {!hasData ? (
-        <Flex paddingTop="density-2xl">
+        <Flex>
           <StatusMessage
             size="small"
             slotMedia={<i className="nv-icons-fill-warning"></i>}
-            slotHeading="No Data Available"
+            slotHeading="No Calibration Data"
             slotSubheading={
-              <Stack gap="density-sm">
-                <Text kind="label/regular/md">
-                  No detector results are available for this probe.
-                </Text>
-              </Stack>
+              <Text kind="label/regular/md">
+                Z-score comparison is not available for these detectors.
+              </Text>
             }
           />
         </Flex>
@@ -94,6 +99,28 @@ const DetectorLollipopChart = ({
             option={option}
             style={{ height: chartHeight }}
             onChartReady={handleChartReady}
+            onEvents={{
+              mouseover: (params: { componentType?: string; data?: { name?: string }; value?: string }) => {
+                // Handle data point hover
+                if (params.data?.name) {
+                  onHoverDetector?.(params.data.name);
+                }
+                // Handle Y-axis label hover
+                else if (params.componentType === "yAxis" && params.value) {
+                  // Extract detector name from label (format: "name (passed/total)")
+                  const match = params.value.match(/^(.+?)\s*\(/);
+                  const name = match ? match[1] : params.value;
+                  // Find matching detector
+                  const detector = detectors.find(d => d.detector_name === name || d.detector_name.includes(name));
+                  if (detector) {
+                    onHoverDetector?.(detector.detector_name);
+                  }
+                }
+              },
+              mouseout: () => {
+                onHoverDetector?.(null);
+              },
+            }}
           />
 
           {/* Z-Score axis label with info tooltip - positioned at x=0 on chart */}
@@ -139,7 +166,7 @@ const DetectorLollipopChart = ({
           </Flex>
         </>
       )}
-    </>
+    </Stack>
   );
 };
 

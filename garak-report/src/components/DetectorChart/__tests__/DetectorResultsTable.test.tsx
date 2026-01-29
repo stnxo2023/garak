@@ -1,6 +1,6 @@
 /**
  * @file DetectorResultsTable.test.tsx
- * @description Tests for the DetectorResultsTable component.
+ * @description Tests for the DetectorResultsTable component with stacked progress bars.
  */
 
 import { render, screen } from "@testing-library/react";
@@ -10,16 +10,19 @@ import type { Detector } from "../../../types/ProbesChart";
 
 // Mock KUI components
 vi.mock("@kui/react", () => ({
-  Flex: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  Flex: ({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) => (
+    <div style={style}>{children}</div>
+  ),
+  Stack: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Text: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
 }));
 
 // Mock DefconBadge
 vi.mock("../../DefconBadge", () => ({
   __esModule: true,
-  default: ({ level }: { level: number }) => (
-    <div data-testid="defcon-badge" data-level={level}>
-      DC-{level}
+  default: ({ defcon }: { defcon: number }) => (
+    <div data-testid="defcon-badge" data-defcon={defcon}>
+      DC-{defcon}
     </div>
   ),
 }));
@@ -41,17 +44,13 @@ const createMockDetector = (overrides: Partial<Detector> = {}): Detector => ({
 });
 
 describe("DetectorResultsTable", () => {
-  it("renders table headers", () => {
+  it("renders Results heading", () => {
     render(<DetectorResultsTable detectors={[]} />);
 
-    expect(screen.getByText("Detector")).toBeInTheDocument();
-    expect(screen.getByText("DEFCON")).toBeInTheDocument();
-    expect(screen.getByText("Passed")).toBeInTheDocument();
-    expect(screen.getByText("Failed")).toBeInTheDocument();
-    expect(screen.getByText("Total")).toBeInTheDocument();
+    expect(screen.getByText("Results")).toBeInTheDocument();
   });
 
-  it("renders detector row with correct data", () => {
+  it("renders detector name and counts", () => {
     const detectors = [
       createMockDetector({
         detector_name: "my.TestDetector",
@@ -65,8 +64,8 @@ describe("DetectorResultsTable", () => {
 
     expect(screen.getByText("my.TestDetector")).toBeInTheDocument();
     expect(screen.getByText("45")).toBeInTheDocument(); // passed
-    expect(screen.getByText("5")).toBeInTheDocument(); // failed (50 - 45)
     expect(screen.getByText("50")).toBeInTheDocument(); // total
+    expect(screen.getByText("/")).toBeInTheDocument(); // separator
   });
 
   it("renders multiple detectors", () => {
@@ -93,8 +92,8 @@ describe("DetectorResultsTable", () => {
 
     const badges = screen.getAllByTestId("defcon-badge");
     expect(badges).toHaveLength(2);
-    expect(badges[0]).toHaveAttribute("data-level", "1");
-    expect(badges[1]).toHaveAttribute("data-level", "5");
+    expect(badges[0]).toHaveAttribute("data-defcon", "1");
+    expect(badges[1]).toHaveAttribute("data-defcon", "5");
   });
 
   it("handles zero failures correctly", () => {
@@ -108,10 +107,9 @@ describe("DetectorResultsTable", () => {
 
     render(<DetectorResultsTable detectors={detectors} />);
 
-    // 100 appears twice: once for passed, once for total
-    expect(screen.getAllByText("100")).toHaveLength(2);
-    // 0 appears for failed count
-    expect(screen.getAllByText("0")).toHaveLength(1);
+    // Shows 100/100 (passed/total)
+    const hundredTexts = screen.getAllByText("100");
+    expect(hundredTexts).toHaveLength(2); // passed and total
   });
 
   it("handles legacy hit_count field", () => {
@@ -128,11 +126,8 @@ describe("DetectorResultsTable", () => {
 
     render(<DetectorResultsTable detectors={detectors} />);
 
-    // total = attempt_count = 80
     // passed = total - hit_count = 80 - 20 = 60
-    // failed = hit_count = 20
-    expect(screen.getByText("80")).toBeInTheDocument(); // total
     expect(screen.getByText("60")).toBeInTheDocument(); // passed
-    expect(screen.getByText("20")).toBeInTheDocument(); // failed
+    expect(screen.getByText("80")).toBeInTheDocument(); // total
   });
 });

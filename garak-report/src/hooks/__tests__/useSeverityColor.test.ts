@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock getComputedStyle
 beforeEach(() => {
-  const colorMap: Record<string, string> = {
+    const colorMap: Record<string, string> = {
     "--color-teal-200": "#7dd3fc",
     "--color-green-200": "#bbf7d0",
     "--color-green-400": "#4ade80",
@@ -17,7 +17,7 @@ beforeEach(() => {
     "--color-red-700": "#b91c1c",
     "--color-red-400": "#f87171",
     "--color-teal-400": "#2dd4bf",
-  };
+    };
 
   vi.stubGlobal("getComputedStyle", () => ({
     getPropertyValue: (prop: string) => colorMap[prop] || "",

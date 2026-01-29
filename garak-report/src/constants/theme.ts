@@ -29,15 +29,15 @@ export const THEME_COLORS = {
 export const CSS_COLOR_VARS = {
   defcon: {
     1: "--color-red-700",
-    2: "--color-red-400",
-    3: "--color-green-200", // Changed from yellow-200 to make more distinct from DC-4
+    2: "--color-yellow-400",
+    3: "--color-blue-400", // Blue to match badge color
     4: "--color-green-600",
     5: "--color-teal-400",
   },
   severity: {
     1: "--color-red-200",
     2: "--color-yellow-200",
-    3: "--color-green-200", // Adjusted to match defcon-3
+    3: "--color-blue-200", // Blue to match defcon-3
     4: "--color-green-400",
     5: "--color-teal-200",
     default: "--color-gray-200",

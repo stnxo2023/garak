@@ -54,6 +54,9 @@ export interface EChartsDetectorData {
   attempt_count?: number;
   hit_count?: number;
   fail_count?: number;
+  passed?: number;
+  failed?: number;
+  total?: number;
   unavailable?: boolean;
   itemStyle?: {
     color?: string;

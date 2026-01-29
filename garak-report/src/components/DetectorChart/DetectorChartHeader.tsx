@@ -22,8 +22,8 @@ const DetectorChartHeader = () => {
       <Text kind="title/xs">Detector comparison</Text>
       <Tooltip
         slotContent={
-          <Stack gap="density-xxs">
-            <Text kind="body/bold/sm">What are Detectors?</Text>
+        <Stack gap="density-xxs">
+          <Text kind="body/bold/sm">What are Detectors?</Text>
             <Text kind="body/regular/sm">
               A detector analyzes the language model's responses to determine if a probe's attack
               succeeded. Each detector examines the output for specific failure indicators (e.g.,
@@ -38,7 +38,7 @@ const DetectorChartHeader = () => {
               DEFCON levels indicate risk: DC-1 (Critical Risk) to DC-5 (Low Risk). Click DEFCON
               badges to filter results.
             </Text>
-            <Text kind="body/bold/sm">Lollipop colors:</Text>
+          <Text kind="body/bold/sm">Lollipop colors:</Text>
             <Text kind="body/regular/sm">
               Colors represent each detector's individual DEFCON level, which may differ from the
               probe's overall DEFCON. Different detectors within the same probe can have different
@@ -50,7 +50,7 @@ const DetectorChartHeader = () => {
               total prompt count. Different detectors may evaluate different subsets of prompts
               based on their detection logic.
             </Text>
-          </Stack>
+        </Stack>
         }
       >
         <Button kind="tertiary">

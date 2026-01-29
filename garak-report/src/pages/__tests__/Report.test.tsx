@@ -99,9 +99,9 @@ vi.mock("@kui/react", () => ({
   ),
   Checkbox: ({ checked, onCheckedChange, slotLabel, children, ...props }: MockCheckboxProps) => (
     <label {...props}>
-      <input
-        type="checkbox"
-        checked={checked}
+      <input 
+        type="checkbox" 
+        checked={checked} 
         onChange={e => onCheckedChange?.(e.target.checked)}
       />
       {slotLabel || children}
@@ -191,7 +191,7 @@ vi.mock("../../hooks/useFlattenedModules", () => ({
 
 vi.mock("../../hooks/useSeverityColor", () => ({
   __esModule: true,
-  default: () => ({
+  default: () => ({ 
     getDefconBadgeColor: () => "red",
   }),
 }));
@@ -416,8 +416,8 @@ describe("Report", () => {
     it("renders DEFCON filter buttons for all levels", async () => {
       vi.resetModules();
       const mockModules = [
-        {
-          group_name: "module1",
+        { 
+          group_name: "module1", 
           summary: {
             group: "module1",
             score: 0.8,
@@ -442,7 +442,7 @@ describe("Report", () => {
 
       // Should render filter label and all 5 DEFCON buttons
       expect(screen.getByText("Filter by DEFCON:")).toBeInTheDocument();
-
+      
       for (let defcon = 1; defcon <= 5; defcon++) {
         const defconButton = screen.getByTitle(`DEFCON ${defcon}. Click to hide.`);
         expect(defconButton).toBeInTheDocument();
@@ -453,8 +453,8 @@ describe("Report", () => {
     it("toggles DEFCON filter when clicked", async () => {
       vi.resetModules();
       const mockModules = [
-        {
-          group_name: "module1",
+        { 
+          group_name: "module1", 
           summary: {
             group: "module1",
             score: 0.8,
@@ -467,8 +467,8 @@ describe("Report", () => {
           },
           probes: [],
         },
-        {
-          group_name: "module2",
+        { 
+          group_name: "module2", 
           summary: {
             group: "module2",
             score: 0.6,
@@ -507,8 +507,8 @@ describe("Report", () => {
     it("filters modules by selected DEFCON levels", async () => {
       vi.resetModules();
       const mockModules = [
-        {
-          group_name: "critical",
+        { 
+          group_name: "critical", 
           summary: {
             group: "critical",
             score: 0.9,
@@ -521,8 +521,8 @@ describe("Report", () => {
           },
           probes: [],
         },
-        {
-          group_name: "moderate",
+        { 
+          group_name: "moderate", 
           summary: {
             group: "moderate",
             score: 0.6,
@@ -535,8 +535,8 @@ describe("Report", () => {
           },
           probes: [],
         },
-        {
-          group_name: "low",
+        { 
+          group_name: "low", 
           summary: {
             group: "low",
             score: 0.3,
@@ -577,8 +577,8 @@ describe("Report", () => {
     it("shows empty state when all DEFCON levels are filtered out", async () => {
       vi.resetModules();
       const mockModules = [
-        {
-          group_name: "module1",
+        { 
+          group_name: "module1", 
           summary: {
             group: "module1",
             score: 0.8,
@@ -617,8 +617,8 @@ describe("Report", () => {
     it("renders sorting controls", async () => {
       vi.resetModules();
       const mockModules = [
-        {
-          group_name: "alpha",
+        { 
+          group_name: "alpha", 
           summary: {
             group: "alpha",
             score: 0.8,
@@ -643,7 +643,7 @@ describe("Report", () => {
 
       expect(screen.getByText("Sort by:")).toBeInTheDocument();
       expect(screen.getByTestId("segmented-control")).toBeInTheDocument();
-
+      
       // DEFCON should be selected by default
       const defconSegment = screen.getByTestId("segment-defcon");
       const alphabeticalSegment = screen.getByTestId("segment-alphabetical");
@@ -655,8 +655,8 @@ describe("Report", () => {
     it("switches between DEFCON and alphabetical sorting", async () => {
       vi.resetModules();
       const mockModules = [
-        {
-          group_name: "zebra",
+        { 
+          group_name: "zebra", 
           summary: {
             group: "zebra",
             score: 0.8,
@@ -669,8 +669,8 @@ describe("Report", () => {
           },
           probes: [],
         },
-        {
-          group_name: "alpha",
+        { 
+          group_name: "alpha", 
           summary: {
             group: "alpha",
             score: 0.6,
@@ -708,8 +708,8 @@ describe("Report", () => {
     it("sorts modules by DEFCON level when DEFCON sort is selected", async () => {
       vi.resetModules();
       const mockModules = [
-        {
-          group_name: "high_defcon",
+        { 
+          group_name: "high_defcon", 
           summary: {
             group: "high_defcon",
             score: 0.5,
@@ -722,8 +722,8 @@ describe("Report", () => {
           },
           probes: [],
         },
-        {
-          group_name: "low_defcon",
+        { 
+          group_name: "low_defcon", 
           summary: {
             group: "low_defcon",
             score: 0.9,
@@ -749,7 +749,7 @@ describe("Report", () => {
       // With DEFCON sorting (default), low_defcon (DEFCON 1) should come first
       const accordionItems = screen.getAllByTestId(/accordion-item-/);
       expect(accordionItems).toHaveLength(2);
-
+      
       // Check that modules are present (exact ordering would require deeper DOM inspection)
       expect(screen.getByText("low_defcon")).toBeInTheDocument();
       expect(screen.getByText("high_defcon")).toBeInTheDocument();
@@ -767,7 +767,7 @@ describe("Report", () => {
           calibration: { model_count: 3 },
         },
       };
-
+      
       vi.stubGlobal("__GARAK_INSERT_HERE__", [mockReport]);
 
       const { default: ReportReloaded } = await import("../Report");
@@ -779,8 +779,8 @@ describe("Report", () => {
     it("clears selectedProbe when accordion value changes", async () => {
       vi.resetModules();
       const mockModules = [
-        {
-          group_name: "module1",
+        { 
+          group_name: "module1", 
           summary: {
             group: "module1",
             score: 0.8,
@@ -811,8 +811,8 @@ describe("Report", () => {
     it("renders all main components when data is available", async () => {
       vi.resetModules();
       const mockModules = [
-        {
-          group_name: "test_module",
+        { 
+          group_name: "test_module", 
           summary: {
             group: "test_module",
             score: 0.75,
@@ -850,8 +850,8 @@ describe("Report", () => {
     it("displays module badges with correct score and DEFCON values", async () => {
       vi.resetModules();
       const mockModules = [
-        {
-          group_name: "scored_module",
+        { 
+          group_name: "scored_module", 
           summary: {
             group: "scored_module",
             score: 0.85,
@@ -876,11 +876,11 @@ describe("Report", () => {
 
       // Check score badge (85% displayed as 85)
       expect(screen.getByText("85%")).toBeInTheDocument();
-
+      
       // Check DEFCON badge in accordion (there are multiple DC-2 texts)
       const defconBadges = screen.getAllByText("DC-2");
       expect(defconBadges.length).toBeGreaterThan(0); // Should have at least one DC-2
-
+      
       // Check module name and description
       expect(screen.getByText("scored_module")).toBeInTheDocument();
     });
@@ -890,8 +890,8 @@ describe("Report", () => {
     it("handles modules with missing or null probe arrays", async () => {
       vi.resetModules();
       const mockModules = [
-        {
-          group_name: "no_probes",
+        { 
+          group_name: "no_probes", 
           summary: {
             group: "no_probes",
             score: 0.5,
@@ -923,8 +923,8 @@ describe("Report", () => {
     it("handles rapid DEFCON filter toggles", async () => {
       vi.resetModules();
       const mockModules = [
-        {
-          group_name: "test_module",
+        { 
+          group_name: "test_module", 
           summary: {
             group: "test_module",
             score: 0.7,
@@ -948,14 +948,14 @@ describe("Report", () => {
       render(<ReportReloaded />);
 
       const defcon2Button = screen.getByTitle("DEFCON 2. Click to hide.");
-
+      
       // Rapidly toggle the filter multiple times
       fireEvent.click(defcon2Button);
       expect(defcon2Button).toHaveStyle({ opacity: "0.3" });
-
+      
       fireEvent.click(defcon2Button);
       expect(defcon2Button).toHaveStyle({ opacity: "1" });
-
+      
       fireEvent.click(defcon2Button);
       expect(defcon2Button).toHaveStyle({ opacity: "0.3" });
     });
@@ -963,8 +963,8 @@ describe("Report", () => {
     it("maintains filter state when modules change", async () => {
       vi.resetModules();
       let mockModules = [
-        {
-          group_name: "initial_module",
+        { 
+          group_name: "initial_module", 
           summary: {
             group: "initial_module",
             score: 0.6,
@@ -995,8 +995,8 @@ describe("Report", () => {
 
       // Change the modules data
       mockModules = [
-        {
-          group_name: "updated_module",
+        { 
+          group_name: "updated_module", 
           summary: {
             group: "updated_module",
             score: 0.8,

@@ -1,26 +1,29 @@
 /**
  * @file DetectorsView.tsx
- * @description Panel component displaying detector comparison for a selected probe.
- *              Shows Z-score lollipop chart and results table for detectors within the probe.
+ * @description Panel component displaying probe analysis with detector breakdown.
+ *              Shows probe header with severity, description, and failure stats,
+ *              followed by detector results and relative performance (Z-score).
  * @module components
  *
  * @copyright NVIDIA Corporation 2023-2026
  * @license Apache-2.0
  */
 
+import { useState } from "react";
 import type { Probe } from "../types/ProbesChart";
-import { Stack, Panel } from "@kui/react";
-import { DetectorChartHeader, DetectorLollipopChart } from "./DetectorChart";
+import { Stack, Panel, Flex, Text } from "@kui/react";
+import { DetectorLollipopChart } from "./DetectorChart";
 import DetectorResultsTable from "./DetectorChart/DetectorResultsTable";
+import DefconBadge from "./DefconBadge";
 
 /**
- * Panel displaying detector comparison for a selected probe.
- * Shows Z-score lollipop chart comparing detectors, plus a results table.
+ * Panel displaying probe analysis with detector breakdown.
+ * Structure: Header (name + DEFCON + description + stats) → Detector Breakdown → Relative Performance
  *
  * @param props - Component props
  * @param props.probe - Selected probe to show detectors for
  * @param props.isDark - Theme mode for chart styling
- * @returns Detector comparison panel with chart and table
+ * @returns Probe analysis panel with detector comparison
  */
 const DetectorsView = ({
   probe,
@@ -34,18 +37,64 @@ const DetectorsView = ({
     a.detector_name.localeCompare(b.detector_name)
   );
 
+  // Shared hover state for linked highlighting between chart and table
+  const [hoveredDetector, setHoveredDetector] = useState<string | null>(null);
+
+  // Use data directly from backend - no calculations
+  const probeSeverity = probe.summary?.probe_severity ?? 5;
+  const promptCount = probe.summary?.prompt_count;
+  const failCount = probe.summary?.fail_count;
+  const probeScore = probe.summary?.probe_score;
+
   return (
-    <Panel slotHeading={<DetectorChartHeader />}>
-      <Stack gap="density-xl">
-        {/* Z-Score Lollipop Chart */}
-        <DetectorLollipopChart
-          probe={probe}
+    <Panel>
+      <Stack gap="density-3xl">
+        {/* Header group: name + description + stats */}
+        <Stack gap="density-md">
+          <Flex gap="density-md" align="center">
+            <DefconBadge defcon={probeSeverity} />
+            <Text kind="title/lg">{probe.probe_name}</Text>
+          </Flex>
+
+          {probe.summary?.probe_descr && (
+            <Text kind="body/regular/md" style={{ color: "var(--color-tk-400)" }}>
+              {probe.summary.probe_descr}
+            </Text>
+          )}
+
+          <Flex gap="density-sm" align="baseline">
+            {probeScore != null && (
+              <Text kind="title/md">
+                {(probeScore * 100).toFixed(0)}% pass rate
+              </Text>
+            )}
+            {failCount != null && (
+              <Text kind="body/regular/md" style={{ color: "var(--color-tk-400)" }}>
+                · {failCount.toLocaleString()} failures
+              </Text>
+            )}
+            {promptCount != null && (
+              <Text kind="body/regular/md" style={{ color: "var(--color-tk-400)" }}>
+                · {promptCount.toLocaleString()} prompts
+              </Text>
+            )}
+          </Flex>
+        </Stack>
+
+        {/* Detector Breakdown */}
+        <DetectorResultsTable
           detectors={sortedDetectors}
-          isDark={isDark}
+          hoveredDetector={hoveredDetector}
+          onHoverDetector={setHoveredDetector}
         />
 
-        {/* Results Table */}
-        <DetectorResultsTable detectors={sortedDetectors} />
+        {/* Relative Performance (Z-Score) */}
+        <DetectorLollipopChart
+          detectors={sortedDetectors}
+          isDark={isDark}
+          hoveredDetector={hoveredDetector}
+          onHoverDetector={setHoveredDetector}
+        />
       </Stack>
     </Panel>
   );

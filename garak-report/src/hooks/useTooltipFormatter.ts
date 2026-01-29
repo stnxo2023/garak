@@ -34,15 +34,20 @@ export function useTooltipFormatter() {
     const score = data?.detector_score != null ? `${data.detector_score.toFixed(2)}%` : "—";
     const z = formatZ(data?.zscore ?? null);
     const comment = data?.comment ?? "Unavailable";
-    const attempts = data?.attempt_count;
-    const hits = data?.hit_count ?? data?.fail_count; // whichever makes sense
-    const countsLine =
-      attempts != null && hits != null ? `<br/>Attempts: ${attempts}, Detected: ${hits}` : "";
     const color = data?.itemStyle?.color ?? "#666";
 
     // Add DEFCON information
     const defcon = data?.detector_defcon;
     const defconLine = defcon != null ? `<br/>DEFCON: <strong>DC-${defcon}</strong>` : "";
+
+    // Add pass/fail counts (new fields)
+    const passed = data?.passed;
+    const failed = data?.failed;
+    const total = data?.total;
+    const countsLine =
+      total != null && passed != null && failed != null
+        ? `<br/><span style="color: #4ade80">${passed} passed</span> · <span style="color: #f87171">${failed} failed</span> · ${total} total`
+        : "";
 
     return `
       <strong>${detectorType}</strong><br/>
