@@ -107,6 +107,8 @@ export function useProbeChartOptions(
       },
       yAxis: {
         type: "value",
+        min: 0,
+        max: 100,
         axisLabel: { color: textColor },
         axisLine: { lineStyle: { color: textColor } },
         splitLine: {

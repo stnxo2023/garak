@@ -53,7 +53,8 @@ function buildDetector(name: string, data: EvalDetectorData): Detector | null {
     calibration_used: data.calibration_used ?? false,
     // Pass through backend values directly - no calculations
     total_evaluated: data.total_evaluated ?? data.attempt_count,
-    hit_count: data.hit_count,  // Preserve for display (failures count)
+    hit_count: data.hit_count,  // Failures count (if provided)
+    passed: data.passed,  // Passes count (backend provides this)
     attempt_count: data.attempt_count,  // Preserve original field
   };
 }
