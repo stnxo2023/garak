@@ -6,11 +6,8 @@ import type { Probe, Detector } from "../../types/ProbesChart";
 
 // Mock Kaizen components
 vi.mock("@kui/react", () => ({
-  Panel: ({ children, slotHeading }: { children: React.ReactNode; slotHeading: React.ReactNode }) => (
-    <div data-testid="panel">
-      <div data-testid="panel-heading">{slotHeading}</div>
-      <div data-testid="panel-content">{children}</div>
-    </div>
+  Panel: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="panel">{children}</div>
   ),
   Stack: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="stack">{children}</div>
@@ -20,6 +17,9 @@ vi.mock("@kui/react", () => ({
   ),
   Text: ({ children, kind }: { children: React.ReactNode; kind?: string }) => (
     <span data-kind={kind}>{children}</span>
+  ),
+  Badge: ({ children, color }: { children: React.ReactNode; color?: string }) => (
+    <span data-testid="badge" data-color={color}>{children}</span>
   ),
   Button: ({ children }: { children: React.ReactNode }) => (
     <button>{children}</button>
@@ -36,9 +36,19 @@ vi.mock("@kui/react", () => ({
 // Mock DefconBadge component
 vi.mock("../DefconBadge", () => ({
   __esModule: true,
-  default: ({ level }: { level: number }) => (
-    <div data-testid="defcon-badge" data-level={level}>
-      DC-{level}
+  default: ({ defcon }: { defcon: number }) => (
+    <div data-testid="defcon-badge" data-defcon={defcon}>
+      DC-{defcon}
+    </div>
+  ),
+}));
+
+// Mock ProgressBar component
+vi.mock("../ProgressBar", () => ({
+  __esModule: true,
+  default: ({ passPercent, hasFailures }: { passPercent: number; hasFailures: boolean }) => (
+    <div data-testid="progress-bar" data-pass={passPercent} data-failures={hasFailures}>
+      {passPercent}%
     </div>
   ),
 }));
@@ -54,6 +64,8 @@ vi.mock("../../hooks/useSeverityColor", () => ({
   default: () => ({
     getSeverityColorByComment: () => "#00ff00",
     getDefconColor: () => "#ff0000",
+    getSeverityLabelByLevel: (level: number) => `Risk Level ${level}`,
+    getDefconBadgeColor: () => "red",
   }),
 }));
 
@@ -73,7 +85,7 @@ const createMockDetector = (overrides: Partial<Detector> = {}): Detector => ({
   detector_defcon: 5,
   calibration_used: true,
   total_evaluated: 100,
-  passed: 90,
+  hit_count: 10,
   ...overrides,
 });
 
@@ -83,7 +95,7 @@ const createMockProbe = (overrides: Partial<Probe> = {}): Probe => ({
     probe_name: "test.Probe",
     probe_score: 0.9,
     probe_severity: 5,
-    probe_descr: "Test probe",
+    probe_descr: "Test probe description",
     probe_tier: 1,
   },
   detectors: [createMockDetector()],
@@ -95,59 +107,77 @@ describe("DetectorsView", () => {
     vi.clearAllMocks();
   });
 
-  it("renders panel with heading", () => {
+  it("renders panel with probe name", () => {
     const probe = createMockProbe();
     render(<DetectorsView probe={probe} />);
 
     expect(screen.getByTestId("panel")).toBeInTheDocument();
-    expect(screen.getByTestId("panel-heading")).toBeInTheDocument();
+    expect(screen.getByText("test.Probe")).toBeInTheDocument();
   });
 
-  it("renders chart and results table", () => {
+  it("displays probe description", () => {
     const probe = createMockProbe();
     render(<DetectorsView probe={probe} />);
 
-    expect(screen.getByTestId("echarts")).toBeInTheDocument();
-    expect(screen.getByText("Results")).toBeInTheDocument();
+    expect(screen.getByText("Test probe description")).toBeInTheDocument();
   });
 
-  it("displays probe name in chart header", () => {
-    const probe = createMockProbe({ probe_name: "custom.ProbeName" });
+  it("displays pass rate when probe score is available", () => {
+    const probe = createMockProbe({
+      summary: {
+        probe_name: "test.Probe",
+        probe_score: 0.85,
+        probe_severity: 4,
+        probe_descr: "Test",
+        probe_tier: 1,
+      },
+    });
     render(<DetectorsView probe={probe} />);
 
-    expect(screen.getByText("custom.ProbeName")).toBeInTheDocument();
+    expect(screen.getByText(/85.*pass rate/)).toBeInTheDocument();
   });
 
-  it("renders results table with detector data", () => {
+  it("renders DEFCON badge with correct level", () => {
+    const probe = createMockProbe({
+      summary: {
+        probe_name: "test.Probe",
+        probe_score: 0.5,
+        probe_severity: 2,
+        probe_descr: "Test",
+        probe_tier: 1,
+      },
+    });
+    render(<DetectorsView probe={probe} />);
+
+    const defconBadge = screen.getAllByTestId("defcon-badge")[0];
+    expect(defconBadge).toHaveAttribute("data-defcon", "2");
+  });
+
+  it("renders Detector Breakdown section", () => {
+    const probe = createMockProbe();
+    render(<DetectorsView probe={probe} />);
+
+    expect(screen.getByText("Detector Breakdown")).toBeInTheDocument();
+  });
+
+  it("renders Relative Performance section", () => {
+    const probe = createMockProbe();
+    render(<DetectorsView probe={probe} />);
+
+    expect(screen.getByText("Relative Performance")).toBeInTheDocument();
+  });
+
+  it("renders detector names in the table", () => {
     const probe = createMockProbe({
       detectors: [
-        createMockDetector({
-          detector_name: "detector.One",
-          detector_defcon: 2,
-          total_evaluated: 50,
-          passed: 45,
-        }),
-        createMockDetector({
-          detector_name: "detector.Two",
-          detector_defcon: 5,
-          total_evaluated: 100,
-          passed: 100,
-        }),
+        createMockDetector({ detector_name: "detector.Alpha" }),
+        createMockDetector({ detector_name: "detector.Beta" }),
       ],
     });
-
     render(<DetectorsView probe={probe} />);
 
-    // Results heading
-    expect(screen.getByText("Results")).toBeInTheDocument();
-
-    // Detector names
-    expect(screen.getByText("detector.One")).toBeInTheDocument();
-    expect(screen.getByText("detector.Two")).toBeInTheDocument();
-
-    // DEFCON badges
-    const badges = screen.getAllByTestId("defcon-badge");
-    expect(badges).toHaveLength(2);
+    expect(screen.getByText("detector.Alpha")).toBeInTheDocument();
+    expect(screen.getByText("detector.Beta")).toBeInTheDocument();
   });
 
   it("sorts detectors alphabetically", () => {
@@ -155,49 +185,12 @@ describe("DetectorsView", () => {
       detectors: [
         createMockDetector({ detector_name: "z.Last" }),
         createMockDetector({ detector_name: "a.First" }),
-        createMockDetector({ detector_name: "m.Middle" }),
       ],
     });
-
     render(<DetectorsView probe={probe} />);
 
-    // Check that all detectors are rendered
+    // Both detectors should be rendered
     expect(screen.getByText("a.First")).toBeInTheDocument();
-    expect(screen.getByText("m.Middle")).toBeInTheDocument();
     expect(screen.getByText("z.Last")).toBeInTheDocument();
-  });
-
-  it("shows empty state when probe has no detectors", () => {
-    const probe = createMockProbe({ detectors: [] });
-    render(<DetectorsView probe={probe} />);
-
-    expect(screen.getByTestId("status-message")).toBeInTheDocument();
-    expect(screen.getByText("No Data Available")).toBeInTheDocument();
-  });
-
-  it("displays passed and total counts correctly", () => {
-    const probe = createMockProbe({
-      detectors: [
-        createMockDetector({
-          detector_name: "test.Detector",
-          total_evaluated: 100,
-          passed: 85,
-        }),
-      ],
-    });
-
-    render(<DetectorsView probe={probe} />);
-
-    // Shows passed/total format
-    expect(screen.getByText("85")).toBeInTheDocument(); // passed
-    expect(screen.getByText("100")).toBeInTheDocument(); // total
-  });
-
-  it("applies dark theme when isDark is true", () => {
-    const probe = createMockProbe();
-    render(<DetectorsView probe={probe} isDark={true} />);
-
-    // Component renders without error with dark theme
-    expect(screen.getByTestId("panel")).toBeInTheDocument();
   });
 });

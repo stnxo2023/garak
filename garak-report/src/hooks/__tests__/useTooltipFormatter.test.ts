@@ -84,7 +84,7 @@ describe("useTooltipFormatter", () => {
     expect(output).toContain("Score: 75.00%");
   });
 
-  it("includes attempt and hit counts when available", () => {
+  it("includes failure and total counts when available", () => {
     const format = useTooltipFormatter();
     const output = format({
       detectorType: "Counter Detector",
@@ -93,13 +93,14 @@ describe("useTooltipFormatter", () => {
         zscore: 1.5,
         comment: "Good",
         detector_defcon: 1,
-        attempt_count: 100,
-        hit_count: 15,
+        failed: 15,
+        total: 100,
         itemStyle: { color: "#red" },
       },
     });
 
     expect(output).toContain("DEFCON: <strong>DC-1</strong>");
-    expect(output).toContain("Attempts: 100, Detected: 15");
+    expect(output).toContain("15 failures");
+    expect(output).toContain("/ 100 total");
   });
 });

@@ -10,6 +10,8 @@
 import { Divider, Flex, Stack, Text, Tooltip } from "@kui/react";
 import type { Detector } from "../../types/ProbesChart";
 import DefconBadge from "../DefconBadge";
+import ProgressBar from "../ProgressBar";
+import { formatPercentage } from "../../utils/formatPercentage";
 
 /** Props for DetectorResultsTable component */
 interface DetectorResultsTableProps {
@@ -44,14 +46,13 @@ const DetectorResultsTable = ({
           const isHovered = hoveredDetector === detector.detector_name;
           const isFaded = hoveredDetector !== null && !isHovered;
           
-          // Use backend data directly - hit_count IS the failure count
+          // ALL values direct from backend - ZERO business logic
           const total = detector.total_evaluated ?? detector.attempt_count ?? 0;
-          const failed = detector.hit_count ?? 0;  // Backend provides this directly
-          const passed = detector.passed ?? (total - failed);  // Fallback only if passed not provided
+          const failures = detector.hit_count ?? 0;
+          const passRate = detector.absolute_score ?? 0;  // Backend-computed pass rate!
           
-          // Percentages for progress bar visualization (presentation only)
-          const passedPercent = total > 0 ? (passed / total) * 100 : 0;
-          const failedPercent = total > 0 ? (failed / total) * 100 : 0;
+          // Presentation formatting only (decimal to percentage for display)
+          const passPercent = passRate * 100;
 
           return (
             <Flex
@@ -63,7 +64,6 @@ const DetectorResultsTable = ({
               style={{
                 opacity: isFaded ? 0.3 : 1,
                 transition: "opacity 0.15s ease",
-                cursor: "pointer",
               }}
             >
               {/* DEFCON badge - fixed width */}
@@ -93,61 +93,29 @@ const DetectorResultsTable = ({
                   <Stack gap="density-xxs">
                     <Text kind="body/bold/sm">{detector.detector_name}</Text>
                     <Text kind="body/regular/sm">
-                      <span style={{ color: "var(--color-green-400)" }}>{passed} passed</span>
-                      {" · "}
-                      <span style={{ color: "var(--color-red-400)" }}>{failed} failed</span>
-                      {" · "}
-                      {total} total
+                      <span style={failures > 0 ? { color: "var(--color-red-400)" } : undefined}>{failures} failures</span>
+                      {" / "}
+                      <span>{total} total</span>
                     </Text>
                     <Text kind="body/regular/sm">
-                      Pass rate: {passedPercent.toFixed(1)}%
+                      Pass rate: {formatPercentage(passPercent)}
                     </Text>
                   </Stack>
                 }
               >
-                <div
-                  style={{
-                    flex: 1,
-                    minWidth: "200px",
-                    height: "8px",
-                    borderRadius: "4px",
-                    overflow: "hidden",
-                    backgroundColor: "var(--color-tk-200)",
-                    cursor: "help",
-                    display: "flex",
-                  }}
-                >
-                  {/* Green (passed) portion - KUI green */}
-                  {passedPercent > 0 && (
-                    <div
-                      style={{
-                        width: `${passedPercent}%`,
-                        height: "100%",
-                        backgroundColor: "var(--color-green-500)",
-                      }}
-                    />
-                  )}
-                  {/* Red (failed) portion - KUI red */}
-                  {failedPercent > 0 && (
-                    <div
-                      style={{
-                        width: `${failedPercent}%`,
-                        height: "100%",
-                        backgroundColor: "var(--color-red-500)",
-                      }}
-                    />
-                  )}
+                <div style={{ flex: 1, minWidth: "200px", cursor: "help" }}>
+                  <ProgressBar passPercent={passPercent} hasFailures={failures > 0} />
                 </div>
               </Tooltip>
 
-              {/* Counts: passed/total and percentage - mono for alignment */}
+              {/* Counts: failures/total and pass rate - all from backend */}
               <Flex align="center" gap="density-sm" style={{ flexShrink: 0 }}>
                 <Text kind="mono/sm" style={{ color: "var(--color-tk-500)" }}>
-                  <span style={{ color: "var(--color-green-500)" }}>{passed}</span>
+                  <span style={failures > 0 ? { color: "var(--color-red-500)" } : undefined}>{failures}</span>
                   <span style={{ color: "var(--color-tk-400)" }}> / {total}</span>
                 </Text>
-                <Text kind="mono/sm" style={{ color: "var(--color-tk-400)", width: "40px", textAlign: "right" }}>
-                  {passedPercent.toFixed(0)}%
+                <Text kind="mono/sm" style={{ color: "var(--color-tk-400)", width: "52px", textAlign: "right" }}>
+                  {formatPercentage(passPercent)}
                 </Text>
               </Flex>
             </Flex>

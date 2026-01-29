@@ -84,13 +84,13 @@ describe("useDetectorChartOptions", () => {
       createMockDetector({
         detector_name: "test.Detector",
         total_evaluated: 100,
-        passed: 85,
+        hit_count: 15, // failures come directly from hit_count
       }),
     ];
 
     const { result } = renderHook(() => useDetectorChartOptions(detectors, false));
 
-    // 100 total - 85 passed = 15 failed
+    // Y-axis label shows failures/total format
     const yAxisData = result.current.option.yAxis?.data as string[];
     expect(yAxisData[0]).toContain("(15/100)");
   });

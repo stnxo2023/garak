@@ -83,7 +83,7 @@ const useSeverityColor = () => {
     if (commentLower.includes(DEFCON_RISK_COMMENTS.elevated))
       return getCSSColor(CSS_COLOR_VARS.severity[3]);
     if (commentLower.includes(DEFCON_RISK_COMMENTS.medium))
-      return getCSSColor(CSS_COLOR_VARS.severity[3]);
+      return getCSSColor(CSS_COLOR_VARS.severity[4]);  // DC-4 = Medium Risk
     if (commentLower.includes(DEFCON_RISK_COMMENTS.low))
       return getCSSColor(CSS_COLOR_VARS.severity[5]);
     // Legacy fallbacks (kept for backwards compatibility)

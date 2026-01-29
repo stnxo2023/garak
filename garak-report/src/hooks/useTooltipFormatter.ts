@@ -40,13 +40,13 @@ export function useTooltipFormatter() {
     const defcon = data?.detector_defcon;
     const defconLine = defcon != null ? `<br/>DEFCON: <strong>DC-${defcon}</strong>` : "";
 
-    // Add pass/fail counts (new fields)
-    const passed = data?.passed;
+    // Show failures/total (direct from backend - no calculations)
     const failed = data?.failed;
     const total = data?.total;
+    const failedStyle = failed && failed > 0 ? ' style="color: #f87171"' : '';
     const countsLine =
-      total != null && passed != null && failed != null
-        ? `<br/><span style="color: #4ade80">${passed} passed</span> · <span style="color: #f87171">${failed} failed</span> · ${total} total`
+      total != null && failed != null
+        ? `<br/><span${failedStyle}>${failed} failures</span> / ${total} total`
         : "";
 
     return `

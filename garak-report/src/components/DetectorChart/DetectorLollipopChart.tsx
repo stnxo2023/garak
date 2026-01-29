@@ -97,7 +97,7 @@ const DetectorLollipopChart = ({
           <ReactECharts
             ref={chartRef}
             option={option}
-            style={{ height: chartHeight }}
+            style={{ height: chartHeight, cursor: "default" }}
             onChartReady={handleChartReady}
             onEvents={{
               mouseover: (params: { componentType?: string; data?: { name?: string }; value?: string }) => {

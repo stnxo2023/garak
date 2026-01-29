@@ -12,6 +12,7 @@ import type { Probe, EnrichedProbeData } from "../types/ProbesChart";
 import useSeverityColor from "./useSeverityColor";
 import { useProbeTooltip } from "./useProbeTooltip";
 import { THEME_COLORS, CHART_DIMENSIONS, CHART_LABEL_CONFIG, CHART_OPACITY } from "../constants";
+import { formatPercentage } from "../utils/formatPercentage";
 
 // Re-export for backward compatibility
 export type { EnrichedProbeData } from "../types/ProbesChart";
@@ -127,7 +128,7 @@ export function useProbeChartOptions(
               label: {
                 show: CHART_LABEL_CONFIG.show,
                 position: CHART_LABEL_CONFIG.position,
-                formatter: ({ value }: { value: number }) => `${value.toFixed(0)}%`,
+                formatter: ({ value }: { value: number }) => formatPercentage(value),
                 fontSize: CHART_LABEL_CONFIG.fontSize,
                 fontWeight: isSelected ? "bold" : "normal",
                 color: isSelected ? getDefconColor(p.severity ?? 0) : textColor,

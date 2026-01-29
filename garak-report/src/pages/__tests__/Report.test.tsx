@@ -57,6 +57,12 @@ vi.mock("@kui/react", () => ({
       {children}
     </span>
   ),
+  Button: ({ children, onClick, ...props }: MockComponentProps & { onClick?: () => void }) => (
+    <button data-testid="button" onClick={onClick} {...props}>
+      {children}
+    </button>
+  ),
+  Divider: () => <hr data-testid="divider" />,
   Flex: ({ children, ...props }: MockFlexProps) => (
     <div data-testid="flex" {...props}>
       {children}
@@ -64,6 +70,11 @@ vi.mock("@kui/react", () => ({
   ),
   Grid: ({ children, ...props }: MockComponentProps) => (
     <div data-testid="grid" {...props}>
+      {children}
+    </div>
+  ),
+  Panel: ({ children, ...props }: MockComponentProps) => (
+    <div data-testid="panel" {...props}>
       {children}
     </div>
   ),
@@ -91,6 +102,11 @@ vi.mock("@kui/react", () => ({
     <span data-kind={kind} {...props}>
       {children}
     </span>
+  ),
+  Tooltip: ({ children, slotContent }: MockComponentProps & { slotContent?: React.ReactNode }) => (
+    <div data-testid="tooltip" title={String(slotContent)}>
+      {children}
+    </div>
   ),
   Group: ({ children, ...props }: MockComponentProps) => (
     <div data-testid="group" {...props}>

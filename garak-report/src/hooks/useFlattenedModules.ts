@@ -51,11 +51,10 @@ function buildDetector(name: string, data: EvalDetectorData): Detector | null {
     relative_comment: data.relative_comment ?? "",
     detector_defcon: data.detector_defcon ?? 5,
     calibration_used: data.calibration_used ?? false,
-    // Support both new (total_evaluated/passed) and old (attempt_count/hit_count) field names
+    // Pass through backend values directly - no calculations
     total_evaluated: data.total_evaluated ?? data.attempt_count,
-    passed: data.passed ?? (data.attempt_count != null && data.hit_count != null 
-      ? data.attempt_count - data.hit_count 
-      : undefined),
+    hit_count: data.hit_count,  // Preserve for display (failures count)
+    attempt_count: data.attempt_count,  // Preserve original field
   };
 }
 

@@ -11,10 +11,12 @@
 
 import { useState } from "react";
 import type { Probe } from "../types/ProbesChart";
-import { Stack, Panel, Flex, Text } from "@kui/react";
+import { Stack, Panel, Flex, Text, Badge } from "@kui/react";
 import { DetectorLollipopChart } from "./DetectorChart";
 import DetectorResultsTable from "./DetectorChart/DetectorResultsTable";
 import DefconBadge from "./DefconBadge";
+import useSeverityColor from "../hooks/useSeverityColor";
+import { formatRate } from "../utils/formatPercentage";
 
 /**
  * Panel displaying probe analysis with detector breakdown.
@@ -40,20 +42,24 @@ const DetectorsView = ({
   // Shared hover state for linked highlighting between chart and table
   const [hoveredDetector, setHoveredDetector] = useState<string | null>(null);
 
+  const { getSeverityLabelByLevel, getDefconBadgeColor } = useSeverityColor();
+
   // Use data directly from backend - no calculations
   const probeSeverity = probe.summary?.probe_severity ?? 5;
-  const promptCount = probe.summary?.prompt_count;
-  const failCount = probe.summary?.fail_count;
   const probeScore = probe.summary?.probe_score;
+  const severityLabel = getSeverityLabelByLevel(probeSeverity);
 
   return (
     <Panel>
       <Stack gap="density-3xl">
-        {/* Header group: name + description + stats */}
+        {/* Header group: name + severity + description + stats */}
         <Stack gap="density-md">
           <Flex gap="density-md" align="center">
             <DefconBadge defcon={probeSeverity} />
             <Text kind="title/lg">{probe.probe_name}</Text>
+            <Badge color={getDefconBadgeColor(probeSeverity)} kind="outline">
+              {severityLabel}
+            </Badge>
           </Flex>
 
           {probe.summary?.probe_descr && (
@@ -62,23 +68,9 @@ const DetectorsView = ({
             </Text>
           )}
 
-          <Flex gap="density-sm" align="baseline">
-            {probeScore != null && (
-              <Text kind="title/md">
-                {(probeScore * 100).toFixed(0)}% pass rate
-              </Text>
-            )}
-            {failCount != null && (
-              <Text kind="body/regular/md" style={{ color: "var(--color-tk-400)" }}>
-                · {failCount.toLocaleString()} failures
-              </Text>
-            )}
-            {promptCount != null && (
-              <Text kind="body/regular/md" style={{ color: "var(--color-tk-400)" }}>
-                · {promptCount.toLocaleString()} prompts
-              </Text>
-            )}
-          </Flex>
+          {probeScore != null && (
+            <Text kind="title/md">{formatRate(probeScore)} pass rate</Text>
+          )}
         </Stack>
 
         {/* Detector Breakdown */}

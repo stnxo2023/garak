@@ -6,9 +6,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 beforeEach(() => {
     const colorMap: Record<string, string> = {
     "--color-teal-200": "#7dd3fc",
+    "--color-teal-400": "#2dd4bf",
     "--color-green-200": "#bbf7d0",
     "--color-green-400": "#4ade80",
     "--color-green-600": "#16a34a",
+    "--color-blue-200": "#bfdbfe",
+    "--color-blue-400": "#60a5fa",
     "--color-yellow-200": "#fef08a",
     "--color-yellow-300": "#fde047",
     "--color-yellow-400": "#facc15",
@@ -16,7 +19,6 @@ beforeEach(() => {
     "--color-gray-200": "#e5e7eb",
     "--color-red-700": "#b91c1c",
     "--color-red-400": "#f87171",
-    "--color-teal-400": "#2dd4bf",
     };
 
   vi.stubGlobal("getComputedStyle", () => ({
@@ -29,8 +31,8 @@ describe("useSeverityColor", () => {
     const { result } = renderHook(() => useSeverityColor());
 
     expect(result.current.getSeverityColorByLevel(5)).toBe("#7dd3fc"); // teal-200
-    expect(result.current.getSeverityColorByLevel(4)).toBe("#4ade80"); // green-400 (user's change)
-    expect(result.current.getSeverityColorByLevel(3)).toBe("#bbf7d0"); // green-200 (user's change)
+    expect(result.current.getSeverityColorByLevel(4)).toBe("#4ade80"); // green-400
+    expect(result.current.getSeverityColorByLevel(3)).toBe("#bfdbfe"); // blue-200
     expect(result.current.getSeverityColorByLevel(2)).toBe("#fef08a"); // yellow-200
     expect(result.current.getSeverityColorByLevel(1)).toBe("#fecaca"); // red-200
     expect(result.current.getSeverityColorByLevel(0)).toBe("#e5e7eb"); // gray-200
@@ -42,8 +44,8 @@ describe("useSeverityColor", () => {
     expect(result.current.getSeverityColorByComment("very poor")).toBe("#fecaca"); // red-200
     expect(result.current.getSeverityColorByComment("poor")).toBe("#fecaca"); // red-200
     expect(result.current.getSeverityColorByComment("below average")).toBe("#fef08a"); // yellow-200
-    expect(result.current.getSeverityColorByComment("average")).toBe("#bbf7d0"); // green-200 (user's change)
-    expect(result.current.getSeverityColorByComment("above average")).toBe("#bbf7d0"); // green-200 (user's change)
+    expect(result.current.getSeverityColorByComment("average")).toBe("#bfdbfe"); // blue-200 (DC-3)
+    expect(result.current.getSeverityColorByComment("above average")).toBe("#bfdbfe"); // blue-200 (DC-3)
     expect(result.current.getSeverityColorByComment("excellent")).toBe("#7dd3fc"); // teal-200
     expect(result.current.getSeverityColorByComment("competitive")).toBe("#7dd3fc"); // teal-200
     expect(result.current.getSeverityColorByComment("nonsense")).toBe("#e5e7eb"); // gray-200
@@ -54,9 +56,9 @@ describe("useSeverityColor", () => {
     const { result } = renderHook(() => useSeverityColor());
 
     expect(result.current.getDefconColor(1)).toBe("#b91c1c"); // red-700
-    expect(result.current.getDefconColor(2)).toBe("#f87171"); // red-400
-    expect(result.current.getDefconColor(3)).toBe("#bbf7d0"); // green-200 (user's change)
-    expect(result.current.getDefconColor(4)).toBe("#16a34a"); // green-600 (user's change)
+    expect(result.current.getDefconColor(2)).toBe("#facc15"); // yellow-400
+    expect(result.current.getDefconColor(3)).toBe("#60a5fa"); // blue-400
+    expect(result.current.getDefconColor(4)).toBe("#16a34a"); // green-600
     expect(result.current.getDefconColor(5)).toBe("#2dd4bf"); // teal-400
     expect(result.current.getDefconColor(undefined)).toBe("#16a34a"); // green-600 (default to DC-4)
   });

@@ -38,8 +38,7 @@ interface ChartDetectorData {
   color: string;
   defcon: number;
   total: number;
-  passed: number;
-  failed: number;
+  failed: number;  // Direct from backend (hit_count)
 }
 
 /**
@@ -60,16 +59,15 @@ export function useDetectorChartOptions(
   const { getDefconColor } = useSeverityColor();
   const textColor = isDark ? THEME_COLORS.text.dark : THEME_COLORS.text.light;
 
-  // Convert detectors to chart data format
+  // Convert detectors to chart data format - ALL values direct from backend
   const chartData = useMemo<ChartDetectorData[]>(() => {
     return detectors.map((d) => {
       const zscore = d.relative_score;
       const zscoreIsValid = zscore != null && typeof zscore === "number" && !isNaN(zscore);
       
-      // Use backend data directly - hit_count IS the failure count
+      // ALL from backend - ZERO business logic
       const total = d.total_evaluated ?? d.attempt_count ?? 0;
-      const failed = d.hit_count ?? 0;  // Backend provides this directly
-      const passed = d.passed ?? (total - failed);  // Fallback only if passed not provided
+      const failures = d.hit_count ?? 0;
 
       return {
         name: d.detector_name,
@@ -77,12 +75,11 @@ export function useDetectorChartOptions(
         detector_score: d.absolute_score != null ? d.absolute_score * 100 : null,
         comment: d.relative_comment ?? "Unknown",
         color: zscoreIsValid
-          ? getDefconColor(d.detector_defcon ?? 5) // DEFCON color palette
-          : "#666666", // Gray for unavailable
+          ? getDefconColor(d.detector_defcon ?? 5)  // Match DEFCON badge color
+          : "#999999", // Gray for unavailable
         defcon: d.detector_defcon ?? 5,
         total,
-        passed,
-        failed,
+        failed: failures,  // Direct from backend (hit_count)
       };
     }).sort((a, b) => b.name.localeCompare(a.name)); // Reverse alpha for A at bottom
   }, [detectors, getDefconColor]);
@@ -90,12 +87,12 @@ export function useDetectorChartOptions(
   // Check if we have any valid data
   const hasData = chartData.some((d) => d.zscore !== null);
 
-  // Build Y-axis labels with counts (passed/total to match Results table)
+  // Build Y-axis labels with counts (failures/total - direct from backend)
   const yAxisLabels = useMemo(
     () =>
       chartData.map((d) => {
         if (d.total > 0) {
-          return `${d.name} (${d.passed}/${d.total})`;
+          return `${d.name} (${d.failed}/${d.total})`;
         }
         return d.name;
       }),
@@ -123,7 +120,6 @@ export function useDetectorChartOptions(
           value: [0, index],
           name: d.name,
           detector_defcon: d.defcon,
-          passed: d.passed,
           failed: d.failed,
           total: d.total,
           comment: "No calibration data",
@@ -156,7 +152,6 @@ export function useDetectorChartOptions(
         detector_score: d.detector_score,
         comment: d.comment,
         detector_defcon: d.defcon,
-        passed: d.passed,
         failed: d.failed,
         total: d.total,
         itemStyle: {
@@ -176,7 +171,6 @@ export function useDetectorChartOptions(
         detector_score: d.detector_score,
         comment: d.comment,
         detector_defcon: d.defcon,
-        passed: d.passed,
         failed: d.failed,
         total: d.total,
         lineStyle: {

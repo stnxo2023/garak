@@ -8,7 +8,7 @@
  */
 
 import { useState } from "react";
-import { Accordion, Anchor, Badge, Flex, Stack, Text } from "@kui/react";
+import { Accordion, Anchor, Badge, Flex, Stack, Text, Tooltip } from "@kui/react";
 import ErrorBoundary from "./ErrorBoundary";
 import ProbesChart from "./ProbesChart";
 import useSeverityColor from "../hooks/useSeverityColor";
@@ -24,6 +24,13 @@ interface ModuleAccordionProps {
   /** Whether dark theme is active */
   isDark: boolean;
 }
+
+/** Format aggregation function name for display */
+const formatAggregation = (fn: string | undefined): string => {
+  if (!fn) return "Score";
+  const formatted = fn.replace(/_/g, " ");
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+};
 
 /**
  * Accordion displaying modules with expandable probe charts.
@@ -45,13 +52,24 @@ const ModuleAccordion = ({ modules, accordionKey, isDark }: ModuleAccordionProps
         slotTrigger: (
           <Flex direction="row" gap="density-lg">
             <Flex direction="col" gap="density-sm">
-              <Badge
-                color={getDefconBadgeColor(module.summary.group_defcon)}
-                kind="solid"
-                className="w-[70px]"
+              <Tooltip
+                slotContent={
+                  <Stack gap="density-xxs">
+                    <Text kind="body/bold/sm">{formatAggregation(module.summary.group_aggregation_function)}</Text>
+                    <Text kind="body/regular/sm">
+                      This score is the {module.summary.group_aggregation_function?.replace(/_/g, " ") || "aggregate"} of all probe scores in this module.
+                    </Text>
+                  </Stack>
+                }
               >
-                <Text kind="label/bold/xl">{(module.summary.score * 100).toFixed(0)}%</Text>
-              </Badge>
+                <Badge
+                  color={getDefconBadgeColor(module.summary.group_defcon)}
+                  kind="solid"
+                  className="w-[70px]"
+                >
+                  <Text kind="label/bold/xl">{(module.summary.score * 100).toFixed(0)}%</Text>
+                </Badge>
+              </Tooltip>
               <Badge
                 color={getDefconBadgeColor(module.summary.group_defcon)}
                 kind="outline"

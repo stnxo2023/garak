@@ -34,7 +34,7 @@ describe("useProbeTooltip", () => {
     const tooltip = result.current({ name: "probe-1", value: 50 });
 
     expect(tooltip).toContain("<strong>probe-1</strong>");
-    expect(tooltip).toContain("Score: 50.00%");
+    expect(tooltip).toContain("Score: 50"); // formatPercentage removes .00
     expect(tooltip).toContain(
       'Severity: <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: #ff0; margin-right: 6px; vertical-align: middle;"></span><span style="font-weight: 600">medium</span>'
     );
@@ -46,7 +46,7 @@ describe("useProbeTooltip", () => {
     const tooltip = result.current({ name: "unknown", value: 42 });
 
     expect(tooltip).toContain("<strong>unknown</strong>");
-    expect(tooltip).toContain("Score: 42.00%");
+    expect(tooltip).toContain("Score: 42"); // formatPercentage removes .00
     expect(tooltip).toContain(
       'Severity: <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: #999; margin-right: 6px; vertical-align: middle;"></span><span style="font-weight: 600">Unknown</span>'
     );
