@@ -47,6 +47,7 @@ const DetectorsView = ({
   // Use data directly from backend - no calculations
   const probeSeverity = probe.summary?.probe_severity ?? 5;
   const probeScore = probe.summary?.probe_score;
+  const promptCount = probe.summary?.prompt_count;
   const severityLabel = getSeverityLabelByLevel(probeSeverity);
 
   return (
@@ -68,9 +69,16 @@ const DetectorsView = ({
             </Text>
           )}
 
-          {probeScore != null && (
-            <Text kind="title/md">{formatRate(probeScore)} pass rate</Text>
-          )}
+          <Flex gap="density-sm" align="center">
+            {probeScore != null && (
+              <Text kind="title/md">{formatRate(probeScore)} pass rate</Text>
+            )}
+            {promptCount != null && (
+              <Badge color="gray" kind="outline">
+                {promptCount.toLocaleString()} prompts
+              </Badge>
+            )}
+          </Flex>
         </Stack>
 
         {/* Detector Breakdown */}
