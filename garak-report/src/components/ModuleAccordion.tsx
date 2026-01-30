@@ -79,14 +79,18 @@ const ModuleAccordion = ({ modules, accordionKey, isDark }: ModuleAccordionProps
               </Badge>
             </Flex>
             <Stack align="start" gap="density-md">
-              <Text kind="label/bold/2xl">{module.group_name}</Text>
-              <Anchor
-                href={module.summary.group_link}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <Text kind="label/bold/2xl">{module.summary.group || module.group_name}</Text>
+              {module.summary.group_link ? (
+                <Anchor
+                  href={module.summary.group_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Text dangerouslySetInnerHTML={{ __html: module.summary.doc }} />
+                </Anchor>
+              ) : (
                 <Text dangerouslySetInnerHTML={{ __html: module.summary.doc }} />
-              </Anchor>
+              )}
             </Stack>
           </Flex>
         ),
