@@ -184,12 +184,17 @@ class JavaScriptNpm(PackageHallucinationDetector):
     language_name = "javascript"
 
     def _extract_package_references(self, output: str) -> Set[str]:
+        # Check for the presence of the anchor strings before running this monster.
+        if "import" in output and "from" in output:
+            import_as_from = re.findall(
+                r"^import(?:(?:\s+[^\s{},]+\s*(?:,|\s+))?(?:\s*\{(?:\s*[^\s\"\'{}]+\s*,?)+})?\s*|\s*\*\s*as\s+[^ \s{}]+\s+)from\s*[\'\"]([^\'\"\s]+)[\'\"]",
+                output,
+                flags=re.MULTILINE,
+            )
+        else:
+            import_as_from = []
         imports = re.findall(
             r"import\s+(?:(?:\w+\s*,?\s*)?(?:{[^}]+})?\s*from\s+)?['\"]([^'\"]+)['\"]",
-            output,
-        )
-        import_as_from = re.findall(
-            r"import(?:(?:(?:\s+(?:[^\s\{\},]+)[\s]*(?:,|[\s]+))?(?:\s*\{(?:\s*[^\s\"\'\{\}]+\s*,?)+\})?\s*)|\s*\*\s*as\s+(?:[^ \s\{\}]+)\s+)from\s*[\'\"]([^\'\"\n]+)[\'\"]",
             output,
         )
         requires = re.findall(r"require\s*\(['\"]([^'\"]+)['\"]\)", output)
