@@ -257,7 +257,7 @@ class FileDetector(Detector):
 
     valid_format = "local filename"
 
-    def _test_file(self, filename: str) -> Union[None, str]:
+    def _test_file(self, filename: str) -> Union[None, float]:
         raise NotImplementedError
 
     def detect(self, attempt: garak.attempt.Attempt) -> Iterable[float | None]:
