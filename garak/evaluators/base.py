@@ -6,7 +6,7 @@ These describe evaluators for assessing detector results.
 import json
 import logging
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, List
 
 from colorama import Fore, Style
 
