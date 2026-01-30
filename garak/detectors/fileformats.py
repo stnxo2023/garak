@@ -5,11 +5,9 @@
 
 These detectors examine file formats, based on name or content."""
 
-import importlib
 import logging
 import pickletools
 
-from garak import _config
 from garak.detectors.base import FileDetector
 
 
