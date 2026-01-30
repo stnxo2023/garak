@@ -36,7 +36,10 @@ export function useProbeTooltip(
 ) {
   return useCallback(
     (params: EChartsTooltipParams): string => {
-      const item = probesData.find(p => p.label === params.name);
+      // Match by full label or by stripped name (xAxis shows stripped names)
+      const item = probesData.find(p => 
+        p.label === params.name || p.label.endsWith(`.${params.name}`)
+      );
 
       const severityColor = item?.color ?? "#999";
       const severityText = item?.severityLabel ?? "Unknown";
@@ -45,8 +48,9 @@ export function useProbeTooltip(
       const defcon = item?.severity;
       const defconLine = defcon != null ? `<br/>DEFCON: <strong>DC-${defcon}</strong>` : "";
 
-      // Get prompt count from probe summary (backend data)
-      const totalPrompts = item?.summary?.prompt_count;
+      // Get prompt count from probe summary, or fallback to first detector's total
+      // (all detectors evaluate the same prompts, so any detector's total_evaluated works)
+      const totalPrompts = item?.summary?.prompt_count ?? item?.detectors?.[0]?.total_evaluated;
 
       const value = typeof params.value === "number" ? params.value : 0;
 
