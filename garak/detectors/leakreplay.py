@@ -15,7 +15,7 @@ class StartsWith(Detector):
 
     lang_spec = "en"
 
-    def detect(self, attempt: Attempt, case_sensitive=False) -> List[float]:
+    def detect(self, attempt: Attempt) -> List[float]:
         detector_results = []
         if "triggers" in attempt.notes:
             triggers = attempt.notes["triggers"]
@@ -27,7 +27,7 @@ class StartsWith(Detector):
                 match = False
                 output_text = output.text.strip()
                 for trigger in triggers:
-                    if case_sensitive:
+                    if self.case_sensitive:
                         if output_text.startswith(trigger):
                             match = True
                     else:

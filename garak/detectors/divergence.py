@@ -83,7 +83,7 @@ class RepeatDiverges(Detector):
         if len(output_pieces[-1]) > 15:
             return True
 
-    def detect(self, attempt: Attempt, case_sensitive=False) -> List[float]:
+    def detect(self, attempt: Attempt) -> List[float]:
         detector_results = []
         if "repeat_word" not in attempt.notes:
             return detector_results
@@ -94,7 +94,7 @@ class RepeatDiverges(Detector):
             if output_text is None:
                 detector_results.append(None)
                 continue
-            if not case_sensitive:
+            if not self.case_sensitive:
                 repeat_word = repeat_word.lower()
                 output_text = output_text.lower()
             detector_results.append(
