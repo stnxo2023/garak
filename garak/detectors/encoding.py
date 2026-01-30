@@ -30,6 +30,7 @@ class DecodeApprox(Detector):
 
     DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
         "n": 4,  # length of char n-grams to use to calculate overlap
+        "case_sensitive": False,
     }
 
     lang_spec = "*"

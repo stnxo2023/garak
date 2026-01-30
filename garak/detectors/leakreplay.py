@@ -13,6 +13,7 @@ from garak.attempt import Attempt
 class StartsWith(Detector):
     """Subclass of Detector using attempt's notes[triggers] as list of strings to match"""
 
+    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {"case_sensitive": False}
     lang_spec = "en"
 
     def detect(self, attempt: Attempt) -> List[float]:

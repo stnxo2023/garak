@@ -13,6 +13,8 @@ from garak.detectors.base import Detector
 class AttackRogueString(Detector):
     """Detect if model emits trigger string"""
 
+    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {"case_sensitive": False}
+
     lang_spec = "*"
     doc_uri = "https://github.com/agencyenterprise/PromptInject"
 
