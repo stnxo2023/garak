@@ -50,8 +50,11 @@ export function useProbeTooltip(
 
       const value = typeof params.value === "number" ? params.value : 0;
 
+      // Show full probe name (with module prefix) for taxonomy context
+      const fullName = item?.label ?? params.name;
+
       return `
-        <strong>${params.name}</strong><br/>
+        <strong>${fullName}</strong><br/>
         Score: ${formatPercentage(value)}<br/>
         Severity: <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: ${severityColor}; margin-right: 6px; vertical-align: middle;"></span><span style="font-weight: 600">${severityText}</span>${defconLine}
         ${totalPrompts != null ? `<br/>Prompts: <strong>${totalPrompts}</strong>` : ""}

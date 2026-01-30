@@ -25,14 +25,46 @@ export type { EnrichedProbeData } from "../types/ProbesChart";
  * @param isDark - Whether dark theme is active
  * @returns ECharts option configuration object
  */
+/** 
+ * Module color palette - hex values from KUI theme
+ * These must be hex values (not CSS variables) for ECharts to render them
+ */
+const MODULE_COLORS = [
+  "#0074df", // blue-500
+  "#3f8500", // green-500
+  "#a846db", // purple-500
+  "#0d8473", // teal-500
+  "#d73d00", // yellow-500
+  "#e52020", // red-500
+];
+
 export function useProbeChartOptions(
   probesData: EnrichedProbeData[],
   selectedProbe: Probe | null,
-  isDark?: boolean
+  isDark?: boolean,
+  allModuleNames?: string[]
 ) {
   const { getDefconColor } = useSeverityColor();
   const textColor = isDark ? THEME_COLORS.text.dark : THEME_COLORS.text.light;
   const getTooltip = useProbeTooltip(probesData);
+
+  // Build color map from stable allModuleNames list (or fall back to probesData)
+  const moduleColorMap = useMemo(() => {
+    const moduleList = allModuleNames ?? (() => {
+      const modules = new Set<string>();
+      probesData.forEach(p => {
+        const moduleName = p.label.split(".")[0];
+        if (moduleName) modules.add(moduleName);
+      });
+      return Array.from(modules).sort();
+    })();
+    
+    const map = new Map<string, string>();
+    moduleList.forEach((m, i) => {
+      map.set(m, MODULE_COLORS[i % MODULE_COLORS.length]);
+    });
+    return map;
+  }, [allModuleNames, probesData]);
 
   return useMemo(
     () => ({
@@ -90,17 +122,31 @@ export function useProbeChartOptions(
               color: textColor,
               opacity: CHART_OPACITY.dimmed,
             },
+            // Module dot styles - created dynamically based on module colors
+            ...Object.fromEntries(
+              Array.from(moduleColorMap.entries()).map(([moduleName, color]) => [
+                `dot_${moduleName}`,
+                {
+                  backgroundColor: color,
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                },
+              ])
+            ),
           },
           formatter: (value: string, index: number) => {
             const probe = probesData[index];
             const isSelected = selectedProbe?.summary?.probe_name === probe.summary?.probe_name;
             const defcon = probe.severity ?? 0;
+            const moduleName = probe.label.split(".")[0];
+            const dot = `{dot_${moduleName}| } `;
 
             if (selectedProbe && !isSelected) {
-              return `{dimmed|${value}}`;
+              return `${dot}{dimmed|${value}}`;
             }
 
-            return isSelected ? `{selected${defcon}|${value}}` : value;
+            return isSelected ? `${dot}{selected${defcon}|${value}}` : `${dot}${value}`;
           },
         },
         axisLine: { lineStyle: { color: textColor } },
@@ -149,7 +195,7 @@ export function useProbeChartOptions(
         },
       ],
     }),
-    [probesData, selectedProbe, getTooltip, getDefconColor, isDark, textColor]
+    [probesData, selectedProbe, getTooltip, getDefconColor, isDark, textColor, moduleColorMap]
   );
 }
 

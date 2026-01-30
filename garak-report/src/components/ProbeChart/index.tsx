@@ -10,3 +10,4 @@
 export { default as ProbeChartHeader } from "./ProbeChartHeader";
 export { default as ProbeTagsList } from "./ProbeTagsList";
 export { default as ProbeBarChart } from "./ProbeBarChart";
+export { default as ModuleFilterChips } from "./ModuleFilterChips";

@@ -25,6 +25,8 @@ interface ProbeBarChartProps {
   allProbes: Probe[];
   /** Theme mode for styling */
   isDark?: boolean;
+  /** All module names for consistent color mapping (not affected by filtering) */
+  allModuleNames?: string[];
 }
 
 /**
@@ -45,8 +47,9 @@ const ProbeBarChart = ({
   onProbeClick,
   allProbes,
   isDark,
+  allModuleNames,
 }: ProbeBarChartProps) => {
-  const option = useProbeChartOptions(probesData, selectedProbe, isDark);
+  const option = useProbeChartOptions(probesData, selectedProbe, isDark, allModuleNames);
 
   /**
    * Handles click events on chart bars or axis labels.

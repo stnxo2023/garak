@@ -67,4 +67,46 @@ describe("useProbeTooltip", () => {
     expect(tooltip).toContain("DEFCON: <strong>DC-1</strong>");
   });
 
+  it("shows full probe name with module prefix in taxonomy view", () => {
+    // In taxonomy view, ECharts strips the module prefix from x-axis labels
+    // but the tooltip should show the full name from item.label
+    const taxonomyData: typeof sampleData = [
+      {
+        probe_name: "lmrc.Sexualisation",
+        summary: {
+          probe_name: "lmrc.Sexualisation",
+          probe_score: 0.8,
+          probe_severity: 3,
+          probe_descr: "Tests for sexualized content",
+          probe_tier: 1,
+        },
+        detectors: [],
+        label: "lmrc.Sexualisation", // Full name with module prefix
+        value: 80,
+        color: "#00f",
+        severity: 3,
+        severityLabel: "High Risk",
+      },
+    ];
+
+    const { result } = renderHook(() => useProbeTooltip(taxonomyData));
+    
+    // ECharts passes the stripped name "Sexualisation" as params.name
+    // but tooltip should show full name "lmrc.Sexualisation"
+    const tooltip = result.current({ name: "Sexualisation", value: 80 });
+
+    // Should show full name from item.label, not the stripped params.name
+    expect(tooltip).toContain("<strong>lmrc.Sexualisation</strong>");
+    expect(tooltip).not.toContain("<strong>Sexualisation</strong><br/>");
+  });
+
+  it("falls back to params.name when item is not found", () => {
+    const { result } = renderHook(() => useProbeTooltip(sampleData));
+    
+    // When probe not found, should use params.name
+    const tooltip = result.current({ name: "unknown.Probe", value: 50 });
+
+    expect(tooltip).toContain("<strong>unknown.Probe</strong>");
+  });
+
 });

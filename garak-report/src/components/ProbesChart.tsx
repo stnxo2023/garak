@@ -8,12 +8,12 @@
  * @license Apache-2.0
  */
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import DetectorsView from "./DetectorsView";
 import useSeverityColor from "../hooks/useSeverityColor";
 import type { ProbesChartProps } from "../types/ProbesChart";
-import { Grid } from "@kui/react";
-import { ProbeChartHeader, ProbeTagsList, ProbeBarChart } from "./ProbeChart";
+import { Grid, Stack } from "@kui/react";
+import { ProbeChartHeader, ProbeTagsList, ProbeBarChart, ModuleFilterChips } from "./ProbeChart";
 
 /**
  * Main probe visualization component displaying bar chart and detector details.
@@ -33,6 +33,7 @@ const ProbesChart = ({
   isDark,
 }: ProbesChartProps & { isDark?: boolean }) => {
   const { getSeverityColorByLevel, getSeverityLabelByLevel } = useSeverityColor();
+  const [selectedModules, setSelectedModules] = useState<string[]>([]);
 
   const probesData = useMemo(() => {
     // Sort probes alphabetically by class name for consistent ordering
@@ -58,7 +59,34 @@ const ProbesChart = ({
     });
   }, [module, getSeverityColorByLevel, getSeverityLabelByLevel]);
 
-  const filtered = probesData;
+  // Extract unique module names (first part of probe name before the dot)
+  const moduleNames = useMemo(() => {
+    const moduleSet = new Set<string>();
+    probesData.forEach(probe => {
+      const moduleName = probe.label.split(".")[0];
+      if (moduleName) moduleSet.add(moduleName);
+    });
+    return Array.from(moduleSet).sort();
+  }, [probesData]);
+
+  // Filter probes by selected modules (multi-select)
+  const filtered = useMemo(() => {
+    if (selectedModules.length === 0) return probesData;
+    return probesData.filter(probe => {
+      const moduleName = probe.label.split(".")[0];
+      return selectedModules.includes(moduleName);
+    });
+  }, [probesData, selectedModules]);
+
+  // Handle module chip click - toggle in multi-select array
+  const handleModuleClick = (moduleName: string) => {
+    setSelectedModules(prev => 
+      prev.includes(moduleName)
+        ? prev.filter(m => m !== moduleName)
+        : [...prev, moduleName]
+    );
+    setSelectedProbe(null); // Clear probe selection when changing module filter
+  };
 
   // Collect all unique tags from all probes in this module
   const allTags = useMemo(() => {
@@ -75,17 +103,23 @@ const ProbesChart = ({
         <p className="text-sm italic text-gray-500 py-8">No probes meet the current filter.</p>
       ) : (
         <Grid cols={selectedProbe ? 2 : 1}>
-          <div>
+          <Stack gap="density-md">
             <ProbeChartHeader />
             <ProbeTagsList tags={allTags} />
+            <ModuleFilterChips
+              moduleNames={moduleNames}
+              selectedModules={selectedModules}
+              onSelectModule={handleModuleClick}
+            />
             <ProbeBarChart
               probesData={filtered}
               selectedProbe={selectedProbe}
               onProbeClick={setSelectedProbe}
               allProbes={module.probes}
               isDark={isDark}
+              allModuleNames={moduleNames}
             />
-          </div>
+          </Stack>
           {selectedProbe && (
             <DetectorsView
               probe={selectedProbe}
