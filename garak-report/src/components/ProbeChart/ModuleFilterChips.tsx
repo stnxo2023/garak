@@ -67,7 +67,7 @@ const ModuleFilterChips = ({
       </Text>
       {moduleNames.map((moduleName, index) => {
         const isSelected = selectedModules.includes(moduleName);
-        const color = getModuleColor(index);
+        const color = isInteractive ? getModuleColor(index) : "gray";
         const dotColor = DOT_COLOR_VARS[color];
 
         return (
@@ -78,18 +78,22 @@ const ModuleFilterChips = ({
             onClick={isInteractive ? () => onSelectModule(moduleName) : undefined}
             className={isInteractive ? "cursor-pointer" : ""}
           >
-            <Flex align="center" gap="density-xxs">
-              <span
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  backgroundColor: dotColor,
-                  flexShrink: 0,
-                }}
-              />
+            {isInteractive ? (
+              <Flex align="center" gap="density-xxs">
+                <span
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    backgroundColor: dotColor,
+                    flexShrink: 0,
+                  }}
+                />
+                <Text kind="label/bold/sm">{moduleName}</Text>
+              </Flex>
+            ) : (
               <Text kind="label/bold/sm">{moduleName}</Text>
-            </Flex>
+            )}
           </Badge>
         );
       })}

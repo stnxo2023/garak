@@ -139,8 +139,11 @@ export function useProbeChartOptions(
             const probe = probesData[index];
             const isSelected = selectedProbe?.summary?.probe_name === probe.summary?.probe_name;
             const defcon = probe.severity ?? 0;
+            
+            // Only show module dot if there are multiple modules
+            const showDot = moduleColorMap.size > 1;
             const moduleName = probe.label.split(".")[0];
-            const dot = `{dot_${moduleName}| } `;
+            const dot = showDot ? `{dot_${moduleName}| } ` : "";
 
             if (selectedProbe && !isSelected) {
               return `${dot}{dimmed|${value}}`;
