@@ -8,6 +8,7 @@
  * @license Apache-2.0
  */
 
+import { useEffect } from "react";
 import { Flex, Spinner, Grid, StatusMessage } from "@kui/react";
 import Footer from "../components/Footer";
 import ReportHeader from "../components/Header";
@@ -51,6 +52,21 @@ function Report({ onThemeChange, currentTheme = "system" }: ReportProps) {
 
   // Theme mode
   const { isDark, toggleTheme } = useThemeMode(currentTheme, onThemeChange);
+
+  // Update document title with target name
+  useEffect(() => {
+    const targetName =
+      selectedReport?.meta?.target_name ||
+      selectedReport?.meta?.model_name ||
+      (setupData?.["plugins.model_name"] as string) ||
+      null;
+
+    document.title = targetName ? `NVIDIA Garak - ${targetName}` : "NVIDIA Garak";
+
+    return () => {
+      document.title = "NVIDIA Garak";
+    };
+  }, [selectedReport?.meta?.target_name, selectedReport?.meta?.model_name, setupData]);
 
   // Loading state
   if (!selectedReport) {
