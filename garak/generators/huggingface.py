@@ -467,7 +467,9 @@ class LLaVA(Generator, HFCompatible):
 
     extra_dependency_names = ["pillow"]
 
-    def _load_deps(self, deps_override):
+    def _load_deps(self, deps_override: List | None = None):
+        if deps_override is None:
+            deps_override = []
         return super()._load_deps(deps_override + ["PIL"])
 
     DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {

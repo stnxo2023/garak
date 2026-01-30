@@ -83,7 +83,7 @@ class FileIsExecutable(FileDetector):
 
     extra_dependency_names = ["magic"]
 
-    def _load_deps(self, deps_override):
+    def _load_deps(self, deps_override = None):
         try:
             super()._load_deps(deps_override)
         except (ImportError, ModuleNotFoundError) as e:
