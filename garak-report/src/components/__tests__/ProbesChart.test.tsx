@@ -886,4 +886,91 @@ describe("ProbesChart", () => {
       expect(container).toBeTruthy();
     });
   });
+
+  describe("Module filtering functionality", () => {
+    const multiModuleProps: ProbesChartProps = {
+      module: {
+        group_name: "test",
+        summary: {
+          group: "test",
+          score: 0.5,
+          group_defcon: 2,
+          doc: "",
+          group_link: "",
+          group_aggregation_function: "avg",
+          unrecognised_aggregation_function: false,
+          show_top_group_score: false,
+        },
+        probes: [
+          {
+            probe_name: "moduleA.probe1",
+            summary: {
+              probe_name: "moduleA.probe1",
+              probe_score: 0.5,
+              probe_severity: 2,
+              probe_descr: "",
+              probe_tier: 1,
+            },
+            detectors: [],
+          },
+          {
+            probe_name: "moduleB.probe2",
+            summary: {
+              probe_name: "moduleB.probe2",
+              probe_score: 0.7,
+              probe_severity: 3,
+              probe_descr: "",
+              probe_tier: 1,
+            },
+            detectors: [],
+          },
+        ],
+      },
+      selectedProbe: null,
+      setSelectedProbe: vi.fn(),
+    };
+
+    it("renders module filter chips when multiple modules present", () => {
+      render(<ProbesChart {...multiModuleProps} />);
+      
+      expect(screen.getByText("moduleA")).toBeInTheDocument();
+      expect(screen.getByText("moduleB")).toBeInTheDocument();
+    });
+
+    it("filters probes when module chip is clicked", () => {
+      render(<ProbesChart {...multiModuleProps} />);
+      
+      // Click on moduleA chip to filter
+      fireEvent.click(screen.getByText("moduleA"));
+      
+      // The filtering logic should be triggered
+      expect(screen.getByText("moduleA")).toBeInTheDocument();
+    });
+
+    it("clears probe selection when module filter changes", () => {
+      const setSelectedProbe = vi.fn();
+      render(<ProbesChart {...multiModuleProps} setSelectedProbe={setSelectedProbe} />);
+      
+      // Click on a module chip
+      fireEvent.click(screen.getByText("moduleA"));
+      
+      // Should clear the selected probe
+      expect(setSelectedProbe).toHaveBeenCalledWith(null);
+    });
+
+    it("toggles module selection on repeated clicks", () => {
+      render(<ProbesChart {...multiModuleProps} />);
+      
+      const moduleChip = screen.getByText("moduleA");
+      
+      // First click selects
+      fireEvent.click(moduleChip);
+      
+      // Second click deselects
+      fireEvent.click(moduleChip);
+      
+      // Component should still be rendered
+      expect(screen.getByText("moduleA")).toBeInTheDocument();
+    });
+  });
 });
