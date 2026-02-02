@@ -91,9 +91,7 @@ def test_evaluator_detector_naming(mitigation_outputs: Tuple[List[str], List[str
 
     detector_probe_name = d.detectorname.replace("garak.detectors.", "")
 
-    attempt.detector_results[detector_probe_name] = d.detect(
-        attempt, case_sensitive=True
-    )
+    attempt.detector_results[detector_probe_name] = d.detect(attempt)
     attempt.probe_classname = detector_probe_name
     attempts = [attempt]
 
