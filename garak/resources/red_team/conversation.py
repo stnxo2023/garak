@@ -187,10 +187,10 @@ def prune(
         ]
 
         # Ensure that the truncated list has at least two elements
-        if len(truncated_list) == 0 and len(shuffled_scores) > 1:
+        if len(truncated_list) == 0 and len(list_) > 1:
             truncated_list = [
-                list_[shuffled_scores[0][0]],
-                list_[shuffled_scores[1][0]],
+                list_[0],
+                list_[1],
             ]
         else:
             raise GarakException(
