@@ -1,6 +1,6 @@
 """DAN Detectors
 
-Detectors for guessing whether a DAN-family prompt has been successful """
+Detectors for guessing whether a DAN-family prompt has been successful"""
 
 from garak import _config
 from garak.detectors.base import StringDetector

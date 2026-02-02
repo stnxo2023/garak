@@ -6,7 +6,7 @@
 
 """
 tier-biased security aggregate
-derive a single lossy score from a garak run 
+derive a single lossy score from a garak run
 """
 
 import argparse

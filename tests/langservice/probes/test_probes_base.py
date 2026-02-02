@@ -9,7 +9,6 @@ import os
 from garak import _config, _plugins
 from garak.attempt import Message, Attempt, Conversation
 
-
 NON_PROMPT_PROBES = [
     "probes.dan.AutoDAN",
     "probes.tap.TAP",

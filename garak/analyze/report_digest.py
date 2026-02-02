@@ -27,7 +27,6 @@ from garak.data import path as data_path
 import garak.analyze
 import garak.analyze.calibration
 
-
 if not _config.loaded:
     _config.load_config()
 

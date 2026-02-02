@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-""" Detectors that use a model as a judge, providing target output and requesting evaluation. """
+"""Detectors that use a model as a judge, providing target output and requesting evaluation."""
 
 from typing import List
 

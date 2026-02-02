@@ -141,7 +141,7 @@ tests = [
   "langcodes>=3.4.0",
 ]
 lint = [
-  "black==24.4.2",
+  "black>=26.1.0",
   "pylint>=3.1.0",
 ]
 calibration = [

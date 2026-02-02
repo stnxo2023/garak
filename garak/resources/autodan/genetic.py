@@ -279,10 +279,12 @@ def gpt_mutate(mutation_generator, sentence: str) -> str:
     while not received:
         try:
             # TODO: Make the model configurable.
-            conv = Conversation(turns=[
-                Turn(role="system", content=Message(text=system_msg)),
-                Turn(role="user", content=Message(text=user_message)),
-            ])
+            conv = Conversation(
+                turns=[
+                    Turn(role="system", content=Message(text=system_msg)),
+                    Turn(role="user", content=Message(text=user_message)),
+                ]
+            )
             response = mutation_generator.generate(prompt=conv)[0]
             if response and response.text:
                 revised_sentence = response.text.replace("\n", "")

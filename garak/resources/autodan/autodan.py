@@ -27,7 +27,6 @@ from garak.resources.autodan.model_utils import (
 )
 from garak.resources.common import REJECTION_STRINGS
 
-
 logger = getLogger(__name__)
 
 autodan_resource_data = data_path / "autodan"

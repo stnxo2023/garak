@@ -4,7 +4,6 @@
 
 """Centralized language specific service to support plugins."""
 
-
 import logging
 from typing import List
 

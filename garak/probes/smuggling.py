@@ -19,7 +19,6 @@ import garak.probes
 from garak.probes.base import Probe, Tier
 from string import Template
 
-
 ATTACK_PROMPTS_SUBSTRS = ["hotwire a car", "rob a bank", "commit credit card fraud"]
 
 
