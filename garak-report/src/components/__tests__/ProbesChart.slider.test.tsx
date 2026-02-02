@@ -13,6 +13,17 @@ import type {
 
 // Mock Kaizen components
 vi.mock("@kui/react", () => ({
+  Badge: ({ children, onClick, kind, color, className }: {
+    children: React.ReactNode;
+    onClick?: () => void;
+    kind?: string;
+    color?: string;
+    className?: string;
+  }) => (
+    <span data-testid="badge" data-kind={kind} data-color={color} className={className} onClick={onClick}>
+      {children}
+    </span>
+  ),
   Button: ({ children, onClick, ...props }: MockButtonProps) => (
     <button onClick={onClick} {...props}>
       {children}

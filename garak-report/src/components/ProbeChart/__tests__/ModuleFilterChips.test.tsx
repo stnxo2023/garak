@@ -9,16 +9,18 @@ import ModuleFilterChips from "../ModuleFilterChips";
 
 // Mock KUI components
 vi.mock("@kui/react", () => ({
-  Badge: ({ children, onClick, kind, color }: { 
+  Badge: ({ children, onClick, kind, color, className }: { 
     children: React.ReactNode; 
     onClick?: () => void;
     kind?: string;
     color?: string;
+    className?: string;
   }) => (
     <span 
       data-testid="badge" 
       data-kind={kind} 
       data-color={color}
+      className={className}
       onClick={onClick}
     >
       {children}
@@ -27,8 +29,17 @@ vi.mock("@kui/react", () => ({
   Flex: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="flex">{children}</div>
   ),
+  Stack: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="stack">{children}</div>
+  ),
   Text: ({ children }: { children: React.ReactNode }) => (
     <span>{children}</span>
+  ),
+  Tooltip: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+  Button: ({ children }: { children: React.ReactNode }) => (
+    <button>{children}</button>
   ),
 }));
 
@@ -52,9 +63,8 @@ describe("ModuleFilterChips", () => {
     
     // Should show the module badge
     expect(screen.getByText("lmrc")).toBeInTheDocument();
-    // Should show "Module:" label (not "Filter by module:")
-    expect(screen.getByText("Module:")).toBeInTheDocument();
-    expect(screen.queryByText("Filter by module:")).not.toBeInTheDocument();
+    // Should show "Modules" label
+    expect(screen.getByText("Modules")).toBeInTheDocument();
     
     // Clicking should not trigger callback (read-only)
     fireEvent.click(screen.getByText("lmrc"));
@@ -72,7 +82,8 @@ describe("ModuleFilterChips", () => {
   it("renders filter label text", () => {
     render(<ModuleFilterChips {...defaultProps} />);
     
-    expect(screen.getByText("Filter by module:")).toBeInTheDocument();
+    // Shows "Modules" label with info tooltip
+    expect(screen.getByText("Modules")).toBeInTheDocument();
   });
 
   it("calls onSelectModule when badge is clicked", () => {

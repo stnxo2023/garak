@@ -8,7 +8,8 @@
  * @license Apache-2.0
  */
 
-import { Badge, Flex, Text } from "@kui/react";
+import { Badge, Button, Flex, Stack, Text, Tooltip } from "@kui/react";
+import { Info } from "lucide-react";
 
 /** Valid KUI Badge colors */
 type KUIBadgeColor = "blue" | "green" | "red" | "yellow" | "purple" | "teal" | "gray";
@@ -61,10 +62,29 @@ const ModuleFilterChips = ({
   const hasSelection = selectedModules.length > 0;
 
   return (
-    <Flex gap="density-sm" wrap="wrap" align="center">
-      <Text kind="label/regular/sm" className="text-secondary">
-        {isInteractive ? "Filter by module:" : "Module:"}
-      </Text>
+    <Stack gap="density-xs" paddingTop="density-sm" paddingBottom="density-md">
+      <Flex align="center" gap="density-xxs">
+        <Text kind="label/bold/sm">Modules</Text>
+        <Tooltip
+          slotContent={
+            <Stack gap="density-xxs">
+              <Text kind="body/regular/sm">
+                Modules are probe families that group related security tests.
+              </Text>
+              {isInteractive && (
+                <Text kind="body/regular/sm">
+                  Click to filter the chart by module. Multiple selections supported.
+                </Text>
+              )}
+            </Stack>
+          }
+        >
+          <Button kind="tertiary">
+            <Info size={14} />
+          </Button>
+        </Tooltip>
+      </Flex>
+      <Flex gap="density-xs" wrap="wrap">
       {moduleNames.map((moduleName, index) => {
         const isSelected = selectedModules.includes(moduleName);
         const color = isInteractive ? getModuleColor(index) : "gray";
@@ -107,7 +127,8 @@ const ModuleFilterChips = ({
           <Text kind="label/regular/sm">Clear all</Text>
         </Badge>
       )}
-    </Flex>
+      </Flex>
+    </Stack>
   );
 };
 
