@@ -338,10 +338,12 @@ describe("ProbesChart", () => {
     it("renders info button with tooltip content", () => {
       render(<ProbesChart {...baseProps} />);
       
-      expect(screen.getByTestId("tooltip")).toBeInTheDocument();
+      // Multiple tooltips may be present (probe header + module filter)
+      const tooltips = screen.getAllByTestId("tooltip");
+      expect(tooltips.length).toBeGreaterThanOrEqual(1);
       
       // Check tooltip content is present
-      expect(screen.getByTestId("tooltip-content")).toBeInTheDocument();
+      expect(screen.getAllByTestId("tooltip-content").length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText("What are Probes?")).toBeInTheDocument();
       expect(screen.getByText(/A probe is a specific attack technique/)).toBeInTheDocument();
       expect(
