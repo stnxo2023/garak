@@ -144,6 +144,16 @@ class TAP(garak.probes.Probe):
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
         self.run_tap = None
+        if self.width < 3:
+            logging.warning(
+                f"Running TAP with width less than 3 can result in weirdness and failures. "
+                f"Running with provided width: {self.width}"
+            )
+        if self.attack_max_attempts < 3:
+            logging.warning(
+                f"Running TAP with attack_max_attempts less than 3 can result in weirdness and failures. "
+                f"Running with provided attack_max_attempts: {self.attack_max_attempts}"
+            )
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         self.generator = generator
