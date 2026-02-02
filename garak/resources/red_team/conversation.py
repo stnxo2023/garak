@@ -61,6 +61,16 @@ def extract_json(s: str) -> tuple[dict, str]:
         ALWAYS returns a valid dictionary. Never returns None as first element.
         Empty strings are used as default values when extraction fails.
     """
+    # Guard against getting None-type.
+    if s is None:
+        logging.warning(
+            "extract_json: Expected str but got None type. Returning empty values."
+        )
+        return {
+            "improvement": "",
+            "prompt": "",
+        }, '{"improvement": "", "prompt": ""}'
+
     # Extract the string that looks like a JSON
     start_pos = s.find("{")
     end_pos = s.rfind("}") + 1  # +1 to include the closing brace
@@ -108,14 +118,12 @@ def extract_json(s: str) -> tuple[dict, str]:
         if improvement:
             parsed = {"improvement": improvement, "prompt": prompt}
             json_str = json.dumps(parsed)
-            logging.debug("extract_json: Chat-style extraction succeeded")
             return parsed, json_str
         else:
             # All extraction methods failed - return default values
             logging.warning(
                 "extract_json: All extraction methods failed, returning default empty values"
             )
-            logging.debug(f"extract_json: Failed input was: {s[:200]}...")
             return {
                 "improvement": "",
                 "prompt": "",
@@ -177,7 +185,12 @@ def prune(
     np.random.shuffle(shuffled_scores)
     shuffled_scores.sort(reverse=True)
 
-    def get_first_k(list_):
+    def get_first_k(list_: list):
+        if len(list_) < 2:
+            raise GarakException(
+                "red_team.conversation.get_first_k requires a list with at least two elements"
+            )
+
         width = min(attack_params["width"], len(list_))
 
         truncated_list = [
@@ -187,15 +200,11 @@ def prune(
         ]
 
         # Ensure that the truncated list has at least two elements
-        if len(truncated_list) == 0 and len(list_) > 1:
+        if len(truncated_list) < 2:
             truncated_list = [
                 list_[0],
                 list_[1],
             ]
-        else:
-            raise GarakException(
-                "red_team.conversation.prune did not have at least two elements to return"
-            )
 
         return truncated_list
 
