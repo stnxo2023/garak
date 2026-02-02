@@ -212,19 +212,20 @@ class AttackManager(EvaluationJudge):
             # Check for valid outputs and update the list
             new_indices_to_regenerate = []
             for i, full_output in enumerate(outputs_list):
+                orig_index = indices_to_regenerate[i]
                 if isinstance(full_output, Message):
                     full_output = full_output.text
                 if full_output is None:
-                    continue
-                orig_index = indices_to_regenerate[i]
+                    new_indices_to_regenerate.append(orig_index)
                 attack_dict, json_str = extract_json(full_output)
 
-                if attack_dict is not None:
+                # Will catch empty string and None-type
+                if json_str:
                     valid_outputs[orig_index] = attack_dict
                     # Update the conversation with valid generation
                     convs[orig_index].update_last_message(json_str)
 
-                else:
+                if not json_str:
                     new_indices_to_regenerate.append(orig_index)
 
             # Update indices to regenerate for the next iteration
@@ -390,7 +391,10 @@ def run_tap(
             extracted_attack_list, convs_list
         )
         if extracted_attack_list is None or convs_list is None:
-            return list()
+            logger.warning(
+                f"TAP iteration {iteration} could not extract any attacks for conversation."
+            )
+            continue
 
         adv_prompt_list = [attack["prompt"] for attack in extracted_attack_list]
         improv_list = [attack["improvement"] for attack in extracted_attack_list]

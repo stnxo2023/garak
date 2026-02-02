@@ -36,17 +36,30 @@ def random_string(n):
     return "".join(random.choices(string.ascii_letters + string.digits, k=n))
 
 
-def extract_json(s):
+def extract_json(s: str) -> tuple[dict, str]:
     """
     Given an output from the attacker LLM, this function extracts the values
     for `improvement` and `adversarial prompt` and returns them as a dictionary.
+
+    This function attempts multiple extraction strategies in order:
+    1. Direct JSON parsing with json.loads()
+    2. Regex extraction of JSON-like structure
+    3. Chat-style format parsing (Improvement: / Prompt:)
+    4. Default empty values (guaranteed fallback)
 
     Args:
         s (str): The string containing the potential JSON structure.
 
     Returns:
-        dict: A dictionary containing the extracted values.
-        str: The cleaned JSON string.
+        tuple[dict, str]: A tuple containing:
+            - dict: A dictionary with 'improvement' and 'prompt' string fields.
+                    Never returns None - returns {"improvement": "", "prompt": ""}
+                    as default when all extraction methods fail.
+            - str: The extracted or constructed JSON string representation.
+
+    Note:
+        ALWAYS returns a valid dictionary. Never returns None as first element.
+        Empty strings are used as default values when extraction fails.
     """
     # Extract the string that looks like a JSON
     start_pos = s.find("{")
@@ -61,9 +74,10 @@ def extract_json(s):
             if isinstance(parsed["improvement"], str) and isinstance(
                 parsed["prompt"], str
             ):
+                logging.debug("extract_json: Direct JSON parse succeeded")
                 return parsed, json_str
     except json.decoder.JSONDecodeError:
-        pass
+        logging.debug("extract_json: JSON parse failed, trying regex")
 
     improvement_group = r"^\{\"improvement\"\s*:\s*\"(.*?)\","
     prompt_group = r",\s*\"prompt\"\s*:\s*\"(.*?)\"\s*\}$"
@@ -75,6 +89,7 @@ def extract_json(s):
 
     if improvement:
         parsed = {"improvement": improvement, "prompt": prompt}
+        logging.debug("extract_json: Regex extraction succeeded")
         return parsed, json_str
     else:
         # Try catching chat-style outputs
@@ -93,9 +108,18 @@ def extract_json(s):
         if improvement:
             parsed = {"improvement": improvement, "prompt": prompt}
             json_str = json.dumps(parsed)
+            logging.debug("extract_json: Chat-style extraction succeeded")
             return parsed, json_str
         else:
-            return None, None
+            # All extraction methods failed - return default values
+            logging.warning(
+                "extract_json: All extraction methods failed, returning default empty values"
+            )
+            logging.debug(f"extract_json: Failed input was: {s[:200]}...")
+            return {
+                "improvement": "",
+                "prompt": "",
+            }, '{"improvement": "", "prompt": ""}'
 
 
 def get_init_msg(goal, target):
