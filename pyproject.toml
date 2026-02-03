@@ -69,6 +69,10 @@ authors = [
   { name = "Fabrizio Rocco" },
   { name = "Sai Chandra Pandraju" },
   { name = "Harish Kolla" },
+  { name = "Snehal Vartak" },
+  { name = "Abhiraj Sinha" },
+  { name = "Harsh Motla" },
+  { name = "Otavio Padovani" },
 ]
 license = "Apache-2.0"
 license-files = ["LICENSE"]
