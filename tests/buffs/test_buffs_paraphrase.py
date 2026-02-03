@@ -17,7 +17,7 @@ def test_buff_results(klassname):
     import sys
 
     b = _plugins.load_plugin(klassname)
-    b._load_model()
+    b._load_unsafe()
     if sys.platform == "win32" and klassname == "buffs.paraphrase.Fast":
         # special case buff not currently supported on Windows
         from garak.exception import GarakException

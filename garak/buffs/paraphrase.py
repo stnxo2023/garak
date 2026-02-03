@@ -25,6 +25,7 @@ class PegasusT5(Buff, HFCompatible):
     }
     lang = "en"
     doc_uri = "https://huggingface.co/tuner007/pegasus_paraphrase"
+    _unsafe_attributes = ["para_model", "tokenizer"]
 
     def __init__(self, config_root=_config) -> None:
         self.num_return_sequences = 6
@@ -33,7 +34,7 @@ class PegasusT5(Buff, HFCompatible):
         self.para_model = None
         super().__init__(config_root=config_root)
 
-    def _load_model(self):
+    def _load_unsafe(self):
         from transformers import PegasusForConditionalGeneration, PegasusTokenizer
 
         self.device = self._select_hf_device()
@@ -46,7 +47,7 @@ class PegasusT5(Buff, HFCompatible):
 
     def _get_response(self, input_text):
         if self.para_model is None:
-            self._load_model()
+            self._load_unsafe()
 
         batch = self.tokenizer(
             [input_text],
@@ -97,6 +98,7 @@ class Fast(Buff, HFCompatible):
     }
     lang = "en"
     doc_uri = "https://huggingface.co/humarin/chatgpt_paraphraser_on_T5_base"
+    _unsafe_attributes = ["para_model", "tokenizer"]
 
     def __init__(self, config_root=_config) -> None:
         self.num_beams = 5
@@ -111,27 +113,27 @@ class Fast(Buff, HFCompatible):
         self.para_model = None
         super().__init__(config_root=config_root)
 
-    def _load_model(self):
+    def _load_unsafe(self):
         from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
         self.device = self._select_hf_device()
         model_kwargs = self._gather_hf_params(
             hf_constructor=AutoModelForSeq2SeqLM.from_pretrained
         )  # will defer to device_map if device map was `auto` may not match self.device
-
-        self.para_model = AutoModelForSeq2SeqLM.from_pretrained(
-            self.para_model_name, **model_kwargs
-        ).to(self.device)
-        self.tokenizer = AutoTokenizer.from_pretrained(self.para_model_name)
         if self.hf_args.get("custom_generate", None):
             if not self.hf_args.get("trust_remote_code", False):
                 raise ValueError(
                     "When using a 'custom_generate' option 'trust_remote_code' must be enabled."
                 )
 
+        self.para_model = AutoModelForSeq2SeqLM.from_pretrained(
+            self.para_model_name, **model_kwargs
+        ).to(self.device)
+        self.tokenizer = AutoTokenizer.from_pretrained(self.para_model_name)
+
     def _get_response(self, input_text):
         if self.para_model is None:
-            self._load_model()
+            self._load_unsafe()
 
         input_ids = self.tokenizer(
             f"paraphrase: {input_text}",
