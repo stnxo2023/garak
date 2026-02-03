@@ -64,6 +64,7 @@ The first benchmark is in summer 2024. We think something between twice-yearly a
 
 ### Bag config
 
+Configuration is combined with generator specific requirements for `max_tokens: 4000`, `skip_seq_start`, and `skip_seq_end` as required for target systems.
 ```
 system:
   parallel_attempts: 32
