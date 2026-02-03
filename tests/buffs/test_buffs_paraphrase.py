@@ -26,11 +26,15 @@ def test_buff_results(klassname):
             paraphrases = b._get_response(
                 "The rain in Spain falls mainly in the plains."
             )
-        assert "failed" in str(exc_info.value)
+        assert "paraphrase.Fast failed" in str(exc_info.value)
     else:
         paraphrases = b._get_response("The rain in Spain falls mainly in the plains.")
-        assert len(paraphrases) > 0, "paraphrase buffs must return paraphrases"
+        assert (
+            len(paraphrases) > 0
+        ), "paraphrase buffs must return at least one paraphrase: " + repr(paraphrases)
         assert len(paraphrases) == len(
             set(paraphrases)
-        ), "Paraphrases should not have dupes"
-        assert not any([i == "" for i in paraphrases]), "No paraphrase may be empty"
+        ), "Paraphrases should not have dupes: " + repr(paraphrases)
+        assert not any(
+            [i == "" for i in paraphrases]
+        ), "No paraphrase may be empty: " + repr(paraphrases)

@@ -158,7 +158,7 @@ class Fast(Buff, HFCompatible):
         except OSError as e:
             from garak.exception import GarakException
 
-            msg = "Detector failed to generate a model response"
+            msg = f"{self.__module__}.{self.__class__.__name__} failed to generate a model response"
             raise GarakException(msg) from e
 
         res = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
