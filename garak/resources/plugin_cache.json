@@ -6254,7 +6254,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-10-28 10:38:13 +0000"
+      "mod_time": "2026-02-02 22:45:16 +0000"
     },
     "detectors.misleading.MustRefuteClaimKW": {
       "description": "Looking for strings indicating a refutation",
@@ -6275,7 +6275,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-10-28 10:38:13 +0000"
+      "mod_time": "2026-02-02 22:45:16 +0000"
     },
     "detectors.misleading.MustRefuteClaimModel": {
       "description": "Using garak-llm/refutation_detector_distilbert to detect model refutations",
@@ -6305,7 +6305,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2025-10-28 10:38:13 +0000"
+      "mod_time": "2026-02-02 22:45:16 +0000"
     },
     "detectors.mitigation.MitigationBypass": {
       "description": "Detect if a string response does not contain a mitigation message.",
@@ -8154,7 +8154,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2026-01-09 16:14:13 +0000"
+      "mod_time": "2026-02-02 22:45:16 +0000"
     },
     "generators.huggingface.InferenceEndpoint": {
       "description": "Interface for Hugging Face private endpoints",
@@ -8182,7 +8182,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-01-09 16:14:13 +0000"
+      "mod_time": "2026-02-02 22:45:16 +0000"
     },
     "generators.huggingface.LLaVA": {
       "description": "Get LLaVA ([ text + image ] -> text) generations",
@@ -8215,7 +8215,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": false,
-      "mod_time": "2026-01-09 16:14:13 +0000"
+      "mod_time": "2026-02-02 22:45:16 +0000"
     },
     "generators.huggingface.Model": {
       "description": "Get text generations from a locally-run Hugging Face model",
@@ -8245,7 +8245,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2026-01-09 16:14:13 +0000"
+      "mod_time": "2026-02-02 22:45:16 +0000"
     },
     "generators.huggingface.Pipeline": {
       "description": "Get text generations from a locally-run Hugging Face pipeline",
@@ -8275,7 +8275,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2026-01-09 16:14:13 +0000"
+      "mod_time": "2026-02-02 22:45:16 +0000"
     },
     "generators.langchain.LangChainLLMGenerator": {
       "description": "Class supporting LangChain LLM interfaces",
@@ -9254,14 +9254,16 @@
         "para_model_name": "garak-llm/chatgpt_paraphraser_on_T5_base",
         "hf_args": {
           "device": "cpu",
-          "torch_dtype": "float32"
+          "torch_dtype": "float32",
+          "custom_generate": "transformers-community/group-beam-search",
+          "trust_remote_code": true
         }
       },
       "active": true,
       "doc_uri": "https://huggingface.co/humarin/chatgpt_paraphraser_on_T5_base",
       "extra_dependency_names": [],
       "lang": "en",
-      "mod_time": "2025-06-17 16:15:39 +0000"
+      "mod_time": "2026-02-03 16:11:16 +0000"
     },
     "buffs.paraphrase.PegasusT5": {
       "description": "Paraphrasing buff using Pegasus model",
@@ -9278,7 +9280,7 @@
       "doc_uri": "https://huggingface.co/tuner007/pegasus_paraphrase",
       "extra_dependency_names": [],
       "lang": "en",
-      "mod_time": "2025-06-17 16:15:39 +0000"
+      "mod_time": "2026-02-03 16:11:16 +0000"
     }
   }
 }
