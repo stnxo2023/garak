@@ -176,6 +176,14 @@ include = [
   "garak/resources/*.json",
   "garak/resources/*.yaml",
 ]
+exclude = [
+  ".pre-commit-config.yaml",
+  ".github/",
+  ".gitignore",
+  "garak-report/",
+  "tests/",
+  "doc/source/html/",
+]
 
 [tool.black]
 line-length = 88
