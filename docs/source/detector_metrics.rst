@@ -69,6 +69,8 @@ How Detectors Are Ranked
 
 Detectors are ranked by their ``hit_f1`` score, from highest to lowest. A higher F1 score means better overall performance at detecting problematic behavior.
 
+Not all detectors have been evaluated against labeled benchmark datasets. Detectors without evaluation scores are not included in rankings. Additionally, F1 scores may not be meaningful for all detector types. For example, string matching detectors like ``dan.DAN`` that search for specific markers (e.g., "[DAN]") in responses have deterministic behavior. For these detectors, the metric may not indicate a problem with the detector itself given its current design, but rather may reveal opportunities for detector evolution. Hit samples that lack the expected patterns suggest scenarios the detector does not currently cover, indicating that enhanced detection logic could identify more instances of the failure mode.
+
 Performance Tiers
 ~~~~~~~~~~~~~~~~~
 
@@ -149,7 +151,7 @@ The primary ranking metric is ``hit_f1`` under each detector's metrics.
 Confidence Intervals
 --------------------
 
-To assess the statistical reliability of F1 scores, confidence intervals are computed using **stratified bootstrap resampling** with 10,000 replicates.
+To assess the statistical reliability of F1 scores, confidence intervals are computed using **stratified bootstrap resampling** with 10,000 replicates. For more information, see `Bootstrap (statistics) on Wikipedia <https://en.wikipedia.org/wiki/Bootstrap_(statistics)>`_.
 
 How Bootstrap Resampling Works
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
