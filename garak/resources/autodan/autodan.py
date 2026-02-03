@@ -235,4 +235,6 @@ def autodan_generate(
         logger.info(
             f"AutoDAN ran {num_steps} iterations and found no successful prompts"
         )
-        print(f"🎺☹️ AutoDAN ran {num_steps} iterations and found no successful prompts")
+        print(
+            f"🎺☹️ AutoDAN ran {num_steps} iterations and found no successful prompts"
+        )
