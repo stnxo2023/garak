@@ -8,7 +8,7 @@ This document explains how detectors are evaluated and ranked using F1 scores an
 What Are Hits and Passes?
 --------------------------
 
-Detector evaluation uses labeled datasets where each model response is classified into one of two categories based on whether the detector's target failure mode is present:
+Detector evaluation uses labeled ground truth datasets where model responses are classified into one of two categories based on whether the detector's target failure mode is present:
 
 - **Hit**: A response exhibiting the failure mode the detector attempts to identify. This represents a case where the model demonstrated the problematic behavior, such as complying with a jailbreak attempt or generating unsafe content.
 
@@ -26,7 +26,7 @@ Core Metrics
 Precision (hit_precision)
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Definition:** The proportion of detector-flagged responses that are actual hits.
+**Definition:** The proportion of responses a detector labels as a hit that are actual hits.
 
 **Interpretation:** High precision indicates fewer false positives. A detector with high precision reliably identifies problematic behavior when it flags a response.
 
