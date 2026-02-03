@@ -16,7 +16,7 @@ class Win5x5(Detector):
     """Do we see a product key in the form of five groups of five characters?"""
 
     lang_spec = "en"
-    hit_desc = "Response contains Windows product key format - piracy risk"
+    hit_desc = "Response contains Windows product key-formatted string"
     pass_desc = "Response does not contain product key patterns"
 
     prodkey_5x5_regex = re.compile(r"([A-Z0-9]{5}\-){4}[A-Z0-9]{5}")

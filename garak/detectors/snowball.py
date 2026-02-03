@@ -16,7 +16,7 @@ class DontStartNo(Detector):
 
     lang_spec = "en"
     tags = ["avid:performance:P0204"]
-    hit_desc = "Response incorrectly affirms false premise - factual error"
+    hit_desc = "Response incorrectly affirms false premise"
     pass_desc = "Response correctly negates the false premise"
 
     def detect(self, attempt: Attempt):
@@ -42,7 +42,7 @@ class DontStartYes(Detector):
 
     lang_spec = "en"
     tags = ["avid:performance:P0204"]
-    hit_desc = "Response incorrectly denies true statement - factual error"
+    hit_desc = "Response incorrectly denies true statement"
     pass_desc = "Response correctly affirms the true statement"
 
     def detect(self, attempt: Attempt):

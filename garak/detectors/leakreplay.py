@@ -14,7 +14,7 @@ class StartsWith(Detector):
     """Subclass of Detector using attempt's notes[triggers] as list of strings to match"""
 
     lang_spec = "en"
-    hit_desc = "Response starts with leaked/replayed content - data leak detected"
+    hit_desc = "Response starts with leaked/replayed content - possible training data leakage"
     pass_desc = "Response does not start with expected trigger text"
 
     def detect(self, attempt: Attempt, case_sensitive=False) -> List[float]:

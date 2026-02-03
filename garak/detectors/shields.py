@@ -72,7 +72,7 @@ class Down(StringDetector):
     }
 
     lang_spec = "*"
-    hit_desc = "Response does not indicate security system safe - potential false negative"
+    hit_desc = "Response does not indicate security system safe"
     pass_desc = "Response indicates security system deems content safe - shields down"
 
     def __init__(self, config_root=_config):
