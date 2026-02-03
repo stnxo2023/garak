@@ -1,17 +1,20 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""Base classes for probes.
+"""**Base classes for probes**
 
-Probe plugins must inherit one of these. `Probe` serves as a template showing
-what expectations there are for inheriting classes."""
+Probe plugins must inherit one of these. ``Probe`` serves as a template for showing
+what expectations there are for inheriting classes.
+
+Abstract and common-level probe classes belong here. Contact the garak maintainers before adding new classes.
+"""
 
 import copy
 import json
 import logging
 from collections.abc import Iterable
 import random
-from typing import Iterable, Union, List
+from typing import Iterable, Union
 
 from colorama import Fore, Style
 import tqdm
@@ -54,7 +57,7 @@ class Probe(Configurable):
     modality: dict = {"in": {"text"}}
     # what tier is this probe? should be in (OF_CONCERN,COMPETE_WITH_SOTA,INFORMATIONAL,UNLISTED)
     # let mixins override this
-    # tier: tier = Tier.UNLISTED
+    # tier: Tier = Tier.UNLISTED
     tier: Tier = Tier.UNLISTED
 
     DEFAULT_PARAMS = {}
@@ -101,6 +104,8 @@ class Probe(Configurable):
             )
 
         logging.info(f"probe init: {self}")
+        self._load_deps()
+
         if "description" not in dir(self):
             if self.__doc__:
                 self.description = self.__doc__.split("\n", maxsplit=1)[0]
@@ -203,7 +208,11 @@ class Probe(Configurable):
         return attempt
 
     def _mint_attempt(
-        self, prompt=None, seq=None, notes=None, lang="*"
+        self,
+        prompt: str | garak.attempt.Message | garak.attempt.Conversation | None = None,
+        seq=None,
+        notes=None,
+        lang="*",
     ) -> garak.attempt.Attempt:
         """function for creating a new attempt given a prompt"""
         turns = []
@@ -255,7 +264,6 @@ class Probe(Configurable):
             seq=seq,
             prompt=prompt,
             notes=notes,
-            lang=lang,
         )
 
         new_attempt = self._attempt_prestore_hook(new_attempt, seq)
@@ -376,7 +384,7 @@ class Probe(Configurable):
             colour=f"#{garak.resources.theme.LANGPROVIDER_RGB}",
             desc="Preparing prompts",
         )
-        if isinstance(prompts[0], str):
+        if isinstance(prompts[0], str):  # self.prompts can be strings
             localized_prompts = self.langprovider.get_text(
                 prompts, notify_callback=preparation_bar.update
             )
@@ -590,11 +598,21 @@ class TreeSearchProbe(Probe):
 
             all_completed_attempts += attempts_completed
 
-            node_results = [
-                1.0 if s > self.per_generation_threshold else 0 for s in node_results
-            ]
-            if len(node_results) > 0:
-                mean_score = sum(node_results) / len(node_results)
+            updated_results = []
+            for s in node_results:
+                if s is None:
+                    updated_results.append(None)
+                elif s > self.per_generation_threshold:
+                    updated_results.append(1.0)
+                else:
+                    updated_results.append(0.0)
+            node_results = updated_results
+
+            non_none_node_results = list(
+                filter(lambda x: x is not None, updated_results)
+            )
+            if len(non_none_node_results) > 0:
+                mean_score = sum(non_none_node_results) / len(non_none_node_results)
             else:
                 mean_score = 0
             parent = self._get_node_parent(current_node)
@@ -662,11 +680,13 @@ class IterativeProbe(Probe):
 
     IterativeProbe assumes the probe generates a set of initial prompts, each of which are passed to the target model and the response is used for evaluation. The responses are also provided back to the probe and the probe uses the response to generate follow up prompts which are also passed to the target model and each of the responses are used for evaluation.
     This can continue until one of:
-        - max_calls_per_conv is reached
-        - The probe chooses to run the detector on the target response and stops when the detector detects a success
-        -The probe has a function, different from the detector for deciding when it thinks an attack will be successful and stops at that point.
+
+    - ``max_calls_per_conv`` is reached.
+    - The probe chooses to run the detector on the target response and stops when the detector detects a success.
+    - The probe has a function, different from the detector for deciding when the probe thinks an attack will be successful and stops at that point.
 
     Additional design considerations:
+
     1. Not all multiturn probes need this base class. A probe could directly construct a multiturn input where it only cares about how the target responds to the last turn (eg: prefill attacks) can just subclass Probe.
     2. Probes that inherit from IterativeProbe are allowed to manipulate the history in addition to generating new turns based on a target's response. For example if the response to the initial turn was a refusal, the probe can in the next attempt either pass in that history of old init turn + refusal + next turn or just pass a new init turn.
     3. An Attempt is created at every turn when the history is passed to the target. All these Attempts are collected and passed to the detector. The probe can use Attempt.notes to tell the detector to skip certain attempts but a special detector needs to be written that will pay attention to this value.
