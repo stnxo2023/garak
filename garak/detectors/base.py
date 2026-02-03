@@ -24,13 +24,15 @@ class Detector(Configurable):
     lang_spec: str = (
         None  # language this is for. format: a comma-separated list of BCP47 tags, or "*"
     )
-    precision = 0.0
-    recall = 0.0
-    accuracy = None
     active: bool = True
     tags = []  # list of taxonomy categories per the MISP format
+
     # list of strings naming modules required but not explicitly in garak by default
     extra_dependency_names = []
+    hit_desc = (
+        "Detector identified matching indicators of risk"  # description when detector scores a hit
+    )
+    pass_desc = "Detector found no issue"  # description when detector passes
 
     # support mainstream any-to-any large models
     # legal element for str list `modality['in']`: 'text', 'image', 'audio', 'video', '3d'
