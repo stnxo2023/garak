@@ -25,19 +25,6 @@ import garak.resources.theme
 PROBE_DETECTOR_SEP = "+"
 
 
-def map_score(score: float) -> int:
-    """assign a defcon class (i.e. 1-5, 1=worst) to a %age score 0.0-100.0"""
-    if score < garak.analyze.ABSOLUTE_DEFCON_BOUNDS.TERRIBLE * 100.0:
-        return 1
-    if score < garak.analyze.ABSOLUTE_DEFCON_BOUNDS.BELOW_AVG * 100.0:
-        return 2
-    if score < garak.analyze.ABSOLUTE_DEFCON_BOUNDS.ABOVE_AVG * 100.0:
-        return 3
-    if score < garak.analyze.ABSOLUTE_DEFCON_BOUNDS.EXCELLENT * 100.0:
-        return 4
-    return 5
-
-
 def build_tiers() -> dict:
     from garak._plugins import enumerate_plugins, plugin_info
 
