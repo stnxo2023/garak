@@ -1,6 +1,14 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+import contextlib
+import json
+import os
+from pathlib import Path
+import tempfile
+
+import pytest
+
 import garak.analyze.tbsa
 
 BASE_DIGEST = {
@@ -88,3 +96,38 @@ def test_hash_varies():
     assert (
         altered_probes_hash != base_hash
     ), "altering probe selection must yield change in pdver hash"
+
+
+@pytest.fixture
+def tbsa_json_filenames(request) -> None:
+    nil_outfile = tempfile.NamedTemporaryFile(mode="wb+", delete=False)
+    one_outfile = tempfile.NamedTemporaryFile(mode="wb+", delete=False)
+
+    def remove_tbsa_json():
+        with contextlib.suppress(FileNotFoundError):
+            Path(nil_outfile.name).unlink()
+            Path(one_outfile.name).unlink()
+
+    request.addfinalizer(remove_tbsa_json)
+
+    return nil_outfile.name, one_outfile.name
+
+
+def test_stable_hash_different_content(tbsa_json_filenames):
+    cli_args_0 = (
+        f"-r tests/_assets/tbsa_digest_0.json -j {tbsa_json_filenames[0]} -q".split()
+    )
+    cli_args_1 = (
+        f"-r tests/_assets/tbsa_digest_1.json -j {tbsa_json_filenames[1]} -q".split()
+    )
+    garak.analyze.tbsa.main(cli_args_0)
+    garak.analyze.tbsa.main(cli_args_1)
+
+    with open(tbsa_json_filenames[0], "r", encoding="utf-8") as f_one:
+        nil = json.load(f_one)
+    with open(tbsa_json_filenames[1], "r", encoding="utf-8") as f_two:
+        one = json.load(f_two)
+
+    assert (
+        nil["version_probe_hash"] == one["version_probe_hash"]
+    ), "hash must be stable across identical probe/detector inventories"
