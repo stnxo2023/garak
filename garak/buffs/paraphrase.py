@@ -36,6 +36,12 @@ class PegasusT5(Buff, HFCompatible):
 
     def _load_unsafe(self):
         from transformers import PegasusForConditionalGeneration, PegasusTokenizer
+        import os
+
+        # disable huggingface attempts to open PRs in public sources
+        disable_env_key = "DISABLE_SAFETENSORS_CONVERSION"
+        stored_env = os.getenv(disable_env_key, default=None)
+        os.environ[disable_env_key] = "true"
 
         self.device = self._select_hf_device()
         self.para_model = PegasusForConditionalGeneration.from_pretrained(
@@ -44,6 +50,11 @@ class PegasusT5(Buff, HFCompatible):
         self.tokenizer = PegasusTokenizer.from_pretrained(
             self.para_model_name, trust_remote_code=self.hf_args["trust_remote_code"]
         )
+
+        if stored_env:
+            os.environ[disable_env_key] = stored_env
+        else:
+            del os.environ[disable_env_key]
 
     def _get_response(self, input_text):
         if self.para_model is None:
@@ -115,11 +126,22 @@ class Fast(Buff, HFCompatible):
 
     def _load_unsafe(self):
         from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+        import os
+
+        # disable huggingface attempts to open PRs in public sources
+        disable_env_key = "DISABLE_SAFETENSORS_CONVERSION"
+        stored_env = os.getenv(disable_env_key, default=None)
+        os.environ[disable_env_key] = "true"
 
         self.device = self._select_hf_device()
         model_kwargs = self._gather_hf_params(
             hf_constructor=AutoModelForSeq2SeqLM.from_pretrained
         )  # will defer to device_map if device map was `auto` may not match self.device
+        generation_params = self._gather_generation_params()
+        for param in generation_params.keys():
+            if param in model_kwargs.keys():
+                model_kwargs.pop(param)
+
         if self.hf_args.get("custom_generate", None):
             if not self.hf_args.get("trust_remote_code", False):
                 raise ValueError(
@@ -130,6 +152,14 @@ class Fast(Buff, HFCompatible):
             self.para_model_name, **model_kwargs
         ).to(self.device)
         self.tokenizer = AutoTokenizer.from_pretrained(self.para_model_name)
+
+        for k, v in generation_params.items():
+            setattr(self.para_model.generation_config, k, v)
+
+        if stored_env:
+            os.environ[disable_env_key] = stored_env
+        else:
+            del os.environ[disable_env_key]
 
     def _get_response(self, input_text):
         if self.para_model is None:
