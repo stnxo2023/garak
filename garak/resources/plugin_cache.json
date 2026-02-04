@@ -5377,7 +5377,7 @@
       },
       "pass_desc": "Detector found no issue",
       "tags": [],
-      "mod_time": "2026-02-03 21:40:18 +0000"
+      "mod_time": "2026-02-04 01:24:08 +0000"
     },
     "detectors.base.FileDetector": {
       "description": "Detector subclass for processing attempts whose outputs are filenames for checking",
@@ -5397,7 +5397,7 @@
       "pass_desc": "Detector found no issue",
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2026-02-03 21:40:18 +0000"
+      "mod_time": "2026-02-04 01:24:08 +0000"
     },
     "detectors.base.HFDetector": {
       "description": "Detector using a Hugging Face model",
@@ -5424,7 +5424,7 @@
       },
       "pass_desc": "Detector found no issue",
       "tags": [],
-      "mod_time": "2026-02-03 21:40:18 +0000"
+      "mod_time": "2026-02-04 01:24:08 +0000"
     },
     "detectors.base.StringDetector": {
       "description": "Subclass of Detector using list of substrings as detection triggers",
@@ -5444,7 +5444,7 @@
       },
       "pass_desc": "Detector found no issue",
       "tags": [],
-      "mod_time": "2026-02-03 21:40:18 +0000"
+      "mod_time": "2026-02-04 01:24:08 +0000"
     },
     "detectors.base.TriggerListDetector": {
       "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
@@ -5463,7 +5463,7 @@
       },
       "pass_desc": "Detector found no issue",
       "tags": [],
-      "mod_time": "2026-02-03 21:40:18 +0000"
+      "mod_time": "2026-02-04 01:24:08 +0000"
     },
     "detectors.continuation.Continuation": {
       "description": "Detect if model intiates / continues a trigger word",
@@ -8058,7 +8058,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2026-02-02 22:45:16 +0000"
+      "mod_time": "2026-02-04 01:24:08 +0000"
     },
     "generators.huggingface.InferenceEndpoint": {
       "description": "Interface for Hugging Face private endpoints",
@@ -8086,7 +8086,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-02-02 22:45:16 +0000"
+      "mod_time": "2026-02-04 01:24:08 +0000"
     },
     "generators.huggingface.LLaVA": {
       "description": "Get LLaVA ([ text + image ] -> text) generations",
@@ -8119,7 +8119,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": false,
-      "mod_time": "2026-02-02 22:45:16 +0000"
+      "mod_time": "2026-02-04 01:24:08 +0000"
     },
     "generators.huggingface.Model": {
       "description": "Get text generations from a locally-run Hugging Face model",
@@ -8149,7 +8149,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2026-02-02 22:45:16 +0000"
+      "mod_time": "2026-02-04 01:24:08 +0000"
     },
     "generators.huggingface.Pipeline": {
       "description": "Get text generations from a locally-run Hugging Face pipeline",
@@ -8179,7 +8179,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2026-02-02 22:45:16 +0000"
+      "mod_time": "2026-02-04 01:24:08 +0000"
     },
     "generators.langchain.LangChainLLMGenerator": {
       "description": "Class supporting LangChain LLM interfaces",
@@ -9167,7 +9167,7 @@
       "doc_uri": "https://huggingface.co/humarin/chatgpt_paraphraser_on_T5_base",
       "extra_dependency_names": [],
       "lang": "en",
-      "mod_time": "2026-02-03 16:11:16 +0000"
+      "mod_time": "2026-02-04 14:10:31 +0000"
     },
     "buffs.paraphrase.PegasusT5": {
       "description": "Paraphrasing buff using Pegasus model",
@@ -9184,7 +9184,7 @@
       "doc_uri": "https://huggingface.co/tuner007/pegasus_paraphrase",
       "extra_dependency_names": [],
       "lang": "en",
-      "mod_time": "2026-02-03 16:11:16 +0000"
+      "mod_time": "2026-02-04 14:10:31 +0000"
     }
   }
 }
