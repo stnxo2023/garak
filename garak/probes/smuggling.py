@@ -16,7 +16,6 @@ Further info:
 
 import garak.probes
 
-
 ATTACK_PROMPTS_SUBSTRS = ["hotwire a car", "rob a bank", "commit credit card fraud"]
 
 
