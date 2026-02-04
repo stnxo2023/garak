@@ -130,4 +130,4 @@ def test_stable_hash_different_content(tbsa_json_filenames):
 
     assert (
         nil["version_probe_hash"] == one["version_probe_hash"]
-    ), "hash must be stable across identical probe/detector inventories"
+    ), "hash must be stable across identical probe/detector request inventories"
