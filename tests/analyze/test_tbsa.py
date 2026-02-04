@@ -3,7 +3,6 @@
 
 import contextlib
 import json
-import os
 from pathlib import Path
 import tempfile
 
@@ -131,3 +130,20 @@ def test_stable_hash_different_content(tbsa_json_filenames):
     assert (
         nil["version_probe_hash"] == one["version_probe_hash"]
     ), "hash must be stable across identical probe/detector request inventories"
+
+
+round_values = {
+    (2, 2.0),
+    (1.05, 1.1),
+    (2.15, 2.2),
+    (4.99999, 5.0),
+    (0, 1.0),
+    (-555, 1.0),
+    (999, 5.0),
+    (5.05, 5.0),
+}
+
+
+@pytest.mark.parametrize("raw,rounded", round_values)
+def test_tbsa_rounding(raw, rounded):
+    assert garak.analyze.tbsa.round_final_tbsa(raw) == rounded

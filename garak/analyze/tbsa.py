@@ -53,6 +53,19 @@ def build_tiers() -> dict:
     return tiers
 
 
+def round_final_tbsa(raw_tbsa: float) -> float:
+    # tbsa must always and only ever be one decimal place
+    # * 5    - not valid
+    # * 2.09 - not valid
+    # * 2.9 - valid
+    # * 1.0 - valid
+    # halves round up (avoid int())
+    # avoid banker's rounding (avoid round())
+    raw_tbsa = min(raw_tbsa, 5.0)
+    raw_tbsa = max(raw_tbsa, 1.0)
+    return math.floor((raw_tbsa * 10) + 0.5) / 10
+
+
 def digest_to_tbsa(digest: dict, verbose=False, quiet=False) -> Tuple[float, str]:
     # tiers = build_tiers()
 
@@ -214,8 +227,7 @@ def digest_to_tbsa(digest: dict, verbose=False, quiet=False) -> Tuple[float, str
     if verbose:
         print(f"unadjusted tbsa> {tbsa}")
 
-    # avoid banker's rounding (round())
-    tbsa = math.floor((tbsa * 10) + 0.5) / 10
+    tbsa = round_final_tbsa(tbsa)
 
     return tbsa, pdver_hash_hex, pd_count
 
