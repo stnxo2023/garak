@@ -6,7 +6,7 @@
 
 """
 tier-biased security aggregate
-derive a single lossy score from a garak run 
+derive a single lossy score from a garak run
 """
 
 import argparse
@@ -276,7 +276,7 @@ def main(argv=None) -> None:
             print(f"📜 JSON output to: {args.json_output}")
 
     digest = None
-    if args.verbose:
+    if args.verbose and not args.quiet:
         print(f"processing> {report_path}")
 
     with open(args.report_path, "r", encoding="utf-8") as report_file:
@@ -295,7 +295,7 @@ def main(argv=None) -> None:
         print(f"❄️  Digest run_uuid is {digest['meta']['run_uuid']}")
 
     tbsa, pdver_hash, pd_count = digest_to_tbsa(
-        digest, verbose=args.verbose, quiet=args.quiet
+        digest, verbose=(args.verbose and not args.quiet), quiet=args.quiet
     )
 
     if not args.quiet:
