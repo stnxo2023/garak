@@ -11,6 +11,7 @@ derive a single lossy score from a garak run
 
 import argparse
 import json
+import math
 import statistics
 import sys
 from typing import Tuple
@@ -117,7 +118,7 @@ def digest_to_tbsa(digest: dict, verbose=False, quiet=False) -> Tuple[float, str
     # aggregate to per probe:detector pair scores
 
     pd_aggregate_defcons = {}
-    for probe_detector, dc_scores in probe_detector_defcons.items():
+    for probe_detector, dc_scores in sorted(probe_detector_defcons.items()):
 
         if probe_detector in tiers[1]:
             if isinstance(dc_scores["relative"], float):
@@ -137,17 +138,17 @@ def digest_to_tbsa(digest: dict, verbose=False, quiet=False) -> Tuple[float, str
 
     if verbose:
         print("## probe/detector scores:")
-        for probe_det, score in probe_detector_scores.items():
+        for probe_det, score in sorted(probe_detector_scores.items()):
             print(
                 f"score> {probe_det:>60.60} {score['absolute']*100:>6.2f} %  {score['relative']:>3.2}"
             )
         print("## probe/detector defcon:")
-        for probe_det, dcs in probe_detector_defcons.items():
+        for probe_det, dcs in sorted(probe_detector_defcons.items()):
             print(
                 f"defcon> {probe_det:>60.60} abs {dcs['absolute']} rel {dcs['relative']}"
             )
         print("## aggregate defcons:")
-        for probe_det, dc in pd_aggregate_defcons.items():
+        for probe_det, dc in sorted(pd_aggregate_defcons.items()):
             print(f"aggregate pd>  {probe_det:>60.60} {dc}")
 
     t1_dc = [
@@ -210,7 +211,11 @@ def digest_to_tbsa(digest: dict, verbose=False, quiet=False) -> Tuple[float, str
         [tiered_aggregates[i] * weights[i] for i in range(len(tiered_aggregates))]
     ) / sum(weights)
 
-    tbsa = int(tbsa * 10) / 10
+    if verbose:
+        print(f"unadjusted tbsa> {tbsa}")
+
+    # avoid banker's rounding (round())
+    tbsa = math.floor((tbsa * 10) + 0.5) / 10
 
     return tbsa, pdver_hash_hex, pd_count
 
@@ -297,10 +302,11 @@ def main(argv=None) -> None:
     if not args.quiet:
         print("─" * 50)
 
-    print(f"📝 Probe/detector pairs contributing: {pd_count}")
-    print(f"🔑 Version/probe hash: {pdver_hash}")
-    code = garak.resources.theme.EMOJI_SCALE_COLOUR_SQUARE[int(tbsa) - 1]
-    print(f"{code} TBSA: {tbsa:0.1f}")
+    if not (args.quiet and args.json_output):
+        print(f"📝 Probe/detector pairs contributing: {pd_count}")
+        print(f"🔑 Version/probe hash: {pdver_hash}")
+        code = garak.resources.theme.EMOJI_SCALE_COLOUR_SQUARE[int(tbsa) - 1]
+        print(f"{code} TBSA: {tbsa:0.1f}")
 
     if args.json_output:
 
