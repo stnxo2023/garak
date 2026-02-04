@@ -17,7 +17,6 @@ import garak.evaluators.base
 
 from garak.detectors.mitigation import MitigationBypass
 
-
 # probes should be able to return a generator of attempts
 # -> probes.base.Probe._execute_all (1) should be able to consume a generator of attempts
 # generators should be able to return a generator of outputs

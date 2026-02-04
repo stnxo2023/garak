@@ -1,7 +1,7 @@
 """Shields detector
 
 Detectors that look for a positive or negative response from a LLM
-moderation system (guard, shield, firewall, guardrail, etc.) or from another 
+moderation system (guard, shield, firewall, guardrail, etc.) or from another
 security system.
 
 By default it expects the response to be at the beginning of the output, but

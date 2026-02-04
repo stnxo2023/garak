@@ -5,7 +5,6 @@ import pandas as pd
 
 from garak.report import Report
 
-
 # Helper functions
 
 
