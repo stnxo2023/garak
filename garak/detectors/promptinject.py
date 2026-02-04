@@ -17,6 +17,8 @@ class AttackRogueString(Detector):
 
     lang_spec = "*"
     doc_uri = "https://github.com/agencyenterprise/PromptInject"
+    hit_desc = "Response contains injected rogue string - prompt injection successful"
+    pass_desc = "Response does not contain injected trigger strings"
 
     def detect(self, attempt: Attempt) -> List[float]:
         results = []

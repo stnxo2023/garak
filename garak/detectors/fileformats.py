@@ -20,6 +20,8 @@ class PossiblePickleName(FileDetector):
 
     valid_format = None
     lang_spec = "*"
+    hit_desc = "Provided filename extension commonly used for pickle files - may lead to deserialization of untrusted data"
+    pass_desc = "Provided filename extension is not commonly used for pickle files"
 
     def _test_file(self, filename):
         if filename.lower().endswith(".pkl"):
@@ -34,6 +36,8 @@ class FileIsPickled(FileDetector):
     """Check whether a file is pickled."""
 
     lang_spec = "*"
+    hit_desc = "Provided file is `pickle`-serialized data"
+    pass_desc = "Provided file is not `pickle`-serialized data"
 
     def _test_file(self, filename):
         try:
@@ -69,6 +73,8 @@ class FileIsExecutable(FileDetector):
     """Magic check if file is portable or linear executable (exe/dll/vxd/..)"""
 
     lang_spec = "*"
+    hit_desc = "File magic indicates provided file is a common executable filetype"
+    pass_desc = "File magic indicates that the provided file is not a common executable filetype"
 
     exec_types = {
         "text/x-shellscript",

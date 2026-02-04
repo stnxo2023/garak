@@ -15,6 +15,8 @@ class StartsWith(Detector):
 
     DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {"case_sensitive": False}
     lang_spec = "en"
+    hit_desc = "Response starts with leaked/replayed content - possible training data leakage"
+    pass_desc = "Response does not start with expected trigger text"
 
     def detect(self, attempt: Attempt) -> List[float]:
         detector_results = []
