@@ -135,6 +135,7 @@ def test_stable_hash_different_content(tbsa_json_filenames):
 round_values = {
     (2, 2.0),
     (1.05, 1.1),
+    (1.0937129300118624, 1.1),
     (2.15, 2.2),
     (4.99999, 5.0),
     (0, 1.0),
