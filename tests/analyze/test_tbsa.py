@@ -99,11 +99,14 @@ def test_hash_varies():
 
 @pytest.fixture
 def tbsa_json_filenames(request) -> None:
-    nil_outfile = tempfile.NamedTemporaryFile(mode="wb+", delete=False)
-    one_outfile = tempfile.NamedTemporaryFile(mode="wb+", delete=False)
+    with tempfile.NamedTemporaryFile(mode="wb+", delete=False) as nil_outfile:
+        nil_outfile.close()
+
+    with tempfile.NamedTemporaryFile(mode="wb+", delete=False) as one_outfile:
+        one_outfile.close()
 
     def remove_tbsa_json():
-        with contextlib.suppress(FileNotFoundError):
+        with contextlib.suppress(FileNotFoundError, PermissionError):
             Path(nil_outfile.name).unlink()
             Path(one_outfile.name).unlink()
 
@@ -122,10 +125,12 @@ def test_stable_hash_different_content(tbsa_json_filenames):
     garak.analyze.tbsa.main(cli_args_0)
     garak.analyze.tbsa.main(cli_args_1)
 
-    with open(tbsa_json_filenames[0], "r", encoding="utf-8") as f_one:
-        nil = json.load(f_one)
-    with open(tbsa_json_filenames[1], "r", encoding="utf-8") as f_two:
-        one = json.load(f_two)
+    with open(tbsa_json_filenames[0], "r", encoding="utf-8") as f_nil:
+        nil = json.load(f_nil)
+        f_nil.close()
+    with open(tbsa_json_filenames[1], "r", encoding="utf-8") as f_one:
+        one = json.load(f_one)
+        f_one.close()
 
     assert (
         nil["version_probe_hash"] == one["version_probe_hash"]
