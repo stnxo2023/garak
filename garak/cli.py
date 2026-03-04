@@ -216,6 +216,13 @@ def main(arguments=None) -> None:
         help="specify a MISP top-level taxonomy to be used for grouping probes in reporting. e.g. 'avid-effect', 'owasp' ",
     )
     parser.add_argument(
+        "--confidence_interval_method",
+        type=str,
+        default=None,
+        choices=["bootstrap", "none"],
+        help="method for CI calculation: 'bootstrap' (default) or 'none' to disable",
+    )
+    parser.add_argument(
         "--rebuild_cis",
         type=str,
         metavar="REPORT_PATH",
