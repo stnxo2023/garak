@@ -174,7 +174,7 @@ class Evaluator:
                         detector,
                         self.probename,
                         outputs_evaluated,
-                        exinfo=e,
+                        exc_info=e,
                     )
             elif ci_method == "bootstrap" and outputs_evaluated > 0:
                 if hasattr(_config.system, "verbose") and _config.system.verbose > 0:
