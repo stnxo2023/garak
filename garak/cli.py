@@ -221,6 +221,18 @@ def main(arguments=None) -> None:
         metavar="REPORT_PATH",
         help="recalculate confidence intervals for existing report and update in-place"
     )
+    parser.add_argument(
+        "--bootstrap_num_iterations",
+        type=int,
+        default=None,
+        help="number of bootstrap iterations for CI calculation (overrides config)",
+    )
+    parser.add_argument(
+        "--bootstrap_confidence_level",
+        type=float,
+        default=None,
+        help="confidence level for bootstrap CIs, e.g. 0.95 or 0.99 (overrides config)",
+    )
 
     ## COMMANDS
     # items placed here also need to be listed in command_options below
@@ -405,6 +417,25 @@ def main(arguments=None) -> None:
             _config.system.parallel_requests = worker_count_validation(
                 _config.system.parallel_requests
             )
+
+        if (
+            hasattr(args, "bootstrap_num_iterations")
+            and args.bootstrap_num_iterations is not None
+            and args.bootstrap_num_iterations <= 0
+        ):
+            raise ValueError(
+                f"--bootstrap_num_iterations must be > 0, got {args.bootstrap_num_iterations}"
+            )
+
+        if (
+            hasattr(args, "bootstrap_confidence_level")
+            and args.bootstrap_confidence_level is not None
+            and not (0.0 < args.bootstrap_confidence_level < 1.0)
+        ):
+            raise ValueError(
+                f"--bootstrap_confidence_level must be in (0, 1), got {args.bootstrap_confidence_level}"
+            )
+
     except ValueError as e:
         logging.exception(e)
         print(e)
@@ -569,14 +600,22 @@ def main(arguments=None) -> None:
             print(f"📊 Recalculating confidence intervals for {report_path}")
             
             try:
-                ci_results = calculate_ci_from_report(str(report_path))
+                ci_results = calculate_ci_from_report(
+                    str(report_path),
+                    num_iterations=getattr(args, "bootstrap_num_iterations", None),
+                    confidence_level=getattr(args, "bootstrap_confidence_level", None),
+                )
                 
                 if len(ci_results) == 0:
                     print(f"⚠️  No CIs calculated (check sample sizes and eval entries)")
                     return 0
                 
                 print(f"📊 Updating {len(ci_results)} probe/detector pairs with new CIs")
-                update_eval_entries_with_ci(str(report_path), ci_results)
+                update_eval_entries_with_ci(
+                    str(report_path),
+                    ci_results,
+                    confidence_level=getattr(args, "bootstrap_confidence_level", None),
+                )
                 
                 print(f"✅ CIs recalculated and report updated: {report_path}")
                 
