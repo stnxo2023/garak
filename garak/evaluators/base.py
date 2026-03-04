@@ -170,11 +170,11 @@ class Evaluator:
                         )
                 except ValueError as e:
                     logging.error(
-                        "CI calculation failed for %s (probe: %s, n=%d): %s",
+                        "CI calculation failed for %s (probe: %s, n=%d):",
                         detector,
                         self.probename,
                         outputs_evaluated,
-                        str(e),
+                        exinfo=e,
                     )
             elif ci_method == "bootstrap" and outputs_evaluated > 0:
                 if hasattr(_config.system, "verbose") and _config.system.verbose > 0:
