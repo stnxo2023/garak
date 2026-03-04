@@ -233,6 +233,12 @@ def main(arguments=None) -> None:
         default=None,
         help="confidence level for bootstrap CIs, e.g. 0.95 or 0.99 (overrides config)",
     )
+    parser.add_argument(
+        "--bootstrap_min_sample_size",
+        type=int,
+        default=None,
+        help="minimum sample size required for bootstrap CI calculation (overrides config)",
+    )
 
     ## COMMANDS
     # items placed here also need to be listed in command_options below
@@ -434,6 +440,15 @@ def main(arguments=None) -> None:
         ):
             raise ValueError(
                 f"--bootstrap_confidence_level must be in (0, 1), got {args.bootstrap_confidence_level}"
+            )
+
+        if (
+            hasattr(args, "bootstrap_min_sample_size")
+            and args.bootstrap_min_sample_size is not None
+            and args.bootstrap_min_sample_size <= 0
+        ):
+            raise ValueError(
+                f"--bootstrap_min_sample_size must be > 0, got {args.bootstrap_min_sample_size}"
             )
 
     except ValueError as e:
