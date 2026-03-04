@@ -9129,6 +9129,44 @@
       "parallel_capable": true,
       "supports_multiple_generations": false,
       "mod_time": "2026-02-02 14:10:11 +0000"
+    },
+    "generators.websocket.WebSocketGenerator": {
+      "description": "Generator for WebSocket-based LLM services",
+      "DEFAULT_PARAMS": {
+        "uri": "wss://echo.websocket.org",
+        "name": "WebSocket LLM",
+        "auth_type": "none",
+        "username": null,
+        "api_key": null,
+        "conversation_id": null,
+        "req_template": "$INPUT",
+        "req_template_json_object": null,
+        "headers": {},
+        "response_json": false,
+        "response_json_field": "text",
+        "response_after_typing": true,
+        "typing_indicator": "typing",
+        "request_timeout": 20,
+        "connection_timeout": 10,
+        "max_response_length": 10000,
+        "verify_ssl": true
+      },
+      "active": true,
+      "extra_dependency_names": [
+        "websockets"
+      ],
+      "generator_family_name": null,
+      "modality": {
+        "in": [
+          "text"
+        ],
+        "out": [
+          "text"
+        ]
+      },
+      "parallel_capable": true,
+      "supports_multiple_generations": false,
+      "mod_time": "2026-02-19 18:44:19 +0000"
     }
   },
   "harnesses": {
