@@ -50,7 +50,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install libmagic
+          curl -O https://raw.githubusercontent.com/Homebrew/homebrew-core/b8292ac3475e57ca407db18dfeb131cc51116da2/Formula/lib/libmagic.rb
+          HOMEBREW_DEVELOPER="true" brew install libmagic.rb
           cd garak
           python -m pip install --upgrade pip
           pip install --no-cache-dir -r requirements.txt
