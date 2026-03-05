@@ -598,61 +598,9 @@ def main(arguments=None) -> None:
             print(f"📜 AVID reports generated at {report.write_location}")
 
         elif args.rebuild_cis:
-            from pathlib import Path
-            from garak.analyze.ci_calculator import (
-                calculate_ci_from_report,
-                update_eval_entries_with_ci
-            )
-            
-            report_path = Path(args.rebuild_cis)
-            
-            # Validate file exists and is a file
-            if not report_path.exists():
-                msg = f"❌ Report file not found: {report_path}"
-                logging.critical(msg)
-                raise GarakException(msg)
-            
-            if not report_path.is_file():
-                print(f"❌ Path is not a file: {report_path}")
-                return 1
-            
-            print(f"📊 Recalculating confidence intervals for {report_path}")
-            
-            try:
-                ci_results = calculate_ci_from_report(
-                    str(report_path),
-                    num_iterations=_config.reporting.bootstrap_num_iterations,
-                    confidence_level=_config.reporting.bootstrap_confidence_level,
-                )
-                
-                if len(ci_results) == 0:
-                    print(f"⚠️  No CIs calculated (check sample sizes and eval entries)")
-                    return 0
-                
-                print(f"📊 Updating {len(ci_results)} probe/detector pairs with new CIs")
-                update_eval_entries_with_ci(
-                    str(report_path),
-                    ci_results,
-                    confidence_level=_config.reporting.bootstrap_confidence_level,
-                )
-                
-                print(f"✅ CIs recalculated and report updated: {report_path}")
-                
-                # Regenerate HTML digest with updated CIs
-                from garak.analyze.report_digest import build_digest, build_html
-                digest = build_digest(str(report_path))
-                html_output = report_path.with_suffix('.html')
-                html_report = build_html(digest, _config)
-                with open(html_output, "w", encoding="utf-8") as htmlfile:
-                    htmlfile.write(html_report)
-                print(f"📄 HTML digest written to {html_output}")
-            
-            except ValueError as e:
-                print(f"❌ Invalid report data: {e}")
-                return 1
-            except OSError as e:
-                print(f"❌ I/O error: {e}")
-                return 1
+            from garak.analyze.rebuild_cis import rebuild_cis_for_report
+
+            return rebuild_cis_for_report(report_path=args.rebuild_cis)
 
         # model is specified, we're doing something
         elif _config.plugins.target_type:

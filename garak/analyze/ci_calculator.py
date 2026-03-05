@@ -20,6 +20,30 @@ def _get_report_digest(report_path: str) -> Optional[dict]:
     return None
 
 
+def _extract_ci_config_from_report(report_path: str) -> dict:
+    """Extract CI config from existing eval entries in report.
+
+    Returns dict with keys 'confidence_method' and 'confidence_level'
+    if found, empty dict if no CI data present.
+    """
+    with open(report_path, "r", encoding="utf-8") as reportfile:
+        for line in reportfile:
+            if not line.strip():
+                continue
+            entry = json.loads(line.strip())
+            if entry.get("entry_type") == "eval" and "confidence" in entry:
+                result = {}
+                if "confidence_method" in entry:
+                    result["confidence_method"] = entry["confidence_method"]
+                try:
+                    result["confidence_level"] = float(entry["confidence"])
+                except (ValueError, TypeError):
+                    pass
+                if result:
+                    return result
+    return {}
+
+
 def _reconstruct_binary_from_aggregates(passed: int, failed: int) -> List[int]:
     # Reconstruct binary pass/fail data from aggregates; order irrelevant for bootstrap resampling
     return [1] * passed + [0] * failed
