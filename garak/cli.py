@@ -432,30 +432,27 @@ def main(arguments=None) -> None:
             )
 
         if (
-            hasattr(args, "bootstrap_num_iterations")
-            and args.bootstrap_num_iterations is not None
-            and args.bootstrap_num_iterations <= 0
+            _config.reporting.bootstrap_num_iterations is not None
+            and _config.reporting.bootstrap_num_iterations <= 0
         ):
             raise ValueError(
-                f"--bootstrap_num_iterations must be > 0, got {args.bootstrap_num_iterations}"
+                f"bootstrap_num_iterations must be > 0, got {_config.reporting.bootstrap_num_iterations}"
             )
 
         if (
-            hasattr(args, "bootstrap_confidence_level")
-            and args.bootstrap_confidence_level is not None
-            and not (0.0 < args.bootstrap_confidence_level < 1.0)
+            _config.reporting.bootstrap_confidence_level is not None
+            and not (0.0 < _config.reporting.bootstrap_confidence_level < 1.0)
         ):
             raise ValueError(
-                f"--bootstrap_confidence_level must be in (0, 1), got {args.bootstrap_confidence_level}"
+                f"bootstrap_confidence_level must be in (0, 1), got {_config.reporting.bootstrap_confidence_level}"
             )
 
         if (
-            hasattr(args, "bootstrap_min_sample_size")
-            and args.bootstrap_min_sample_size is not None
-            and args.bootstrap_min_sample_size <= 0
+            _config.reporting.bootstrap_min_sample_size is not None
+            and _config.reporting.bootstrap_min_sample_size <= 0
         ):
             raise ValueError(
-                f"--bootstrap_min_sample_size must be > 0, got {args.bootstrap_min_sample_size}"
+                f"bootstrap_min_sample_size must be > 0, got {_config.reporting.bootstrap_min_sample_size}"
             )
 
     except ValueError as e:
@@ -624,8 +621,8 @@ def main(arguments=None) -> None:
             try:
                 ci_results = calculate_ci_from_report(
                     str(report_path),
-                    num_iterations=getattr(args, "bootstrap_num_iterations", None),
-                    confidence_level=getattr(args, "bootstrap_confidence_level", None),
+                    num_iterations=_config.reporting.bootstrap_num_iterations,
+                    confidence_level=_config.reporting.bootstrap_confidence_level,
                 )
                 
                 if len(ci_results) == 0:
@@ -636,7 +633,7 @@ def main(arguments=None) -> None:
                 update_eval_entries_with_ci(
                     str(report_path),
                     ci_results,
-                    confidence_level=getattr(args, "bootstrap_confidence_level", None),
+                    confidence_level=_config.reporting.bootstrap_confidence_level,
                 )
                 
                 print(f"✅ CIs recalculated and report updated: {report_path}")
