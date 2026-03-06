@@ -20,7 +20,12 @@ from garak.probes.base import Probe
 
 
 class SystemPromptExtraction(Probe):
-    """Attempt to extract system prompts using adversarial attack templates"""
+    """Attempt to extract system prompts using adversarial attack templates
+
+    Combines system prompts from HuggingFace datasets with attack templates
+    to test whether a model will reveal its system prompt under adversarial
+    pressure. Uses conversation support to set the system prompt, then probes
+    with various extraction techniques."""
 
     lang = "en"
     primary_detector = "sysprompt_extraction.PromptExtraction"
