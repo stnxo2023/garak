@@ -118,8 +118,8 @@ def test_aggregate_preserves_mixed_eval_ci_format() -> None:
             "garak.analyze.aggregate_reports",
             "-o",
             aggfile_name,
-            "tests/_assets/test.report.jsonl",
-            "tests/_assets/test_with_ci.report.jsonl",
+            "tests/_assets/analyze/test.report.jsonl",
+            "tests/_assets/analyze/test_with_ci.report.jsonl",
         ],
         check=True,
         capture_output=True,
@@ -133,7 +133,9 @@ def test_aggregate_preserves_mixed_eval_ci_format() -> None:
             if rec.get("entry_type") == "eval":
                 eval_entries.append(rec)
 
-    assert len(eval_entries) >= 2, "expected at least two eval entries (one without CI, one with CI)"
+    assert (
+        len(eval_entries) >= 2
+    ), "expected at least two eval entries (one without CI, one with CI)"
     has_no_ci = any("confidence_lower" not in e for e in eval_entries)
     has_ci = any(
         e.get("confidence_method") == "bootstrap"
@@ -141,8 +143,12 @@ def test_aggregate_preserves_mixed_eval_ci_format() -> None:
         and "confidence_upper" in e
         for e in eval_entries
     )
-    assert has_no_ci, "aggregated output should contain at least one eval without CI fields"
-    assert has_ci, "aggregated output should contain at least one eval with CI fields preserved"
+    assert (
+        has_no_ci
+    ), "aggregated output should contain at least one eval without CI fields"
+    assert (
+        has_ci
+    ), "aggregated output should contain at least one eval with CI fields preserved"
 
 
 def test_digest_handles_mixed_eval_ci_format(tmp_path) -> None:
@@ -151,7 +157,7 @@ def test_digest_handles_mixed_eval_ci_format(tmp_path) -> None:
 
     report_path = tmp_path / "mixed_ci.report.jsonl"
     with open(
-        "tests/_assets/test.report.jsonl",
+        "tests/_assets/analyze/test.report.jsonl",
         encoding="utf-8",
     ) as f:
         setup_line = f.readline()
@@ -202,6 +208,9 @@ def test_digest_handles_mixed_eval_ci_format(tmp_path) -> None:
 
     assert "absolute_score" in always_pass
     assert "absolute_score" in quack
-    assert "absolute_confidence_lower" not in always_pass or always_pass.get("absolute_confidence_lower") is None
+    assert (
+        "absolute_confidence_lower" not in always_pass
+        or always_pass.get("absolute_confidence_lower") is None
+    )
     assert "absolute_confidence_lower" in quack
     assert "absolute_confidence_upper" in quack
