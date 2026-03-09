@@ -46,6 +46,15 @@ To override config defaults:
 
    garak --rebuild_cis report.jsonl --bootstrap_num_iterations 50000 --bootstrap_confidence_level 0.99
 
+.. note::
+
+   ``--rebuild_cis`` updates only the JSONL report file. To regenerate the HTML report
+   after recalculating CIs, run ``digest_report`` separately:
+
+   .. code-block:: bash
+
+      python -m garak.analyze.report_digest -r path/to/report.jsonl -o path/to/report.html
+
 Report HTML
 -----------
 

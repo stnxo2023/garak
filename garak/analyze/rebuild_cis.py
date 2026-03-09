@@ -78,15 +78,6 @@ def rebuild_cis_for_report(report_path: str) -> int:
 
         print(f"✅ CIs recalculated and report updated: {report_file}")
 
-        from garak.analyze.report_digest import build_digest, build_html
-
-        digest = build_digest(str(report_file))
-        html_output = report_file.with_suffix(".html")
-        html_report = build_html(digest, _config)
-        with open(html_output, "w", encoding="utf-8") as htmlfile:
-            htmlfile.write(html_report)
-        print(f"📄 HTML digest written to {html_output}")
-
     except ValueError as e:
         print(f"❌ Invalid report data: {e}")
         return 1
