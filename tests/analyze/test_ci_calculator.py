@@ -138,8 +138,8 @@ def test_calculate_ci_from_report_success(temp_report):
     assert len(ci_results) == 1
 
     key = list(ci_results.keys())[0]
-    assert key[0] == "probes.encoding.InjectBase64"
-    assert key[1] == "detector.mitigation.MitigationBypass"
+    assert key[0] == "encoding.InjectBase64"
+    assert key[1] == "mitigation.MitigationBypass"
 
     ci_lower, ci_upper = ci_results[key]
     assert 0 <= ci_lower <= 100
@@ -153,15 +153,15 @@ def test_update_eval_entries_with_ci(temp_report):
         {"entry_type": "init"},
         {
             "entry_type": "eval",
-            "probe": "probes.test.Test",
-            "detector": "detector.test.Detector",
+            "probe": "test.Test",
+            "detector": "test.Detector",
             "passed": 75,
             "total_evaluated": 100,
         },
     ])
 
     ci_results = {
-        ("probes.test.Test", "detector.test.Detector"): (65.2, 84.8)
+        ("test.Test", "test.Detector"): (65.2, 84.8)
     }
 
     output_path = report.with_suffix(".updated.jsonl")
@@ -190,8 +190,8 @@ def test_extract_ci_config_from_report_with_cis(temp_report):
         {"entry_type": "init"},
         {
             "entry_type": "eval",
-            "probe": "probes.test.Test",
-            "detector": "detector.test.Detector",
+            "probe": "test.Test",
+            "detector": "test.Detector",
             "confidence_method": "bootstrap",
             "confidence": "0.95",
             "confidence_lower": 0.65,
@@ -210,8 +210,8 @@ def test_extract_ci_config_from_report_no_cis(temp_report):
         {"entry_type": "init"},
         {
             "entry_type": "eval",
-            "probe": "probes.test.Test",
-            "detector": "detector.test.Detector",
+            "probe": "test.Test",
+            "detector": "test.Detector",
             "passed": 75,
             "total_evaluated": 100,
         },
@@ -227,8 +227,8 @@ def test_extract_ci_config_from_report_malformed_confidence(temp_report):
         {"entry_type": "init"},
         {
             "entry_type": "eval",
-            "probe": "probes.test.Test",
-            "detector": "detector.test.Detector",
+            "probe": "test.Test",
+            "detector": "test.Detector",
             "confidence_method": "bootstrap",
             "confidence": "not_a_number",
         },
@@ -237,3 +237,58 @@ def test_extract_ci_config_from_report_malformed_confidence(temp_report):
     result = garak.analyze.ci_calculator._extract_ci_config_from_report(str(report))
     assert result == {"confidence_method": "bootstrap"}
     assert "confidence_level" not in result
+
+
+def test_end_to_end_rebuild_ci_pipeline(temp_report):
+    """End-to-end: calculate CIs from digest, then update eval entries.
+
+    Exercises the exact code path used by rebuild_cis_for_report:
+    calculate_ci_from_report -> update_eval_entries_with_ci.
+    """
+    report = temp_report([
+        {"entry_type": "init"},
+        {
+            "entry_type": "eval",
+            "probe": "encoding.InjectBase64",
+            "detector": "mitigation.MitigationBypass",
+            "passed": 37,
+            "total_evaluated": 50,
+            "fails": 13,
+        },
+        {
+            "entry_type": "digest",
+            "eval": {
+                "test_group": {
+                    "encoding.InjectBase64": {
+                        "mitigation.MitigationBypass": {
+                            "total_evaluated": 50,
+                            "passed": 37,
+                        }
+                    }
+                }
+            },
+        },
+    ])
+
+    ci_results = garak.analyze.ci_calculator.calculate_ci_from_report(str(report))
+    assert len(ci_results) == 1
+
+    output_path = report.with_suffix(".rebuilt.jsonl")
+    garak.analyze.ci_calculator.update_eval_entries_with_ci(
+        str(report), ci_results, output_path=str(output_path)
+    )
+
+    with open(output_path, "r") as f:
+        for line in f:
+            entry = json.loads(line)
+            if entry.get("entry_type") == "eval":
+                assert "confidence_lower" in entry, "eval entry missing confidence_lower"
+                assert "confidence_upper" in entry, "eval entry missing confidence_upper"
+                assert "confidence_method" in entry, "eval entry missing confidence_method"
+                assert 0 <= entry["confidence_lower"] <= 1
+                assert 0 <= entry["confidence_upper"] <= 1
+                break
+        else:
+            pytest.fail("No eval entry found in output")
+
+    output_path.unlink()

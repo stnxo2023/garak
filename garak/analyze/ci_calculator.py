@@ -101,13 +101,13 @@ def calculate_ci_from_report(
             if "." not in probe_key:
                 continue
             
-            probe_name = f"probes.{probe_key}"
+            probe_name = probe_key
             
             for detector_key in eval_data[probe_group][probe_key]:
                 if detector_key == "_summary":
                     continue
                 
-                detector_name = f"detector.{detector_key}"
+                detector_name = detector_key
                 
                 # Skip if not in requested pairs (if specified)
                 if probe_detector_pairs is not None:
