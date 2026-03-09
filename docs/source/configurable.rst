@@ -187,9 +187,9 @@ Reporting Config Items
      python -m garak --confidence_interval_method none ...  # Disable CIs for this run
      python -m garak --confidence_interval_method bootstrap ...  # Explicitly enable (default)
   
-* ``bootstrap_num_iterations`` - Number of bootstrap resampling iterations for computing confidence intervals on attack success rates (default: 10000). Only used when ``confidence_interval_method`` is ``"bootstrap"``.
-* ``bootstrap_confidence_level`` - Confidence level for bootstrap confidence intervals, expressed as a decimal between 0 and 1 (default: 0.95 for 95% confidence intervals). Only used when ``confidence_interval_method`` is ``"bootstrap"``.
-* ``bootstrap_min_sample_size`` - Minimum sample size required for reliable bootstrap confidence interval estimates (default: 30). Can be increased for more conservative estimates, but lowering it significantly compromises statistical validity. Only used when ``confidence_interval_method`` is ``"bootstrap"``.
+* ``bootstrap_num_iterations`` - Number of bootstrap resampling iterations for computing confidence intervals on attack success rates (default: 10000). Also available via CLI as ``--bootstrap_num_iterations``. Only used when ``confidence_interval_method`` is ``"bootstrap"``.
+* ``bootstrap_confidence_level`` - Confidence level for bootstrap confidence intervals, expressed as a decimal between 0 and 1 (default: 0.95 for 95% confidence intervals). Also available via CLI as ``--bootstrap_confidence_level``. Only used when ``confidence_interval_method`` is ``"bootstrap"``.
+* ``bootstrap_min_sample_size`` - Minimum sample size required for reliable bootstrap confidence interval estimates (default: 30). Also available via CLI as ``--bootstrap_min_sample_size``. Can be increased for more conservative estimates, but lowering it significantly compromises statistical validity. Only used when ``confidence_interval_method`` is ``"bootstrap"``.
 
 
 Bundled Quick Configs
