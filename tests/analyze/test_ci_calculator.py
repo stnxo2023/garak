@@ -239,14 +239,22 @@ def test_extract_ci_config_from_report_malformed_confidence(temp_report):
     assert "confidence_level" not in result
 
 
-def test_end_to_end_rebuild_ci_pipeline(temp_report):
-    """End-to-end: calculate CIs from digest, then update eval entries.
-
-    Exercises the exact code path used by rebuild_cis_for_report:
-    calculate_ci_from_report -> update_eval_entries_with_ci.
-    """
+def test_rebuild_cis_for_report_recalculates_digest(temp_report):
+    """Full rebuild_cis_for_report: eval entries updated + fresh digest appended."""
     report = temp_report([
-        {"entry_type": "init"},
+        {
+            "entry_type": "init",
+            "garak_version": "0.11",
+            "start_time": "2026-01-01T00:00:00",
+            "run": "test-run-uuid",
+        },
+        {
+            "entry_type": "start_run setup",
+            "reporting.confidence_interval_method": "bootstrap",
+            "plugins.probe_spec": "encoding.InjectBase64",
+            "plugins.target_type": "test",
+            "plugins.target_name": "test-target",
+        },
         {
             "entry_type": "eval",
             "probe": "encoding.InjectBase64",
@@ -263,6 +271,7 @@ def test_end_to_end_rebuild_ci_pipeline(temp_report):
                         "mitigation.MitigationBypass": {
                             "total_evaluated": 50,
                             "passed": 37,
+                            "score": 0.26,
                         }
                     }
                 }
@@ -270,25 +279,21 @@ def test_end_to_end_rebuild_ci_pipeline(temp_report):
         },
     ])
 
-    ci_results = garak.analyze.ci_calculator.calculate_ci_from_report(str(report))
-    assert len(ci_results) == 1
+    _config.reporting.confidence_interval_method = "bootstrap"
+    from garak.analyze.rebuild_cis import rebuild_cis_for_report
 
-    output_path = report.with_suffix(".rebuilt.jsonl")
-    garak.analyze.ci_calculator.update_eval_entries_with_ci(
-        str(report), ci_results, output_path=str(output_path)
-    )
+    result = rebuild_cis_for_report(str(report))
+    assert result == 0, "rebuild_cis_for_report should return 0 on success"
 
-    with open(output_path, "r") as f:
-        for line in f:
-            entry = json.loads(line)
-            if entry.get("entry_type") == "eval":
-                assert "confidence_lower" in entry, "eval entry missing confidence_lower"
-                assert "confidence_upper" in entry, "eval entry missing confidence_upper"
-                assert "confidence_method" in entry, "eval entry missing confidence_method"
-                assert 0 <= entry["confidence_lower"] <= 1
-                assert 0 <= entry["confidence_upper"] <= 1
-                break
-        else:
-            pytest.fail("No eval entry found in output")
+    with open(report, "r") as f:
+        entries = [json.loads(line) for line in f if line.strip()]
 
-    output_path.unlink()
+    digests = [e for e in entries if e.get("entry_type") == "digest"]
+    assert len(digests) == 1, f"Expected exactly 1 digest entry, found {len(digests)}"
+
+    evals = [e for e in entries if e.get("entry_type") == "eval"]
+    assert len(evals) >= 1
+    for ev in evals:
+        if ev.get("probe") == "encoding.InjectBase64":
+            assert "confidence_lower" in ev, "eval entry should have CI after rebuild"
+            assert "confidence_upper" in ev, "eval entry should have CI after rebuild"

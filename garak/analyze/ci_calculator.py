@@ -212,6 +212,10 @@ def update_eval_entries_with_ci(
                         e.pos
                     ) from e
                 
+                if entry.get("entry_type") == "digest":
+                    logging.debug("Stripping stale digest entry (will be recalculated)")
+                    continue
+
                 if entry.get("entry_type") == "eval":
                     probe = entry.get("probe")
                     detector = entry.get("detector")

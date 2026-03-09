@@ -40,6 +40,7 @@ def rebuild_cis_for_report(report_path: str) -> int:
         calculate_ci_from_report,
         update_eval_entries_with_ci,
     )
+    from garak.analyze.report_digest import build_digest, append_report_object
 
     existing = _extract_ci_config_from_report(str(report_file))
     active_level = _config.reporting.bootstrap_confidence_level
@@ -75,6 +76,11 @@ def rebuild_cis_for_report(report_path: str) -> int:
 
         print(f"📊 Updating {len(ci_results)} probe/detector pairs with new CIs")
         update_eval_entries_with_ci(str(report_file), ci_results)
+
+        digest = build_digest(str(report_file))
+        with open(report_file, "a+", encoding="utf-8") as reportfile:
+            append_report_object(reportfile, digest)
+        logging.info("Recalculated digest appended to %s", report_file)
 
         print(f"✅ CIs recalculated and report updated: {report_file}")
 
