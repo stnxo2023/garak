@@ -44,6 +44,21 @@ def _extract_ci_config_from_report(report_path: str) -> dict:
     return {}
 
 
+def _extract_reporting_config_from_setup(report_path: str) -> dict:
+    """Extract reporting.* config values from the start_run setup entry."""
+    with open(report_path, "r", encoding="utf-8") as f:
+        first_line = f.readline().strip()
+        if not first_line:
+            return {}
+        entry = json.loads(first_line)
+        if entry.get("entry_type") != "start_run setup":
+            return {}
+        return {
+            k: v for k, v in entry.items()
+            if k.startswith("reporting.")
+        }
+
+
 def _reconstruct_binary_from_aggregates(passed: int, failed: int) -> List[int]:
     # Reconstruct binary pass/fail data from aggregates; order irrelevant for bootstrap resampling
     return [1] * passed + [0] * failed
@@ -215,6 +230,12 @@ def update_eval_entries_with_ci(
                 if entry.get("entry_type") == "digest":
                     logging.debug("Stripping stale digest entry (will be recalculated)")
                     continue
+
+                if entry.get("entry_type") == "start_run setup":
+                    for param in _config.reporting_params:
+                        entry[f"reporting.{param}"] = getattr(
+                            _config.reporting, param
+                        )
 
                 if entry.get("entry_type") == "eval":
                     probe = entry.get("probe")

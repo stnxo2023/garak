@@ -37,10 +37,26 @@ def rebuild_cis_for_report(report_path: str) -> int:
 
     from garak.analyze.ci_calculator import (
         _extract_ci_config_from_report,
+        _extract_reporting_config_from_setup,
         calculate_ci_from_report,
         update_eval_entries_with_ci,
     )
     from garak.analyze.report_digest import build_digest, append_report_object
+
+    original_reporting = _extract_reporting_config_from_setup(str(report_file))
+    if original_reporting:
+        active_reporting = {
+            f"reporting.{p}": getattr(_config.reporting, p)
+            for p in _config.reporting_params
+        }
+        diffs = {
+            k: (original_reporting.get(k), v)
+            for k, v in active_reporting.items()
+            if original_reporting.get(k) != v
+        }
+        if diffs:
+            for key, (old, new) in diffs.items():
+                logging.info("Config changed: %s: %s -> %s", key, old, new)
 
     existing = _extract_ci_config_from_report(str(report_file))
     active_level = _config.reporting.bootstrap_confidence_level

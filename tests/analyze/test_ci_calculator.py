@@ -297,3 +297,99 @@ def test_rebuild_cis_for_report_recalculates_digest(temp_report):
         if ev.get("probe") == "encoding.InjectBase64":
             assert "confidence_lower" in ev, "eval entry should have CI after rebuild"
             assert "confidence_upper" in ev, "eval entry should have CI after rebuild"
+
+
+def test_extract_reporting_config_from_setup(temp_report):
+    """Verify extraction of reporting.* keys from start_run setup entry."""
+    report = temp_report([
+        {
+            "entry_type": "start_run setup",
+            "reporting.taxonomy": None,
+            "reporting.confidence_interval_method": "none",
+            "reporting.bootstrap_confidence_level": 0.95,
+            "plugins.target_type": "test",
+            "system.verbose": 0,
+        },
+        {"entry_type": "init"},
+    ])
+
+    result = garak.analyze.ci_calculator._extract_reporting_config_from_setup(str(report))
+
+    assert "reporting.confidence_interval_method" in result
+    assert result["reporting.confidence_interval_method"] == "none"
+    assert "reporting.bootstrap_confidence_level" in result
+    assert result["reporting.bootstrap_confidence_level"] == 0.95
+    assert "reporting.taxonomy" in result
+    assert "plugins.target_type" not in result
+    assert "system.verbose" not in result
+
+
+def test_update_eval_entries_updates_start_run_setup(temp_report):
+    """Verify update_eval_entries_with_ci updates reporting.* keys in start_run setup."""
+    report = temp_report([
+        {
+            "entry_type": "start_run setup",
+            "reporting.confidence_interval_method": "none",
+            "reporting.bootstrap_num_iterations": 5000,
+            "plugins.target_type": "test",
+        },
+        {
+            "entry_type": "eval",
+            "probe": "test.Test",
+            "detector": "test.Detector",
+            "passed": 75,
+            "total_evaluated": 100,
+        },
+    ])
+
+    ci_results = {
+        ("test.Test", "test.Detector"): (65.2, 84.8)
+    }
+
+    output_path = report.with_suffix(".updated.jsonl")
+    garak.analyze.ci_calculator.update_eval_entries_with_ci(
+        str(report), ci_results, output_path=str(output_path)
+    )
+
+    with open(output_path, "r") as f:
+        setup = json.loads(f.readline())
+
+    assert setup["entry_type"] == "start_run setup"
+    assert setup["reporting.confidence_interval_method"] == _config.reporting.confidence_interval_method
+    assert setup["reporting.bootstrap_num_iterations"] == _config.reporting.bootstrap_num_iterations
+    assert setup["reporting.bootstrap_confidence_level"] == _config.reporting.bootstrap_confidence_level
+
+    output_path.unlink()
+
+
+def test_update_preserves_non_reporting_setup_keys(temp_report):
+    """Verify non-reporting keys in start_run setup are preserved unchanged."""
+    report = temp_report([
+        {
+            "entry_type": "start_run setup",
+            "plugins.target_type": "test",
+            "plugins.probe_spec": "test.Test",
+            "system.verbose": 0,
+            "run.seed": 42,
+            "reporting.confidence_interval_method": "none",
+        },
+        {"entry_type": "init"},
+    ])
+
+    ci_results = {}
+
+    output_path = report.with_suffix(".updated.jsonl")
+    garak.analyze.ci_calculator.update_eval_entries_with_ci(
+        str(report), ci_results, output_path=str(output_path)
+    )
+
+    with open(output_path, "r") as f:
+        setup = json.loads(f.readline())
+
+    assert setup["plugins.target_type"] == "test"
+    assert setup["plugins.probe_spec"] == "test.Test"
+    assert setup["system.verbose"] == 0
+    assert setup["run.seed"] == 42
+    assert setup["entry_type"] == "start_run setup"
+
+    output_path.unlink()
