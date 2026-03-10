@@ -239,53 +239,48 @@ def test_extract_ci_config_from_report_malformed_confidence(temp_report):
     assert "confidence_level" not in result
 
 
-def test_rebuild_cis_for_report_recalculates_digest(temp_report):
-    """Full rebuild_cis_for_report: eval entries updated + fresh digest appended."""
-    report = temp_report([
-        {
-            "entry_type": "init",
-            "garak_version": "0.11",
-            "start_time": "2026-01-01T00:00:00",
-            "run": "test-run-uuid",
-        },
-        {
-            "entry_type": "start_run setup",
-            "reporting.confidence_interval_method": "bootstrap",
-            "plugins.probe_spec": "encoding.InjectBase64",
-            "plugins.target_type": "test",
-            "plugins.target_name": "test-target",
-        },
-        {
-            "entry_type": "eval",
-            "probe": "encoding.InjectBase64",
-            "detector": "mitigation.MitigationBypass",
-            "passed": 37,
-            "total_evaluated": 50,
-            "fails": 13,
-        },
-        {
-            "entry_type": "digest",
-            "eval": {
-                "test_group": {
-                    "encoding.InjectBase64": {
-                        "mitigation.MitigationBypass": {
-                            "total_evaluated": 50,
-                            "passed": 37,
-                            "score": 0.26,
-                        }
+REBUILD_REPORT_ENTRIES = [
+    {
+        "entry_type": "init",
+        "garak_version": "0.11",
+        "start_time": "2026-01-01T00:00:00",
+        "run": "test-run-uuid",
+    },
+    {
+        "entry_type": "start_run setup",
+        "reporting.confidence_interval_method": "bootstrap",
+        "plugins.probe_spec": "encoding.InjectBase64",
+        "plugins.target_type": "test",
+        "plugins.target_name": "test-target",
+    },
+    {
+        "entry_type": "eval",
+        "probe": "encoding.InjectBase64",
+        "detector": "mitigation.MitigationBypass",
+        "passed": 37,
+        "total_evaluated": 50,
+        "fails": 13,
+    },
+    {
+        "entry_type": "digest",
+        "eval": {
+            "test_group": {
+                "encoding.InjectBase64": {
+                    "mitigation.MitigationBypass": {
+                        "total_evaluated": 50,
+                        "passed": 37,
+                        "score": 0.26,
                     }
                 }
-            },
+            }
         },
-    ])
+    },
+]
 
-    _config.reporting.confidence_interval_method = "bootstrap"
-    from garak.analyze.rebuild_cis import rebuild_cis_for_report
 
-    result = rebuild_cis_for_report(str(report))
-    assert result == 0, "rebuild_cis_for_report should return 0 on success"
-
-    with open(report, "r") as f:
+def _assert_rebuilt_entries(target_path: Path) -> None:
+    """Verify that a rebuilt report has CIs in eval entries and exactly one digest."""
+    with open(target_path, "r") as f:
         entries = [json.loads(line) for line in f if line.strip()]
 
     digests = [e for e in entries if e.get("entry_type") == "digest"]
@@ -297,6 +292,81 @@ def test_rebuild_cis_for_report_recalculates_digest(temp_report):
         if ev.get("probe") == "encoding.InjectBase64":
             assert "confidence_lower" in ev, "eval entry should have CI after rebuild"
             assert "confidence_upper" in ev, "eval entry should have CI after rebuild"
+
+
+def test_rebuild_cis_overwrite(temp_report, request):
+    """rebuild_cis_for_report with overwrite=True modifies the original file."""
+    from garak.analyze.rebuild_cis import rebuild_cis_for_report
+
+    report = temp_report(REBUILD_REPORT_ENTRIES)
+    original_content = report.read_text()
+
+    _config.reporting.confidence_interval_method = "bootstrap"
+    result = rebuild_cis_for_report(str(report), overwrite=True)
+    assert result == 0
+
+    assert report.read_text() != original_content, "Original file should be modified"
+    _assert_rebuilt_entries(report)
+
+
+def test_rebuild_cis_default_safe_output(temp_report, request):
+    """rebuild_cis_for_report with no flags writes to .rebuilt file, original untouched."""
+    from garak.analyze.rebuild_cis import rebuild_cis_for_report
+
+    report = temp_report(REBUILD_REPORT_ENTRIES)
+    original_content = report.read_text()
+
+    name = report.name
+    if name.endswith(".report.jsonl"):
+        expected_name = name.removesuffix(".report.jsonl") + ".rebuilt.report.jsonl"
+    else:
+        expected_name = f"{report.stem}.rebuilt{report.suffix}"
+    expected_output = report.parent / expected_name
+
+    def cleanup_rebuilt():
+        expected_output.unlink(missing_ok=True)
+
+    request.addfinalizer(cleanup_rebuilt)
+
+    _config.reporting.confidence_interval_method = "bootstrap"
+    result = rebuild_cis_for_report(str(report))
+    assert result == 0
+
+    assert report.read_text() == original_content, "Original file should be untouched"
+    assert expected_output.exists(), f"Expected rebuilt file at {expected_output}"
+    _assert_rebuilt_entries(expected_output)
+
+
+def test_rebuild_cis_explicit_output_path(temp_report, request, tmp_path):
+    """rebuild_cis_for_report with output_path writes to the specified path."""
+    from garak.analyze.rebuild_cis import rebuild_cis_for_report
+
+    report = temp_report(REBUILD_REPORT_ENTRIES)
+    original_content = report.read_text()
+    custom_output = tmp_path / "custom_rebuilt.jsonl"
+
+    _config.reporting.confidence_interval_method = "bootstrap"
+    result = rebuild_cis_for_report(str(report), output_path=str(custom_output))
+    assert result == 0
+
+    assert report.read_text() == original_content, "Original file should be untouched"
+    assert custom_output.exists(), f"Expected output at {custom_output}"
+    _assert_rebuilt_entries(custom_output)
+
+
+def test_rebuild_cis_mutually_exclusive_flags(temp_report, tmp_path):
+    """Passing both output_path and overwrite=True returns error code 1."""
+    from garak.analyze.rebuild_cis import rebuild_cis_for_report
+
+    report = temp_report(REBUILD_REPORT_ENTRIES)
+    custom_output = tmp_path / "should_not_exist.jsonl"
+
+    _config.reporting.confidence_interval_method = "bootstrap"
+    result = rebuild_cis_for_report(
+        str(report), output_path=str(custom_output), overwrite=True
+    )
+    assert result == 1, "Should return 1 when both output_path and overwrite are set"
+    assert not custom_output.exists(), "No output file should be created"
 
 
 def test_extract_reporting_config_from_setup(temp_report):

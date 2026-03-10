@@ -32,23 +32,33 @@ These intervals account for sampling uncertainty. When detector performance metr
 Recalculating Confidence Intervals
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For reports created before CI support or to experiment with different parameters, use the ``--rebuild_cis`` command:
+For reports created before CI support or to experiment with different parameters, use the standalone ``rebuild_cis`` tool:
 
 .. code-block:: bash
 
-   garak --rebuild_cis path/to/garak.uuid.report.jsonl
+   python -m garak.analyze.rebuild_cis -r path/to/garak.uuid.report.jsonl
 
-This reconstructs binary pass/fail outcomes from attempt records and recalculates CIs using current config settings. The report file is updated in-place with new CI values in eval entries.
-
-To override config defaults:
+By default, this writes the rebuilt report to a new file (e.g. ``garak.uuid.rebuilt.report.jsonl``) without modifying the original. To overwrite the original report in-place, use the ``-w`` flag:
 
 .. code-block:: bash
 
-   garak --rebuild_cis report.jsonl --bootstrap_num_iterations 50000 --bootstrap_confidence_level 0.99
+   python -m garak.analyze.rebuild_cis -r path/to/report.jsonl -w
+
+To write to a specific output path:
+
+.. code-block:: bash
+
+   python -m garak.analyze.rebuild_cis -r path/to/report.jsonl -o path/to/rebuilt.jsonl
+
+To override bootstrap config defaults:
+
+.. code-block:: bash
+
+   python -m garak.analyze.rebuild_cis -r report.jsonl --bootstrap_num_iterations 50000 --bootstrap_confidence_level 0.99
 
 .. note::
 
-   ``--rebuild_cis`` updates only the JSONL report file. To regenerate the HTML report
+   ``rebuild_cis`` updates only the JSONL report file. To regenerate the HTML report
    after recalculating CIs, run ``digest_report`` separately:
 
    .. code-block:: bash

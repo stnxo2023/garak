@@ -3,7 +3,7 @@
 
 """Flow for invoking garak from the command line"""
 
-command_options = "list_detectors list_probes list_generators list_buffs list_config plugin_info interactive report rebuild_cis version fix".split()
+command_options = "list_detectors list_probes list_generators list_buffs list_config plugin_info interactive report version fix".split()
 
 
 def parse_cli_plugin_config(plugin_type, args):
@@ -221,12 +221,6 @@ def main(arguments=None) -> None:
         default=None,
         choices=["bootstrap", "none"],
         help="method for CI calculation: 'bootstrap' (default) or 'none' to disable",
-    )
-    parser.add_argument(
-        "--rebuild_cis",
-        type=str,
-        metavar="REPORT_PATH",
-        help="recalculate confidence intervals for existing report and update in-place"
     )
     parser.add_argument(
         "--bootstrap_num_iterations",
@@ -596,11 +590,6 @@ def main(arguments=None) -> None:
             report = Report(args.report).load().get_evaluations()
             report.export()
             print(f"📜 AVID reports generated at {report.write_location}")
-
-        elif args.rebuild_cis:
-            from garak.analyze.rebuild_cis import rebuild_cis_for_report
-
-            return rebuild_cis_for_report(report_path=args.rebuild_cis)
 
         # model is specified, we're doing something
         elif _config.plugins.target_type:
