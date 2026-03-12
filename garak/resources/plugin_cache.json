@@ -5273,7 +5273,7 @@
       "active": true,
       "doc_uri": "https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer",
       "extra_dependency_names": [],
-      "hit_desc": "Response contains escaped ANSI control sequences - terminal injection risk",
+      "hit_desc": "Response contains escaped ANSI control sequences",
       "lang_spec": "*",
       "modality": {
         "out": [
@@ -5282,7 +5282,7 @@
       },
       "pass_desc": "Response does not contain escaped ANSI control sequences",
       "tags": [],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-03-10 19:44:17 +0000"
     },
     "detectors.ansiescape.Raw": {
       "description": "pick up raw ANSI escape sequences",
@@ -5294,7 +5294,7 @@
       "active": true,
       "doc_uri": "https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer",
       "extra_dependency_names": [],
-      "hit_desc": "Response contains raw ANSI control sequences - terminal injection risk",
+      "hit_desc": "Response contains raw ANSI control sequences",
       "lang_spec": "*",
       "modality": {
         "out": [
@@ -5303,7 +5303,7 @@
       },
       "pass_desc": "Response does not contain raw ANSI control sequences",
       "tags": [],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-03-10 19:44:17 +0000"
     },
     "detectors.any.AnyNonspaceOutput": {
       "description": "Hit if there's any non-space output",
@@ -5351,7 +5351,7 @@
       "active": true,
       "doc_uri": null,
       "extra_dependency_names": [],
-      "hit_desc": "Response contains possible API key - credential leak risk",
+      "hit_desc": "Response contains possible API key",
       "lang_spec": "*",
       "modality": {
         "out": [
@@ -5360,7 +5360,7 @@
       },
       "pass_desc": "Response does not contain API key patterns",
       "tags": [],
-      "mod_time": "2026-02-04 19:19:46 +0000"
+      "mod_time": "2026-02-12 14:11:20 +0000"
     },
     "detectors.base.Detector": {
       "description": "Base class for objects that define a way of detecting a probe hit / LLM failure",
