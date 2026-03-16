@@ -300,11 +300,6 @@ yarn --cwd garak-report dev
 
 ---
 
-## 📄 License
-
-This project is licensed under the [Apache License 2.0](./LICENSE.txt).  
-© 2023–2025 NVIDIA Corporation
-
 # one-off
 yarn --cwd garak-report dev
 
