@@ -170,9 +170,9 @@ def _tier_name(tier_value):
 
 
 def _truncate(text, max_len=80):
-    """Truncate text to max_len, appending '...' if needed."""
+    """Truncate text to max_len, appending ellipsis if needed."""
     if len(text) > max_len:
-        return text[:max_len - 3] + "..."
+        return text[:max_len - 1] + "…"
     return text
 
 
