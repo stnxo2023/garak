@@ -13,16 +13,16 @@ as ``--target_name``:
 .. code-block:: bash
 
    pip install llm llm-claude-3  # install llm + any provider plugins
-   garak --model_type llm --model_name gpt-4o-mini
+   garak --target_type llm --target_name gpt-4o-mini
 """
 
 import logging
-from typing import List, Union
 
 import backoff
 
 from garak import _config
 from garak.attempt import Message, Conversation
+from garak.exception import GeneratorBackoffTrigger
 from garak.generators.base import Generator
 
 
@@ -44,46 +44,45 @@ class LLMGenerator(Generator):
     parallel_capable = False
 
     extra_dependency_names = ["llm"]
+    _unsafe_attributes = ["target"]
 
     def __init__(self, name="", config_root=_config):
         self.name = name
         self._load_config(config_root)
-        self.fullname = f"llm {self.name}"
+        self.fullname = f"llm:{self.name}"
 
         super().__init__(self.name, config_root=config_root)
-        self._load_client()
+        self._load_unsafe()
 
-    def _load_client(self) -> None:
-        import llm as llm_lib
-
-        self.llm = llm_lib
+    def _load_unsafe(self) -> None:
+        if hasattr(self, "target") and self.target is not None:
+            return
         try:
             self.target = (
                 self.llm.get_model(self.name) if self.name else self.llm.get_model()
             )
-        except Exception as exc:
+        except self.llm.UnknownModelError as exc:
             logging.error(
                 "Failed to resolve llm model '%s': %s", self.name, repr(exc)
             )
             raise
+        self._accepted_params = self._enumerate_model_params()
 
-    def _clear_client(self) -> None:
-        self.target = None
+    def _enumerate_model_params(self) -> set:
+        """Discover which prompt options the resolved model actually supports."""
+        if self.target is None:
+            return set()
+        options_cls = getattr(self.target, "Options", None)
+        if options_cls is not None and hasattr(options_cls, "model_fields"):
+            return set(options_cls.model_fields.keys())
+        return set()
 
-    def __getstate__(self) -> object:
-        self._clear_client()
-        return dict(self.__dict__)
-
-    def __setstate__(self, data: dict) -> None:
-        self.__dict__.update(data)
-        self._load_client()
-
-    @backoff.on_exception(backoff.fibo, Exception, max_value=70)
+    @backoff.on_exception(backoff.fibo, GeneratorBackoffTrigger, max_value=70)
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
-    ) -> List[Union[Message, None]]:
+    ) -> list[Message | None]:
         if self.target is None:
-            self._load_client()
+            self._load_unsafe()
 
         system_turns = [turn for turn in prompt.turns if turn.role == "system"]
         user_turns = [turn for turn in prompt.turns if turn.role == "user"]
@@ -101,22 +100,35 @@ class LLMGenerator(Generator):
 
         text_prompt = prompt.last_message("user").text
 
-        prompt_kwargs = {}
-        if self.temperature:
-            prompt_kwargs["temperature"] = self.temperature
-        if self.max_tokens:
-            prompt_kwargs["max_tokens"] = self.max_tokens
-        if self.top_p:
-            prompt_kwargs["top_p"] = self.top_p
-        if self.stop:
-            prompt_kwargs["stop"] = self.stop
+        system_text = None
+        if system_turns:
+            system_text = system_turns[0].content.text
 
-        outputs: List[Union[Message, None]] = []
+        prompt_kwargs = {}
+        param_map = {
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+            "top_p": self.top_p,
+            "stop": self.stop,
+        }
+        for param_name, param_value in param_map.items():
+            if param_value and param_name in self._accepted_params:
+                prompt_kwargs[param_name] = param_value
+
+        outputs: list[Message | None] = []
         for _ in range(generations_this_call):
             try:
-                response = self.target.prompt(text_prompt, **prompt_kwargs)
+                response = self.target.prompt(
+                    text_prompt, system=system_text, **prompt_kwargs
+                )
                 outputs.append(Message(response.text()))
+            except self.llm.ModelError as e:
+                raise GeneratorBackoffTrigger from e
             except Exception as e:
+                backoff_types = ("RateLimitError", "APITimeoutError", "APIConnectionError")
+                exc_name = type(e).__name__
+                if exc_name in backoff_types:
+                    raise GeneratorBackoffTrigger from e
                 logging.error("llm generation failed: %s", repr(e))
                 outputs.append(None)
         return outputs
