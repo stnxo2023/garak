@@ -191,7 +191,7 @@ _PLUGIN_TABLE_COLUMNS = {
 }
 
 
-def print_plugins(prefix: str, color, selected_plugins=None, verbose=0):
+def print_plugins(prefix: str, color, selected_plugins=None, verbose: int=0):
     """
     Print plugins for a category (probes/detectors/generators/buffs).
 
