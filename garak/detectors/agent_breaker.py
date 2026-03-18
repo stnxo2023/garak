@@ -157,7 +157,7 @@ class AgentBreakerResult(Detector):
             return 0.0
         except (json.JSONDecodeError, ValueError, TypeError) as e:
             logging.warning(
-                "AgentBreakerResult failed to parse verification JSON: %s", e
+                f"{self.__class__.__name__} failed to parse verification JSON: {e}"
             )
             return 0.0
 

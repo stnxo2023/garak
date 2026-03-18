@@ -175,7 +175,8 @@ class AgentBreaker(garak.probes.IterativeProbe):
 
         if self.langprovider.target_lang not in ("en", self.lang):
             logging.warning(
-                "AgentBreaker probe currently does not support languages other than %s",
+                "%s probe currently does not support languages other than %s",
+                self.__class__.__name__,
                 self.lang,
             )
 
@@ -213,7 +214,7 @@ class AgentBreaker(garak.probes.IterativeProbe):
         self.agent_config.setdefault("tools", [])
 
         logging.info(
-            f"agent_breaker.AgentBreaker # Loaded agent config with "
+            f"{self.__class__.__name__} # Loaded agent config with "
             f"{len(self.agent_config['tools'])} tools"
         )
 
@@ -241,7 +242,7 @@ class AgentBreaker(garak.probes.IterativeProbe):
             discovery_prompt = self._prompts["DISCOVERY_FULL"]
 
         logging.info(
-            "agent_breaker.AgentBreaker # Discovering agent config from "
+            f"{self.__class__.__name__} # Discovering agent config from "
             "target agent..."
         )
 
@@ -256,12 +257,12 @@ class AgentBreaker(garak.probes.IterativeProbe):
         try:
             response = generator.generate(prompt=conv, generations_this_call=1)
         except Exception as e:
-            logging.warning(f"agent_breaker.AgentBreaker # Discovery call failed: {e}")
+            logging.warning(f"{self.__class__.__name__} # Discovery call failed: {e}")
             return
 
         if not response or response[0] is None or response[0].text is None:
             logging.warning(
-                "agent_breaker.AgentBreaker # Agent returned empty response "
+                f"{self.__class__.__name__} # Agent returned empty response "
                 "during discovery"
             )
             return
@@ -280,7 +281,7 @@ class AgentBreaker(garak.probes.IterativeProbe):
         parsed_text: Optional[str] = self._get_red_team_response(parse_prompt)
         if not parsed_text:
             logging.warning(
-                "agent_breaker.AgentBreaker # Red team model failed to "
+                f"{self.__class__.__name__} # Red team model failed to "
                 "parse discovery response"
             )
             return
@@ -298,7 +299,7 @@ class AgentBreaker(garak.probes.IterativeProbe):
             parsed: dict = json.loads(json_str)
         except json.JSONDecodeError as e:
             logging.warning(
-                f"agent_breaker.AgentBreaker # Failed to parse discovery " f"JSON: {e}"
+                f"{self.__class__.__name__} # Failed to parse discovery " f"JSON: {e}"
             )
             return
 
@@ -306,7 +307,7 @@ class AgentBreaker(garak.probes.IterativeProbe):
         if discovered_tools:
             self.agent_config["tools"] = discovered_tools
             logging.info(
-                f"agent_breaker.AgentBreaker # Discovered "
+                f"{self.__class__.__name__} # Discovered "
                 f"{len(discovered_tools)} tools from agent"
             )
 
@@ -315,7 +316,7 @@ class AgentBreaker(garak.probes.IterativeProbe):
             if discovered_purpose:
                 self.agent_config["agent_purpose"] = discovered_purpose
                 logging.info(
-                    "agent_breaker.AgentBreaker # Discovered agent purpose "
+                    f"{self.__class__.__name__} # Discovered agent purpose "
                     "from agent"
                 )
 
@@ -373,7 +374,7 @@ class AgentBreaker(garak.probes.IterativeProbe):
         if self.red_team_model is not None:
             return
 
-        logging.debug("agent_breaker.AgentBreaker # Setting up red team model")
+        logging.debug(f"{self.__class__.__name__} # Setting up red team model")
         rt_config = self._build_red_team_model_config()
         self.red_team_model = garak._plugins.load_plugin(
             f"generators.{self.red_team_model_type}", config_root=rt_config
@@ -457,12 +458,12 @@ class AgentBreaker(garak.probes.IterativeProbe):
                 result["priority_targets"] = parsed.get("priority_targets", [])
             except json.JSONDecodeError as e:
                 logging.warning(
-                    f"agent_breaker.AgentBreaker # Failed to parse JSON response: {e}"
+                    f"{self.__class__.__name__} # Failed to parse JSON response: {e}"
                 )
                 logging.debug(f"Raw response: {analysis}")
 
         logging.debug(
-            f"agent_breaker.AgentBreaker # Analyzed {len(result['tool_analyses'])} tools, "
+            f"{self.__class__.__name__} # Analyzed {len(result['tool_analyses'])} tools, "
             f"Priority targets: {result['priority_targets']}"
         )
 
@@ -539,18 +540,18 @@ class AgentBreaker(garak.probes.IterativeProbe):
                 # Log the analysis for debugging
                 if parsed.get("analysis"):
                     logging.debug(
-                        f"agent_breaker.AgentBreaker # Attack analysis: {parsed.get('analysis')}"
+                        f"{self.__class__.__name__} # Attack analysis: {parsed.get('analysis')}"
                     )
                 if parsed.get("new_approach"):
                     logging.debug(
-                        f"agent_breaker.AgentBreaker # New approach: {parsed.get('new_approach')}"
+                        f"{self.__class__.__name__} # New approach: {parsed.get('new_approach')}"
                     )
 
                 return attack_prompt
             except json.JSONDecodeError:
                 # Fallback: use the raw response as the prompt
                 logging.warning(
-                    "agent_breaker.AgentBreaker # Failed to parse JSON, using raw response"
+                    f"{self.__class__.__name__} # Failed to parse JSON, using raw response"
                 )
                 return response.strip()
 
@@ -601,7 +602,7 @@ class AgentBreaker(garak.probes.IterativeProbe):
             return is_success, confidence, reasoning
         except (json.JSONDecodeError, ValueError) as e:
             logging.warning(
-                f"agent_breaker.AgentBreaker # Failed to parse verification JSON: {e}"
+                f"{self.__class__.__name__} # Failed to parse verification JSON: {e}"
             )
             return False, 0.0, "Failed to parse verification response"
 
@@ -616,7 +617,7 @@ class AgentBreaker(garak.probes.IterativeProbe):
             self._discover_agent_config(self.generator)
 
         if not self.agent_config.get("tools"):
-            msg = "agent_breaker.AgentBreaker # No tools found -- cannot run attack"
+            msg = f"{self.__class__.__name__} # No tools found -- cannot run attack"
             logging.warning(msg)
             print(msg)
             return []
@@ -625,17 +626,17 @@ class AgentBreaker(garak.probes.IterativeProbe):
         self.max_calls_per_conv = num_tools * self.max_attempts_per_tool
 
         logging.info(
-            "agent_breaker.AgentBreaker # Analyzing agent tools for weaknesses..."
+            f"{self.__class__.__name__} # Analyzing agent tools for weaknesses..."
         )
         self.agent_analysis = self._analyze_attackable_tools()
 
         tool_configs = self._build_tool_configs()
         if not tool_configs:
-            logging.warning("agent_breaker.AgentBreaker # No tools to attack")
+            logging.warning(f"{self.__class__.__name__} # No tools to attack")
             return []
 
         logging.info(
-            f"agent_breaker.AgentBreaker # Attacking {len(tool_configs)} tools"
+            f"{self.__class__.__name__} # Attacking {len(tool_configs)} tools"
         )
 
         all_attempts: List[garak.attempt.Attempt] = []
@@ -644,7 +645,7 @@ class AgentBreaker(garak.probes.IterativeProbe):
                 all_attempts.extend(self._attack_single_tool(tool_name, tool_analysis))
             except Exception:
                 logging.exception(
-                    "agent_breaker.AgentBreaker # Unhandled error attacking tool %s, skipping",
+                    f"{self.__class__.__name__} # Unhandled error attacking tool %s, skipping",
                     tool_name,
                 )
 
@@ -674,7 +675,7 @@ class AgentBreaker(garak.probes.IterativeProbe):
         attack_prompts = tool_analysis.get("attack_prompts", [])
         if not attack_prompts:
             logging.warning(
-                f"agent_breaker.AgentBreaker # No attack prompts for {tool_name}"
+                f"{self.__class__.__name__} # No attack prompts for {tool_name}"
             )
             return attempts
 
@@ -730,9 +731,9 @@ class AgentBreaker(garak.probes.IterativeProbe):
         if attack_succeeded:
             last_attempt.notes = state.to_notes()
             logging.info(
-                f"agent_breaker.AgentBreaker # Attack PROMPT: {last_attempt.prompt}"
-                f"agent_breaker.AgentBreaker # Attack RESPONSE: {response_text}"
-                f"agent_breaker.AgentBreaker # Attack SUCCEEDED on {state.current_target} "
+                f"{self.__class__.__name__} # Attack PROMPT: {last_attempt.prompt}"
+                f"{self.__class__.__name__} # Attack RESPONSE: {response_text}"
+                f"{self.__class__.__name__} # Attack SUCCEEDED on {state.current_target} "
                 f"with confidence {confidence:.2f} - moving to next tool"
             )
 
@@ -800,7 +801,7 @@ class AgentBreaker(garak.probes.IterativeProbe):
                 next_attempt.notes = next_state.to_notes()
 
                 logging.info(
-                    "agent_breaker.AgentBreaker # Starting NEW conversation with improved payload "
+                    f"{self.__class__.__name__} # Starting NEW conversation with improved payload "
                     "(attempt %d/%d on %s)",
                     len(current_target_history) + 1,
                     self.max_attempts_per_tool,
