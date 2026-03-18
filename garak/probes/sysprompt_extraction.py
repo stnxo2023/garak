@@ -102,12 +102,15 @@ class SystemPromptExtraction(Probe):
 
     @staticmethod
     def _load_garak_attacks() -> List[str]:
-        """Load attack templates from data file, skipping comment lines."""
+        """Load attack templates from data file."""
         with open(
             data_path / "sysprompt_extraction" / "attacks.json", "r", encoding="utf-8"
         ) as attackfile:
             attacks_raw = json.load(attackfile)
-        return [attack for attack in attacks_raw if not attack[0] == "#"]
+        attack_list = []
+        for attacks in attacks_raw.values():
+            attack_list.extend(attacks)
+        return attack_list
 
     def _generate_attempts(self):
         """Build Conversation prompts from all (system_prompt, attack) combinations."""
