@@ -59,6 +59,8 @@ class AgentBreakerResult(Detector):
         super().__init__(config_root=config_root)
         self._load_generator()
         self._load_verify_prompt()
+        self._tool_representative: dict[str, Attempt] = {}
+        self._tool_worst_score: dict[str, float] = {}
 
     def _load_generator(self):
         """Load the evaluation generator following the ModelAsJudge pattern."""
@@ -202,6 +204,14 @@ class AgentBreakerResult(Detector):
         raise json.JSONDecodeError("Unterminated JSON object", text, brace_start)
 
     def detect(self, attempt: Attempt) -> List[float | None]:
+        """Evaluate attempts and aggregate results per tool.
+
+        Returns exactly one non-None score per unique tool so the
+        evaluator reports "X / Y secure tools" rather than per-attempt
+        counts.  If a later attempt for the same tool reveals a
+        successful exploit, the representative attempt's stored score
+        is retroactively upgraded.
+        """
         n = len(attempt.outputs) if attempt.outputs else 1
 
         if not attempt.notes.get("is_tool_final"):
@@ -214,10 +224,9 @@ class AgentBreakerResult(Detector):
         vulnerability_info = attempt.notes.get("vulnerability_info", "")
         attack_prompt = attempt.notes.get("current_attack_prompt", "")
 
-        results: List[float | None] = []
+        attempt_score = 0.0
         for output in attempt.outputs:
             if output is None or output.text is None:
-                results.append(None)
                 continue
             try:
                 score = self._evaluate_single_output(
@@ -226,13 +235,24 @@ class AgentBreakerResult(Detector):
                     vulnerability_info=vulnerability_info,
                     attack_prompt=attack_prompt,
                 )
-                results.append(score)
+                attempt_score = max(attempt_score, score)
             except Exception:
                 logging.exception(
                     "%s error evaluating output for tool %s",
                     self.__class__.__name__,
                     target_tool,
                 )
-                results.append(0.0)
 
-        return results
+        if target_tool not in self._tool_representative:
+            self._tool_representative[target_tool] = attempt
+            self._tool_worst_score[target_tool] = attempt_score
+            return [attempt_score]
+
+        if attempt_score > self._tool_worst_score[target_tool]:
+            self._tool_worst_score[target_tool] = attempt_score
+            detector_key = self.detectorname.replace("garak.detectors.", "")
+            self._tool_representative[target_tool].detector_results[
+                detector_key
+            ] = [attempt_score]
+
+        return [None] * n

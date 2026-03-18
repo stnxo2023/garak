@@ -175,9 +175,7 @@ class AgentBreaker(garak.probes.IterativeProbe):
 
         if self.langprovider.target_lang not in ("en", self.lang):
             logging.warning(
-                "%s probe currently does not support languages other than %s",
-                self.__class__.__name__,
-                self.lang,
+                f"{self.__class__.__name__} probe currently does not support languages other than {self.lang}"
             )
 
         # Load prompt templates and agent configuration from YAML
@@ -418,7 +416,7 @@ class AgentBreaker(garak.probes.IterativeProbe):
 
     def _format_attack_prompt(self, tool_name: str, attack_prompt: str) -> str:
         """Format an attack prompt to explicitly request using a specific tool"""
-        return f"use {tool_name} for {attack_prompt}"
+        return f"Use the {tool_name} tool for helping with the following task:\n{attack_prompt}"
 
     def _analyze_attackable_tools(self) -> dict:
         """Use red team model to analyze which tools can be attacked and their weaknesses"""
@@ -572,7 +570,7 @@ class AgentBreaker(garak.probes.IterativeProbe):
         verify_prompt = self._prompts["VERIFY"].format(
             target_tool=target_tool,
             vulnerability_info=vulnerability_info,
-            attack_prompt=attack_prompt,
+            attack_prompt=attack_prompt.last_message().text,
             agent_response=agent_response,
         )
 
@@ -684,6 +682,8 @@ class AgentBreaker(garak.probes.IterativeProbe):
             attempt = self._create_attempt(prompt)
             state = AttackState(
                 current_target=tool_name,
+                current_tool_analysis=tool_analysis,
+                current_attack_prompt=prompt,
                 vulnerability_info=vulnerability_info,
             )
             attempt.notes = state.to_notes()
@@ -695,8 +695,6 @@ class AgentBreaker(garak.probes.IterativeProbe):
         self, last_attempt: garak.attempt.Attempt
     ) -> Iterable[garak.attempt.Attempt]:
         """Generate next attempts based on the previous response"""
-
-        # moved from _attack_single_tool
         response_text = ""
         try:
             if last_attempt.outputs and last_attempt.outputs[0] is not None:
@@ -720,44 +718,47 @@ class AgentBreaker(garak.probes.IterativeProbe):
         attempts_history.append(
             {
                 "target": state.current_target,
+                "prompt": last_attempt.prompt.last_message().text,
                 "success": is_success,
                 "confidence": confidence,
                 "reasoning": reasoning,
+                "response": response_text,
             }
         )
 
-        attack_succeeded = is_success and confidence >= self.success_threshold
+        state.attempts_history = attempts_history
+        last_attempt.notes = state.to_notes()
 
+        attack_succeeded = is_success and confidence >= self.success_threshold
         if attack_succeeded:
+            state.is_tool_final = True
             last_attempt.notes = state.to_notes()
             logging.info(
                 f"{self.__class__.__name__} # Attack PROMPT: {last_attempt.prompt}"
                 f"{self.__class__.__name__} # Attack RESPONSE: {response_text}"
                 f"{self.__class__.__name__} # Attack SUCCEEDED on {state.current_target} "
-                f"with confidence {confidence:.2f} - moving to next tool"
+                f"with confidence {confidence:.2f} - breaking out of loop for this tool"
             )
-
             return []
 
-        next_attempts = []
+        if state.is_complete:
+            state.is_tool_final = True
+            last_attempt.notes = state.to_notes()
+            return []
 
-        state = AttackState.from_notes(last_attempt.notes or {})
-        if not state.is_complete:
-            for conv_idx in enumerate(last_attempt.conversations):
-                try:
-                    next_attempt = self._handle_exploitation_phase(last_attempt)
-                except Exception:
-                    logging.exception(
-                        "%s # Error in exploitation phase for conversation %d",
-                        self.__class__.__name__,
-                        conv_idx,
-                    )
-                    next_attempt = None
+        try:
+            next_attempt = self._handle_exploitation_phase(last_attempt)
+        except Exception:
+            state.is_tool_final = True
+            last_attempt.notes = state.to_notes()
+            logging.exception(
+                f"{self.__class__.__name__} # Error in exploitation phase for {state.current_target}"
+            )
+            return []
 
-                if next_attempt is not None:
-                    next_attempts.append(next_attempt)
-
-        return next_attempts
+        if next_attempt is not None:
+            return [next_attempt]
+        return []
 
     def _handle_exploitation_phase(
         self,
@@ -777,14 +778,8 @@ class AgentBreaker(garak.probes.IterativeProbe):
             h for h in state.attempts_history if h.get("target") == state.current_target
         ]
 
-        current_target_history.append(
-            {
-                "target": state.current_target,
-                "prompt": last_attempt.prompt.last_message().text,
-            }
-        )
         # Try next attack prompt on same target (up to max_attempts_per_tool)
-        if len(current_target_history) + 1 < self.max_attempts_per_tool:
+        if len(current_target_history) < self.max_attempts_per_tool:
             exploit_prompt = self._generate_exploit_prompt(
                 target_tool=state.current_target,
                 tool_analysis=state.current_tool_analysis,
@@ -798,6 +793,7 @@ class AgentBreaker(garak.probes.IterativeProbe):
                 next_attempt = self._create_attempt(exploit_prompt)
                 next_state = copy.deepcopy(state)
                 next_state.attempts_history = current_target_history
+                next_state.current_attack_prompt = exploit_prompt
                 next_attempt.notes = next_state.to_notes()
 
                 logging.info(
