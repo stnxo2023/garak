@@ -107,20 +107,60 @@ def test_unsupported_params_filtered(cfg, fake_llm):
     assert "top_p" not in kwargs
 
 
-def test_model_error_raises_backoff_trigger(cfg, monkeypatch):
-    """llm.ModelError should raise GeneratorBackoffTrigger, not loop forever."""
+def test_suppressed_params_excludes_param(cfg, fake_llm):
+    """Params in suppressed_params should not reach the model even if it supports them."""
+    gen = LLMGenerator(name="alias", config_root=cfg)
+    gen.temperature = 0.7
+    gen.suppressed_params = {"temperature"}
+    gen._accepted_params = gen._enumerate_model_params()
+
+    conv = Conversation([Turn("user", Message(text="hello"))])
+    gen._call_model(conv)
+
+    _, kwargs = fake_llm.calls[0]
+    assert "temperature" not in kwargs
+
+
+def test_extra_params_included(cfg, fake_llm):
+    """Params in extra_params should always be forwarded to the model."""
+    gen = LLMGenerator(name="alias", config_root=cfg)
+    gen.extra_params = {"custom_key": "custom_value"}
+
+    conv = Conversation([Turn("user", Message(text="hello"))])
+    gen._call_model(conv)
+
+    _, kwargs = fake_llm.calls[0]
+    assert kwargs.get("custom_key") == "custom_value"
+
+
+def test_model_error_triggers_backoff(cfg, monkeypatch):
+    """llm.ModelError (non-key errors) should trigger backoff for potential retry."""
 
     class ErrorModel:
         Options = FakeOptions
 
         def prompt(self, *a, **k):
-            raise llm.ModelError("API rate limit")
+            raise llm.ModelError("transient model error")
 
     monkeypatch.setattr(llm, "get_model", lambda *a, **k: ErrorModel())
     gen = LLMGenerator(name="alias", config_root=cfg)
-    conv = Conversation([Turn("user", Message(text="ping"))])
     with pytest.raises(GeneratorBackoffTrigger):
-        gen._call_model.__wrapped__(gen, conv)
+        gen._call_single.__wrapped__(gen, "ping", None, {})
+
+
+def test_needs_key_exception_returns_none(cfg, monkeypatch):
+    """NeedsKeyException should log and return None — no API key means no recovery."""
+
+    class NoKeyModel:
+        Options = FakeOptions
+
+        def prompt(self, *a, **k):
+            raise llm.NeedsKeyException("no API key configured")
+
+    monkeypatch.setattr(llm, "get_model", lambda *a, **k: NoKeyModel())
+    gen = LLMGenerator(name="alias", config_root=cfg)
+    result = gen._call_single.__wrapped__(gen, "ping", None, {})
+    assert result is None
 
 
 def test_non_model_error_returns_none(cfg, monkeypatch):
@@ -134,13 +174,12 @@ def test_non_model_error_returns_none(cfg, monkeypatch):
 
     monkeypatch.setattr(llm, "get_model", lambda *a, **k: BoomModel())
     gen = LLMGenerator(name="alias", config_root=cfg)
-    conv = Conversation([Turn("user", Message(text="ping"))])
-    out = gen._call_model.__wrapped__(gen, conv)
-    assert out == [None]
+    result = gen._call_single.__wrapped__(gen, "ping", None, {})
+    assert result is None
 
 
-def test_rate_limit_error_triggers_backoff(cfg, monkeypatch):
-    """Rate limit errors from underlying providers should trigger backoff."""
+def test_unknown_provider_error_returns_none(cfg, monkeypatch):
+    """Unrecognised provider exceptions should log and return None."""
 
     class RateLimitError(Exception):
         pass
@@ -153,9 +192,8 @@ def test_rate_limit_error_triggers_backoff(cfg, monkeypatch):
 
     monkeypatch.setattr(llm, "get_model", lambda *a, **k: RateLimitModel())
     gen = LLMGenerator(name="alias", config_root=cfg)
-    conv = Conversation([Turn("user", Message(text="ping"))])
-    with pytest.raises(GeneratorBackoffTrigger):
-        gen._call_model.__wrapped__(gen, conv)
+    result = gen._call_single.__wrapped__(gen, "ping", None, {})
+    assert result is None
 
 
 def test_unknown_model_raises_immediately(cfg, monkeypatch):

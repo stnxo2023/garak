@@ -20,6 +20,8 @@ import logging
 
 import backoff
 
+from typing import List, Union
+
 from garak import _config
 from garak.attempt import Message, Conversation
 from garak.exception import GeneratorBackoffTrigger
@@ -37,6 +39,8 @@ class LLMGenerator(Generator):
     DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
         "top_p": None,
         "stop": [],
+        "suppressed_params": set(),
+        "extra_params": {},
     }
 
     active = True
@@ -48,10 +52,7 @@ class LLMGenerator(Generator):
 
     def __init__(self, name="", config_root=_config):
         self.name = name
-        self._load_config(config_root)
-        self.fullname = f"llm:{self.name}"
-
-        super().__init__(self.name, config_root=config_root)
+        super().__init__(name, config_root=config_root)
         self._load_unsafe()
 
     def _load_unsafe(self) -> None:
@@ -74,13 +75,31 @@ class LLMGenerator(Generator):
             return set()
         options_cls = getattr(self.target, "Options", None)
         if options_cls is not None and hasattr(options_cls, "model_fields"):
-            return set(options_cls.model_fields.keys())
+            return set(options_cls.model_fields.keys()) - self.suppressed_params
         return set()
 
     @backoff.on_exception(backoff.fibo, GeneratorBackoffTrigger, max_value=70)
+    def _call_single(
+        self, text_prompt: str, system_text: Union[str, None], prompt_kwargs: dict
+    ) -> Union[Message, None]:
+        """Attempt a single model generation, retrying on transient errors."""
+        try:
+            response = self.target.prompt(
+                text_prompt, system=system_text, **prompt_kwargs
+            )
+            return Message(response.text())
+        except self.llm.NeedsKeyException as e:
+            logging.error("llm generation failed: %s", repr(e))
+            return None
+        except Exception as e:
+            if isinstance(e, self.llm.ModelError):
+                raise GeneratorBackoffTrigger from e
+            logging.error("llm generation failed: %s", repr(e))
+            return None
+
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
-    ) -> list[Message | None]:
+    ) -> List[Union[None, Message]]:
         if self.target is None:
             self._load_unsafe()
 
@@ -114,24 +133,12 @@ class LLMGenerator(Generator):
         for param_name, param_value in param_map.items():
             if param_value and param_name in self._accepted_params:
                 prompt_kwargs[param_name] = param_value
+        prompt_kwargs.update(self.extra_params)
 
-        outputs: list[Message | None] = []
-        for _ in range(generations_this_call):
-            try:
-                response = self.target.prompt(
-                    text_prompt, system=system_text, **prompt_kwargs
-                )
-                outputs.append(Message(response.text()))
-            except self.llm.ModelError as e:
-                raise GeneratorBackoffTrigger from e
-            except Exception as e:
-                backoff_types = ("RateLimitError", "APITimeoutError", "APIConnectionError")
-                exc_name = type(e).__name__
-                if exc_name in backoff_types:
-                    raise GeneratorBackoffTrigger from e
-                logging.error("llm generation failed: %s", repr(e))
-                outputs.append(None)
-        return outputs
+        return [
+            self._call_single(text_prompt, system_text, prompt_kwargs)
+            for _ in range(generations_this_call)
+        ]
 
 
 DEFAULT_CLASS = "LLMGenerator"
