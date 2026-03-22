@@ -139,8 +139,8 @@ def _init_populate_result_db(evals, taxonomy=None):
         # add a row for each group
         for group in groups:
             cursor.execute(
-                f"insert into results values ('{pm}', '{group}', '{pc}', '{detector}', '{score}', '{instances}', '{passes}', ?, ?, ?)",
-                (confidence, ci_lower, ci_upper),
+                "insert into results values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (pm, group, pc, detector, score, instances, passes, confidence, ci_lower, ci_upper),
             )
 
     return conn, cursor
@@ -167,7 +167,8 @@ def _get_group_aggregate_score(
     unknown_function = False
     group_score = None  # range 0.0--1.0
     res = cursor.execute(
-        f"select score as s from results where probe_group = '{probe_group}';"
+        "select score as s from results where probe_group = ?;",
+        (probe_group,),
     )
     probe_scores = [i[0] for i in res.fetchall()]
 
@@ -243,7 +244,8 @@ def _get_group_info(probe_group, group_score, taxonomy, config=_config) -> dict:
 
 def _get_probe_result_summaries(cursor, probe_group) -> List[tuple]:
     res = cursor.execute(
-        f"select probe_module, probe_class, min(score) as s from results where probe_group='{probe_group}' group by probe_class order by s asc, probe_class asc;"
+        "select probe_module, probe_class, min(score) as s from results where probe_group=? group by probe_class order by s asc, probe_class asc;",
+        (probe_group,),
     )
     return res.fetchall()
 
@@ -269,7 +271,8 @@ def _get_probe_info(probe_module, probe_class, absolute_score) -> dict:
 def _get_detectors_info(cursor, probe_group: str, probe_class: str) -> List[dict]:
     """Returns list of dicts with keys: detector, absolute_score, confidence, ci_lower, ci_upper"""
     res = cursor.execute(
-        f"select detector, score, confidence, confidence_lower, confidence_upper from results where probe_group='{probe_group}' and probe_class='{probe_class}' order by score asc, detector asc;"
+        "select detector, score, confidence, confidence_lower, confidence_upper from results where probe_group=? and probe_class=? order by score asc, detector asc;",
+        (probe_group, probe_class),
     )
     rows = res.fetchall()
     
