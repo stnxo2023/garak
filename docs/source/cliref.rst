@@ -3,7 +3,7 @@ CLI reference for garak
 
 ::
 
-  garak LLM vulnerability scanner v0.14.1.pre1 ( https://github.com/NVIDIA/garak ) at 2026-03-06T16:22:34.561569
+  garak LLM vulnerability scanner v0.14.1.pre1 ( https://github.com/NVIDIA/garak ) at 2026-03-23T14:42:57.765457
   usage: python -m garak [-h] [--verbose] [--report_prefix REPORT_PREFIX]
                          [--narrow_output]
                          [--parallel_requests PARALLEL_REQUESTS]
@@ -22,7 +22,6 @@ CLI reference for garak
                          [--probe_option_file PROBE_OPTION_FILE | --probe_options PROBE_OPTIONS]
                          [--taxonomy TAXONOMY]
                          [--confidence_interval_method {bootstrap,none}]
-                         [--rebuild_cis REPORT_PATH]
                          [--bootstrap_num_iterations BOOTSTRAP_NUM_ITERATIONS]
                          [--bootstrap_confidence_level BOOTSTRAP_CONFIDENCE_LEVEL]
                          [--bootstrap_min_sample_size BOOTSTRAP_MIN_SAMPLE_SIZE]
@@ -104,9 +103,6 @@ CLI reference for garak
     --confidence_interval_method {bootstrap,none}
                           method for CI calculation: 'bootstrap' (default) or
                           'none' to disable
-    --rebuild_cis REPORT_PATH
-                          recalculate confidence intervals for existing report
-                          and update in-place
     --bootstrap_num_iterations BOOTSTRAP_NUM_ITERATIONS
                           number of bootstrap iterations for CI calculation
                           (overrides config)
@@ -119,10 +115,10 @@ CLI reference for garak
     --plugin_info PLUGIN_INFO
                           show info about one plugin; format as
                           type.plugin.class, e.g. probes.lmrc.Profanity
-    --list_probes         list all available probes. Usage: combine with
-                          --probes/-p to filter for probes that will be
-                          activated based on a `probe_spec`, e.g. '--list_probes
-                          -p dan' to show only active 'dan' family probes.
+    --list_probes         list available probes. Use -v for a detailed markdown
+                          table with tier and description. Combine with
+                          --probes/-p to filter by probe_spec, e.g. '--
+                          list_probes -p dan'.
     --list_detectors      list available detectors. Usage: combine with
                           --detectors/-d to filter for detectors that will be
                           activated based on a `detector_spec`, e.g. '--
