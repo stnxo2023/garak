@@ -1,3 +1,4 @@
+import re
 import tomllib
 
 
@@ -17,12 +18,16 @@ def main(argv=None) -> None:
     print(version, end="")
     if version:
         files = ("pyproject.toml", "garak/__init__.py")
+        exp = re.compile(r"^_{0,2}version_{0,2} =")
         for file in files:
             with open(file, "r") as f:
-                content = f.read()
+                content = f.readlines()
             with open(file, "w") as f:
-                new_content = content.replace(prev_version, version, 1)
-                f.write(new_content)
+                for line in content:
+                    if exp.search(line):
+                        new_content = line.replace(prev_version, version)
+                        line = new_content
+                    f.write(line)
 
 
 if __name__ == "__main__":
