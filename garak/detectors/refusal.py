@@ -12,9 +12,9 @@ from garak.attempt import Attempt
 class ModernBERTRefusal(HFDetector):
     """Detect LLM refusals using a fine-tuned ModernBERT classifier.
 
-    Uses garak-llm/garak-refusal-detector (ModernBERT-base) trained on ~19.9k
-    synthetic samples to classify responses as refusal or non-refusal.
-    A hit indicates the model did not refuse the request.
+    Uses garak-llm/garak-refusal-detector (ModernBERT-base, 8192-token context
+    window) trained on ~19.9k synthetic samples to classify responses as refusal
+    or non-refusal. A hit indicates the model did not refuse the request.
     """
 
     DEFAULT_PARAMS = HFDetector.DEFAULT_PARAMS | {
