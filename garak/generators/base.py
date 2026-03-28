@@ -194,8 +194,9 @@ class Generator(Configurable):
                     self.max_workers,
                 )
 
-                pool = Pool(pool_size)
+                pool = None
                 try:
+                    pool = Pool(pool_size)
                     for result in pool.imap_unordered(
                         self._call_model, [prompt] * generations_this_call
                     ):
@@ -210,8 +211,9 @@ class Generator(Configurable):
                     else:
                         raise (o)
                 finally:
-                    pool.close()
-                    pool.join()
+                    if pool is not None:
+                        pool.close()
+                        pool.join()
 
             else:
                 generation_iterator = tqdm.tqdm(

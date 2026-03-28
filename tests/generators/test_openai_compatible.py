@@ -116,8 +116,9 @@ def test_openai_multiprocessing(openai_compat_mocks, classname):
     for _ in range(iterations):
         from multiprocessing import Pool
 
-        attempt_pool = Pool(parallel_attempts)
+        attempt_pool = None
         try:
+            attempt_pool = Pool(parallel_attempts)
             for result in attempt_pool.imap_unordered(generate_in_subprocess, prompts):
                 assert result is not None
                 assert isinstance(result, list), "generator should return list"
@@ -125,8 +126,9 @@ def test_openai_multiprocessing(openai_compat_mocks, classname):
                     result[0], Message
                 ), "generator should return list of Turns or Nones"
         finally:
-            attempt_pool.close()
-            attempt_pool.join()
+            if attempt_pool is not None:
+                attempt_pool.close()
+                attempt_pool.join()
 
 
 def test_openai_multiple_generations():
