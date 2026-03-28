@@ -588,10 +588,6 @@ class TreeSearchProbe(Probe):
                     attempt
                 )
                 node_results += attempt.detector_results[self.primary_detector]
-                attempt.status = garak.attempt.ATTEMPT_COMPLETE
-                _config.transient.reportfile.write(
-                    json.dumps(attempt.as_dict(), ensure_ascii=False) + "\n"
-                )
 
             tree_bar.update()
             tree_bar.refresh()
