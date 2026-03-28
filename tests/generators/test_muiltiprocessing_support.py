@@ -67,6 +67,10 @@ def test_multiprocessing(classname):
     for _ in range(iterations):
         from multiprocessing import Pool
 
-        with Pool(parallel_attempts) as attempt_pool:
+        attempt_pool = Pool(parallel_attempts)
+        try:
             for result in attempt_pool.imap_unordered(generate_in_subprocess, params):
                 assert result is not None
+        finally:
+            attempt_pool.close()
+            attempt_pool.join()

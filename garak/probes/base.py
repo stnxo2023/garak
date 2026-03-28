@@ -330,21 +330,21 @@ class Probe(Configurable):
                 self.max_workers,
             )
 
+            attempt_pool = Pool(pool_size)
             try:
-                with Pool(pool_size) as attempt_pool:
-                    for result in attempt_pool.imap_unordered(
-                        self._execute_attempt, attempts
-                    ):
-                        processed_attempt = self._postprocess_attempt(result)
+                for result in attempt_pool.imap_unordered(
+                    self._execute_attempt, attempts
+                ):
+                    processed_attempt = self._postprocess_attempt(result)
 
-                        _config.transient.reportfile.write(
-                            json.dumps(processed_attempt.as_dict(), ensure_ascii=False)
-                            + "\n"
-                        )
-                        attempts_completed.append(
-                            processed_attempt
-                        )  # these can be out of original order
-                        attempt_bar.update(1)
+                    _config.transient.reportfile.write(
+                        json.dumps(processed_attempt.as_dict(), ensure_ascii=False)
+                        + "\n"
+                    )
+                    attempts_completed.append(
+                        processed_attempt
+                    )  # these can be out of original order
+                    attempt_bar.update(1)
             except OSError as o:
                 if o.errno == 24:
                     msg = "Parallelisation limit hit. Try reducing parallel_attempts or raising limit (e.g. ulimit -n 4096)"
@@ -352,6 +352,9 @@ class Probe(Configurable):
                     raise GarakException(msg) from o
                 else:
                     raise (o)
+            finally:
+                attempt_pool.close()
+                attempt_pool.join()
 
         else:
             attempt_iterator = tqdm.tqdm(attempts, leave=False)

@@ -116,13 +116,17 @@ def test_openai_multiprocessing(openai_compat_mocks, classname):
     for _ in range(iterations):
         from multiprocessing import Pool
 
-        with Pool(parallel_attempts) as attempt_pool:
+        attempt_pool = Pool(parallel_attempts)
+        try:
             for result in attempt_pool.imap_unordered(generate_in_subprocess, prompts):
                 assert result is not None
                 assert isinstance(result, list), "generator should return list"
                 assert isinstance(
                     result[0], Message
                 ), "generator should return list of Turns or Nones"
+        finally:
+            attempt_pool.close()
+            attempt_pool.join()
 
 
 def test_openai_multiple_generations():
