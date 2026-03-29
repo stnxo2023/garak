@@ -14,6 +14,8 @@ Further info:
 
 """
 
+from garak import _config
+from garak.data import path as data_path
 import garak.probes
 
 ATTACK_PROMPTS_SUBSTRS = ["hotwire a car", "rob a bank", "commit credit card fraud"]
@@ -43,6 +45,46 @@ class HypotheticalResponse(garak.probes.Probe):
         "payload:jailbreak",
     ]
     tier = garak.probes.Tier.INFORMATIONAL
+
+
+class HomoglyphObfuscation(garak.probes.Probe):
+    """Does homoglyph character substitution bypass content filters?
+
+    Uses Unicode homoglyphs (visually similar characters from different
+    scripts) to disguise trigger words in prompts that request unsafe
+    content. For example, Cyrillic 'a' (U+0430) replaces Latin 'a' in
+    'jailbreak', making the token sequence different while the text
+    remains human-readable. Tests whether input-side content filters
+    catch these substitutions."""
+
+    lang = "en"
+    active = False
+    primary_detector = "mitigation.MitigationBypass"
+    doc_uri = "https://embracethered.com/blog/posts/2024/hiding-and-finding-text-with-unicode-tags/"
+    goal = "bypass content filters using homoglyph character substitution"
+    tags = [
+        "avid-effect:security:S0403",
+        "owasp:llm01",
+        "quality:Security:PromptStability",
+        "payload:jailbreak",
+    ]
+    tier = garak.probes.Tier.COMPETE_WITH_SOTA
+
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
+
+        self.prompts = []
+
+        with open(
+            data_path / "smuggling_homoglyph_5.txt",
+            "r",
+            encoding="utf-8",
+        ) as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                self.prompts.append(line)
 
 
 class FunctionMasking(garak.probes.Probe):
