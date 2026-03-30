@@ -1,35 +1,34 @@
-garak.detectors
-===============
+Detectors
+===================
 
 .. toctree::
    :maxdepth: 2
 
-   garak.detectors
-   garak.detectors.base
-   garak.detectors.always
-   garak.detectors.any
-   garak.detectors.ansiescape
-   garak.detectors.apikey
-   garak.detectors.continuation
-   garak.detectors.dan
-   garak.detectors.divergence
-   garak.detectors.encoding
-   garak.detectors.exploitation
-   garak.detectors.fileformats
-   garak.detectors.goodside
-   garak.detectors.judge
-   garak.detectors.knownbadsignatures
-   garak.detectors.leakreplay
-   garak.detectors.lmrc
-   garak.detectors.malwaregen
-   garak.detectors.misleading
-   garak.detectors.mitigation
-   garak.detectors.packagehallucination
-   garak.detectors.perspective
-   garak.detectors.promptinject
-   garak.detectors.productkey
-   garak.detectors.shields
-   garak.detectors.snowball
-   garak.detectors.unsafe_content
-   garak.detectors.visual_jailbreak
-   garak.detectors.web_injection
+   detectors/detectors.base
+   detectors/detectors.always
+   detectors/detectors.any
+   detectors/detectors.ansiescape
+   detectors/detectors.apikey
+   detectors/detectors.continuation
+   detectors/detectors.dan
+   detectors/detectors.divergence
+   detectors/detectors.encoding
+   detectors/detectors.exploitation
+   detectors/detectors.fileformats
+   detectors/detectors.goodside
+   detectors/detectors.judge
+   detectors/detectors.knownbadsignatures
+   detectors/detectors.leakreplay
+   detectors/detectors.lmrc
+   detectors/detectors.malwaregen
+   detectors/detectors.misleading
+   detectors/detectors.mitigation
+   detectors/detectors.packagehallucination
+   detectors/detectors.perspective
+   detectors/detectors.promptinject
+   detectors/detectors.productkey
+   detectors/detectors.shields
+   detectors/detectors.snowball
+   detectors/detectors.unsafe_content
+   detectors/detectors.visual_jailbreak
+   detectors/detectors.web_injection

@@ -1,34 +1,33 @@
-garak.generators
-================
+Generators
+==========
 
 garak's generators each wrap a set of ways for interfacing with a dialogue system or LLM.
 
-For a detailed oversight into how a generator operates, see :doc:`garak.generators.base`.
+For a detailed oversight into how a generator operates, see :doc:`generators/generators.base`.
 
 .. toctree::
    :maxdepth: 2
 
-   garak.generators
-   garak.generators.azure
-   garak.generators.base
-   garak.generators.bedrock
-   garak.generators.cohere
-   garak.generators.function
-   garak.generators.ggml
-   garak.generators.groq
-   garak.generators.guardrails
-   garak.generators.huggingface
-   garak.generators.langchain
-   garak.generators.langchain_serve
-   garak.generators.litellm
-   garak.generators.mistral
-   garak.generators.ollama
-   garak.generators.openai
-   garak.generators.nim
-   garak.generators.nvcf
-   garak.generators.replicate
-   garak.generators.rest
-   garak.generators.rasa
-   garak.generators.test
-   garak.generators.watsonx
-   garak.generators.websocket
+   generators/generators.azure
+   generators/generators.base
+   generators/generators.bedrock
+   generators/generators.cohere
+   generators/generators.function
+   generators/generators.ggml
+   generators/generators.groq
+   generators/generators.guardrails
+   generators/generators.huggingface
+   generators/generators.langchain
+   generators/generators.langchain_serve
+   generators/generators.litellm
+   generators/generators.mistral
+   generators/generators.ollama
+   generators/generators.openai
+   generators/generators.nim
+   generators/generators.nvcf
+   generators/generators.replicate
+   generators/generators.rest
+   generators/generators.rasa
+   generators/generators.test
+   generators/generators.watsonx
+   generators/generators.websocket

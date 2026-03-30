@@ -31,7 +31,7 @@ This produces the following output.
    📜 Converting garak reports gpt35-0906.report.jsonl
    📜 AVID reports generated at gpt35-0906.avid.jsonl
 
-.. toctree::
-   :maxdepth: 2
-
-   garak.report
+.. automodule:: garak.report
+   :members:
+   :undoc-members:
+   :show-inheritance:

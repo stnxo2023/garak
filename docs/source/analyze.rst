@@ -48,7 +48,7 @@ Invoke and see usage via command line with ``python -m garak.analyze.count_token
 garak.analyze.get_tree
 ----------------------
 
-If a TreeSearchProbe probe was used (:doc:`garak.probes.base`), display the tree of items explored during the run.
+If a TreeSearchProbe probe was used (:doc:`probes/probes.base`), display the tree of items explored during the run.
 
 Invoke and see usage via command line with ``python -m garak.analyze.get_tree``
 
