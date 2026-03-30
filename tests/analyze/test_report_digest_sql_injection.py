@@ -22,7 +22,7 @@ ADVERSARIAL_PAYLOADS = [
     "'; DROP TABLE results; --",
     'Robert"); DROP TABLE results;--',
     "probe\\'group",
-    "value with \"double quotes\"",
+    'value with "double quotes"',
     "semi;colon",
 ]
 
@@ -96,7 +96,7 @@ def test_get_detectors_info_with_adversarial_values(payload):
     try:
         results = _get_detectors_info(cursor, payload, payload)
         assert len(results) == 1
-        assert results[0][0] == f"det.{payload}"  # detector name
-        assert results[0][1] == pytest.approx(0.4)  # score
+        assert results[0]["detector"] == f"det.{payload}"  # detector name
+        assert results[0]["absolute_score"] == pytest.approx(0.4)  # score
     finally:
         _close_result_db(conn)
