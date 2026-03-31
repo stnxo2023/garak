@@ -48,18 +48,18 @@ Check out the :doc:`usage` section for further information, including :doc:`inst
 
    basic
    attempt
-   buffs
+   index_buffs
    cli
    command
-   detectors
-   evaluators
+   index_detectors
+   index_evaluators
    exception
-   generators
-   harnesses
+   index_generators
+   index_harnesses
    interactive
    langservice
    payloads
-   probes
+   index_probes
    report
    _config
    _plugins
