@@ -73,6 +73,10 @@ authors = [
   { name = "Abhiraj Sinha" },
   { name = "Harsh Motla" },
   { name = "Otavio Padovani" },
+  { name = "Siddhant Mishra" },
+  { name = "dyrtyData" },
+  { name = "Leone Lage Perdigão" },
+  { name = "Lucas Wang" },
 ]
 license = "Apache-2.0"
 license-files = ["LICENSE"]
