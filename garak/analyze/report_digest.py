@@ -578,6 +578,16 @@ if __name__ == "__main__":
     if taxonomy is not None and taxonomy.lower() == "none":
         taxonomy = None
 
+    # If -t not specified, inherit taxonomy from the original report's setup
+    if not taxonomy_specified:
+        with open(report_path, "r", encoding="utf-8") as f:
+            for line in f:
+                if line.strip():
+                    entry = json.loads(line.strip())
+                    if entry["entry_type"] == "start_run setup":
+                        taxonomy = entry.get("reporting.taxonomy") or None
+                        break
+
     # Propagate CLI taxonomy to _config so build_digest picks it up
     _config.reporting.taxonomy = taxonomy
 
