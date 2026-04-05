@@ -102,8 +102,6 @@ class FileIsExecutable(FileDetector):
     def _test_file(self, filename):
         if self.magic is None:
             return None
-        with open(filename, "rb") as f:
-            m = self.magic.Magic(mime=True)
-            header = f.read(2048)
-            mimetype = m.from_buffer(header)
-            return 1.0 if mimetype in self.exec_types else 0.0
+        m = self.magic.Magic(mime=True)
+        mimetype = m.from_file(filename)
+        return 1.0 if mimetype in self.exec_types else 0.0
