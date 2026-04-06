@@ -256,4 +256,4 @@ def test_doc_src_no_markdown(rst_file):
         canary_match = canary.search(rst_file_content, re.I)
         assert (
             canary_match is None
-        ), f"Markdown-like content in rst: {result.group().strip()} use ReStructured Text for garak docs - Markdown won't render"
+        ), f"Markdown-like content in rst: {canary_match.group().strip()} use ReStructured Text for garak docs - Markdown won't render"
