@@ -73,7 +73,7 @@ def test_docs_detectors(classname: str):
 @pytest.mark.parametrize("classname", module_names["harnesses"])
 def test_docs_harnesses(classname: str):
     target_doc = f"harnesses.{classname}"
-    file_path = DOC_SOURCE / f"{target_doc}.rst"
+    file_path = DOC_SOURCE / "harnesses" / f"{target_doc}.rst"
     assert (
         file_path.is_file()
     ), f"There must be an entry for each harness family in the docs; missing {file_path}"
@@ -89,7 +89,7 @@ def test_docs_harnesses(classname: str):
 @pytest.mark.parametrize("classname", module_names["evaluators"])
 def test_docs_evaluators(classname: str):
     target_doc = f"evaluators.{classname}"
-    file_path = DOC_SOURCE / f"{target_doc}.rst"
+    file_path = DOC_SOURCE / "evaluators" / f"{target_doc}.rst"
     assert (
         file_path.is_file()
     ), f"There must be an entry for each evaluator family in the docs; missing {file_path}"

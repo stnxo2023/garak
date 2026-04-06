@@ -18,6 +18,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "garak_ext",
     "sphinx_github_style",
+    "sphinx_reredirects",
 ]
 
 intersphinx_mapping = {
@@ -55,6 +56,16 @@ linkcode_url = "https://github.com/NVIDIA/garak"
 # hide module paths
 add_module_names = False
 autodoc_preserve_defaults = False
+
+# redirect dir indices
+redirects = {
+    "buffs/index": "index_buffs",
+    "detectors/index": "index_detectors",
+    "evaluators/index": "index_evaluators",
+    "generators/index": "index_generators",
+    "harnesses/index": "index_harnesses",
+    "probes/index": "index_probes",
+}
 
 import os
 import sys
