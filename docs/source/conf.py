@@ -59,12 +59,12 @@ autodoc_preserve_defaults = False
 
 # redirect dir indices
 redirects = {
-    "buffs/index": "index_buffs",
-    "detectors/index": "index_detectors",
-    "evaluators/index": "index_evaluators",
-    "generators/index": "index_generators",
-    "harnesses/index": "index_harnesses",
-    "probes/index": "index_probes",
+    "buffs/index": "../index_buffs.html",
+    "detectors/index": "../index_detectors.html",
+    "evaluators/index": "../index_evaluators.html",
+    "generators/index": "../index_generators.html",
+    "harnesses/index": "../index_harnesses.html",
+    "probes/index": "../index_probes.html",
 }
 
 import os
