@@ -73,7 +73,7 @@ Check out the :doc:`usage` section for further information, including :doc:`inst
    detector_metrics
    translation
    ascii_smuggling
-   analyze/analyze.tbsa
+   analyze/tbsa
 
 .. toctree::
    :caption: Extending and Contributing

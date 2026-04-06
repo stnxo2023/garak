@@ -48,7 +48,7 @@ Invoke and see usage via command line with ``python -m garak.analyze.count_token
 garak.analyze.get_tree
 ----------------------
 
-If a TreeSearchProbe probe was used (:doc:`probes/probes.base`), display the tree of items explored during the run.
+If a TreeSearchProbe probe was used (:doc:`probes/base`), display the tree of items explored during the run.
 
 Invoke and see usage via command line with ``python -m garak.analyze.get_tree``
 
@@ -109,9 +109,9 @@ Invoke and see usage via command line with ``python -m garak.analyze.report_dige
 garak.analyze.tbsa
 ------------------
 
-Generate a single numeric score for a run using :doc:`tier-based score aggregation <analyze/analyze.tbsa>`.
+Generate a single numeric score for a run using :doc:`tier-based score aggregation <analyze/tbsa>`.
 Note that this score is lossy and difficult to make comparable -- it will change with different configs and across different garak versions.
 
 Invoke and see usage via command line with ``python -m garak.analyze.tbsa``
 
-Read full details: :doc:`analyze/analyze.tbsa`
+Read full details: :doc:`analyze/tbsa`

@@ -13,8 +13,8 @@ implemented buffs.
 .. toctree::
    :maxdepth: 2
 
-   buffs/buffs.base
-   buffs/buffs.encoding
-   buffs/buffs.low_resource_languages
-   buffs/buffs.lowercase
-   buffs/buffs.paraphrase
+   buffs/base
+   buffs/encoding
+   buffs/low_resource_languages
+   buffs/lowercase
+   buffs/paraphrase
