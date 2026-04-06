@@ -63,7 +63,7 @@ Check out the :doc:`usage` section for further information, including :doc:`inst
    report
    _config
    _plugins
-   analyze
+   index_analyze
 
 .. toctree:: 
    :caption: Technologies
@@ -73,7 +73,7 @@ Check out the :doc:`usage` section for further information, including :doc:`inst
    detector_metrics
    translation
    ascii_smuggling
-   analyze.tbsa
+   analyze/analyze.tbsa
 
 .. toctree::
    :caption: Extending and Contributing

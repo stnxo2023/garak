@@ -4,6 +4,6 @@ Harnesses
 .. toctree::
    :maxdepth: 2
 
-   harnesses.base
-   harnesses.probewise
-   harnesses.pxd
+   harnesses/harnesses.base
+   harnesses/harnesses.probewise
+   harnesses/harnesses.pxd

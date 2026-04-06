@@ -4,5 +4,5 @@ Evaluators
 .. toctree::
    :maxdepth: 2
 
-   evaluators.base
-   evaluators.maxrecall
+   evaluators/evaluators.base
+   evaluators/evaluators.maxrecall
