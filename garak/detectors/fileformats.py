@@ -7,6 +7,7 @@ These detectors examine file formats, based on name or content."""
 
 import logging
 import pickletools
+import tempfile
 
 from garak.detectors.base import FileDetector
 
@@ -103,5 +104,10 @@ class FileIsExecutable(FileDetector):
         if self.magic is None:
             return None
         m = self.magic.Magic(mime=True)
-        mimetype = m.from_file(filename)
+        with open(filename, "rb") as f:
+            header = f.read(8192)
+        with tempfile.NamedTemporaryFile() as tmp:
+            tmp.write(header)
+            tmp.flush()
+            mimetype = m.from_file(tmp.name)
         return 1.0 if mimetype in self.exec_types else 0.0
