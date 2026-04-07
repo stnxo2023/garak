@@ -1,5 +1,5 @@
-garak.report
-============
+report (AVID)
+=============
 
 ``garak``'s reports connect to things interested in consuming info on
 LLM vulnerabilities and failures, such as the AI Vulnerability Database.

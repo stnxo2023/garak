@@ -1,5 +1,5 @@
-Run analysis
-============
+analyze
+=======
 
 Processing run results is a core part of getting actionable information out of a ``garak`` run.
 We provide a range of scripts and constructs under ``garak.analyze`` that assist in this.
