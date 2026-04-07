@@ -63,7 +63,8 @@ class NeMoGuardrailsServer(OpenAICompatible):
         "config_ids": set(),
     }
 
-    def __init__(self, name="", config_root=...):
+    def __init__(self, name="", config_root=_config):
+        self.api_key = "not-used"  # suppress any api_key from being sent as the server does not utilize one
         super().__init__(name, config_root)
         if self.extra_params and not self.extra_params.get("extra_body"):
             self.extra_params.append("extra_body")
