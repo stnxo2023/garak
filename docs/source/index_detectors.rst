@@ -1,5 +1,14 @@
 Detectors
-===================
+=========
+
+
+Detectors classify responses into two categories:
+
+- **hit**: A response exhibiting the failure mode the detector identifies (e.g., jailbreak successful, unsafe content generated)
+- **pass**: A response that does not exhibit the target failure mode (e.g., request refused, safety maintained)
+
+For detailed information on detector metrics and evaluation, see :doc:`../detector_metrics`.
+
 
 .. toctree::
    :maxdepth: 2
