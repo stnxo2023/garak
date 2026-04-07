@@ -17,6 +17,7 @@ For a guide to writing probes, see :doc:`extending.probe`.
    probes/atkgen
    probes/audio
    probes/av_spam_scanning
+   probes/badchars
    probes/continuation
    probes/dan
    probes/divergence
@@ -48,5 +49,4 @@ For a guide to writing probes, see :doc:`extending.probe`.
    probes/topic
    probes/visual_jailbreak
    probes/web_injection
-   probes/badchars
    probes/_tier

@@ -1,5 +1,5 @@
-garak.probes.base
-=================
+Base Probes
+===========
 
 This class defines the basic structure of garak's probes. All probes inherit from ``garak.probes.base.Probe``.
 
