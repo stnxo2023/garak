@@ -40,7 +40,7 @@ def test_top_docs(category: str):
 
 @pytest.mark.parametrize("classname", module_names["probes"])
 def test_docs_probes(classname: str):
-    target_doc = f"probes.{classname}"
+    target_doc = f"{classname}"
     file_path = DOC_SOURCE / "probes" / f"{target_doc}.rst"
     assert (
         file_path.is_file()
@@ -56,7 +56,7 @@ def test_docs_probes(classname: str):
 
 @pytest.mark.parametrize("classname", module_names["detectors"])
 def test_docs_detectors(classname: str):
-    target_doc = f"detectors.{classname}"
+    target_doc = f"{classname}"
     file_path = DOC_SOURCE / "detectors" / f"{target_doc}.rst"
     assert (
         file_path.is_file()
@@ -72,7 +72,7 @@ def test_docs_detectors(classname: str):
 
 @pytest.mark.parametrize("classname", module_names["harnesses"])
 def test_docs_harnesses(classname: str):
-    target_doc = f"harnesses.{classname}"
+    target_doc = f"{classname}"
     file_path = DOC_SOURCE / "harnesses" / f"{target_doc}.rst"
     assert (
         file_path.is_file()
@@ -88,7 +88,7 @@ def test_docs_harnesses(classname: str):
 
 @pytest.mark.parametrize("classname", module_names["evaluators"])
 def test_docs_evaluators(classname: str):
-    target_doc = f"evaluators.{classname}"
+    target_doc = f"{classname}"
     file_path = DOC_SOURCE / "evaluators" / f"{target_doc}.rst"
     assert (
         file_path.is_file()
@@ -104,7 +104,7 @@ def test_docs_evaluators(classname: str):
 
 @pytest.mark.parametrize("classname", module_names["generators"])
 def test_docs_generators(classname: str):
-    target_doc = f"generators.{classname}"
+    target_doc = f"{classname}"
     file_path = DOC_SOURCE / "generators" / f"{target_doc}.rst"
     assert (
         file_path.is_file()
@@ -120,7 +120,7 @@ def test_docs_generators(classname: str):
 
 @pytest.mark.parametrize("classname", module_names["buffs"])
 def test_docs_buffs(classname: str):
-    target_doc = f"buffs.{classname}"
+    target_doc = f"{classname}"
     file_path = DOC_SOURCE / "buffs" / f"{target_doc}.rst"
     assert (
         file_path.is_file()
