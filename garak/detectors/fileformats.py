@@ -6,6 +6,7 @@
 These detectors examine file formats, based on name or content."""
 
 import logging
+import os
 import pickletools
 import tempfile
 
@@ -106,8 +107,10 @@ class FileIsExecutable(FileDetector):
         m = self.magic.Magic(mime=True)
         with open(filename, "rb") as f:
             header = f.read(8192)
-        with tempfile.NamedTemporaryFile() as tmp:
+        with tempfile.NamedTemporaryFile(mode="wb", delete=False) as tmp:
             tmp.write(header)
             tmp.flush()
+            tmp.close()
             mimetype = m.from_file(tmp.name)
+            os.remove(tmp.name)
         return 1.0 if mimetype in self.exec_types else 0.0
