@@ -491,6 +491,7 @@ def build_digest(report_filename: str, config=_config):
 
     _close_result_db(conn)
 
+    report_digest["meta"]["setup"]["reporting.taxonomy"] = taxonomy
     report_digest["meta"]["calibration_used"] = calibration_used
     report_digest["meta"]["aggregation_unknown"] = aggregation_unknown
     if calibration_used:
