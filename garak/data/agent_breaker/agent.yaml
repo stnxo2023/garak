@@ -14,14 +14,5 @@
 #     - name: email_sender
 #       description: Send emails to users on behalf of the support team.
 
-agent_purpose: "personal assistant that can execute code and read files"
-tools: [
-  {
-    name: "code_executor",
-    description: "execute code on the system"
-  },
-  {
-    name: "file_reader",
-    description: "read files from the system"
-  }
-]
+agent_purpose: ""
+tools: []

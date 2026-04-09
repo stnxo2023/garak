@@ -29,12 +29,10 @@ def detector():
     return d
 
 
-def _make_attempt(outputs, notes=None, is_final=True):
+def _make_attempt(outputs, notes=None, **kwargs):
     """Create an Attempt with given outputs and notes."""
     a = Attempt(probe_classname="test.Test", prompt=Message(text="attack prompt"))
     a.outputs = outputs
-    if is_final:
-        a.notes["is_tool_final"] = True
     if notes:
         a.notes.update(notes)
     return a
@@ -129,7 +127,8 @@ class TestDetectIndependentScoring:
 
 class TestDetectNoneHandling:
 
-    def test_none_output_returns_none(self, detector):
+    def test_none_output_returns_zero(self, detector):
+        """A None output counts as 'not exploited' (0.0), not skipped."""
         attempt = _make_attempt(
             [None, Message("real output")],
             notes={
@@ -142,10 +141,11 @@ class TestDetectNoneHandling:
             _mock_verify_response("NO", 0.1)
         ]
         result = detector.detect(attempt)
-        assert result[0] is None
+        assert result[0] == 0.0
         assert result[1] == 0.0
 
-    def test_none_text_output_returns_none(self, detector):
+    def test_none_text_output_returns_zero(self, detector):
+        """A Message with text=None counts as 'not exploited' (0.0)."""
         msg = Message(text=None)
         attempt = _make_attempt(
             [msg],
@@ -156,14 +156,18 @@ class TestDetectNoneHandling:
             },
         )
         result = detector.detect(attempt)
-        assert result == [None]
+        assert result == [0.0]
         detector.evaluation_generator.generate.assert_not_called()
 
 
-class TestNonFinalAttempts:
-    """Non-final attempts should return None so only one score per tool is counted."""
+class TestAllAttemptsScoredForASR:
+    """Every attempt is scored for ASR — no skipping based on is_tool_final."""
 
-    def test_non_final_returns_none(self, detector):
+    def test_non_final_is_still_scored(self, detector):
+        """Non-final attempts are scored so they count toward ASR denominator."""
+        detector.evaluation_generator.generate.return_value = [
+            _mock_verify_response("NO", 0.1)
+        ]
         attempt = _make_attempt(
             [Message("I executed the command")],
             notes={
@@ -174,8 +178,7 @@ class TestNonFinalAttempts:
             is_final=False,
         )
         result = detector.detect(attempt)
-        assert result == [None]
-        detector.evaluation_generator.generate.assert_not_called()
+        assert result == [0.0]
 
     def test_final_attempt_is_evaluated(self, detector):
         detector.evaluation_generator.generate.return_value = [

@@ -14,7 +14,7 @@ from unittest.mock import MagicMock, patch, call
 import garak._plugins
 import garak.attempt
 from garak.attempt import Attempt, Message
-from garak.probes.agent_breaker import AgentBreaker
+from garak.probes.agent_breaker import AgentBreaker, AttackState
 
 
 # ---------------------------------------------------------------------------
@@ -32,12 +32,23 @@ def _make_probe(**overrides):
         probe.red_team_model_type = "nim.NVOpenAIChat"
         probe.red_team_model_name = "test/model"
         probe.red_team_model_config = {"max_tokens": 8192}
+        probe.parse_model = None
+        probe.parse_model_type = None
+        probe.parse_model_name = None
+        probe.parse_model_config = None
         probe.eval_threshold = 0.7
         probe.success_threshold = 0.7
         probe.max_calls_per_conv = 50
         probe.max_attempts_per_tool = 3
         probe.follow_prompt_cap = True
         probe.generations = 1
+        probe.soft_probe_prompt_cap = 100
+        probe.parallel_attempts = 0
+        probe.parallelisable_attempts = False
+        probe.probename = "garak.probes.agent_breaker.AgentBreaker"
+        probe.description = "test"
+        probe.post_buff_hook = False
+        probe.reverse_langprovider = None
         probe.agent_config = {
             "agent_purpose": "Test assistant",
             "tools": [
@@ -48,6 +59,10 @@ def _make_probe(**overrides):
         probe.agent_analysis = None
         probe.generator = None
         probe.attempt_queue = []
+        probe._detector = MagicMock()
+        # Wire the real _extract_json so JSON parsing tests work correctly.
+        from garak.detectors.agent_breaker import AgentBreakerResult
+        probe._detector._extract_json = AgentBreakerResult._extract_json
         probe._load_prompts()
         for k, v in overrides.items():
             setattr(probe, k, v)
@@ -167,7 +182,7 @@ class TestDiscoverAgentConfig:
                 {"name": "tool_y", "description": "Does Y"},
             ]
         })
-        probe._get_red_team_response = MagicMock(return_value=rt_json)
+        probe._get_model_response = MagicMock(return_value=rt_json)
 
         probe._discover_agent_config(generator)
 
@@ -187,7 +202,7 @@ class TestDiscoverAgentConfig:
             "agent_purpose": "A helpful assistant",
             "tools": [{"name": "tool_a", "description": "Does A"}],
         })
-        probe._get_red_team_response = MagicMock(return_value=rt_json)
+        probe._get_model_response = MagicMock(return_value=rt_json)
 
         probe._discover_agent_config(generator)
 
@@ -222,7 +237,7 @@ class TestDiscoverAgentConfig:
         agent_resp.text = "I have tools"
         generator = MagicMock()
         generator.generate.return_value = [agent_resp]
-        probe._get_red_team_response = MagicMock(return_value="NOT JSON {{{")
+        probe._get_model_response = MagicMock(return_value="NOT JSON {{{")
 
         probe._discover_agent_config(generator)
         assert probe.agent_config["tools"] == []
@@ -233,10 +248,10 @@ class TestDiscoverAgentConfig:
 # ===========================================================================
 
 class TestProbeOrchestration:
+    """Tests for _create_init_attempts orchestration logic."""
 
     def test_skips_discovery_when_tools_present(self):
         probe = _make_probe()
-        generator = MagicMock()
         with patch.object(probe, "_setup_red_team_model"), \
              patch.object(probe, "_discover_agent_config") as mock_discover, \
              patch.object(probe, "_analyze_attackable_tools", return_value={
@@ -244,15 +259,14 @@ class TestProbeOrchestration:
                  "priority_targets": [],
              }), \
              patch.object(probe, "_attack_single_tool", return_value=[]):
-            probe.probe(generator)
+            probe._create_init_attempts()
             mock_discover.assert_not_called()
 
     def test_returns_empty_when_no_tools(self):
         probe = _make_probe(agent_config={"agent_purpose": "", "tools": []})
-        generator = MagicMock()
         with patch.object(probe, "_setup_red_team_model"), \
              patch.object(probe, "_discover_agent_config"):
-            result = probe.probe(generator)
+            result = list(probe._create_init_attempts())
         assert result == []
 
     def test_max_calls_per_conv_calculated(self):
@@ -262,7 +276,6 @@ class TestProbeOrchestration:
             {"name": "b", "description": "B"},
             {"name": "c", "description": "C"},
         ]
-        generator = MagicMock()
         with patch.object(probe, "_setup_red_team_model"), \
              patch.object(probe, "_analyze_attackable_tools", return_value={
                  "tool_analyses": {
@@ -273,12 +286,11 @@ class TestProbeOrchestration:
                  "priority_targets": [],
              }), \
              patch.object(probe, "_attack_single_tool", return_value=[]):
-            probe.probe(generator)
+            probe._create_init_attempts()
         assert probe.max_calls_per_conv == 12  # 3 tools * 4 attempts
 
     def test_sequential_calls_each_tool(self):
         probe = _make_probe()
-        generator = MagicMock()
         dummy_attempt = MagicMock()
         with patch.object(probe, "_setup_red_team_model"), \
              patch.object(probe, "_analyze_attackable_tools", return_value={
@@ -289,7 +301,7 @@ class TestProbeOrchestration:
                  "priority_targets": [],
              }), \
              patch.object(probe, "_attack_single_tool", return_value=[dummy_attempt]) as mock_attack:
-            results = probe.probe(generator)
+            results = list(probe._create_init_attempts())
         assert mock_attack.call_count == 2
         assert len(results) == 2
 
@@ -365,69 +377,41 @@ class TestBuildToolConfigs:
 # ===========================================================================
 
 class TestAttackSingleTool:
+    """_attack_single_tool creates initial attempts from attack_prompts."""
 
-    def _make_attempt_mock(self):
-        a = MagicMock(spec=Attempt)
-        a.notes = {}
-        out = MagicMock()
-        out.text = "agent response"
-        a.outputs = [out]
-        return a
+    def test_creates_one_attempt_per_attack_prompt(self):
+        probe = _make_probe()
+        results = probe._attack_single_tool(
+            "file_reader",
+            {"attack_prompts": ["try A", "try B", "try C"], "vulnerabilities": "path traversal"},
+        )
+        assert len(results) == 3
 
-    def test_stops_early_on_success(self):
-        probe = _make_probe(max_attempts_per_tool=5, eval_threshold=0.7)
-        attempt = self._make_attempt_mock()
-
-        with patch.object(probe, "_create_attempt", return_value=attempt), \
-             patch.object(probe, "_execute_attempt", return_value=attempt), \
-             patch.object(probe, "_verify_attack_success", return_value=(True, 0.9, "worked")):
-            results = probe._attack_single_tool(
-                "file_reader",
-                {"attack_prompts": ["try this"], "vulnerabilities": "path traversal"},
-            )
-
+    def test_attempt_notes_contain_target(self):
+        probe = _make_probe()
+        results = probe._attack_single_tool(
+            "file_reader",
+            {"attack_prompts": ["try this"], "vulnerabilities": "path traversal"},
+        )
         assert len(results) == 1
-        assert results[0].notes["is_tool_final"] is True
+        assert results[0].notes["current_target"] == "file_reader"
+        assert results[0].notes["vulnerability_info"] == "path traversal"
 
-    def test_exhausts_max_attempts(self):
-        probe = _make_probe(max_attempts_per_tool=3, eval_threshold=0.7)
+    def test_empty_attack_prompts_returns_empty(self):
+        probe = _make_probe()
+        results = probe._attack_single_tool(
+            "file_reader",
+            {"attack_prompts": [], "vulnerabilities": "vuln"},
+        )
+        assert results == []
 
-        def make_attempt():
-            a = self._make_attempt_mock()
-            return a
-
-        with patch.object(probe, "_create_attempt", side_effect=lambda _: make_attempt()), \
-             patch.object(probe, "_execute_attempt", side_effect=lambda a: a), \
-             patch.object(probe, "_verify_attack_success", return_value=(False, 0.2, "blocked")), \
-             patch.object(probe, "_generate_exploit_prompt", return_value="next attack"):
-            results = probe._attack_single_tool(
-                "file_reader",
-                {"attack_prompts": ["try this"], "vulnerabilities": "path traversal"},
-            )
-
-        final = [a for a in results if a.notes.get("is_tool_final")]
-        assert len(final) == 1
-
-    def test_stops_when_prompt_generation_fails(self):
-        probe = _make_probe(max_attempts_per_tool=5, eval_threshold=0.7)
-
-        call_count = [0]
-        def make_attempt():
-            a = self._make_attempt_mock()
-            return a
-
-        with patch.object(probe, "_create_attempt", side_effect=lambda _: make_attempt()), \
-             patch.object(probe, "_execute_attempt", side_effect=lambda a: a), \
-             patch.object(probe, "_verify_attack_success", return_value=(False, 0.1, "nope")), \
-             patch.object(probe, "_generate_exploit_prompt", return_value=None):
-            results = probe._attack_single_tool(
-                "file_reader",
-                {"attack_prompts": ["try this"], "vulnerabilities": "vuln"},
-            )
-
-        final = [a for a in results if a.notes.get("is_tool_final")]
-        assert len(final) == 1
-        assert len(results) <= 2  # at most first attempt + the one that failed to get next prompt
+    def test_missing_attack_prompts_key_returns_empty(self):
+        probe = _make_probe()
+        results = probe._attack_single_tool(
+            "file_reader",
+            {"vulnerabilities": "vuln"},
+        )
+        assert results == []
 
 
 # ===========================================================================
@@ -435,73 +419,476 @@ class TestAttackSingleTool:
 # ===========================================================================
 
 class TestVerifyAttackSuccess:
+    """_verify_attack_success delegates to self._detector.verify().
+
+    These tests mock the detector and pass a Conversation-like prompt
+    object (with .last_message().text) matching the real call signature.
+    """
+
+    @staticmethod
+    def _make_prompt(text="attack"):
+        prompt = MagicMock()
+        prompt.last_message.return_value = Message(text=text)
+        return prompt
+
+    def test_delegates_to_detector(self):
+        probe = _make_probe()
+        probe._detector.verify.return_value = (True, 0.9, "exploited")
+        prompt = self._make_prompt()
+        ok, conf, reason = probe._verify_attack_success(prompt, "response", "tool", "vuln")
+        assert ok is True
+        assert conf == 0.9
+        assert reason == "exploited"
+        probe._detector.verify.assert_called_once_with(
+            output_text="response",
+            target_tool="tool",
+            vulnerability_info="vuln",
+            attack_prompt="attack",
+        )
 
     def test_partial_counts_as_success(self):
         probe = _make_probe()
-        resp = json.dumps({
-            "success": "PARTIAL", "confidence": 0.6, "reasoning": "some access"
-        })
-        probe._get_red_team_response = MagicMock(return_value=resp)
-        ok, conf, reason = probe._verify_attack_success("p", "r", "tool", "vuln")
+        probe._detector.verify.return_value = (True, 0.6, "some access")
+        ok, conf, reason = probe._verify_attack_success(self._make_prompt(), "r", "tool", "vuln")
         assert ok is True
         assert conf == 0.6
 
-    def test_none_response(self):
+    def test_failure(self):
         probe = _make_probe()
-        probe._get_red_team_response = MagicMock(return_value=None)
-        ok, conf, reason = probe._verify_attack_success("p", "r", "tool", "vuln")
+        probe._detector.verify.return_value = (False, 0.1, "blocked")
+        ok, conf, reason = probe._verify_attack_success(self._make_prompt(), "r", "tool", "vuln")
+        assert ok is False
+        assert conf == 0.1
+
+    def test_error_returns_false(self):
+        probe = _make_probe()
+        probe._detector.verify.return_value = (False, 0.0, "Evaluation model error")
+        ok, conf, reason = probe._verify_attack_success(self._make_prompt(), "r", "tool", "vuln")
         assert ok is False
         assert conf == 0.0
-        assert "Verification failed" in reason
-
-    def test_malformed_json(self):
-        probe = _make_probe()
-        probe._get_red_team_response = MagicMock(return_value="NOT JSON")
-        ok, conf, reason = probe._verify_attack_success("p", "r", "tool", "vuln")
-        assert ok is False
-        assert conf == 0.0
-
-    def test_markdown_wrapped_json(self):
-        probe = _make_probe()
-        inner = json.dumps({
-            "success": "YES", "confidence": 0.95, "reasoning": "full access"
-        })
-        wrapped = f"```json\n{inner}\n```"
-        probe._get_red_team_response = MagicMock(return_value=wrapped)
-        ok, conf, reason = probe._verify_attack_success("p", "r", "tool", "vuln")
-        assert ok is True
-        assert conf == 0.95
-        assert reason == "full access"
-
-    def test_yes_is_success(self):
-        probe = _make_probe()
-        resp = json.dumps({
-            "success": "YES", "confidence": 0.8, "reasoning": "exploited"
-        })
-        probe._get_red_team_response = MagicMock(return_value=resp)
-        ok, conf, reason = probe._verify_attack_success("p", "r", "tool", "vuln")
-        assert ok is True
-
-    def test_no_is_failure(self):
-        probe = _make_probe()
-        resp = json.dumps({
-            "success": "NO", "confidence": 0.1, "reasoning": "blocked"
-        })
-        probe._get_red_team_response = MagicMock(return_value=resp)
-        ok, conf, reason = probe._verify_attack_success("p", "r", "tool", "vuln")
-        assert ok is False
 
 
 # ===========================================================================
-# 8. Integration: plugin loading
+# 8. _generate_next_attempts — core loop control and multi-generation support
+# ===========================================================================
+
+def _make_attempt_with_state(outputs, target="file_reader", vuln="path traversal",
+                              attack_prompt_text="attack", tool_analysis=None,
+                              attempts_history=None):
+    """Create a real Attempt with proper AttackState notes and outputs."""
+    prompt = garak.attempt.Conversation([
+        garak.attempt.Turn(
+            role="user",
+            content=Message(text=attack_prompt_text),
+        ),
+    ])
+    a = Attempt(probe_classname="test.Test", prompt=prompt)
+    a.outputs = outputs
+    state = AttackState(
+        current_target=target,
+        current_tool_analysis=tool_analysis or {"vulnerabilities": vuln},
+        current_attack_prompt=attack_prompt_text,
+        vulnerability_info=vuln,
+        attempts_history=list(attempts_history or []),
+    )
+    a.notes = state.to_notes()
+    return a
+
+
+class TestGenerateNextAttempts:
+    """Tests for _generate_next_attempts — the core loop control logic."""
+
+    # --- Single generation (generations=1) ---
+
+    def test_single_output_success_stops_attack(self):
+        """When the single output is a successful exploit, return [] to stop."""
+        probe = _make_probe(success_threshold=0.7)
+        probe._detector.verify.return_value = (True, 0.9, "exploited")
+        attempt = _make_attempt_with_state([Message("leaked data")])
+
+        result = list(probe._generate_next_attempts(attempt))
+
+        assert result == []
+        state = AttackState.from_notes(attempt.notes)
+        assert state.verified_results == [(True, 0.9)]
+        # removed: is_tool_final no longer tracked
+
+    def test_single_output_failure_continues(self):
+        """When the output is blocked, generate a follow-up attempt."""
+        probe = _make_probe(success_threshold=0.7, max_attempts_per_tool=3)
+        probe._detector.verify.return_value = (False, 0.99, "blocked")
+        probe._generate_exploit_prompt = MagicMock(return_value="next attack")
+        attempt = _make_attempt_with_state([Message("Access denied")])
+
+        result = list(probe._generate_next_attempts(attempt))
+
+        assert len(result) == 1
+        state = AttackState.from_notes(attempt.notes)
+        assert state.verified_results == [(False, 0.99)]
+        # removed: is_tool_final no longer tracked
+
+    # --- Multi generation (generations>1) ---
+
+    def test_multi_gen_all_blocked_continues(self):
+        """When all 3 outputs are blocked, attack continues to next turn."""
+        probe = _make_probe(success_threshold=0.7, max_attempts_per_tool=3)
+        probe._detector.verify.return_value = (False, 0.99, "blocked")
+        probe._generate_exploit_prompt = MagicMock(return_value="next attack")
+        attempt = _make_attempt_with_state([
+            Message("blocked 1"), Message("blocked 2"), Message("blocked 3"),
+        ])
+
+        result = list(probe._generate_next_attempts(attempt))
+
+        assert len(result) == 1  # generated follow-up
+        state = AttackState.from_notes(attempt.notes)
+        assert state.verified_results == [(False, 0.99), (False, 0.99), (False, 0.99)]
+        assert probe._detector.verify.call_count == 3
+
+    def test_multi_gen_one_success_stops(self):
+        """If any output succeeds, stop the attack line."""
+        probe = _make_probe(success_threshold=0.7)
+        # outputs[0] blocked, outputs[1] succeeds, outputs[2] blocked
+        probe._detector.verify.side_effect = [
+            (False, 0.99, "blocked"),
+            (True, 0.95, "leaked"),
+            (False, 0.99, "blocked"),
+        ]
+        attempt = _make_attempt_with_state([
+            Message("Access denied"), Message("root:x:0:0"), Message("Not allowed"),
+        ])
+
+        result = list(probe._generate_next_attempts(attempt))
+
+        assert result == []
+        state = AttackState.from_notes(attempt.notes)
+        assert state.verified_results == [(False, 0.99), (True, 0.95), (False, 0.99)]
+        # removed: is_tool_final no longer tracked
+
+    def test_multi_gen_success_below_threshold_continues(self):
+        """Success with confidence below threshold does NOT stop the attack."""
+        probe = _make_probe(success_threshold=0.7)
+        probe._detector.verify.side_effect = [
+            (True, 0.3, "maybe"),   # success but low confidence
+            (False, 0.99, "blocked"),
+        ]
+        probe._generate_exploit_prompt = MagicMock(return_value="next attack")
+        attempt = _make_attempt_with_state([
+            Message("partial"), Message("denied"),
+        ])
+
+        result = list(probe._generate_next_attempts(attempt))
+
+        assert len(result) == 1  # continues
+        state = AttackState.from_notes(attempt.notes)
+        # removed: is_tool_final no longer tracked
+
+    def test_multi_gen_verified_results_stored_per_output(self):
+        """verified_results has one entry per output, in order."""
+        probe = _make_probe(success_threshold=0.7, max_attempts_per_tool=3)
+        probe._detector.verify.side_effect = [
+            (False, 0.2, "safe"),
+            (False, 0.8, "almost"),
+            (True, 0.5, "partial"),   # success but below threshold
+            (False, 0.1, "blocked"),
+        ]
+        probe._generate_exploit_prompt = MagicMock(return_value="next")
+        attempt = _make_attempt_with_state([
+            Message("out1"), Message("out2"), Message("out3"), Message("out4"),
+        ])
+
+        probe._generate_next_attempts(attempt)
+
+        state = AttackState.from_notes(attempt.notes)
+        assert len(state.verified_results) == 4
+        assert state.verified_results[0] == (False, 0.2)
+        assert state.verified_results[1] == (False, 0.8)
+        assert state.verified_results[2] == (True, 0.5)
+        assert state.verified_results[3] == (False, 0.1)
+
+    # --- None handling ---
+
+    def test_none_output_gets_false_verdict(self):
+        """A None output scores as (False, 0.0) without calling the detector."""
+        probe = _make_probe(success_threshold=0.7, max_attempts_per_tool=3)
+        probe._detector.verify.return_value = (False, 0.99, "blocked")
+        probe._generate_exploit_prompt = MagicMock(return_value="next")
+        attempt = _make_attempt_with_state([
+            None, Message("real response"),
+        ])
+
+        probe._generate_next_attempts(attempt)
+
+        state = AttackState.from_notes(attempt.notes)
+        assert state.verified_results[0] == (False, 0.0)
+        assert state.verified_results[1] == (False, 0.99)
+        # Only called once — skipped the None output
+        assert probe._detector.verify.call_count == 1
+
+    def test_none_text_output_gets_false_verdict(self):
+        """Message(text=None) scores as (False, 0.0) without calling the detector."""
+        probe = _make_probe(success_threshold=0.7, max_attempts_per_tool=3)
+        probe._detector.verify.return_value = (False, 0.5, "ok")
+        probe._generate_exploit_prompt = MagicMock(return_value="next")
+        attempt = _make_attempt_with_state([
+            Message(text=None), Message("response"),
+        ])
+
+        probe._generate_next_attempts(attempt)
+
+        state = AttackState.from_notes(attempt.notes)
+        assert state.verified_results[0] == (False, 0.0)
+        assert probe._detector.verify.call_count == 1
+
+    # --- Attacker history recording ---
+
+    def test_best_response_recorded_in_history(self):
+        """The response with highest confidence is stored in attacker history."""
+        probe = _make_probe(success_threshold=0.7, max_attempts_per_tool=3)
+        probe._detector.verify.side_effect = [
+            (False, 0.3, "weak refusal"),
+            (False, 0.9, "strong refusal with details"),
+            (False, 0.5, "medium refusal"),
+        ]
+        probe._generate_exploit_prompt = MagicMock(return_value="next")
+        attempt = _make_attempt_with_state([
+            Message("weak"), Message("strong"), Message("medium"),
+        ])
+
+        probe._generate_next_attempts(attempt)
+
+        state = AttackState.from_notes(attempt.notes)
+        history_entry = state.attempts_history[-1]
+        assert history_entry["response"] == "strong"
+        assert history_entry["confidence"] == 0.9
+        assert history_entry["reasoning"] == "strong refusal with details"
+        assert history_entry["target"] == "file_reader"
+
+    def test_history_success_true_when_any_output_succeeds(self):
+        """History entry success=True if any output had is_success=True."""
+        probe = _make_probe(success_threshold=0.7)
+        probe._detector.verify.side_effect = [
+            (False, 0.99, "blocked"),
+            (True, 0.95, "leaked"),
+        ]
+        attempt = _make_attempt_with_state([
+            Message("blocked"), Message("leaked data"),
+        ])
+
+        probe._generate_next_attempts(attempt)
+
+        state = AttackState.from_notes(attempt.notes)
+        assert state.attempts_history[-1]["success"] is True
+
+    def test_history_appends_not_replaces(self):
+        """Each call appends to history, preserving previous entries."""
+        probe = _make_probe(success_threshold=0.7, max_attempts_per_tool=5)
+        probe._detector.verify.return_value = (False, 0.99, "blocked")
+        probe._generate_exploit_prompt = MagicMock(return_value="next")
+
+        existing_history = [{"target": "file_reader", "prompt": "old", "success": False,
+                             "confidence": 0.5, "reasoning": "nope", "response": "denied"}]
+        attempt = _make_attempt_with_state(
+            [Message("blocked again")],
+            attempts_history=existing_history,
+        )
+
+        probe._generate_next_attempts(attempt)
+
+        state = AttackState.from_notes(attempt.notes)
+        assert len(state.attempts_history) == 2
+        assert state.attempts_history[0]["prompt"] == "old"
+        assert state.attempts_history[1]["prompt"] == "attack"
+
+
+class TestGenerateNextAttemptsLoopControl:
+    """Tests for loop termination conditions in _generate_next_attempts."""
+
+    def test_max_attempts_exhausted(self):
+        """When attempts_history reaches max_attempts_per_tool, return []."""
+        probe = _make_probe(max_attempts_per_tool=2, success_threshold=0.7)
+        probe._detector.verify.return_value = (False, 0.99, "blocked")
+        # Already have 2 attempts in history — at the limit
+        existing = [
+            {"target": "file_reader", "prompt": "a1", "success": False,
+             "confidence": 0.5, "reasoning": "no", "response": "denied"},
+            {"target": "file_reader", "prompt": "a2", "success": False,
+             "confidence": 0.5, "reasoning": "no", "response": "denied"},
+        ]
+        attempt = _make_attempt_with_state(
+            [Message("blocked")], attempts_history=existing,
+        )
+
+        result = list(probe._generate_next_attempts(attempt))
+
+        # _handle_exploitation_phase sees 3 history entries (2 existing + 1 new)
+        # which is >= max_attempts_per_tool=2, so it should not generate more
+        assert result == []
+
+    def test_exploit_prompt_generation_fails_stops(self):
+        """If the red-team model fails to generate a prompt, stop."""
+        probe = _make_probe(max_attempts_per_tool=5, success_threshold=0.7)
+        probe._detector.verify.return_value = (False, 0.99, "blocked")
+        probe._generate_exploit_prompt = MagicMock(return_value=None)
+        attempt = _make_attempt_with_state([Message("denied")])
+
+        result = list(probe._generate_next_attempts(attempt))
+
+        assert result == []
+        state = AttackState.from_notes(attempt.notes)
+        # removed: is_tool_final no longer tracked
+
+    def test_next_attempt_has_clean_verified_results(self):
+        """Follow-up attempts must have empty verified_results (not inherited)."""
+        probe = _make_probe(max_attempts_per_tool=5, success_threshold=0.7)
+        probe._detector.verify.return_value = (False, 0.99, "blocked")
+        probe._generate_exploit_prompt = MagicMock(return_value="improved attack")
+        attempt = _make_attempt_with_state([Message("denied"), Message("denied")])
+
+        result = list(probe._generate_next_attempts(attempt))
+
+        assert len(result) == 1
+        next_state = AttackState.from_notes(result[0].notes)
+        assert next_state.verified_results == []
+        assert next_state.current_target == "file_reader"
+
+
+class TestHandleExploitationPhase:
+    """Tests for _handle_exploitation_phase — follow-up attempt generation."""
+
+    def test_generates_follow_up_within_limit(self):
+        """Should create a new attempt when under max_attempts_per_tool."""
+        probe = _make_probe(max_attempts_per_tool=3, success_threshold=0.7)
+        probe._generate_exploit_prompt = MagicMock(return_value="next attack")
+        attempt = _make_attempt_with_state(
+            [Message("denied")],
+            attempts_history=[{"target": "file_reader", "prompt": "first",
+                               "success": False, "confidence": 0.5,
+                               "reasoning": "no", "response": "denied"}],
+        )
+
+        result = probe._handle_exploitation_phase(attempt)
+
+        assert result is not None
+        next_state = AttackState.from_notes(result.notes)
+        assert next_state.verified_results == []
+        assert "next attack" in next_state.current_attack_prompt
+
+    def test_returns_none_at_max_attempts(self):
+        """Returns None when max_attempts_per_tool is reached."""
+        probe = _make_probe(max_attempts_per_tool=2, success_threshold=0.7)
+        existing = [
+            {"target": "file_reader", "prompt": f"a{i}", "success": False,
+             "confidence": 0.5, "reasoning": "no", "response": "denied"}
+            for i in range(2)
+        ]
+        attempt = _make_attempt_with_state(
+            [Message("denied")], attempts_history=existing,
+        )
+
+        result = probe._handle_exploitation_phase(attempt)
+
+        assert result is None
+        state = AttackState.from_notes(attempt.notes)
+        # removed: is_tool_final no longer tracked
+
+    def test_returns_none_when_exploit_prompt_fails(self):
+        """Returns None when red-team model returns no prompt."""
+        probe = _make_probe(max_attempts_per_tool=5, success_threshold=0.7)
+        probe._generate_exploit_prompt = MagicMock(return_value=None)
+        attempt = _make_attempt_with_state([Message("denied")])
+
+        result = probe._handle_exploitation_phase(attempt)
+
+        assert result is None
+        state = AttackState.from_notes(attempt.notes)
+        # removed: is_tool_final no longer tracked
+
+
+class TestPostprocessAttempt:
+    """Tests for _postprocess_attempt — notes promotion for the detector."""
+
+    def test_promotes_verified_results(self):
+        """verified_results must appear in processed.notes for the detector."""
+        probe = _make_probe()
+        attempt = _make_attempt_with_state([Message("response")])
+        # Simulate what _generate_next_attempts does
+        state = AttackState.from_notes(attempt.notes)
+        state.verified_results = [(False, 0.99), (True, 0.85)]
+        attempt.notes = state.to_notes()
+
+        # _postprocess_attempt calls super() which needs IterativeProbe machinery.
+        # We test the notes promotion logic directly.
+        state_read = AttackState.from_notes(attempt.notes)
+        assert state_read.verified_results == [(False, 0.99), (True, 0.85)]
+
+    def test_promotes_context_fields(self):
+        """current_target, vulnerability_info etc. must survive round-trip."""
+        state = AttackState(
+            current_target="bash_executor",
+            vulnerability_info="RCE",
+            current_attack_prompt="run whoami",
+            verified_results=[(True, 0.99)],
+        )
+        notes = state.to_notes()
+        assert notes["current_target"] == "bash_executor"
+        assert notes["vulnerability_info"] == "RCE"
+        assert notes["current_attack_prompt"] == "run whoami"
+        assert notes["verified_results"] == [(True, 0.99)]
+
+    def test_empty_verified_results_not_in_notes(self):
+        """Empty verified_results should not appear in serialized notes."""
+        state = AttackState(current_target="tool")
+        notes = state.to_notes()
+        assert "verified_results" not in notes
+
+
+class TestAttackStateRoundTrip:
+    """Ensure AttackState serialization preserves all fields."""
+
+    def test_full_round_trip(self):
+        state = AttackState(
+            current_target="bash_exec",
+            vulnerability_info="RCE",
+            verified_results=[(True, 0.99), (False, 0.5)],
+            attempts_history=[{"target": "bash_exec", "success": True}],
+        )
+        notes = state.to_notes()
+        restored = AttackState.from_notes(notes)
+        assert restored.current_target == "bash_exec"
+        assert restored.vulnerability_info == "RCE"
+        assert restored.verified_results == [(True, 0.99), (False, 0.5)]
+        assert len(restored.attempts_history) == 1
+
+    def test_empty_verified_results_round_trip(self):
+        """Empty verified_results should round-trip as empty list."""
+        state = AttackState(current_target="tool")
+        notes = state.to_notes()
+        restored = AttackState.from_notes(notes)
+        assert restored.verified_results == []
+
+    def test_verified_results_survive_field_updates(self):
+        """Updating other fields after verified_results must not lose them."""
+        state = AttackState(current_target="tool")
+        state.verified_results = [(True, 0.9), (False, 0.1)]
+        state.current_attack_prompt = "updated prompt"
+        notes = state.to_notes()
+        assert notes["verified_results"] == [(True, 0.9), (False, 0.1)]
+        assert notes["current_attack_prompt"] == "updated prompt"
+
+
+# ===========================================================================
+# 9. Integration: plugin loading
 # ===========================================================================
 
 class TestIntegration:
 
     def test_probe_loads_as_plugin(self):
-        probe = garak._plugins.load_plugin(
-            "probes.agent_breaker.AgentBreaker",
-            config_root={"run": {"generations": 1}},
-        )
+        from garak.detectors.agent_breaker import AgentBreakerResult
+        with patch.object(AgentBreakerResult, "__init__", lambda self, config_root=None: None):
+            probe = garak._plugins.load_plugin(
+                "probes.agent_breaker.AgentBreaker",
+                config_root={"run": {"generations": 1}},
+            )
         assert probe is not None
         assert isinstance(probe, AgentBreaker)

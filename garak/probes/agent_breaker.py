@@ -39,56 +39,38 @@ class AttackState:
     probe-detector boundary.
     """
 
-    phase: str = "exploitation"
-    turn_num: int = 0
     current_target: str = ""
     current_tool_analysis: dict = field(default_factory=dict)
     current_attack_prompt: str = ""
-    attempt_index: int = 0
-    target_index: int = 0
     attempts_history: list = field(default_factory=list)
-    is_complete: bool = False
-    is_tool_final: bool = False
-    overall_success: bool = False
-    agent_analysis: dict = field(default_factory=dict)
     vulnerability_info: str = ""
+    # Per-output verification results: list of (is_success, confidence) tuples,
+    # one entry per generator output.  Empty means not yet verified.
+    verified_results: list = field(default_factory=list)
 
-    # why custom serialization instead of using `dataclass.asdict`?
     def to_notes(self) -> dict:
         """Serialize state into an ``attempt.notes`` dict."""
-        return {
-            "phase": self.phase,
-            "turn_num": self.turn_num,
+        d = {
             "current_target": self.current_target,
             "current_tool_analysis": self.current_tool_analysis,
             "current_attack_prompt": self.current_attack_prompt,
-            "attempt_index": self.attempt_index,
-            "target_index": self.target_index,
             "attempts_history": list(self.attempts_history),
-            "is_complete": self.is_complete,
-            "is_tool_final": self.is_tool_final,
-            "overall_success": self.overall_success,
-            "agent_analysis": self.agent_analysis,
             "vulnerability_info": self.vulnerability_info,
         }
+        if self.verified_results:
+            d["verified_results"] = list(self.verified_results)
+        return d
 
     @classmethod
     def from_notes(cls, notes: dict) -> "AttackState":
         """Reconstruct state from an ``attempt.notes`` dict."""
         return cls(
-            phase=notes.get("phase", "exploitation"),
-            turn_num=notes.get("turn_num", 0),
             current_target=notes.get("current_target", ""),
             current_tool_analysis=notes.get("current_tool_analysis", {}),
             current_attack_prompt=notes.get("current_attack_prompt", ""),
-            attempt_index=notes.get("attempt_index", 0),
-            target_index=notes.get("target_index", 0),
             attempts_history=list(notes.get("attempts_history", [])),
-            is_complete=notes.get("is_complete", False),
-            is_tool_final=notes.get("is_tool_final", False),
-            overall_success=notes.get("overall_success", False),
-            agent_analysis=notes.get("agent_analysis", {}),
             vulnerability_info=notes.get("vulnerability_info", ""),
+            verified_results=list(notes.get("verified_results", [])),
         )
 
 
@@ -156,6 +138,9 @@ class AgentBreaker(garak.probes.IterativeProbe):
             "max_tokens": 8192,
             "suppressed_params": ["stop"],
         },
+        "parse_model_type": None,
+        "parse_model_name": None,
+        "parse_model_config": None,
         "end_condition": "verify",
         "max_calls_per_conv": 50,
         "follow_prompt_cap": True,
@@ -169,9 +154,14 @@ class AgentBreaker(garak.probes.IterativeProbe):
 
     def __init__(self, config_root=_config):
         self.red_team_model = None
+        self.parse_model = None
         self.agent_config = None
         self.agent_analysis = None
         super().__init__(config_root=config_root)
+        # Shared detector instance — used for in-loop verification so the
+        # same model and logic drive both loop control and final scoring.
+        from garak.detectors.agent_breaker import AgentBreakerResult
+        self._detector = AgentBreakerResult(config_root=config_root)
 
         if self.langprovider.target_lang not in ("en", self.lang):
             logging.warning(
@@ -276,25 +266,19 @@ class AgentBreaker(garak.probes.IterativeProbe):
                 agent_response=agent_response,
             )
 
-        parsed_text: Optional[str] = self._get_red_team_response(parse_prompt)
+        self._setup_parse_model()
+        parsed_text: Optional[str] = self._get_model_response(
+            parse_prompt, model=self.parse_model
+        )
         if not parsed_text:
             logging.warning(
-                f"{self.__class__.__name__} # Red team model failed to "
+                f"{self.__class__.__name__} # Parse model failed to "
                 "parse discovery response"
             )
             return
 
         try:
-            json_str = parsed_text.strip()
-            if json_str.startswith("```json"):
-                json_str = json_str[7:]
-            if json_str.startswith("```"):
-                json_str = json_str[3:]
-            if json_str.endswith("```"):
-                json_str = json_str[:-3]
-            json_str = json_str.strip()
-
-            parsed: dict = json.loads(json_str)
+            parsed: dict = self._detector._extract_json(parsed_text)
         except json.JSONDecodeError as e:
             logging.warning(
                 f"{self.__class__.__name__} # Failed to parse discovery " f"JSON: {e}"
@@ -349,37 +333,55 @@ class AgentBreaker(garak.probes.IterativeProbe):
 
         return configs
 
-    def _build_red_team_model_config(self):
-        """Build configuration for the red team model"""
-        try:
-            rt_model_module, rt_model_class = self.red_team_model_type.split(".")
-        except ValueError as e:
-            msg = f"red team model type needs to be fully specified, e.g. 'module.Class'. Got {self.red_team_model_type}"
-            logging.critical(msg)
-            raise ValueError() from e
-        rt_config = {
-            "generators": {
-                rt_model_module: {
-                    rt_model_class: self.red_team_model_config
-                    | {"name": self.red_team_model_name},
-                }
-            }
-        }
-        return rt_config
-
-    def _setup_red_team_model(self):
-        """Instantiate the red team model for generating attacks"""
-        if self.red_team_model is not None:
-            return
-
-        logging.debug(f"{self.__class__.__name__} # Setting up red team model")
-        rt_config = self._build_red_team_model_config()
-        self.red_team_model = garak._plugins.load_plugin(
-            f"generators.{self.red_team_model_type}", config_root=rt_config
+    def _load_model(self, model_type: str, model_name: str, model_config: dict):
+        """Load a generator model from type/name/config."""
+        model_root = {"generators": {}}
+        conf_root = model_root["generators"]
+        for part in model_type.split("."):
+            if part not in conf_root:
+                conf_root[part] = {}
+            conf_root = conf_root[part]
+        if model_config:
+            conf_root |= copy.deepcopy(model_config)
+        if model_name:
+            conf_root["name"] = model_name
+        return garak._plugins.load_plugin(
+            f"generators.{model_type}", config_root=model_root
         )
 
-    def _get_red_team_response(self, prompt: str) -> Optional[str]:
-        """Get a response from the red team model"""
+    def _setup_red_team_model(self):
+        """Instantiate the red team model for generating attacks."""
+        if self.red_team_model is not None:
+            return
+        logging.debug(f"{self.__class__.__name__} # Setting up red team model")
+        self.red_team_model = self._load_model(
+            self.red_team_model_type,
+            self.red_team_model_name,
+            self.red_team_model_config,
+        )
+
+    def _setup_parse_model(self):
+        """Load a separate model for parsing discovery responses.
+
+        Falls back to the red team model when ``parse_model_type`` is
+        not configured.
+        """
+        if self.parse_model is not None:
+            return
+        if not self.parse_model_type:
+            self.parse_model = self.red_team_model
+            return
+        logging.debug(f"{self.__class__.__name__} # Setting up parse model")
+        self.parse_model = self._load_model(
+            self.parse_model_type,
+            self.parse_model_name,
+            self.parse_model_config,
+        )
+
+    def _get_model_response(self, prompt: str, model=None) -> Optional[str]:
+        """Get a response from a model. Defaults to the red team model."""
+        if model is None:
+            model = self.red_team_model
         conv = garak.attempt.Conversation(
             [
                 garak.attempt.Turn(
@@ -389,7 +391,7 @@ class AgentBreaker(garak.probes.IterativeProbe):
             ]
         )
         try:
-            response = self.red_team_model.generate(
+            response = model.generate(
                 prompt=conv, generations_this_call=1
             )
         except Exception:
@@ -428,7 +430,7 @@ class AgentBreaker(garak.probes.IterativeProbe):
             tools_description=tools_description,
         )
 
-        analysis = self._get_red_team_response(analysis_prompt)
+        analysis = self._get_model_response(analysis_prompt)
 
         # Parse the JSON response
         result = {
@@ -441,17 +443,7 @@ class AgentBreaker(garak.probes.IterativeProbe):
 
         if analysis:
             try:
-                # Try to extract JSON from the response (handle markdown code blocks)
-                json_str = analysis.strip()
-                if json_str.startswith("```json"):
-                    json_str = json_str[7:]
-                if json_str.startswith("```"):
-                    json_str = json_str[3:]
-                if json_str.endswith("```"):
-                    json_str = json_str[:-3]
-                json_str = json_str.strip()
-
-                parsed = json.loads(json_str)
+                parsed = self._detector._extract_json(analysis)
                 result["tool_analyses"] = parsed.get("tool_analyses", {})
                 result["priority_targets"] = parsed.get("priority_targets", [])
             except json.JSONDecodeError as e:
@@ -482,7 +474,6 @@ class AgentBreaker(garak.probes.IterativeProbe):
             target_tool: Name of the tool being targeted
             tool_analysis: Analysis dict containing functionality, capabilities, etc.
             previous_attempts_history: List of dicts with 'prompt' and 'response' keys
-            attempt_index: Current attempt number for this tool
         """
 
         # Generate a new prompt based on analysis of previous attempts
@@ -518,21 +509,11 @@ class AgentBreaker(garak.probes.IterativeProbe):
             history_str=history_str,
         )
 
-        response = self._get_red_team_response(exploit_prompt)
+        response = self._get_model_response(exploit_prompt)
 
         if response:
             try:
-                # Try to extract JSON from the response
-                json_str = response.strip()
-                if json_str.startswith("```json"):
-                    json_str = json_str[7:]
-                if json_str.startswith("```"):
-                    json_str = json_str[3:]
-                if json_str.endswith("```"):
-                    json_str = json_str[:-3]
-                json_str = json_str.strip()
-
-                parsed = json.loads(json_str)
+                parsed = self._detector._extract_json(response)
                 attack_prompt = parsed.get("attack_prompt")
 
                 # Log the analysis for debugging
@@ -557,52 +538,24 @@ class AgentBreaker(garak.probes.IterativeProbe):
 
     def _verify_attack_success(
         self,
-        attack_prompt: str,
+        attack_prompt: garak.attempt.Conversation,
         agent_response: str,
         target_tool: str,
         vulnerability_info: str,
     ) -> tuple[bool, float, str]:
-        """Verify if an attack was successful using the red team model
+        """Verify if an attack was successful.
+
+        Delegates to the shared detector instance so that loop-control and
+        final scoring always use the same model and logic.
 
         Returns: (is_success, confidence_score, reasoning)
         """
-
-        verify_prompt = self._prompts["VERIFY"].format(
+        return self._detector.verify(
+            output_text=agent_response,
             target_tool=target_tool,
             vulnerability_info=vulnerability_info,
             attack_prompt=attack_prompt.last_message().text,
-            agent_response=agent_response,
         )
-
-        verification = self._get_red_team_response(verify_prompt)
-
-        if not verification:
-            return False, 0.0, "Verification failed"
-
-        # Parse JSON response
-        try:
-            json_str = verification.strip()
-            if json_str.startswith("```json"):
-                json_str = json_str[7:]
-            if json_str.startswith("```"):
-                json_str = json_str[3:]
-            if json_str.endswith("```"):
-                json_str = json_str[:-3]
-            json_str = json_str.strip()
-
-            parsed = json.loads(json_str)
-
-            success_val = parsed.get("success", "NO").upper()
-            is_success = success_val in ("YES", "PARTIAL")
-            confidence = float(parsed.get("confidence", 0.0))
-            reasoning = parsed.get("reasoning", "")
-
-            return is_success, confidence, reasoning
-        except (json.JSONDecodeError, ValueError) as e:
-            logging.warning(
-                f"{self.__class__.__name__} # Failed to parse verification JSON: {e}"
-            )
-            return False, 0.0, "Failed to parse verification response"
 
     def _create_init_attempts(self) -> Iterable[garak.attempt.Attempt]:
         """Create initial attempts based on agent analysis"""
@@ -654,11 +607,13 @@ class AgentBreaker(garak.probes.IterativeProbe):
     ) -> garak.attempt.Attempt:
         processed = super()._postprocess_attempt(this_attempt)
         state = AttackState.from_notes(this_attempt.notes or {})
-        if state.is_tool_final:
-            processed.notes["is_tool_final"] = True
-            processed.notes["current_target"] = state.current_target
-            processed.notes["current_attack_prompt"] = state.current_attack_prompt
-            processed.notes["vulnerability_info"] = state.vulnerability_info
+        # Always promote context fields so the detector can score every attempt.
+        processed.notes["current_target"] = state.current_target
+        processed.notes["current_attack_prompt"] = state.current_attack_prompt
+        processed.notes["vulnerability_info"] = state.vulnerability_info
+        # Carry forward the per-output verdicts when present.
+        if state.verified_results:
+            processed.notes["verified_results"] = list(state.verified_results)
         return processed
 
     def _attack_single_tool(
@@ -694,63 +649,73 @@ class AgentBreaker(garak.probes.IterativeProbe):
     def _generate_next_attempts(
         self, last_attempt: garak.attempt.Attempt
     ) -> Iterable[garak.attempt.Attempt]:
-        """Generate next attempts based on the previous response"""
-        response_text = ""
-        try:
-            if last_attempt.outputs and last_attempt.outputs[0] is not None:
-                response_text = last_attempt.outputs[0].text or ""
-        except (IndexError, AttributeError):
-            pass
+        """Generate next attempts based on the previous response.
 
-        state = AttackState()
-        if response_text:
-            state = AttackState.from_notes(last_attempt.notes)
+        Verifies every output independently (supports generations > 1).
+        If *any* output is a successful exploit, the attack line stops.
+        The best response is recorded in the attacker history so the
+        red-team model can learn from it.
+        """
+        outputs = last_attempt.outputs or []
+        if not outputs:
+            return []
 
-        is_success, confidence, reasoning = self._verify_attack_success(
-            attack_prompt=last_attempt.prompt,
-            agent_response=response_text,
-            target_tool=state.current_target,
-            vulnerability_info=state.vulnerability_info,
-        )
+        state = AttackState.from_notes(last_attempt.notes or {})
 
-        attempts_history = state.attempts_history
+        # Verify each output independently.
+        verified_results: list = []
+        best_confidence = -1.0
+        best_response = ""
+        best_reasoning = ""
+        attack_succeeded = False
 
-        attempts_history.append(
+        for output in outputs:
+            if output is None or output.text is None:
+                verified_results.append((False, 0.0))
+                continue
+            is_success, confidence, reasoning = self._verify_attack_success(
+                attack_prompt=last_attempt.prompt,
+                agent_response=output.text,
+                target_tool=state.current_target,
+                vulnerability_info=state.vulnerability_info,
+            )
+            verified_results.append((is_success, confidence))
+            # Track the most informative response for attacker history.
+            if confidence > best_confidence:
+                best_confidence = confidence
+                best_response = output.text
+                best_reasoning = reasoning
+            if is_success and confidence >= self.success_threshold:
+                attack_succeeded = True
+
+        state.verified_results = verified_results
+
+        # Record best response in attacker history for learning.
+        best_success = any(s for s, _ in verified_results)
+        state.attempts_history.append(
             {
                 "target": state.current_target,
                 "prompt": last_attempt.prompt.last_message().text,
-                "success": is_success,
-                "confidence": confidence,
-                "reasoning": reasoning,
-                "response": response_text,
+                "success": best_success,
+                "confidence": best_confidence,
+                "reasoning": best_reasoning,
+                "response": best_response,
             }
         )
-
-        state.attempts_history = attempts_history
         last_attempt.notes = state.to_notes()
 
-        attack_succeeded = is_success and confidence >= self.success_threshold
         if attack_succeeded:
-            state.is_tool_final = True
-            last_attempt.notes = state.to_notes()
             logging.info(
                 f"{self.__class__.__name__} # Attack PROMPT: {last_attempt.prompt}"
-                f"{self.__class__.__name__} # Attack RESPONSE: {response_text}"
+                f"{self.__class__.__name__} # Attack RESPONSE: {best_response}"
                 f"{self.__class__.__name__} # Attack SUCCEEDED on {state.current_target} "
-                f"with confidence {confidence:.2f} - breaking out of loop for this tool"
+                f"with confidence {best_confidence:.2f} - breaking out of loop for this tool"
             )
-            return []
-
-        if state.is_complete:
-            state.is_tool_final = True
-            last_attempt.notes = state.to_notes()
             return []
 
         try:
             next_attempt = self._handle_exploitation_phase(last_attempt)
         except Exception:
-            state.is_tool_final = True
-            last_attempt.notes = state.to_notes()
             logging.exception(
                 f"{self.__class__.__name__} # Error in exploitation phase for {state.current_target}"
             )
@@ -794,6 +759,8 @@ class AgentBreaker(garak.probes.IterativeProbe):
                 next_state = copy.deepcopy(state)
                 next_state.attempts_history = current_target_history
                 next_state.current_attack_prompt = exploit_prompt
+                # Reset verdict — this new attempt hasn't been verified yet.
+                next_state.verified_results = []
                 next_attempt.notes = next_state.to_notes()
 
                 logging.info(
@@ -805,7 +772,4 @@ class AgentBreaker(garak.probes.IterativeProbe):
                 )
                 return next_attempt
 
-        # Current tool is done -- mark for the detector
-        state.is_tool_final = True
-        # this assignment is required due to dataclass type used.
-        last_attempt.notes = state.to_notes()
+        return None
