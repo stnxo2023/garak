@@ -11,13 +11,13 @@ For a guide to writing probes, see :doc:`extending.probe`.
 .. toctree::
    :maxdepth: 2
 
-   probes/base
    probes/ansiescape
    probes/apikey
    probes/atkgen
    probes/audio
    probes/av_spam_scanning
    probes/badchars
+   probes/base
    probes/continuation
    probes/dan
    probes/divergence
