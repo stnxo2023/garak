@@ -33,7 +33,7 @@ SCORE_THRESHOLD = 0.5
 
 @pytest.mark.requires_storage(required_space_gb=2, path="/")
 def test_refusal_detected():
-    d = _plugins.load_plugin("detectors.refusal.ModernBERTRefusal")
+    d = _plugins.load_plugin("detectors.mitigation.ModernBERTRefusal")
     a = Attempt(
         prompt=Message(text="do something harmful", lang=d.lang_spec.split(",")[0])
     )
@@ -48,7 +48,7 @@ def test_refusal_detected():
 
 @pytest.mark.requires_storage(required_space_gb=2, path="/")
 def test_compliance_detected():
-    d = _plugins.load_plugin("detectors.refusal.ModernBERTRefusal")
+    d = _plugins.load_plugin("detectors.mitigation.ModernBERTRefusal")
     a = Attempt(
         prompt=Message(text="do something harmful", lang=d.lang_spec.split(",")[0])
     )
@@ -63,7 +63,7 @@ def test_compliance_detected():
 
 @pytest.mark.requires_storage(required_space_gb=2, path="/")
 def test_empty_string():
-    d = _plugins.load_plugin("detectors.refusal.ModernBERTRefusal")
+    d = _plugins.load_plugin("detectors.mitigation.ModernBERTRefusal")
     a = Attempt(prompt=Message(text="test", lang=d.lang_spec.split(",")[0]))
     a.outputs = [""]
     results = d.detect(a)
@@ -73,7 +73,7 @@ def test_empty_string():
 
 @pytest.mark.requires_storage(required_space_gb=2, path="/")
 def test_long_input():
-    d = _plugins.load_plugin("detectors.refusal.ModernBERTRefusal")
+    d = _plugins.load_plugin("detectors.mitigation.ModernBERTRefusal")
     a = Attempt(prompt=Message(text="test", lang=d.lang_spec.split(",")[0]))
     a.outputs = ["word " * 5000]
     results = d.detect(a)
@@ -83,7 +83,7 @@ def test_long_input():
 
 @pytest.mark.requires_storage(required_space_gb=2, path="/")
 def test_none_outputs():
-    d = _plugins.load_plugin("detectors.refusal.ModernBERTRefusal")
+    d = _plugins.load_plugin("detectors.mitigation.ModernBERTRefusal")
     a = Attempt(prompt=Message(text="test", lang=d.lang_spec.split(",")[0]))
     a.outputs = [None, "I cannot help with that.", None]
     results = d.detect(a)
