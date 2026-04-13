@@ -53,7 +53,11 @@ class NeMoGuardrails(Generator):
 
 
 class NeMoGuardrailsServer(OpenAICompatible):
-    """Generator for NeMo Guardrails Server"""
+    """Generator for NeMo Guardrails Server
+
+    To select specific rails in a multi rail deployment set `config_ids` to match the rail configuration names
+    as documented by the `NeMo guardrails SDK <https://docs.nvidia.com/nemo/guardrails/0.21.0/run-rails/using-fastapi-server/chat-with-guardrailed-model.html#using-the-openai-python-sdk>`_.
+    """
 
     ENV_VAR = None
 
