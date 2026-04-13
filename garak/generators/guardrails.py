@@ -55,6 +55,8 @@ class NeMoGuardrails(Generator):
 class NeMoGuardrailsServer(OpenAICompatible):
     """Generator for NeMo Guardrails Server"""
 
+    ENV_VAR = None
+
     supports_multiple_generations = False
     generator_family_name = "Guardrails"
 
