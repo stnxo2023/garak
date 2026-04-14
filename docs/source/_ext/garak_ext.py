@@ -49,5 +49,23 @@ class ShowASRDirective(SphinxDirective):
         return document.children
 
 
+def _process_default_params(app, what, name, obj, options, lines):
+    """Autodoc event handler: list DEFAULT_PARAMS entries in class docs."""
+    if what != "class":
+        return
+
+    params = obj.__dict__.get("DEFAULT_PARAMS")
+    if not params:
+        return
+
+    lines.append("")
+    lines.append("**Configurable default params:**")
+    lines.append("")
+    for key, value in params.items():
+        lines.append(f"* ``{key}`` = ``{value!r}``")
+    lines.append("")
+
+
 def setup(app: object) -> dict:
     app.add_directive("show-asr", ShowASRDirective)
+    app.connect("autodoc-process-docstring", _process_default_params)
