@@ -48,7 +48,6 @@ class RestGenerator(Generator):
         "client_cert": None,
         "client_key": None,
         "client_key_passphrase_env_var": None,
-        "client_key_passphrase": None,  # loaded from env var by _validate_env_var()
     }
 
     ENV_VAR = "REST_API_KEY"
@@ -91,6 +90,7 @@ class RestGenerator(Generator):
         self.escape_function = self._json_escape
         self.retry_5xx = True
         self.key_env_var = self.ENV_VAR if hasattr(self, "ENV_VAR") else None
+        self.client_key_passphrase = None
 
         # load configuration since super.__init__ has not been called
         self._load_config(config_root)
