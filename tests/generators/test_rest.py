@@ -1,3 +1,4 @@
+import datetime
 import json
 import ssl
 from unittest.mock import MagicMock, patch
@@ -171,8 +172,6 @@ def test_rest_valid_proxy(mocker, requests_mock):
 
 @pytest.mark.usefixtures("set_rest_config")
 def test_rest_invalid_proxy(requests_mock):
-    from garak.exception import GarakException
-
     test_proxies = [
         "http://localhost:8080",
         "https://localhost:8443",
@@ -405,8 +404,99 @@ def test_rest_mtls_http_uri_raises(tmp_path):
     cert_file.write_text("dummy cert")
 
     _config.plugins.generators["rest"]["RestGenerator"]["client_cert"] = str(cert_file)
-    _config.plugins.generators["rest"]["RestGenerator"]["uri"] = "http://example.com/api"
+    _config.plugins.generators["rest"]["RestGenerator"][
+        "uri"
+    ] = "http://example.com/api"
 
     with pytest.raises(GarakException) as exc_info:
         _plugins.load_plugin("generators.rest.RestGenerator", config_root=_config)
     assert "mTLS requires an HTTPS URI" in str(exc_info.value)
+
+
+@pytest.fixture
+def real_mtls_cert_files(tmp_path):
+    """Generate real self-signed PEM cert+key files using the cryptography library."""
+    from cryptography import x509
+    from cryptography.hazmat.primitives import hashes, serialization
+    from cryptography.hazmat.primitives.asymmetric import rsa
+    from cryptography.x509.oid import NameOID
+
+    # generate a 2048-bit RSA key
+    private_key = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=2048,
+    )
+
+    # build a minimal self-signed cert
+    subject = issuer = x509.Name(
+        [x509.NameAttribute(NameOID.COMMON_NAME, "garak-test")]
+    )
+    cert = (
+        x509.CertificateBuilder()
+        .subject_name(subject)
+        .issuer_name(issuer)
+        .public_key(private_key.public_key())
+        .serial_number(x509.random_serial_number())
+        .not_valid_before(datetime.datetime.now(datetime.timezone.utc))
+        .not_valid_after(
+            datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=1)
+        )
+        .sign(private_key, hashes.SHA256())
+    )
+
+    cert_path = tmp_path / "client.crt"
+    key_path = tmp_path / "client.key"
+
+    cert_path.write_bytes(cert.public_bytes(serialization.Encoding.PEM))
+    key_path.write_bytes(
+        private_key.private_bytes(
+            serialization.Encoding.PEM,
+            serialization.PrivateFormat.TraditionalOpenSSL,
+            serialization.NoEncryption(),
+        )
+    )
+
+    return str(cert_path), str(key_path)
+
+
+@pytest.mark.usefixtures("set_rest_config")
+def test_rest_mtls_pickle_roundtrip(real_mtls_cert_files):
+    """Verify the multiprocessing pickle lifecycle for mTLS sessions.
+
+    __getstate__  → _mtls_session must be None (not picklable)
+    __setstate__  → _mtls_session must be reconstructed (not None)
+    reconstructed session must have the mTLS adapter mounted on 'https://'
+    """
+    import requests
+
+    from garak.generators.rest import _MtlsAdapter
+
+    cert_path, key_path = real_mtls_cert_files
+
+    _config.plugins.generators["rest"]["RestGenerator"]["client_cert"] = cert_path
+    _config.plugins.generators["rest"]["RestGenerator"]["client_key"] = key_path
+
+    generator = _plugins.load_plugin(
+        "generators.rest.RestGenerator", config_root=_config
+    )
+
+    # session must be live before pickling
+    assert generator._mtls_session is not None
+
+    # --- pickle (getstate) ---
+    state = generator.__getstate__()
+    assert (
+        state["_mtls_session"] is None
+    ), "_mtls_session must be cleared in __getstate__ so it can be pickled"
+
+    # --- unpickle (setstate) ---
+    generator.__setstate__(state)
+    assert (
+        generator._mtls_session is not None
+    ), "_mtls_session must be reconstructed by __setstate__ via _load_unsafe()"
+
+    # the reconstructed session must have the mTLS adapter on https://
+    adapter = generator._mtls_session.get_adapter("https://example.com")
+    assert isinstance(
+        adapter, _MtlsAdapter
+    ), "Reconstructed session must have an _MtlsAdapter mounted on 'https://'"
