@@ -58,12 +58,14 @@ def _process_default_params(app, what, name, obj, options, lines):
     if not params:
         return
 
-    lines.append("")
-    lines.append("**Configurable default params:**")
+    para_title = "Configurable parameters:"
+    lines.extend(["", para_title, '"' * len(para_title)])
+    lines.extend(["", "*Default values are listed*"])
     lines.append("")
     for key, value in params.items():
         lines.append(f"* ``{key}`` = ``{value!r}``")
-    lines.append("")
+    lines.extend(["", "See also :doc:`configurable` for how to set these values."])
+    lines.extend(["", "----"])
 
 
 def setup(app: object) -> dict:
