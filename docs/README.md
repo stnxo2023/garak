@@ -12,7 +12,7 @@
 1. Build the documentation:
 
    ```console
-   make -C docs/source all
+   make -C docs/source clean doc
    ```
 
    The HTML is created in the `docs/source/html` directory.

@@ -59,8 +59,8 @@ Check out the :doc:`usage` section for further information, including :doc:`inst
    :hidden:
 
    basic
-   attempt
    index_analyze
+   attempt
    cli
    command
    _config
@@ -76,17 +76,17 @@ Check out the :doc:`usage` section for further information, including :doc:`inst
    :maxdepth: 1
    :hidden:
 
-   detector_metrics
-   translation
    ascii_smuggling
+   detector_metrics
    analyze/tbsa
+   translation
 
 .. toctree::
    :caption: Extending and Contributing
    :maxdepth: 1
    :hidden:
 
+   contributing
    extending
    extending.generator
    extending.probe
-   contributing
