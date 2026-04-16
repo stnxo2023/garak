@@ -101,6 +101,28 @@ def mtls_certs(tmp_path_factory):
         .not_valid_before(now)
         .not_valid_after(now + one_day)
         .add_extension(x509.BasicConstraints(ca=True, path_length=None), critical=True)
+        .add_extension(
+            x509.KeyUsage(
+                digital_signature=False,
+                content_commitment=False,
+                key_encipherment=False,
+                data_encipherment=False,
+                key_agreement=False,
+                key_cert_sign=True,
+                crl_sign=True,
+                encipher_only=False,
+                decipher_only=False,
+            ),
+            critical=True,
+        )
+        .add_extension(
+            x509.SubjectKeyIdentifier.from_public_key(ca_key.public_key()),
+            critical=False,
+        )
+        .add_extension(
+            x509.AuthorityKeyIdentifier.from_issuer_public_key(ca_key.public_key()),
+            critical=False,
+        )
         .sign(ca_key, hashes.SHA256())
     )
     ca_cert_path = tmp / "ca.crt"
@@ -127,6 +149,14 @@ def mtls_certs(tmp_path_factory):
             ),
             critical=False,
         )
+        .add_extension(
+            x509.SubjectKeyIdentifier.from_public_key(srv_key.public_key()),
+            critical=False,
+        )
+        .add_extension(
+            x509.AuthorityKeyIdentifier.from_issuer_public_key(ca_key.public_key()),
+            critical=False,
+        )
         .sign(ca_key, hashes.SHA256())
     )
     srv_cert_path = tmp / "server.crt"
@@ -144,6 +174,14 @@ def mtls_certs(tmp_path_factory):
         .serial_number(x509.random_serial_number())
         .not_valid_before(now)
         .not_valid_after(now + one_day)
+        .add_extension(
+            x509.SubjectKeyIdentifier.from_public_key(cli_key.public_key()),
+            critical=False,
+        )
+        .add_extension(
+            x509.AuthorityKeyIdentifier.from_issuer_public_key(ca_key.public_key()),
+            critical=False,
+        )
         .sign(ca_key, hashes.SHA256())
     )
     cli_cert_path = tmp / "client.crt"
@@ -169,6 +207,14 @@ def mtls_certs(tmp_path_factory):
         .serial_number(x509.random_serial_number())
         .not_valid_before(now)
         .not_valid_after(now + one_day)
+        .add_extension(
+            x509.SubjectKeyIdentifier.from_public_key(ecdsa_cli_key.public_key()),
+            critical=False,
+        )
+        .add_extension(
+            x509.AuthorityKeyIdentifier.from_issuer_public_key(ca_key.public_key()),
+            critical=False,
+        )
         .sign(ca_key, hashes.SHA256())
     )
     ecdsa_cli_cert_path = tmp / "client_ecdsa.crt"
