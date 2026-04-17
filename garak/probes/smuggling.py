@@ -50,7 +50,7 @@ DEFAULT_HOMOGLYPH_MAP = {
 }
 
 
-def homoglyph_replace(text, glyph_map, seed=None):
+def _homoglyph_replace(text, glyph_map, seed=None):
     """Replace Latin characters with homoglyphs from the provided map.
 
     For each character in *text* that appears in *glyph_map*, a random
