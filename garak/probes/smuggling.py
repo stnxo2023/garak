@@ -146,7 +146,7 @@ class HomoglyphObfuscation(garak.probes.Probe):
         # Apply homoglyph substitution to each payload
         self.prompts = []
         for i, payload in enumerate(source_payloads):
-            self.prompts.append(homoglyph_replace(payload, glyph_map, seed=i))
+            self.prompts.append(_homoglyph_replace(payload, glyph_map, seed=i))
 
 
 class FunctionMasking(garak.probes.Probe):
