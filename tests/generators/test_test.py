@@ -158,6 +158,10 @@ def _make_conv():
     return Conversation([Turn("user", Message("test"))])
 
 
+LIPSUM_MARGIN = 100
+LIPSUM_GENERATIONS = 15
+
+
 def test_lipsum_default_returns_message():
     g = Lipsum()
     output = g.generate(_make_conv())
@@ -197,12 +201,15 @@ def test_lipsum_unit_text():
 
 
 def test_lipsum_count_joins_multiple_units():
+    count = 5
     g = Lipsum()
     g.unit = "sentence"
-    g.count = 5
+    g.count = count
     output = g._call_model(_make_conv())
     text = output[0].text
-    assert text.count(".") >= 5, "count=5 sentences should yield at least 5 periods"
+    assert (
+        text.count(".") >= count
+    ), f"count={count} sentences should yield at least {count} stops"
 
 
 def test_lipsum_invalid_unit_raises():
@@ -214,7 +221,7 @@ def test_lipsum_invalid_unit_raises():
 
 def test_lipsum_outputs_vary():
     g = Lipsum()
-    results = {g._call_model(_make_conv())[0].text for _ in range(20)}
+    results = {g._call_model(_make_conv())[0].text for _ in range(LIPSUM_GENERATIONS)}
     assert len(results) > 1, "Lipsum outputs should vary across calls"
 
 
@@ -226,29 +233,30 @@ def test_lipsum_generate_lorem_target_length():
         len(text) >= target
     ), f"_generate_lorem should produce at least {target} chars, got {len(text)}"
     assert (
-        len(text) < target + 200
+        len(text) < target + LIPSUM_MARGIN
     ), "_generate_lorem should not overshoot the target by more than one sentence"
 
 
 def test_lipsum_generate_lorem_variance_zero_is_stable():
     g = Lipsum()
     target = 300
-    lengths = [len(g._generate_lorem(target, variance=0.0)) for _ in range(10)]
+    lengths = [
+        len(g._generate_lorem(target, variance=0.0)) for _ in range(LIPSUM_GENERATIONS)
+    ]
     spread = max(lengths) - min(lengths)
     assert (
-        spread < 200
+        spread < LIPSUM_MARGIN
     ), "With variance=0.0, length spread should be small (only sentence granularity)"
 
 
 def test_lipsum_generate_lorem_variance_affects_length():
     g = Lipsum()
     target = 1000
-    lengths = [len(g._generate_lorem(target, variance=0.4)) for _ in range(30)]
+    lengths = [
+        len(g._generate_lorem(target, variance=0.4)) for _ in range(LIPSUM_GENERATIONS)
+    ]
     spread = max(lengths) - min(lengths)
-    assert spread > 0, "With high variance, outputs should differ in length"
-
-
-# --- ReasoningLipsum tests ---
+    assert spread > LIPSUM_MARGIN, "With high variance, outputs should differ in length"
 
 
 def test_reasoning_lipsum_default_returns_message():
@@ -282,13 +290,12 @@ def test_reasoning_lipsum_approximate_total_length():
     g = ReasoningLipsum()
     g.variance = 0.0
     output = g._call_model(_make_conv())
-    character_grace_window = 100
     text = output[0].text
     assert (
-        len(text) > g.reasoning_length + g.output_length - character_grace_window
+        len(text) > g.reasoning_length + g.output_length - LIPSUM_MARGIN
     ), f"Default output should be roughly 2500 chars, got {len(text)}"
     assert (
-        len(text) < g.reasoning_length + g.output_length + character_grace_window
+        len(text) < g.reasoning_length + g.output_length + LIPSUM_MARGIN
     ), f"Default output should be roughly 2500 chars, got {len(text)}"
 
 
@@ -313,35 +320,41 @@ def test_reasoning_lipsum_custom_lengths():
     reasoning_section = text[len(g.skip_seq_start) : end_idx]
     output_section = text[end_idx + len(g.skip_seq_end) :]
     assert (
-        len(reasoning_section) >= 500
-    ), f"Reasoning section should be >= 500 chars, got {len(reasoning_section)}"
+        len(reasoning_section) >= g.reasoning_length
+    ), f"Reasoning section should be >= {g.reasoning_length} chars, got {len(reasoning_section)}"
     assert (
-        len(output_section) >= 200
-    ), f"Output section should be >= 200 chars, got {len(output_section)}"
+        len(output_section) >= g.output_length
+    ), f"Output section should be >= {g.output_length} chars, got {len(output_section)}"
 
 
 def test_reasoning_lipsum_variance_zero_consistent():
     g = ReasoningLipsum()
     g.variance = 0.0
-    lengths = [len(g._call_model(_make_conv())[0].text) for _ in range(10)]
+    lengths = [
+        len(g._call_model(_make_conv())[0].text) for _ in range(LIPSUM_GENERATIONS)
+    ]
     spread = max(lengths) - min(lengths)
     assert (
-        spread < 300
+        spread < LIPSUM_MARGIN
     ), f"With variance=0.0, total length spread should be small, got {spread}"
 
 
 def test_reasoning_lipsum_variance_produces_variation():
     g = ReasoningLipsum()
     g.variance = 0.4
-    lengths = [len(g._call_model(_make_conv())[0].text) for _ in range(30)]
+    lengths = [
+        len(g._call_model(_make_conv())[0].text) for _ in range(LIPSUM_GENERATIONS)
+    ]
     spread = max(lengths) - min(lengths)
-    assert spread > 0, "With high variance, output lengths should vary"
+    assert spread > LIPSUM_MARGIN, "With high variance, output lengths should vary"
 
 
 def test_reasoning_lipsum_multiple_generations():
     g = ReasoningLipsum()
-    output = g._call_model(_make_conv(), generations_this_call=3)
-    assert len(output) == 3, "Should return requested number of generations"
+    output = g._call_model(_make_conv(), generations_this_call=LIPSUM_GENERATIONS)
+    assert (
+        len(output) == LIPSUM_GENERATIONS
+    ), "Should return requested number of generations"
     for msg in output:
         assert isinstance(msg, Message)
         text = msg.text
