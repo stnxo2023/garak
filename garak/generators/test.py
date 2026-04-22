@@ -135,14 +135,17 @@ class ReasoningLipsum(Lipsum):
     probe/detector behavior with long structured outputs.
 
     Generates output in the format:
-        {skip_seq_start}\\n{reasoning text}\\n{skip_seq_end}\\n{output text}
+        {skip_seq_start}{reasoning text}{skip_seq_end}{output text}
 
     Configurable parameters:
         skip_seq_start: str - Opening delimiter for the reasoning trace.
         skip_seq_end: str - Closing delimiter for the reasoning trace.
         reasoning_length: int - Target character count for the reasoning trace.
         output_length: int - Target character count for the output text.
-        variance: float - Fraction (0.0–1.0) by which reasoning_length and output_length may independently and randomly deviate from their configured values. E.g. 0.1 means ±10%.
+        variance: float - Fraction (0.0–1.0) by which reasoning_length and
+            output_length may deviate from configured values. 0.1 means ±10%.
+        respect_max_tokens: bool - Cap the output text (not the
+            reasoning trace) to approximately max_tokens * 1.4 characters.
     """
 
     DEFAULT_PARAMS = Lipsum.DEFAULT_PARAMS | {
@@ -151,6 +154,7 @@ class ReasoningLipsum(Lipsum):
         "reasoning_length": 1500,
         "output_length": 1000,
         "variance": 0.1,
+        "respect_max_tokens": False,
     }
 
     supports_multiple_generations = False
@@ -160,11 +164,16 @@ class ReasoningLipsum(Lipsum):
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
     ) -> List[Message | None]:
+        output_length = self.output_length
+        if self.respect_max_tokens and self.max_tokens is not None:
+            token_char_budget = int(self.max_tokens * 1.4)
+            output_length = min(output_length, token_char_budget)
+
         results = []
         for _ in range(generations_this_call):
             reasoning = self._generate_lorem(self.reasoning_length, self.variance)
-            output = self._generate_lorem(self.output_length, self.variance)
-            text = f"{self.skip_seq_start}{reasoning}" f"{self.skip_seq_end}{output}"
+            output = self._generate_lorem(output_length, self.variance)
+            text = f"{self.skip_seq_start}{reasoning}{self.skip_seq_end}{output}"
             results.append(Message(text))
         return results
 

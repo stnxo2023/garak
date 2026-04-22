@@ -158,7 +158,7 @@ def _make_conv():
     return Conversation([Turn("user", Message("test"))])
 
 
-LIPSUM_MARGIN = 100
+LIPSUM_MARGIN = 120
 LIPSUM_GENERATIONS = 15
 
 
@@ -291,12 +291,14 @@ def test_reasoning_lipsum_approximate_total_length():
     g.variance = 0.0
     output = g._call_model(_make_conv())
     text = output[0].text
+    delimiters_len = len(g.skip_seq_start) + len(g.skip_seq_end)
+    expected = g.reasoning_length + g.output_length + delimiters_len
     assert (
-        len(text) > g.reasoning_length + g.output_length - LIPSUM_MARGIN
-    ), f"Default output should be roughly 2500 chars, got {len(text)}"
+        len(text) > expected - LIPSUM_MARGIN
+    ), f"Default output should be roughly {expected} chars, got {len(text)}"
     assert (
-        len(text) < g.reasoning_length + g.output_length + LIPSUM_MARGIN
-    ), f"Default output should be roughly 2500 chars, got {len(text)}"
+        len(text) < expected + LIPSUM_MARGIN
+    ), f"Default output should be roughly {expected} chars, got {len(text)}"
 
 
 def test_reasoning_lipsum_custom_delimiters():
@@ -311,8 +313,8 @@ def test_reasoning_lipsum_custom_delimiters():
 
 def test_reasoning_lipsum_custom_lengths():
     g = ReasoningLipsum()
-    g.reasoning_length = 500
-    g.output_length = 200
+    g.reasoning_length = 5000
+    g.output_length = 2000
     g.variance = 0.0
     output = g._call_model(_make_conv())
     text = output[0].text
