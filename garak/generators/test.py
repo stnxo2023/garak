@@ -70,16 +70,37 @@ class Nones(Generator):
 
 
 class Lipsum(Generator):
-    """Lorem Ipsum generator, so we can get non-zero outputs that vary"""
+    """Lorem Ipsum generator, so we can get non-zero outputs that vary
+
+    Configurable parameters:
+        unit: str - content unit to generate per output.
+            Must be one of "sentence", "paragraph", or "text".
+        count: int - How many of the specified unit to join per output.
+    """
+
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+        "unit": "sentence",
+        "count": 1,
+    }
 
     supports_multiple_generations = False
     generator_family_name = "Test"
     name = "Lorem Ipsum"
 
+    _VALID_UNITS = {"sentence", "paragraph", "text"}
+
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
     ) -> List[Message | None]:
-        return [Message(lorem.sentence()) for i in range(generations_this_call)]
+        if self.unit not in self._VALID_UNITS:
+            raise ValueError(
+                f"Invalid lipsum unit '{self.unit}', must be one of {self._VALID_UNITS}"
+            )
+        generate = getattr(lorem, self.unit)
+        return [
+            Message(" ".join(generate() for _ in range(self.count)))
+            for i in range(generations_this_call)
+        ]
 
 
 class BlankVision(Generator):
