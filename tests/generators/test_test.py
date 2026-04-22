@@ -7,7 +7,7 @@ import random
 import garak._plugins
 from garak.attempt import Message, Turn, Conversation
 import garak.generators.base
-from garak.generators.test import Blank, Repeat, Single
+from garak.generators.test import Blank, Repeat, Single, Lipsum, ReasoningLipsum
 
 TEST_GENERATORS = [
     a
@@ -152,3 +152,198 @@ def test_generators_test_blank_many():
     assert output[1] == Message(
         ""
     ), "Blank generator .generate() output list should contain Turns (second position) w empty prompt"
+
+
+def _make_conv():
+    return Conversation([Turn("user", Message("test"))])
+
+
+def test_lipsum_default_returns_message():
+    g = Lipsum()
+    output = g.generate(_make_conv())
+    assert len(output) == 1
+    assert isinstance(output[0], Message)
+    assert len(str(output[0])) > 0, "Lipsum should produce non-empty output"
+
+
+def test_lipsum_unit_sentence():
+    g = Lipsum()
+    g.unit = "sentence"
+    g.count = 1
+    output = g._call_model(_make_conv())
+    text = output[0].text
+    assert text.endswith("."), "A single lorem sentence should end with a period"
+    assert "\n" not in text, "A single sentence should not contain newlines"
+
+
+def test_lipsum_unit_paragraph():
+    g = Lipsum()
+    g.unit = "paragraph"
+    g.count = 1
+    output = g._call_model(_make_conv())
+    text = output[0].text
+    assert len(text) > 0
+    assert text.count(".") > 1, "A paragraph should contain multiple sentences"
+
+
+def test_lipsum_unit_text():
+    g = Lipsum()
+    g.unit = "text"
+    g.count = 1
+    output = g._call_model(_make_conv())
+    text = output[0].text
+    assert len(text) > 0
+    assert "\n" in text, "A text block should contain newlines between paragraphs"
+
+
+def test_lipsum_count_joins_multiple_units():
+    g = Lipsum()
+    g.unit = "sentence"
+    g.count = 5
+    output = g._call_model(_make_conv())
+    text = output[0].text
+    assert text.count(".") >= 5, "count=5 sentences should yield at least 5 periods"
+
+
+def test_lipsum_invalid_unit_raises():
+    g = Lipsum()
+    g.unit = "chapter"
+    with pytest.raises(ValueError, match="Invalid unit"):
+        g._call_model(_make_conv())
+
+
+def test_lipsum_outputs_vary():
+    g = Lipsum()
+    results = {g._call_model(_make_conv())[0].text for _ in range(20)}
+    assert len(results) > 1, "Lipsum outputs should vary across calls"
+
+
+def test_lipsum_generate_lorem_target_length():
+    g = Lipsum()
+    target = 500
+    text = g._generate_lorem(target, variance=0.0)
+    assert (
+        len(text) >= target
+    ), f"_generate_lorem should produce at least {target} chars, got {len(text)}"
+    assert (
+        len(text) < target + 200
+    ), "_generate_lorem should not overshoot the target by more than one sentence"
+
+
+def test_lipsum_generate_lorem_variance_zero_is_stable():
+    g = Lipsum()
+    target = 300
+    lengths = [len(g._generate_lorem(target, variance=0.0)) for _ in range(10)]
+    spread = max(lengths) - min(lengths)
+    assert (
+        spread < 200
+    ), "With variance=0.0, length spread should be small (only sentence granularity)"
+
+
+def test_lipsum_generate_lorem_variance_affects_length():
+    g = Lipsum()
+    target = 1000
+    lengths = [len(g._generate_lorem(target, variance=0.4)) for _ in range(30)]
+    spread = max(lengths) - min(lengths)
+    assert spread > 0, "With high variance, outputs should differ in length"
+
+
+# --- ReasoningLipsum tests ---
+
+
+def test_reasoning_lipsum_default_returns_message():
+    g = ReasoningLipsum()
+    output = g.generate(_make_conv())
+    assert len(output) == 1
+    assert isinstance(output[0], Message)
+
+
+def test_reasoning_lipsum_contains_delimiters():
+    g = ReasoningLipsum()
+    output = g._call_model(_make_conv())
+    text = output[0].text
+    assert g.skip_seq_start in text, "Output should contain skip_seq_start delimiter"
+    assert g.skip_seq_end in text, "Output should contain skip_seq_end delimiter"
+
+
+def test_reasoning_lipsum_structure():
+    g = ReasoningLipsum()
+    output = g._call_model(_make_conv())
+    text = output[0].text
+    start_idx = text.index(g.skip_seq_start)
+    end_idx = text.index(g.skip_seq_end)
+    assert start_idx < end_idx, "skip_seq_start must appear before skip_seq_end"
+    assert text.startswith(g.skip_seq_start), "Output should start with skip_seq_start"
+    after_end = text[end_idx + len(g.skip_seq_end) :]
+    assert len(after_end) > 0, "There should be output text after skip_seq_end"
+
+
+def test_reasoning_lipsum_approximate_total_length():
+    g = ReasoningLipsum()
+    g.variance = 0.0
+    output = g._call_model(_make_conv())
+    character_grace_window = 100
+    text = output[0].text
+    assert (
+        len(text) > g.reasoning_length + g.output_length - character_grace_window
+    ), f"Default output should be roughly 2500 chars, got {len(text)}"
+    assert (
+        len(text) < g.reasoning_length + g.output_length + character_grace_window
+    ), f"Default output should be roughly 2500 chars, got {len(text)}"
+
+
+def test_reasoning_lipsum_custom_delimiters():
+    g = ReasoningLipsum()
+    g.skip_seq_start = "[[REASON]]"
+    g.skip_seq_end = "[[/REASON]]"
+    output = g._call_model(_make_conv())
+    text = output[0].text
+    assert text.startswith(g.skip_seq_start)
+    assert g.skip_seq_end in text
+
+
+def test_reasoning_lipsum_custom_lengths():
+    g = ReasoningLipsum()
+    g.reasoning_length = 500
+    g.output_length = 200
+    g.variance = 0.0
+    output = g._call_model(_make_conv())
+    text = output[0].text
+    end_idx = text.index(g.skip_seq_end)
+    reasoning_section = text[len(g.skip_seq_start) : end_idx]
+    output_section = text[end_idx + len(g.skip_seq_end) :]
+    assert (
+        len(reasoning_section) >= 500
+    ), f"Reasoning section should be >= 500 chars, got {len(reasoning_section)}"
+    assert (
+        len(output_section) >= 200
+    ), f"Output section should be >= 200 chars, got {len(output_section)}"
+
+
+def test_reasoning_lipsum_variance_zero_consistent():
+    g = ReasoningLipsum()
+    g.variance = 0.0
+    lengths = [len(g._call_model(_make_conv())[0].text) for _ in range(10)]
+    spread = max(lengths) - min(lengths)
+    assert (
+        spread < 300
+    ), f"With variance=0.0, total length spread should be small, got {spread}"
+
+
+def test_reasoning_lipsum_variance_produces_variation():
+    g = ReasoningLipsum()
+    g.variance = 0.4
+    lengths = [len(g._call_model(_make_conv())[0].text) for _ in range(30)]
+    spread = max(lengths) - min(lengths)
+    assert spread > 0, "With high variance, output lengths should vary"
+
+
+def test_reasoning_lipsum_multiple_generations():
+    g = ReasoningLipsum()
+    output = g._call_model(_make_conv(), generations_this_call=3)
+    assert len(output) == 3, "Should return requested number of generations"
+    for msg in output:
+        assert isinstance(msg, Message)
+        text = msg.text
+        assert g.skip_seq_start in text
+        assert g.skip_seq_end in text
