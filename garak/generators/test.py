@@ -93,6 +93,28 @@ class Lipsum(Generator):
         "text": "\n\n",
     }
 
+    def _generate_lorem(self, target_length: int, variance: float = 0.0) -> str:
+        """Generate lorem text of approximately target_length characters.
+
+        Builds up text sentence-by-sentence until the target is reached.
+
+        Args:
+            target_length: Target number of characters to generate.
+            variance: Fraction (0.0–1.0) by which the actual length may
+                randomly deviate from target_length. E.g. 0.1 means ±10%.
+        """
+        if variance > 0:
+            deviation = self._rng.uniform(-variance, variance) * target_length
+            target_length = max(1, int(target_length + deviation))
+
+        parts = []
+        current_length = 0
+        while current_length < target_length:
+            part = lorem.sentence()
+            parts.append(part)
+            current_length += len(part) + 1
+        return " ".join(parts)
+
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
     ) -> List[Message | None]:
@@ -106,6 +128,45 @@ class Lipsum(Generator):
             Message(sep.join(generate() for _ in range(self.count)))
             for i in range(generations_this_call)
         ]
+
+
+class ReasoningLipsum(Lipsum):
+    """Lorem Ipsum generator with a simulated reasoning trace, for testing
+    probe/detector behavior with long structured outputs.
+
+    Generates output in the format:
+        {skip_seq_start}\\n{reasoning text}\\n{skip_seq_end}\\n{output text}
+
+    Configurable parameters:
+        skip_seq_start: str - Opening delimiter for the reasoning trace.
+        skip_seq_end: str - Closing delimiter for the reasoning trace.
+        reasoning_length: int - Target character count for the reasoning trace.
+        output_length: int - Target character count for the output text.
+        variance: float - Fraction (0.0–1.0) by which reasoning_length and output_length may independently and randomly deviate from their configured values. E.g. 0.1 means ±10%.
+    """
+
+    DEFAULT_PARAMS = Lipsum.DEFAULT_PARAMS | {
+        "skip_seq_start": "<think>",
+        "skip_seq_end": "</think>",
+        "reasoning_length": 1500,
+        "output_length": 1000,
+        "variance": 0.1,
+    }
+
+    supports_multiple_generations = False
+    generator_family_name = "Test"
+    name = "Reasoning Lipsum"
+
+    def _call_model(
+        self, prompt: Conversation, generations_this_call: int = 1
+    ) -> List[Message | None]:
+        results = []
+        for _ in range(generations_this_call):
+            reasoning = self._generate_lorem(self.reasoning_length, self.variance)
+            output = self._generate_lorem(self.output_length, self.variance)
+            text = f"{self.skip_seq_start}{reasoning}" f"{self.skip_seq_end}{output}"
+            results.append(Message(text))
+        return results
 
 
 class BlankVision(Generator):
