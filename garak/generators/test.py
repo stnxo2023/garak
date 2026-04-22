@@ -87,18 +87,23 @@ class Lipsum(Generator):
     generator_family_name = "Test"
     name = "Lorem Ipsum"
 
-    _VALID_UNITS = {"sentence", "paragraph", "text"}
+    _unit_separators = {
+        "sentence": ". ",
+        "paragraph": ".\n",
+        "text": "\n\n",
+    }
 
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
     ) -> List[Message | None]:
-        if self.unit not in self._VALID_UNITS:
+        if self.unit not in self._unit_separators:
             raise ValueError(
-                f"Invalid lipsum unit '{self.unit}', must be one of {self._VALID_UNITS}"
+                f"Invalid unit '{self.unit}', must be one of {set(self._unit_separators)}"
             )
         generate = getattr(lorem, self.unit)
+        sep = self._unit_separators[self.unit]
         return [
-            Message(" ".join(generate() for _ in range(self.count)))
+            Message(sep.join(generate() for _ in range(self.count)))
             for i in range(generations_this_call)
         ]
 
