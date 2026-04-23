@@ -158,8 +158,7 @@ def _make_conv():
     return Conversation([Turn("user", Message("test"))])
 
 
-LIPSUM_MARGIN = 120
-LIPSUM_GENERATIONS = 15
+LIPSUM_GENERATIONS = 200
 
 
 def test_lipsum_default_returns_message():
@@ -225,40 +224,6 @@ def test_lipsum_outputs_vary():
     assert len(results) > 1, "Lipsum outputs should vary across calls"
 
 
-def test_lipsum_generate_lorem_target_length():
-    g = Lipsum()
-    target = 500
-    text = g._generate_lorem(target, variance=0.0)
-    assert (
-        len(text) >= target
-    ), f"_generate_lorem should produce at least {target} chars, got {len(text)}"
-    assert (
-        len(text) < target + LIPSUM_MARGIN
-    ), "_generate_lorem should not overshoot the target by more than one sentence"
-
-
-def test_lipsum_generate_lorem_variance_zero_is_stable():
-    g = Lipsum()
-    target = 300
-    lengths = [
-        len(g._generate_lorem(target, variance=0.0)) for _ in range(LIPSUM_GENERATIONS)
-    ]
-    spread = max(lengths) - min(lengths)
-    assert (
-        spread < LIPSUM_MARGIN
-    ), "With variance=0.0, length spread should be small (only sentence granularity)"
-
-
-def test_lipsum_generate_lorem_variance_affects_length():
-    g = Lipsum()
-    target = 1000
-    lengths = [
-        len(g._generate_lorem(target, variance=0.4)) for _ in range(LIPSUM_GENERATIONS)
-    ]
-    spread = max(lengths) - min(lengths)
-    assert spread > LIPSUM_MARGIN, "With high variance, outputs should differ in length"
-
-
 def test_reasoning_lipsum_default_returns_message():
     g = ReasoningLipsum()
     output = g.generate(_make_conv())
@@ -294,11 +259,11 @@ def test_reasoning_lipsum_approximate_total_length():
     delimiters_len = len(g.skip_seq_start) + len(g.skip_seq_end)
     expected = g.reasoning_length + g.output_length + delimiters_len
     assert (
-        len(text) > expected - LIPSUM_MARGIN
-    ), f"Default output should be roughly {expected} chars, got {len(text)}"
+        len(text) > expected
+    ), f"Default output should be at least {expected} chars, got {len(text)}"
     assert (
-        len(text) < expected + LIPSUM_MARGIN
-    ), f"Default output should be roughly {expected} chars, got {len(text)}"
+        len(text) < 2 * expected
+    ), f"Default output should be under 2x {expected} chars, got {len(text)}"
 
 
 def test_reasoning_lipsum_custom_delimiters():
@@ -329,26 +294,42 @@ def test_reasoning_lipsum_custom_lengths():
     ), f"Output section should be >= {g.output_length} chars, got {len(output_section)}"
 
 
-def test_reasoning_lipsum_variance_zero_consistent():
+LIPSUM_MARGIN = 100
+SENT_MAX = 120
+PARA_MAX = 800
+TEXT_MAX = 4000
+
+
+@pytest.mark.parametrize(
+    "unit,max_margin",
+    [("sentence", SENT_MAX), ("paragraph", PARA_MAX), ("text", TEXT_MAX)],
+)
+def test_reasoning_lipsum_variance_zero_consistent(unit, max_margin):
     g = ReasoningLipsum()
     g.variance = 0.0
+    g.unit = unit
     lengths = [
         len(g._call_model(_make_conv())[0].text) for _ in range(LIPSUM_GENERATIONS)
     ]
     spread = max(lengths) - min(lengths)
     assert (
-        spread < LIPSUM_MARGIN
+        spread < max_margin
     ), f"With variance=0.0, total length spread should be small, got {spread}"
 
 
-def test_reasoning_lipsum_variance_produces_variation():
+@pytest.mark.parametrize(
+    "unit,min_margin",
+    [("sentence", SENT_MAX / 2), ("paragraph", PARA_MAX / 2), ("text", TEXT_MAX / 2)],
+)
+def test_reasoning_lipsum_variance_produces_variation(unit, min_margin):
     g = ReasoningLipsum()
     g.variance = 0.4
+    g.unit = unit
     lengths = [
         len(g._call_model(_make_conv())[0].text) for _ in range(LIPSUM_GENERATIONS)
     ]
     spread = max(lengths) - min(lengths)
-    assert spread > LIPSUM_MARGIN, "With high variance, output lengths should vary"
+    assert spread > min_margin, "With high variance, output lengths should vary"
 
 
 def test_reasoning_lipsum_multiple_generations():

@@ -88,32 +88,10 @@ class Lipsum(Generator):
     name = "Lorem Ipsum"
 
     _unit_separators = {
-        "sentence": ". ",
-        "paragraph": ".\n",
-        "text": "\n\n",
+        "sentence": " ",
+        "paragraph": "\n",
+        "text": "\n",
     }
-
-    def _generate_lorem(self, target_length: int, variance: float = 0.0) -> str:
-        """Generate lorem text of approximately target_length characters.
-
-        Builds up text sentence-by-sentence until the target is reached.
-
-        Args:
-            target_length: Target number of characters to generate.
-            variance: Fraction (0.0–1.0) by which the actual length may
-                randomly deviate from target_length. E.g. 0.1 means ±10%.
-        """
-        if variance > 0:
-            deviation = self._rng.uniform(-variance, variance) * target_length
-            target_length = max(1, int(target_length + deviation))
-
-        parts = []
-        current_length = 0
-        while current_length < target_length:
-            part = lorem.sentence()
-            parts.append(part)
-            current_length += len(part) + 1
-        return " ".join(parts)
 
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
@@ -151,15 +129,45 @@ class ReasoningLipsum(Lipsum):
     DEFAULT_PARAMS = Lipsum.DEFAULT_PARAMS | {
         "skip_seq_start": "<think>",
         "skip_seq_end": "</think>",
-        "reasoning_length": 1500,
-        "output_length": 1000,
+        "reasoning_length": 2000,
+        "output_length": 500,
         "variance": 0.1,
         "respect_max_tokens": False,
+        "unit": "sentence",
     }
 
     supports_multiple_generations = False
     generator_family_name = "Test"
     name = "Reasoning Lipsum"
+
+    def _generate_lorem(self, min_length: int, variance: float = 0.0) -> str:
+        """Generate lorem text of approximately target_length characters.
+
+        Builds up text sentence-by-sentence until the target is reached.
+
+        Args:
+            target_length: Target number of characters to generate.
+            variance: Fraction (0.0–1.0) by which the actual length may
+                randomly deviate from target_length. E.g. 0.1 means ±10%.
+        """
+        if variance > 0:
+            deviation = self._rng.uniform(-variance, variance) * min_length
+            min_length = max(1, int(min_length + deviation))
+
+        if self.unit not in self._unit_separators:
+            raise ValueError(
+                f"Invalid unit '{self.unit}', must be one of {set(self._unit_separators)}"
+            )
+
+        gen_func = getattr(lorem, self.unit)
+
+        parts = []
+        current_length = 0
+        while current_length < min_length:
+            part = gen_func()
+            parts.append(part)
+            current_length += len(part) + len(self._unit_separators[self.unit])
+        return self._unit_separators[self.unit].join(parts)
 
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
