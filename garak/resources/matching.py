@@ -3,7 +3,7 @@
 
 
 def ngram_contained_match(
-    target: str, text: str, n: int = 4, case_sensitive: bool = False
+    target: str, context: str, n: int = 4, case_sensitive: bool = False
 ) -> float:
     """Return the proportion of target's character n-grams found in text (0.0–1.0).
 
@@ -11,7 +11,7 @@ def ngram_contained_match(
     *target* appears anywhere in *text*, regardless of extra content in
     *text*.
     """
-    if text is None or target is None:
+    if context is None or target is None:
         return 0.0
 
     if len(target) < n:
@@ -19,9 +19,9 @@ def ngram_contained_match(
 
     if not case_sensitive:
         target = target.lower()
-        text = text.lower()
+        context = context.lower()
 
     target_ngrams = set(target[i : i + n] for i in range(len(target) - (n - 1)))
-    matching_ngrams = sum(int(ngram in text) for ngram in target_ngrams)
+    matching_ngrams = sum(int(ngram in context) for ngram in target_ngrams)
 
     return matching_ngrams / len(target_ngrams)
