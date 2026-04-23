@@ -235,8 +235,20 @@ def test_reasoning_lipsum_contains_delimiters():
     g = ReasoningLipsum()
     output = g._call_model(_make_conv())
     text = output[0].text
-    assert g.skip_seq_start in text, "Output should contain skip_seq_start delimiter"
-    assert g.skip_seq_end in text, "Output should contain skip_seq_end delimiter"
+    if g.skip_seq_start:
+        assert text.startswith(
+            g.skip_seq_start
+        ), "Output should begin with skip_seq_start delimiter"
+    if g.skip_seq_end:
+        assert g.skip_seq_end in text, "Output should contain skip_seq_end delimiter"
+        if g.skip_seq_end != g.skip_seq_start:
+            assert not text.startswith(
+                g.skip_seq_end
+            ), "Output should not start with skip_seq_end"
+        if g.output_length > 0:
+            assert not text.endswith(
+                g.skip_seq_end
+            ), "Output should end with lipsum, ends with skip_seq_end"
 
 
 def test_reasoning_lipsum_structure():

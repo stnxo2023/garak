@@ -161,13 +161,11 @@ class ReasoningLipsum(Lipsum):
 
         gen_func = getattr(lorem, self.unit)
 
-        parts = []
-        current_length = 0
-        while current_length < min_length:
-            part = gen_func()
-            parts.append(part)
-            current_length += len(part) + len(self._unit_separators[self.unit])
-        return self._unit_separators[self.unit].join(parts)
+        lorem_text = gen_func()
+        while len(lorem_text) < min_length:
+            lorem_text += self._unit_separators[self.unit]
+            lorem_text += gen_func()
+        return lorem_text
 
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
