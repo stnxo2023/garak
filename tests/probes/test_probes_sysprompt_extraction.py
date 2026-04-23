@@ -5,6 +5,8 @@ import pytest
 import garak._plugins
 from garak.probes.sysprompt_extraction import SystemPromptExtraction
 
+DATASET_SOURCES = SystemPromptExtraction.DEFAULT_PARAMS["system_prompt_sources"]
+
 
 def test_sysprompt_probe_init():
     p = garak._plugins.load_plugin("probes.sysprompt_extraction.SystemPromptExtraction")
@@ -86,6 +88,23 @@ def test_sysprompt_probe_with_mock_data():
         assert len(p.prompts) <= len(p.system_prompts) * len(p.attack_templates)
     except ImportError as e:
         pytest.skip(f"Required dependency not available: {e}")
+
+
+@pytest.mark.parametrize("dataset_name", DATASET_SOURCES)
+def test_sysprompt_dataset_accessible(dataset_name):
+    """Each configured HuggingFace dataset should be loadable and return valid prompts."""
+    try:
+        prompts = SystemPromptExtraction._load_dataset_prompts(dataset_name)
+    except (ModuleNotFoundError, ImportError) as e:
+        pytest.skip(f"datasets library not available: {e}")
+    except Exception as e:
+        pytest.fail(f"Failed to load dataset '{dataset_name}': {e}")
+
+    assert isinstance(prompts, list), f"Expected a list from {dataset_name}"
+    assert len(prompts) > 0, f"No prompts returned from {dataset_name}"
+    assert all(
+        isinstance(p, str) and len(p) > 0 for p in prompts
+    ), f"All prompts from {dataset_name} must be non-empty strings"
 
 
 def test_sysprompt_in_conversation():
