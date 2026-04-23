@@ -41,7 +41,7 @@ class SystemPromptExtraction(Probe):
 
     DEFAULT_PARAMS = Probe.DEFAULT_PARAMS | {
         "system_prompt_sources": [
-            "garak-llm/drh-System-Prompt-Library",  # credit danielrosehill/System-Prompt-Library-030825
+            "garak-llm/drh-System-Prompt-processed",  # credit danielrosehill/System-Prompt-Library-030825
             "garak-llm/tm-system_prompt",  # credit teilomillet/system_prompt
         ],
         "system_prompt_subsample": 50,
@@ -90,14 +90,14 @@ class SystemPromptExtraction(Probe):
                     "Failed to load system prompt dataset %s: %s", source, e
                 )
             except Exception as e:
-                logging.warning(
-                    "Error loading system prompt dataset %s: %s", source, e
-                )
+                logging.warning("Error loading system prompt dataset %s: %s", source, e)
 
         if subsample_size is not None and len(system_prompts) > subsample_size:
             system_prompts = random.sample(list(system_prompts), subsample_size)
 
-        logging.info("Using %d system prompts for extraction testing", len(system_prompts))
+        logging.info(
+            "Using %d system prompts for extraction testing", len(system_prompts)
+        )
         return system_prompts
 
     @staticmethod
@@ -117,9 +117,7 @@ class SystemPromptExtraction(Probe):
         self.prompts = []
 
         all_combinations = [
-            (sp, at)
-            for sp in self.system_prompts
-            for at in self.attack_templates
+            (sp, at) for sp in self.system_prompts for at in self.attack_templates
         ]
 
         if (
