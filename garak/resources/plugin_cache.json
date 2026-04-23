@@ -164,7 +164,7 @@
         "payload:unwanted"
       ],
       "tier": 2,
-      "mod_time": "2026-01-28 08:11:20 +0000"
+      "mod_time": "2026-02-27 19:25:10 +0000"
     },
     "probes.audio.AudioAchillesHeel": {
       "description": "Audio is the Achilles Heel",
@@ -332,7 +332,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2026-01-30 12:34:29 +0000"
+      "mod_time": "2026-04-07 16:55:47 +0000"
     },
     "probes.base.Probe": {
       "description": "Base class for objects that define and execute LLM evaluations",
@@ -352,7 +352,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2026-01-30 12:34:29 +0000"
+      "mod_time": "2026-04-07 16:55:47 +0000"
     },
     "probes.base.TreeSearchProbe": {
       "DEFAULT_PARAMS": {
@@ -377,7 +377,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2026-01-30 12:34:29 +0000"
+      "mod_time": "2026-04-07 16:55:47 +0000"
     },
     "probes.continuation.ContinueSlursReclaimedSlurs": {
       "description": "Continue partial word with slur or reclaimed slur.",
@@ -4655,7 +4655,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2026-02-02 17:15:48 +0000"
+      "mod_time": "2026-03-28 17:25:32 +0000"
     },
     "probes.tap.TAP": {
       "description": "Tree of Attacks with Pruning Probe, generating new attacks against the target",
@@ -4700,7 +4700,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2026-02-02 17:15:48 +0000"
+      "mod_time": "2026-03-28 17:25:32 +0000"
     },
     "probes.tap.TAPCached": {
       "description": "Tree of Attacks with Pruning Probe using cached attacks",
@@ -4727,7 +4727,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2026-02-02 17:15:48 +0000"
+      "mod_time": "2026-03-28 17:25:32 +0000"
     },
     "probes.test.Blank": {
       "description": "Blank prompt",
@@ -5273,7 +5273,7 @@
       "active": true,
       "doc_uri": "https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer",
       "extra_dependency_names": [],
-      "hit_desc": "Response contains escaped ANSI control sequences - terminal injection risk",
+      "hit_desc": "Response contains escaped ANSI control sequences",
       "lang_spec": "*",
       "modality": {
         "out": [
@@ -5282,7 +5282,7 @@
       },
       "pass_desc": "Response does not contain escaped ANSI control sequences",
       "tags": [],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-03-10 19:44:17 +0000"
     },
     "detectors.ansiescape.Raw": {
       "description": "pick up raw ANSI escape sequences",
@@ -5294,7 +5294,7 @@
       "active": true,
       "doc_uri": "https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer",
       "extra_dependency_names": [],
-      "hit_desc": "Response contains raw ANSI control sequences - terminal injection risk",
+      "hit_desc": "Response contains raw ANSI control sequences",
       "lang_spec": "*",
       "modality": {
         "out": [
@@ -5303,7 +5303,7 @@
       },
       "pass_desc": "Response does not contain raw ANSI control sequences",
       "tags": [],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-03-10 19:44:17 +0000"
     },
     "detectors.any.AnyNonspaceOutput": {
       "description": "Hit if there's any non-space output",
@@ -5351,7 +5351,7 @@
       "active": true,
       "doc_uri": null,
       "extra_dependency_names": [],
-      "hit_desc": "Response contains possible API key - credential leak risk",
+      "hit_desc": "Response contains possible API key",
       "lang_spec": "*",
       "modality": {
         "out": [
@@ -5360,7 +5360,7 @@
       },
       "pass_desc": "Response does not contain API key patterns",
       "tags": [],
-      "mod_time": "2026-02-04 19:19:46 +0000"
+      "mod_time": "2026-02-12 14:11:20 +0000"
     },
     "detectors.base.Detector": {
       "description": "Base class for objects that define a way of detecting a probe hit / LLM failure",
@@ -5888,7 +5888,7 @@
       "pass_desc": "File magic indicates that the provided file is not a common executable filetype",
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-04-08 14:06:23 +0000"
     },
     "detectors.fileformats.FileIsPickled": {
       "description": "Check whether a file is pickled.",
@@ -5908,7 +5908,7 @@
       "pass_desc": "Provided file is not `pickle`-serialized data",
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-04-08 14:06:23 +0000"
     },
     "detectors.fileformats.PossiblePickleName": {
       "description": "Guess if filenames look like pickles",
@@ -5928,7 +5928,7 @@
       "pass_desc": "Provided filename extension is not commonly used for pickle files",
       "tags": [],
       "valid_format": null,
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-04-08 14:06:23 +0000"
     },
     "detectors.goodside.Glitch": {
       "description": "Inverse trigger list detector - hit if trigger absent",
@@ -6317,10 +6317,42 @@
         "avid-effect:security:S0403",
         "avid-effect:performance:P0204"
       ],
-      "mod_time": "2026-02-04 19:07:43 +0000",
+      "mod_time": "2026-04-10 15:29:13 +0000",
       "hit_precision": 0.5998546247501363,
       "hit_recall": 0.921295004186436,
       "hit_f1": 0.7266123706801674
+    },
+    "detectors.mitigation.ModernBERTRefusal": {
+      "description": "Detect LLM refusals using a fine-tuned ModernBERT classifier.",
+      "DEFAULT_PARAMS": {
+        "skip": false,
+        "hf_args": {
+          "device": "cpu"
+        },
+        "tokenizer_kwargs": {
+          "padding": true,
+          "truncation": true
+        },
+        "graceful_fail": true,
+        "detector_model_path": "garak-llm/garak-refusal-detector",
+        "detector_target_class": "refusal"
+      },
+      "active": true,
+      "doc_uri": "https://huggingface.co/garak-llm/garak-refusal-detector",
+      "extra_dependency_names": [],
+      "hit_desc": "Response does not contain a refusal",
+      "lang_spec": "en",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "pass_desc": "Response contains a refusal",
+      "tags": [
+        "avid-effect:security:S0403",
+        "avid-effect:performance:P0204"
+      ],
+      "mod_time": "2026-04-10 15:29:13 +0000"
     },
     "detectors.mitigation.Prefixes": {
       "description": "Detect failure prefixes",
@@ -6341,7 +6373,7 @@
       },
       "pass_desc": "Response does not start with a well-known refusal prefix",
       "tags": [],
-      "mod_time": "2026-02-04 19:07:43 +0000"
+      "mod_time": "2026-04-10 15:29:13 +0000"
     },
     "detectors.packagehallucination.Dart": {
       "description": "Check if the output tries to use a Dart package not listed on pub.dev (2025-08-11 snapshot)",
@@ -7866,7 +7898,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-01-28 10:38:34 +0000"
+      "mod_time": "2026-03-28 17:25:32 +0000"
     },
     "generators.bedrock.BedrockGenerator": {
       "description": "Interface for AWS Bedrock foundation models using Converse API",
@@ -7897,7 +7929,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-01-09 14:20:03 +0000"
+      "mod_time": "2026-03-19 10:57:52 +0000"
     },
     "generators.cohere.CohereGenerator": {
       "description": "Interface to Cohere's python library for their text2text model.",
@@ -8355,40 +8387,6 @@
       "parallel_capable": true,
       "supports_multiple_generations": false,
       "mod_time": "2026-01-09 14:20:03 +0000"
-    },
-    "generators.nemo.NeMoGenerator": {
-      "description": "Wrapper for the NVIDIA NeMo models via NGC. Expects NGC_API_KEY and ORG_ID environment variables.",
-      "DEFAULT_PARAMS": {
-        "max_tokens": 150,
-        "temperature": 0.9,
-        "top_k": 2,
-        "context_len": null,
-        "skip_seq_start": null,
-        "skip_seq_end": null,
-        "top_p": 1.0,
-        "repetition_penalty": 1.1,
-        "beam_search_diversity_rate": 0.0,
-        "beam_width": 1,
-        "length_penalty": 1,
-        "guardrail": null,
-        "api_uri": "https://api.llm.ngc.nvidia.com/v1"
-      },
-      "active": true,
-      "extra_dependency_names": [
-        "nemollm"
-      ],
-      "generator_family_name": "NeMo",
-      "modality": {
-        "in": [
-          "text"
-        ],
-        "out": [
-          "text"
-        ]
-      },
-      "parallel_capable": true,
-      "supports_multiple_generations": false,
-      "mod_time": "2025-11-26 08:39:43 +0000"
     },
     "generators.nim.NVMultimodal": {
       "description": "Wrapper for text and image / audio to text NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
