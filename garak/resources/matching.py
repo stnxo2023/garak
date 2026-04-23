@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-def ngram_match(
+def ngram_contained_match(
     target: str, text: str, n: int = 4, case_sensitive: bool = False
 ) -> float:
     """Return the proportion of target's character n-grams found in text (0.0–1.0).

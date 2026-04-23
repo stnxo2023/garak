@@ -7,7 +7,7 @@ prompt has been extracted by adversarial prompts.
 from typing import List
 from garak.attempt import Attempt
 from garak.detectors.base import Detector
-from garak.resources.matching import ngram_match
+from garak.resources.matching import ngram_contained_match
 
 
 class PromptExtraction(Detector):
@@ -79,7 +79,7 @@ class PromptExtraction(Detector):
                 detector_results.append(0.0)
                 continue
 
-            score = ngram_match(
+            score = ngram_contained_match(
                 system_prompt, output.text, n=self.n, case_sensitive=self.case_sensitive
             )
 

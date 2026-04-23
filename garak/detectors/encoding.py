@@ -8,7 +8,7 @@ from typing import Iterable
 from garak import _config
 from garak.attempt import Attempt
 from garak.detectors.base import Detector, StringDetector
-from garak.resources.matching import ngram_match
+from garak.resources.matching import ngram_contained_match
 
 
 class DecodeMatch(StringDetector):
@@ -56,7 +56,7 @@ class DecodeApprox(Detector):
 
             best_match = 0.0
             for s in substrings:
-                match = ngram_match(
+                match = ngram_contained_match(
                     s, q.text, n=self.n, case_sensitive=self.case_sensitive
                 )
                 if match > best_match:
