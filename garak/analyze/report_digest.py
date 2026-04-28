@@ -50,6 +50,7 @@ def _parse_report(reportfile: IO):
     payloads = []
     setup = defaultdict(str)
     init = {}
+    plugin_cache = None
 
     for record in [json.loads(line.strip()) for line in reportfile if line.strip()]:
         if record["entry_type"] == "eval":
@@ -68,8 +69,13 @@ def _parse_report(reportfile: IO):
                 + "  "
                 + pprint.pformat(record, sort_dicts=True, width=60)
             )
+        elif record["entry_type"] == "plugin_cache":
+            if plugin_cache is None:
+                plugin_cache = {}
+            for category, entries in record.get("plugin_cache", {}).items():
+                plugin_cache.setdefault(category, {}).update(entries)
 
-    return init, setup, payloads, evals
+    return init, setup, payloads, evals, plugin_cache
 
 
 def _report_header_content(report_path, init, setup, payloads, config=_config) -> dict:
@@ -90,7 +96,29 @@ def _report_header_content(report_path, init, setup, payloads, config=_config) -
     return header_content
 
 
-def _init_populate_result_db(evals, taxonomy=None):
+def _resolve_plugin_info(plugin_classpath, report_plugin_cache, required_fields=None):
+    if report_plugin_cache is None:
+        return garak._plugins.PluginCache.plugin_info(plugin_classpath), "live_cache"
+
+    category = plugin_classpath.split(".")[0]
+    meta = report_plugin_cache.get(category, {}).get(plugin_classpath)
+    if meta is None:
+        raise ValueError(f"plugin_cache missing metadata for {plugin_classpath}")
+
+    missing = [
+        field
+        for field in (required_fields or ())
+        if field not in meta or meta[field] is None
+    ]
+    if missing:
+        raise ValueError(
+            f"plugin_cache metadata for {plugin_classpath} missing fields: {missing}"
+        )
+
+    return meta, "header"
+
+
+def _init_populate_result_db(evals, taxonomy=None, report_plugin_cache=None):
 
     conn = sqlite3.connect(":memory:")
     cursor = conn.cursor()
@@ -128,7 +156,12 @@ def _init_populate_result_db(evals, taxonomy=None):
         groups = []
         if taxonomy is not None:
             # get the probe tags
-            tags = garak._plugins.PluginCache.plugin_info(f"probes.{pm}.{pc}")["tags"]
+            meta, _ = _resolve_plugin_info(
+                f"probes.{pm}.{pc}",
+                report_plugin_cache,
+                required_fields=("tags",),
+            )
+            tags = meta["tags"]
             for tag in tags:
                 if tag.split(":")[0] == taxonomy:
                     groups.append(":".join(tag.split(":")[1:]))
@@ -250,9 +283,15 @@ def _get_probe_result_summaries(cursor, probe_group) -> List[tuple]:
     return res.fetchall()
 
 
-def _get_probe_info(probe_module, probe_class, absolute_score) -> dict:
+def _get_probe_info(
+    probe_module, probe_class, absolute_score, report_plugin_cache=None
+) -> dict:
     probe_classpath = f"probes.{probe_module}.{probe_class}"
-    probe_plugin_info = garak._plugins.PluginCache.plugin_info(probe_classpath)
+    probe_plugin_info, _ = _resolve_plugin_info(
+        probe_classpath,
+        report_plugin_cache,
+        required_fields=("description", "tags", "tier"),
+    )
     probe_description = probe_plugin_info["description"]
     probe_tags = probe_plugin_info["tags"]
     probe_plugin_name = f"{probe_module}.{probe_class}"
@@ -298,12 +337,15 @@ def _get_probe_detector_details(
     confidence=None,
     ci_lower=None,
     ci_upper=None,
+    report_plugin_cache=None,
 ) -> dict:
     calibration_used = False
     detector = re.sub(r"[^0-9A-Za-z_.]", "", detector)
     detector_module, detector_class = detector.split(".")
-    detector_cache_entry = garak._plugins.PluginCache.plugin_info(
-        f"detectors.{detector_module}.{detector_class}"
+    detector_cache_entry, _ = _resolve_plugin_info(
+        f"detectors.{detector_module}.{detector_class}",
+        report_plugin_cache,
+        required_fields=("description",),
     )
     detector_description = detector_cache_entry["description"]
 
@@ -415,7 +457,7 @@ def build_digest(report_filename: str, config=_config):
     }
 
     with open(report_filename, "r", encoding="utf-8") as reportfile:
-        init, setup, payloads, evals = _parse_report(reportfile)
+        init, setup, payloads, evals, report_plugin_cache = _parse_report(reportfile)
 
     calibration = garak.analyze.calibration.Calibration()
     calibration_used = False
@@ -425,7 +467,7 @@ def build_digest(report_filename: str, config=_config):
     )
     report_digest["meta"] = header_content
 
-    conn, cursor = _init_populate_result_db(evals, taxonomy)
+    conn, cursor = _init_populate_result_db(evals, taxonomy, report_plugin_cache)
     group_names = _get_report_grouping(cursor)
 
     aggregation_unknown = False
@@ -446,7 +488,10 @@ def build_digest(report_filename: str, config=_config):
             report_digest["eval"][probe_group][f"{probe_module}.{probe_class}"] = {}
 
             probe_info = _get_probe_info(
-                probe_module, probe_class, group_absolute_score
+                probe_module,
+                probe_class,
+                group_absolute_score,
+                report_plugin_cache,
             )
 
             report_digest["eval"][probe_group][f"{probe_module}.{probe_class}"][
@@ -471,6 +516,7 @@ def build_digest(report_filename: str, config=_config):
                     confidence,
                     ci_lower,
                     ci_upper,
+                    report_plugin_cache,
                 )
 
                 # add counts for detector (using original field names from eval records)
@@ -494,6 +540,9 @@ def build_digest(report_filename: str, config=_config):
     report_digest["meta"]["setup"]["reporting.taxonomy"] = taxonomy
     report_digest["meta"]["calibration_used"] = calibration_used
     report_digest["meta"]["aggregation_unknown"] = aggregation_unknown
+    report_digest["meta"]["plugin_cache_source"] = (
+        "live_cache" if report_plugin_cache is None else "header"
+    )
     if calibration_used:
         report_digest["meta"]["calibration"] = _get_calibration_info(calibration)
 
