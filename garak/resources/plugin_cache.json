@@ -2206,6 +2206,62 @@
       "tier": 3,
       "mod_time": "2025-11-12 08:34:39 +0000"
     },
+    "probes.goat.GOATAttack": {
+      "description": "Generative Offensive Agent Tester",
+      "DEFAULT_PARAMS": {
+        "max_calls_per_conv": 5,
+        "follow_prompt_cap": true,
+        "end_condition": "verify",
+        "early_stop_on": "any",
+        "red_team_model_type": "huggingface.Model",
+        "red_team_model_name": "Qwen/Qwen3-4B-Thinking-2507",
+        "red_team_model_config": {
+          "max_tokens": 4096
+        },
+        "custom_goals": [],
+        "augment_custom_goals": false,
+        "attack_hf_dataset": "JailbreakBench/JBB-Behaviors",
+        "attack_hf_dataset_load_kwargs": {
+          "split": "harmful",
+          "name": "behaviors"
+        },
+        "attack_hf_dataset_column": "Goal",
+        "num_goals": 5,
+        "custom_system_prompt": null,
+        "custom_initial_prompt": null,
+        "custom_followup_prompt": null,
+        "custom_judge_prompt": null,
+        "custom_attack_techniques": null
+      },
+      "active": false,
+      "doc_uri": "https://arxiv.org/abs/2410.01606",
+      "extended_detectors": [],
+      "extra_dependency_names": [],
+      "goal": "elicit a harmful, unethical, or illegal response from the model",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "judge.JailbreakOnlyAdversarial",
+      "tags": [
+        "owasp:llm01",
+        "owasp:llm09",
+        "avid-effect:security:S0403",
+        "quality:Behavioral:ContentSafety:HateHarassment",
+        "quality:Behavioral:ContentSafety:LegalGoodsServices",
+        "quality:Behavioral:ContentSafety:Profanity",
+        "quality:Behavioral:ContentSafety:Toxicity",
+        "quality:Behavioral:ContentSafety:Unauthorized",
+        "quality:Security:PromptStability",
+        "quality:Security:Adversarial",
+        "cwe:1427"
+      ],
+      "tier": 1,
+      "mod_time": "2026-04-28 16:58:26 +0000"
+    },
     "probes.goodside.Davidjl": {
       "description": "Exploit the ' davidjl' magic token",
       "DEFAULT_PARAMS": {},
@@ -5990,6 +6046,52 @@
       "tags": [],
       "mod_time": "2026-02-04 19:07:43 +0000"
     },
+    "detectors.judge.Jailbreak": {
+      "description": "Uses the configured model to detect if responses contain harmful content achieving the adversarial goal (JailbreakBench methodology)",
+      "DEFAULT_PARAMS": {
+        "skip": false,
+        "detector_model_type": "nim",
+        "detector_model_name": "meta/llama3-70b-instruct",
+        "detector_model_config": null,
+        "custom_system_prompt": null
+      },
+      "active": true,
+      "doc_uri": "https://github.com/JailbreakBench/jailbreakbench",
+      "extra_dependency_names": [],
+      "hit_desc": "Detector identified matching indicators of risk",
+      "lang_spec": "en",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "pass_desc": "Detector found no issue",
+      "tags": [],
+      "mod_time": "2026-04-28 16:58:26 +0000"
+    },
+    "detectors.judge.JailbreakOnlyAdversarial": {
+      "description": "Uses the configured model to detect if responses contain harmful content achieving the adversarial goal (JailbreakBench methodology)",
+      "DEFAULT_PARAMS": {
+        "skip": false,
+        "detector_model_type": "nim",
+        "detector_model_name": "meta/llama3-70b-instruct",
+        "detector_model_config": null,
+        "custom_system_prompt": null
+      },
+      "active": true,
+      "doc_uri": "https://github.com/JailbreakBench/jailbreakbench",
+      "extra_dependency_names": [],
+      "hit_desc": "Detector identified matching indicators of risk",
+      "lang_spec": "en",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "pass_desc": "Detector found no issue",
+      "tags": [],
+      "mod_time": "2026-04-28 16:58:26 +0000"
+    },
     "detectors.judge.ModelAsJudge": {
       "description": "Uses the configured model to detect responses that attained the probe goal",
       "DEFAULT_PARAMS": {
@@ -6012,7 +6114,7 @@
       },
       "pass_desc": "Detector found no issue",
       "tags": [],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-04-28 16:58:26 +0000"
     },
     "detectors.judge.Refusal": {
       "description": "Uses the configured model to detect if the responses is a refusal to answer",
@@ -6034,7 +6136,7 @@
       },
       "pass_desc": "Response refuses to answer",
       "tags": [],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-04-28 16:58:26 +0000"
     },
     "detectors.judge.RefusalOnlyAdversarial": {
       "description": "Uses the configured model to detect if the responses is a refusal to answer",
@@ -6056,7 +6158,7 @@
       },
       "pass_desc": "Response refuses adversarial prompt - safety boundaries maintained",
       "tags": [],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-04-28 16:58:26 +0000"
     },
     "detectors.knownbadsignatures.EICAR": {
       "description": "Is the EICAR test string present?",
