@@ -8974,7 +8974,10 @@
         "req_template": "{\"sender\": \"garak\", \"message\": \"$INPUT\"}",
         "request_timeout": 20,
         "proxies": null,
-        "verify_ssl": true
+        "verify_ssl": true,
+        "client_cert": null,
+        "client_key": null,
+        "client_key_passphrase_env_var": null
       },
       "active": true,
       "extra_dependency_names": [],
@@ -9069,7 +9072,10 @@
         "req_template": "$INPUT",
         "request_timeout": 20,
         "proxies": null,
-        "verify_ssl": true
+        "verify_ssl": true,
+        "client_cert": null,
+        "client_key": null,
+        "client_key_passphrase_env_var": null
       },
       "active": true,
       "extra_dependency_names": [],
@@ -9084,7 +9090,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-11-12 10:22:37 +0000"
+      "mod_time": "2026-04-15 11:54:13 +0000"
     },
     "generators.test.Blank": {
       "description": "This generator always returns the empty string.",
