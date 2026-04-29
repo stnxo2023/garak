@@ -4605,7 +4605,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2026-01-27 19:02:06 +0000"
+      "mod_time": "2026-04-02 07:06:04 +0000"
     },
     "probes.suffix.GCG": {
       "description": "Greedy Coordinate Gradient probe",
@@ -4641,7 +4641,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2026-01-27 19:02:06 +0000"
+      "mod_time": "2026-04-02 07:06:04 +0000"
     },
     "probes.suffix.GCGCached": {
       "description": "Greedy Coordinate Gradient Cached probe",
@@ -4666,7 +4666,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2026-01-27 19:02:06 +0000"
+      "mod_time": "2026-04-02 07:06:04 +0000"
     },
     "probes.tap.PAIR": {
       "description": "Prompt Automatic Iterative Refinement automatic jailbreak",
@@ -8214,7 +8214,45 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-09-25 10:36:16 +0000"
+      "mod_time": "2026-04-13 17:10:30 +0000"
+    },
+    "generators.guardrails.NeMoGuardrailsServer": {
+      "description": "Generator for NeMo Guardrails Server",
+      "DEFAULT_PARAMS": {
+        "max_tokens": 150,
+        "temperature": 0.7,
+        "top_k": null,
+        "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
+        "top_p": 1.0,
+        "uri": "http://localhost:8000/v1/",
+        "frequency_penalty": 0.0,
+        "presence_penalty": 0.0,
+        "seed": null,
+        "stop": [
+          "#",
+          ";"
+        ],
+        "suppressed_params": [],
+        "retry_json": true,
+        "extra_params": {},
+        "config_ids": []
+      },
+      "active": true,
+      "extra_dependency_names": [],
+      "generator_family_name": "Guardrails",
+      "modality": {
+        "in": [
+          "text"
+        ],
+        "out": [
+          "text"
+        ]
+      },
+      "parallel_capable": true,
+      "supports_multiple_generations": false,
+      "mod_time": "2026-04-13 17:10:30 +0000"
     },
     "generators.huggingface.InferenceAPI": {
       "description": "Get text generations from Hugging Face Inference API",
