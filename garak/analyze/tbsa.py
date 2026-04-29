@@ -78,7 +78,6 @@ def digest_to_tbsa(digest: dict, verbose=False, quiet=False) -> Tuple[float, str
     c = garak.analyze.calibration.Calibration()
     if not quiet:
         print(f"📐 Calibration was {c.calibration_filename} from {c.metadata['date']}")
-        # _print_hr()
     probe_detector_scores = {}
     probe_detector_defcons = {}
 
