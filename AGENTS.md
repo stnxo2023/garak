@@ -15,10 +15,11 @@ Due to the nature of the project, there is a lot of potentially harmful or dange
 - Adhere to contribution and documentation standards, described in the docs.
 - Prefer `pathlib` over `os`.
 - Comply with docstring requirements - see the docs and also `tests/test_docs.py`.
+- Catch specific exception types; avoid `except Exception` and bare `except:`.
 
 ## Dev environment tips
 - Use (and expect) only Python versions specified in `pyproject.toml`.
-- Be sure you're using the right environment, with the right dependencies. Conda-like environment management is preferred.
+- Be sure you're using the right environment, with the right dependencies. Virtual environment management is preferred.
 
 ## Testing instructions
 - Don't break existing tests.
