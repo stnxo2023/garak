@@ -539,7 +539,7 @@ def build_digest(report_filename: str, config=_config):
     report_digest["meta"]["calibration_used"] = calibration_used
     report_digest["meta"]["aggregation_unknown"] = aggregation_unknown
     report_digest["meta"]["plugin_cache_source"] = (
-        "live_cache" if report_plugin_cache is None else "header"
+        report_plugin_cache["version"]
     )
     if calibration_used:
         report_digest["meta"]["calibration"] = _get_calibration_info(calibration)
