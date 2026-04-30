@@ -14,6 +14,7 @@ For detailed information on detector metrics and evaluation, see :doc:`../detect
    :maxdepth: 2
 
    detectors/base
+   detectors/agent_breaker
    detectors/always
    detectors/any
    detectors/ansiescape
