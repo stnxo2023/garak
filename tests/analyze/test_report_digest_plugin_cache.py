@@ -11,8 +11,9 @@ import garak._plugins
 import garak.analyze.report_digest as report_digest
 
 
-def _complete_plugin_cache():
+def _complete_plugin_cache(version="test-cache-version"):
     return {
+        "version": version,
         "probes": {
             "probes.test.Blank": {
                 "description": "Frozen probe description",
@@ -119,39 +120,58 @@ def test_resolve_plugin_info_prefers_header(mocker):
         side_effect=AssertionError("live cache should not be used"),
     )
 
-    meta, source = report_digest._resolve_plugin_info(
+    meta = report_digest._resolve_plugin_info(
         "probes.test.Blank",
         _complete_plugin_cache(),
         required_fields=("description", "tags", "tier"),
     )
 
-    assert source == "header"
     assert meta["description"] == "Frozen probe description"
     live_cache.assert_not_called()
 
 
-def test_resolve_plugin_info_uses_live_cache_for_legacy_reports(mocker):
-    live_cache = mocker.patch.object(
+def test_parse_report_uses_live_cache_for_legacy_reports(mocker):
+    live_cache = {
+        "probes": {
+            "probes.test.Blank": {
+                "description": "Live description",
+                "tags": [],
+                "tier": 1,
+            }
+        }
+    }
+    cache_instance = mocker.patch.object(
         garak._plugins.PluginCache,
-        "plugin_info",
-        return_value={"description": "Live description", "tags": [], "tier": 1},
+        "instance",
+        return_value=live_cache,
+    )
+    report = io.StringIO(
+        json.dumps(
+            {
+                "entry_type": "init",
+                "garak_version": "test",
+                "start_time": "2026-01-01T00:00:00",
+                "run": "test-run",
+            }
+        )
     )
 
-    meta, source = report_digest._resolve_plugin_info(
-        "probes.test.Blank",
-        None,
-        required_fields=("description", "tags", "tier"),
-    )
+    *_, plugin_cache = report_digest._parse_report(report)
 
-    assert source == "live_cache"
-    assert meta["description"] == "Live description"
-    live_cache.assert_called_once_with("probes.test.Blank")
+    assert plugin_cache["version"] == garak.__version__
+    assert (
+        plugin_cache["probes"]["probes.test.Blank"]["description"]
+        == "Live description"
+    )
+    assert "version" not in live_cache
+    cache_instance.assert_called_once()
 
 
 def test_build_digest_rejects_missing_plugin_cache_entry(tmp_path):
     report_path = _write_report(
         tmp_path,
         plugin_cache={
+            "version": "test-cache-version",
             "probes": {
                 "probes.test.Blank": {
                     "description": "Frozen probe description",
@@ -170,6 +190,7 @@ def test_build_digest_rejects_missing_required_plugin_cache_field(tmp_path):
     report_path = _write_report(
         tmp_path,
         plugin_cache={
+            "version": "test-cache-version",
             "probes": {
                 "probes.test.Blank": {
                     "description": "Frozen probe description",
@@ -193,7 +214,7 @@ def test_build_digest_records_header_plugin_cache_source(tmp_path):
 
     digest = report_digest.build_digest(str(report_path))
 
-    assert digest["meta"]["plugin_cache_source"] == "header"
+    assert digest["meta"]["plugin_cache_source"] == "test-cache-version"
 
 
 def test_build_digest_records_live_cache_source_for_legacy_report(tmp_path):
@@ -201,4 +222,4 @@ def test_build_digest_records_live_cache_source_for_legacy_report(tmp_path):
 
     digest = report_digest.build_digest(str(report_path))
 
-    assert digest["meta"]["plugin_cache_source"] == "live_cache"
+    assert digest["meta"]["plugin_cache_source"] == garak.__version__

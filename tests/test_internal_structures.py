@@ -128,6 +128,9 @@ def _merge_plugin_cache_records(records):
     plugin_cache = {}
     for record in records:
         for category, entries in record["plugin_cache"].items():
+            if category == "version":
+                plugin_cache["version"] = entries
+                continue
             plugin_cache.setdefault(category, {}).update(entries)
     return plugin_cache
 
@@ -147,6 +150,7 @@ def test_harness_emits_plugin_cache_entries_for_loaded_plugins(mocker, monkeypat
     harness.run(model, [probe], [detector], mocker.Mock())
 
     merged = _merge_plugin_cache_records(_read_report_records("plugin_cache"))
+    assert merged["version"] == garak.__version__
     assert "harnesses.base.Harness" in merged["harnesses"]
     assert "generators.test.Blank" in merged["generators"]
     assert "probes.test.Blank" in merged["probes"]
@@ -192,4 +196,4 @@ def test_digest_uses_harness_emitted_plugin_cache(mocker, tmp_path):
 
     digest = garak.analyze.report_digest.build_digest(str(report_path))
 
-    assert digest["meta"]["plugin_cache_source"] == "header"
+    assert digest["meta"]["plugin_cache_source"] == garak.__version__
