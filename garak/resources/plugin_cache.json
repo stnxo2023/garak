@@ -1,5 +1,49 @@
 {
   "probes": {
+    "probes.agent_breaker.AgentBreaker": {
+      "description": "Agent Breaker - Agentic Application Exploitation Probe",
+      "DEFAULT_PARAMS": {
+        "max_calls_per_conv": 50,
+        "follow_prompt_cap": true,
+        "red_team_model_type": "nim",
+        "red_team_model_name": "openai/gpt-oss-120b",
+        "red_team_model_config": {
+          "max_tokens": 8192,
+          "suppressed_params": [
+            "stop"
+          ]
+        },
+        "parse_model_type": null,
+        "parse_model_name": null,
+        "parse_model_config": null,
+        "end_condition": "verify",
+        "agent_config_file": "agent_breaker/agent.yaml",
+        "max_attempts_per_tool": 5,
+        "success_threshold": 0.7
+      },
+      "active": false,
+      "doc_uri": "https://genai.owasp.org/llmrisk/llm062025-excessive-agency/",
+      "extended_detectors": [],
+      "extra_dependency_names": [],
+      "goal": "Identify weknesses in agentic applications through tool manipulation",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": false,
+      "primary_detector": "agent_breaker.AgentBreakerResult",
+      "tags": [
+        "owasp:llm01",
+        "owasp:llm07",
+        "owasp:llm08",
+        "quality:Security:AgentSecurity",
+        "payload:agentic:exploitation"
+      ],
+      "tier": 3,
+      "mod_time": "2026-04-30 18:03:01 +0000"
+    },
     "probes.ansiescape.AnsiEscaped": {
       "description": "Probe for eliciting ANSI control codes from a model",
       "DEFAULT_PARAMS": {},
@@ -5243,6 +5287,40 @@
     }
   },
   "detectors": {
+    "detectors.agent_breaker.AgentBreakerResult": {
+      "description": "Detect if agent tools were successfully exploited.",
+      "DEFAULT_PARAMS": {
+        "skip": false,
+        "detector_model_type": "nim",
+        "detector_model_name": "openai/gpt-oss-120b",
+        "detector_model_config": {
+          "max_tokens": 8192,
+          "suppressed_params": [
+            "n",
+            "stop"
+          ]
+        },
+        "confidence_cutoff": 0.7
+      },
+      "active": true,
+      "doc_uri": "https://genai.owasp.org/llmrisk/llm062025-excessive-agency/",
+      "extra_dependency_names": [],
+      "hit_desc": "Detector identified matching indicators of risk",
+      "lang_spec": "*",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "pass_desc": "Detector found no issue",
+      "tags": [
+        "owasp:llm01",
+        "owasp:llm07",
+        "owasp:llm08",
+        "quality:Security:AgentSecurity"
+      ],
+      "mod_time": "2026-04-09 15:08:15 +0000"
+    },
     "detectors.always.Fail": {
       "description": "Always Fail (for testing & prototyping)",
       "DEFAULT_PARAMS": {
