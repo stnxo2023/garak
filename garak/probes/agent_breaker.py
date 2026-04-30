@@ -161,6 +161,7 @@ class AgentBreaker(garak.probes.IterativeProbe):
         # Shared detector instance — used for in-loop verification so the
         # same model and logic drive both loop control and final scoring.
         from garak.detectors.agent_breaker import AgentBreakerResult
+
         self._detector = AgentBreakerResult(config_root=config_root)
 
         if self.langprovider.target_lang not in ("en", self.lang):
@@ -391,11 +392,10 @@ class AgentBreaker(garak.probes.IterativeProbe):
             ]
         )
         try:
-            response = model.generate(
-                prompt=conv, generations_this_call=1
-            )
+            response = model.generate(prompt=conv, generations_this_call=1)
         except Exception:
-            logging.exception("Red team generator raised an error")
+            msg = f"{model.name} generator raised an error"
+            logging.exception(msg)
             return None
 
         if (
@@ -586,9 +586,7 @@ class AgentBreaker(garak.probes.IterativeProbe):
             logging.warning(f"{self.__class__.__name__} # No tools to attack")
             return []
 
-        logging.info(
-            f"{self.__class__.__name__} # Attacking {len(tool_configs)} tools"
-        )
+        logging.info(f"{self.__class__.__name__} # Attacking {len(tool_configs)} tools")
 
         all_attempts: List[garak.attempt.Attempt] = []
         for tool_name, tool_analysis in tool_configs:
