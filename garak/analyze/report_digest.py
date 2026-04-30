@@ -75,6 +75,10 @@ def _parse_report(reportfile: IO):
             for category, entries in record.get("plugin_cache", {}).items():
                 plugin_cache.setdefault(category, {}).update(entries)
 
+    if len(plugin_cache) <= 0:
+        from copy import deepcopy
+        plugin_cache = deepcopy(garak._plugins.PluginCache.instance())
+        plugin_cache["version"] = garak.__version__
     return init, setup, payloads, evals, plugin_cache
 
 
