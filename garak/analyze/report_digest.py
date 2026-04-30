@@ -285,7 +285,7 @@ def _get_probe_info(
     probe_module, probe_class, absolute_score, report_plugin_cache=None
 ) -> dict:
     probe_classpath = f"probes.{probe_module}.{probe_class}"
-    probe_plugin_info, _ = _resolve_plugin_info(
+    probe_plugin_info = _resolve_plugin_info(
         probe_classpath,
         report_plugin_cache,
         required_fields=("description", "tags", "tier"),
