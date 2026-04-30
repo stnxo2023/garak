@@ -63,6 +63,7 @@ def _emit_plugin_cache_entry(*plugin_instances) -> None:
     if not snapshot:
         return
 
+    snapshot["version"] = garak.__version__
     _config.transient.reportfile.write(
         json.dumps(
             {
