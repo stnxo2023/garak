@@ -97,8 +97,6 @@ def _report_header_content(report_path, init, setup, payloads, config=_config) -
 
 
 def _resolve_plugin_info(plugin_classpath, report_plugin_cache, required_fields=None):
-    if report_plugin_cache is None:
-        return garak._plugins.PluginCache.plugin_info(plugin_classpath), "live_cache"
 
     category = plugin_classpath.split(".")[0]
     meta = report_plugin_cache.get(category, {}).get(plugin_classpath)
