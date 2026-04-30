@@ -340,7 +340,7 @@ def _get_probe_detector_details(
     calibration_used = False
     detector = re.sub(r"[^0-9A-Za-z_.]", "", detector)
     detector_module, detector_class = detector.split(".")
-    detector_cache_entry, _ = _resolve_plugin_info(
+    detector_cache_entry = _resolve_plugin_info(
         f"detectors.{detector_module}.{detector_class}",
         report_plugin_cache,
         required_fields=("description",),
