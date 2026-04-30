@@ -164,7 +164,7 @@
         "payload:unwanted"
       ],
       "tier": 2,
-      "mod_time": "2026-01-28 08:11:20 +0000"
+      "mod_time": "2026-02-27 19:25:10 +0000"
     },
     "probes.audio.AudioAchillesHeel": {
       "description": "Audio is the Achilles Heel",
@@ -194,7 +194,7 @@
         "quality:Security:PromptStability"
       ],
       "tier": 9,
-      "mod_time": "2025-11-13 14:31:01 +0000"
+      "mod_time": "2026-02-23 15:55:30 +0000"
     },
     "probes.av_spam_scanning.EICAR": {
       "description": "Does the model check its output for viruses? Try to send the EICAR code through",
@@ -332,7 +332,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2026-01-30 12:34:29 +0000"
+      "mod_time": "2026-04-07 16:55:47 +0000"
     },
     "probes.base.Probe": {
       "description": "Base class for objects that define and execute LLM evaluations",
@@ -352,7 +352,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2026-01-30 12:34:29 +0000"
+      "mod_time": "2026-04-07 16:55:47 +0000"
     },
     "probes.base.TreeSearchProbe": {
       "DEFAULT_PARAMS": {
@@ -377,7 +377,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2026-01-30 12:34:29 +0000"
+      "mod_time": "2026-04-07 16:55:47 +0000"
     },
     "probes.continuation.ContinueSlursReclaimedSlurs": {
       "description": "Continue partial word with slur or reclaimed slur.",
@@ -2013,7 +2013,7 @@
         ]
       },
       "parallelisable_attempts": true,
-      "primary_detector": "exploitation.JinjaTemplateDetector",
+      "primary_detector": "exploitation.JinjaTemplateInjectionDetector",
       "tags": [
         "avid-effect:security:S0301",
         "avid-effect:security:S0403",
@@ -2027,7 +2027,7 @@
         "cwe:1336"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2026-02-06 15:37:09 +0000"
     },
     "probes.exploitation.SQLInjectionEcho": {
       "description": "Attempts to get the target to echo a SQL statement.",
@@ -2059,7 +2059,7 @@
         "cwe:1427"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2026-02-06 15:37:09 +0000"
     },
     "probes.exploitation.SQLInjectionSystem": {
       "description": "Attempts to inject untrusted SQL commands into a SQL statement.",
@@ -2091,7 +2091,7 @@
         "cwe:1427"
       ],
       "tier": 1,
-      "mod_time": "2025-11-12 08:34:39 +0000"
+      "mod_time": "2026-02-06 15:37:09 +0000"
     },
     "probes.fileformats.HF_Files": {
       "description": "Get a manifest of files associated with a Hugging Face generator",
@@ -2205,6 +2205,62 @@
       ],
       "tier": 3,
       "mod_time": "2025-11-12 08:34:39 +0000"
+    },
+    "probes.goat.GOATAttack": {
+      "description": "Generative Offensive Agent Tester",
+      "DEFAULT_PARAMS": {
+        "max_calls_per_conv": 5,
+        "follow_prompt_cap": true,
+        "end_condition": "verify",
+        "early_stop_on": "any",
+        "red_team_model_type": "huggingface.Model",
+        "red_team_model_name": "Qwen/Qwen3-4B-Thinking-2507",
+        "red_team_model_config": {
+          "max_tokens": 4096
+        },
+        "custom_goals": [],
+        "augment_custom_goals": false,
+        "attack_hf_dataset": "JailbreakBench/JBB-Behaviors",
+        "attack_hf_dataset_load_kwargs": {
+          "split": "harmful",
+          "name": "behaviors"
+        },
+        "attack_hf_dataset_column": "Goal",
+        "num_goals": 5,
+        "custom_system_prompt": null,
+        "custom_initial_prompt": null,
+        "custom_followup_prompt": null,
+        "custom_judge_prompt": null,
+        "custom_attack_techniques": null
+      },
+      "active": false,
+      "doc_uri": "https://arxiv.org/abs/2410.01606",
+      "extended_detectors": [],
+      "extra_dependency_names": [],
+      "goal": "elicit a harmful, unethical, or illegal response from the model",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "judge.JailbreakOnlyAdversarial",
+      "tags": [
+        "owasp:llm01",
+        "owasp:llm09",
+        "avid-effect:security:S0403",
+        "quality:Behavioral:ContentSafety:HateHarassment",
+        "quality:Behavioral:ContentSafety:LegalGoodsServices",
+        "quality:Behavioral:ContentSafety:Profanity",
+        "quality:Behavioral:ContentSafety:Toxicity",
+        "quality:Behavioral:ContentSafety:Unauthorized",
+        "quality:Security:PromptStability",
+        "quality:Security:Adversarial",
+        "cwe:1427"
+      ],
+      "tier": 1,
+      "mod_time": "2026-04-28 16:58:26 +0000"
     },
     "probes.goodside.Davidjl": {
       "description": "Exploit the ' davidjl' magic token",
@@ -4549,7 +4605,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2026-01-27 19:02:06 +0000"
+      "mod_time": "2026-04-02 07:06:04 +0000"
     },
     "probes.suffix.GCG": {
       "description": "Greedy Coordinate Gradient probe",
@@ -4585,7 +4641,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2026-01-27 19:02:06 +0000"
+      "mod_time": "2026-04-02 07:06:04 +0000"
     },
     "probes.suffix.GCGCached": {
       "description": "Greedy Coordinate Gradient Cached probe",
@@ -4610,7 +4666,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2026-01-27 19:02:06 +0000"
+      "mod_time": "2026-04-02 07:06:04 +0000"
     },
     "probes.tap.PAIR": {
       "description": "Prompt Automatic Iterative Refinement automatic jailbreak",
@@ -4655,7 +4711,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2026-02-02 17:15:48 +0000"
+      "mod_time": "2026-03-28 17:25:32 +0000"
     },
     "probes.tap.TAP": {
       "description": "Tree of Attacks with Pruning Probe, generating new attacks against the target",
@@ -4700,7 +4756,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2026-02-02 17:15:48 +0000"
+      "mod_time": "2026-03-28 17:25:32 +0000"
     },
     "probes.tap.TAPCached": {
       "description": "Tree of Attacks with Pruning Probe using cached attacks",
@@ -4727,7 +4783,7 @@
         "payload:jailbreak"
       ],
       "tier": 2,
-      "mod_time": "2026-02-02 17:15:48 +0000"
+      "mod_time": "2026-03-28 17:25:32 +0000"
     },
     "probes.test.Blank": {
       "description": "Blank prompt",
@@ -5273,7 +5329,7 @@
       "active": true,
       "doc_uri": "https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer",
       "extra_dependency_names": [],
-      "hit_desc": "Response contains escaped ANSI control sequences - terminal injection risk",
+      "hit_desc": "Response contains escaped ANSI control sequences",
       "lang_spec": "*",
       "modality": {
         "out": [
@@ -5282,7 +5338,7 @@
       },
       "pass_desc": "Response does not contain escaped ANSI control sequences",
       "tags": [],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-03-10 19:44:17 +0000"
     },
     "detectors.ansiescape.Raw": {
       "description": "pick up raw ANSI escape sequences",
@@ -5294,7 +5350,7 @@
       "active": true,
       "doc_uri": "https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer",
       "extra_dependency_names": [],
-      "hit_desc": "Response contains raw ANSI control sequences - terminal injection risk",
+      "hit_desc": "Response contains raw ANSI control sequences",
       "lang_spec": "*",
       "modality": {
         "out": [
@@ -5303,7 +5359,7 @@
       },
       "pass_desc": "Response does not contain raw ANSI control sequences",
       "tags": [],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-03-10 19:44:17 +0000"
     },
     "detectors.any.AnyNonspaceOutput": {
       "description": "Hit if there's any non-space output",
@@ -5351,7 +5407,7 @@
       "active": true,
       "doc_uri": null,
       "extra_dependency_names": [],
-      "hit_desc": "Response contains possible API key - credential leak risk",
+      "hit_desc": "Response contains possible API key",
       "lang_spec": "*",
       "modality": {
         "out": [
@@ -5360,7 +5416,7 @@
       },
       "pass_desc": "Response does not contain API key patterns",
       "tags": [],
-      "mod_time": "2026-02-04 19:19:46 +0000"
+      "mod_time": "2026-02-12 14:11:20 +0000"
     },
     "detectors.base.Detector": {
       "description": "Base class for objects that define a way of detecting a probe hit / LLM failure",
@@ -5719,7 +5775,7 @@
       },
       "pass_desc": "Response does not decode the encoded payload",
       "tags": [],
-      "mod_time": "2026-02-04 19:07:43 +0000"
+      "mod_time": "2026-04-23 21:19:16 +0000"
     },
     "detectors.encoding.DecodeMatch": {
       "description": "Is there a direct decoding of anything in attempt[\"notes\"][\"triggers\"]?",
@@ -5740,10 +5796,10 @@
       },
       "pass_desc": "Response does not decode the encoded payload",
       "tags": [],
-      "mod_time": "2026-02-04 19:07:43 +0000"
+      "mod_time": "2026-04-23 21:19:16 +0000"
     },
-    "detectors.exploitation.JinjaTemplateDetector": {
-      "description": "Detect that a valid jinja template was provided.",
+    "detectors.exploitation.JinjaTemplateInjectionDetector": {
+      "description": "Detect that a valid jinja template was provided with injected python code.",
       "DEFAULT_PARAMS": {
         "skip": false
       },
@@ -5769,10 +5825,11 @@
         "quality:Security:ExtractionInversion",
         "cwe:94",
         "cwe:95",
+        "cwe:1336",
         "cwe:1426",
         "cwe:1427"
       ],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-02-06 15:37:09 +0000"
     },
     "detectors.exploitation.PythonCodeExecution": {
       "description": "Detect the presence of python that will execute commands on the system.",
@@ -5799,11 +5856,10 @@
         "quality:Security:ExtractionInversion",
         "cwe:94",
         "cwe:95",
-        "cwe:1336",
         "cwe:1426",
         "cwe:1427"
       ],
-      "mod_time": "2026-02-04 19:22:32 +0000",
+      "mod_time": "2026-02-06 15:37:09 +0000",
       "hit_precision": 1.0,
       "hit_recall": 1.0,
       "hit_f1": 1.0
@@ -5835,7 +5891,7 @@
         "cwe:1426",
         "cwe:1427"
       ],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-02-06 15:37:09 +0000"
     },
     "detectors.exploitation.SQLiSuccess": {
       "description": "Detect if the system returns a \"SUCCESS\" message.",
@@ -5866,7 +5922,7 @@
         "cwe:1426",
         "cwe:1427"
       ],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-02-06 15:37:09 +0000"
     },
     "detectors.fileformats.FileIsExecutable": {
       "description": "Magic check if file is portable or linear executable (exe/dll/vxd/..)",
@@ -5888,7 +5944,7 @@
       "pass_desc": "File magic indicates that the provided file is not a common executable filetype",
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-04-08 14:06:23 +0000"
     },
     "detectors.fileformats.FileIsPickled": {
       "description": "Check whether a file is pickled.",
@@ -5908,7 +5964,7 @@
       "pass_desc": "Provided file is not `pickle`-serialized data",
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-04-08 14:06:23 +0000"
     },
     "detectors.fileformats.PossiblePickleName": {
       "description": "Guess if filenames look like pickles",
@@ -5928,7 +5984,7 @@
       "pass_desc": "Provided filename extension is not commonly used for pickle files",
       "tags": [],
       "valid_format": null,
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-04-08 14:06:23 +0000"
     },
     "detectors.goodside.Glitch": {
       "description": "Inverse trigger list detector - hit if trigger absent",
@@ -5990,6 +6046,52 @@
       "tags": [],
       "mod_time": "2026-02-04 19:07:43 +0000"
     },
+    "detectors.judge.Jailbreak": {
+      "description": "Uses the configured model to detect if responses contain harmful content achieving the adversarial goal (JailbreakBench methodology)",
+      "DEFAULT_PARAMS": {
+        "skip": false,
+        "detector_model_type": "nim",
+        "detector_model_name": "meta/llama3-70b-instruct",
+        "detector_model_config": null,
+        "custom_system_prompt": null
+      },
+      "active": true,
+      "doc_uri": "https://github.com/JailbreakBench/jailbreakbench",
+      "extra_dependency_names": [],
+      "hit_desc": "Detector identified matching indicators of risk",
+      "lang_spec": "en",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "pass_desc": "Detector found no issue",
+      "tags": [],
+      "mod_time": "2026-04-28 16:58:26 +0000"
+    },
+    "detectors.judge.JailbreakOnlyAdversarial": {
+      "description": "Uses the configured model to detect if responses contain harmful content achieving the adversarial goal (JailbreakBench methodology)",
+      "DEFAULT_PARAMS": {
+        "skip": false,
+        "detector_model_type": "nim",
+        "detector_model_name": "meta/llama3-70b-instruct",
+        "detector_model_config": null,
+        "custom_system_prompt": null
+      },
+      "active": true,
+      "doc_uri": "https://github.com/JailbreakBench/jailbreakbench",
+      "extra_dependency_names": [],
+      "hit_desc": "Detector identified matching indicators of risk",
+      "lang_spec": "en",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "pass_desc": "Detector found no issue",
+      "tags": [],
+      "mod_time": "2026-04-28 16:58:26 +0000"
+    },
     "detectors.judge.ModelAsJudge": {
       "description": "Uses the configured model to detect responses that attained the probe goal",
       "DEFAULT_PARAMS": {
@@ -6012,7 +6114,7 @@
       },
       "pass_desc": "Detector found no issue",
       "tags": [],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-04-28 16:58:26 +0000"
     },
     "detectors.judge.Refusal": {
       "description": "Uses the configured model to detect if the responses is a refusal to answer",
@@ -6034,7 +6136,7 @@
       },
       "pass_desc": "Response refuses to answer",
       "tags": [],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-04-28 16:58:26 +0000"
     },
     "detectors.judge.RefusalOnlyAdversarial": {
       "description": "Uses the configured model to detect if the responses is a refusal to answer",
@@ -6056,7 +6158,7 @@
       },
       "pass_desc": "Response refuses adversarial prompt - safety boundaries maintained",
       "tags": [],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-04-28 16:58:26 +0000"
     },
     "detectors.knownbadsignatures.EICAR": {
       "description": "Is the EICAR test string present?",
@@ -6243,7 +6345,7 @@
       },
       "pass_desc": "Response appropriately contradicts the false claim",
       "tags": [],
-      "mod_time": "2026-02-04 19:07:43 +0000"
+      "mod_time": "2026-04-23 22:26:04 +0000"
     },
     "detectors.misleading.MustRefuteClaimKW": {
       "description": "Looking for strings indicating a refutation",
@@ -6264,7 +6366,7 @@
       },
       "pass_desc": "Response properly refutes claims or otherwise appears accurate",
       "tags": [],
-      "mod_time": "2026-02-04 19:07:43 +0000"
+      "mod_time": "2026-04-23 22:26:04 +0000"
     },
     "detectors.misleading.MustRefuteClaimModel": {
       "description": "Using garak-llm/refutation_detector_distilbert to detect model refutations",
@@ -6293,7 +6395,7 @@
       },
       "pass_desc": "Response properly refutes claims or otherwise appears accurate",
       "tags": [],
-      "mod_time": "2026-02-04 19:07:43 +0000"
+      "mod_time": "2026-04-23 22:26:04 +0000"
     },
     "detectors.mitigation.MitigationBypass": {
       "description": "Detect if a string response does not contain a mitigation message.",
@@ -6317,10 +6419,42 @@
         "avid-effect:security:S0403",
         "avid-effect:performance:P0204"
       ],
-      "mod_time": "2026-02-04 19:07:43 +0000",
+      "mod_time": "2026-04-10 15:29:13 +0000",
       "hit_precision": 0.5998546247501363,
       "hit_recall": 0.921295004186436,
       "hit_f1": 0.7266123706801674
+    },
+    "detectors.mitigation.ModernBERTRefusal": {
+      "description": "Detect LLM refusals using a fine-tuned ModernBERT classifier.",
+      "DEFAULT_PARAMS": {
+        "skip": false,
+        "hf_args": {
+          "device": "cpu"
+        },
+        "tokenizer_kwargs": {
+          "padding": true,
+          "truncation": true
+        },
+        "graceful_fail": true,
+        "detector_model_path": "garak-llm/garak-refusal-detector",
+        "detector_target_class": "refusal"
+      },
+      "active": true,
+      "doc_uri": "https://huggingface.co/garak-llm/garak-refusal-detector",
+      "extra_dependency_names": [],
+      "hit_desc": "Response does not contain a refusal",
+      "lang_spec": "en",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "pass_desc": "Response contains a refusal",
+      "tags": [
+        "avid-effect:security:S0403",
+        "avid-effect:performance:P0204"
+      ],
+      "mod_time": "2026-04-10 15:29:13 +0000"
     },
     "detectors.mitigation.Prefixes": {
       "description": "Detect failure prefixes",
@@ -6341,7 +6475,7 @@
       },
       "pass_desc": "Response does not start with a well-known refusal prefix",
       "tags": [],
-      "mod_time": "2026-02-04 19:07:43 +0000"
+      "mod_time": "2026-04-10 15:29:13 +0000"
     },
     "detectors.packagehallucination.Dart": {
       "description": "Check if the output tries to use a Dart package not listed on pub.dev (2025-08-11 snapshot)",
@@ -7866,7 +8000,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-01-28 10:38:34 +0000"
+      "mod_time": "2026-03-28 17:25:32 +0000"
     },
     "generators.bedrock.BedrockGenerator": {
       "description": "Interface for AWS Bedrock foundation models using Converse API",
@@ -7897,7 +8031,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-01-09 14:20:03 +0000"
+      "mod_time": "2026-03-19 10:57:52 +0000"
     },
     "generators.cohere.CohereGenerator": {
       "description": "Interface to Cohere's python library for their text2text model.",
@@ -8080,7 +8214,45 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-09-25 10:36:16 +0000"
+      "mod_time": "2026-04-13 17:10:30 +0000"
+    },
+    "generators.guardrails.NeMoGuardrailsServer": {
+      "description": "Generator for NeMo Guardrails Server",
+      "DEFAULT_PARAMS": {
+        "max_tokens": 150,
+        "temperature": 0.7,
+        "top_k": null,
+        "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
+        "top_p": 1.0,
+        "uri": "http://localhost:8000/v1/",
+        "frequency_penalty": 0.0,
+        "presence_penalty": 0.0,
+        "seed": null,
+        "stop": [
+          "#",
+          ";"
+        ],
+        "suppressed_params": [],
+        "retry_json": true,
+        "extra_params": {},
+        "config_ids": []
+      },
+      "active": true,
+      "extra_dependency_names": [],
+      "generator_family_name": "Guardrails",
+      "modality": {
+        "in": [
+          "text"
+        ],
+        "out": [
+          "text"
+        ]
+      },
+      "parallel_capable": true,
+      "supports_multiple_generations": false,
+      "mod_time": "2026-04-13 17:10:30 +0000"
     },
     "generators.huggingface.InferenceAPI": {
       "description": "Get text generations from Hugging Face Inference API",
@@ -8356,40 +8528,6 @@
       "supports_multiple_generations": false,
       "mod_time": "2026-01-09 14:20:03 +0000"
     },
-    "generators.nemo.NeMoGenerator": {
-      "description": "Wrapper for the NVIDIA NeMo models via NGC. Expects NGC_API_KEY and ORG_ID environment variables.",
-      "DEFAULT_PARAMS": {
-        "max_tokens": 150,
-        "temperature": 0.9,
-        "top_k": 2,
-        "context_len": null,
-        "skip_seq_start": null,
-        "skip_seq_end": null,
-        "top_p": 1.0,
-        "repetition_penalty": 1.1,
-        "beam_search_diversity_rate": 0.0,
-        "beam_width": 1,
-        "length_penalty": 1,
-        "guardrail": null,
-        "api_uri": "https://api.llm.ngc.nvidia.com/v1"
-      },
-      "active": true,
-      "extra_dependency_names": [
-        "nemollm"
-      ],
-      "generator_family_name": "NeMo",
-      "modality": {
-        "in": [
-          "text"
-        ],
-        "out": [
-          "text"
-        ]
-      },
-      "parallel_capable": true,
-      "supports_multiple_generations": false,
-      "mod_time": "2025-11-26 08:39:43 +0000"
-    },
     "generators.nim.NVMultimodal": {
       "description": "Wrapper for text and image / audio to text NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
       "DEFAULT_PARAMS": {
@@ -8418,7 +8556,8 @@
         "extra_params": {},
         "vary_seed_each_call": true,
         "vary_temp_each_call": true,
-        "max_input_len": 180000
+        "max_input_len": 180000,
+        "embed_data": false
       },
       "active": true,
       "extra_dependency_names": [],
@@ -8435,7 +8574,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-01-09 14:20:03 +0000"
+      "mod_time": "2026-02-24 19:51:44 +0000"
     },
     "generators.nim.NVOpenAIChat": {
       "description": "Wrapper for NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
@@ -8479,7 +8618,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-01-09 14:20:03 +0000"
+      "mod_time": "2026-02-24 19:51:44 +0000"
     },
     "generators.nim.NVOpenAICompletion": {
       "description": "Wrapper for NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
@@ -8523,7 +8662,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-01-09 14:20:03 +0000"
+      "mod_time": "2026-02-24 19:51:44 +0000"
     },
     "generators.nim.Vision": {
       "description": "Wrapper for text and image to text NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
@@ -8553,7 +8692,8 @@
         "extra_params": {},
         "vary_seed_each_call": true,
         "vary_temp_each_call": true,
-        "max_input_len": 180000
+        "max_input_len": 180000,
+        "embed_data": false
       },
       "active": true,
       "extra_dependency_names": [],
@@ -8569,7 +8709,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-01-09 14:20:03 +0000"
+      "mod_time": "2026-02-24 19:51:44 +0000"
     },
     "generators.nvcf.NvcfChat": {
       "description": "Wrapper for NVIDIA Cloud Functions Chat models via NGC. Expects NVCF_API_KEY environment variable.",
@@ -8732,7 +8872,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-01-20 17:25:39 +0000"
+      "mod_time": "2026-02-18 22:29:32 +0000"
     },
     "generators.openai.OpenAIGenerator": {
       "description": "Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable",
@@ -8768,7 +8908,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2026-01-20 17:25:39 +0000"
+      "mod_time": "2026-02-18 22:29:32 +0000"
     },
     "generators.openai.OpenAIReasoningGenerator": {
       "description": "Generator wrapper for OpenAI reasoning models, e.g. `o1` family.",
@@ -8809,7 +8949,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-01-20 17:25:39 +0000"
+      "mod_time": "2026-02-18 22:29:32 +0000"
     },
     "generators.rasa.RasaRestGenerator": {
       "description": "API interface for RASA models",
@@ -8834,7 +8974,10 @@
         "req_template": "{\"sender\": \"garak\", \"message\": \"$INPUT\"}",
         "request_timeout": 20,
         "proxies": null,
-        "verify_ssl": true
+        "verify_ssl": true,
+        "client_cert": null,
+        "client_key": null,
+        "client_key_passphrase_env_var": null
       },
       "active": true,
       "extra_dependency_names": [],
@@ -8929,7 +9072,10 @@
         "req_template": "$INPUT",
         "request_timeout": 20,
         "proxies": null,
-        "verify_ssl": true
+        "verify_ssl": true,
+        "client_cert": null,
+        "client_key": null,
+        "client_key_passphrase_env_var": null
       },
       "active": true,
       "extra_dependency_names": [],
@@ -8944,7 +9090,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-11-12 10:22:37 +0000"
+      "mod_time": "2026-04-15 11:54:13 +0000"
     },
     "generators.test.Blank": {
       "description": "This generator always returns the empty string.",
@@ -8969,7 +9115,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-12-02 11:11:43 +0000"
+      "mod_time": "2026-04-23 16:08:36 +0000"
     },
     "generators.test.BlankVision": {
       "description": "This text+image input generator always returns the empty string.",
@@ -8995,7 +9141,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-12-02 11:11:43 +0000"
+      "mod_time": "2026-04-23 16:08:36 +0000"
     },
     "generators.test.Lipsum": {
       "description": "Lorem Ipsum generator, so we can get non-zero outputs that vary",
@@ -9005,7 +9151,9 @@
         "top_k": null,
         "context_len": null,
         "skip_seq_start": null,
-        "skip_seq_end": null
+        "skip_seq_end": null,
+        "unit": "sentence",
+        "count": 1
       },
       "active": true,
       "extra_dependency_names": [],
@@ -9020,7 +9168,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-12-02 11:11:43 +0000"
+      "mod_time": "2026-04-23 16:08:36 +0000"
     },
     "generators.test.Nones": {
       "description": "This generator always returns a None for every generation.",
@@ -9045,7 +9193,38 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-12-02 11:11:43 +0000"
+      "mod_time": "2026-04-23 16:08:36 +0000"
+    },
+    "generators.test.ReasoningLipsum": {
+      "description": "Lorem Ipsum generator with a simulated reasoning trace, for testing",
+      "DEFAULT_PARAMS": {
+        "max_tokens": 150,
+        "temperature": null,
+        "top_k": null,
+        "context_len": null,
+        "skip_seq_start": "<think>",
+        "skip_seq_end": "</think>",
+        "unit": "sentence",
+        "count": 1,
+        "reasoning_length": 2000,
+        "output_length": 500,
+        "variance": 0.1,
+        "respect_max_tokens": false
+      },
+      "active": true,
+      "extra_dependency_names": [],
+      "generator_family_name": "Test",
+      "modality": {
+        "in": [
+          "text"
+        ],
+        "out": [
+          "text"
+        ]
+      },
+      "parallel_capable": true,
+      "supports_multiple_generations": false,
+      "mod_time": "2026-04-23 16:08:36 +0000"
     },
     "generators.test.Repeat": {
       "description": "This generator returns the last message from input that was posed to it.",
@@ -9070,7 +9249,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-12-02 11:11:43 +0000"
+      "mod_time": "2026-04-23 16:08:36 +0000"
     },
     "generators.test.Single": {
       "description": "This generator returns the a fixed string and does not support multiple generations.",
@@ -9095,7 +9274,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-12-02 11:11:43 +0000"
+      "mod_time": "2026-04-23 16:08:36 +0000"
     },
     "generators.watsonx.WatsonXGenerator": {
       "description": "This is a generator for watsonx.ai.",
@@ -9127,6 +9306,44 @@
       "parallel_capable": true,
       "supports_multiple_generations": false,
       "mod_time": "2026-02-02 14:10:11 +0000"
+    },
+    "generators.websocket.WebSocketGenerator": {
+      "description": "Generator for WebSocket-based LLM services",
+      "DEFAULT_PARAMS": {
+        "uri": "wss://echo.websocket.org",
+        "name": "WebSocket LLM",
+        "auth_type": "none",
+        "username": null,
+        "api_key": null,
+        "conversation_id": null,
+        "req_template": "$INPUT",
+        "req_template_json_object": null,
+        "headers": {},
+        "response_json": false,
+        "response_json_field": "text",
+        "response_after_typing": true,
+        "typing_indicator": "typing",
+        "request_timeout": 20,
+        "connection_timeout": 10,
+        "max_response_length": 10000,
+        "verify_ssl": true
+      },
+      "active": true,
+      "extra_dependency_names": [
+        "websockets"
+      ],
+      "generator_family_name": null,
+      "modality": {
+        "in": [
+          "text"
+        ],
+        "out": [
+          "text"
+        ]
+      },
+      "parallel_capable": true,
+      "supports_multiple_generations": false,
+      "mod_time": "2026-02-19 18:44:19 +0000"
     }
   },
   "harnesses": {
