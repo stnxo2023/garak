@@ -113,7 +113,7 @@ def _resolve_plugin_info(plugin_classpath, report_plugin_cache, required_fields=
             f"plugin_cache metadata for {plugin_classpath} missing fields: {missing}"
         )
 
-    return meta, "header"
+    return meta
 
 
 def _init_populate_result_db(evals, taxonomy=None, report_plugin_cache=None):
