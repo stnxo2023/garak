@@ -154,7 +154,7 @@ def _init_populate_result_db(evals, taxonomy=None, report_plugin_cache=None):
         groups = []
         if taxonomy is not None:
             # get the probe tags
-            meta, _ = _resolve_plugin_info(
+            meta = _resolve_plugin_info(
                 f"probes.{pm}.{pc}",
                 report_plugin_cache,
                 required_fields=("tags",),
