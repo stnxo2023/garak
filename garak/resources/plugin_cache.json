@@ -9115,7 +9115,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-12-02 11:11:43 +0000"
+      "mod_time": "2026-04-23 16:08:36 +0000"
     },
     "generators.test.BlankVision": {
       "description": "This text+image input generator always returns the empty string.",
@@ -9141,7 +9141,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-12-02 11:11:43 +0000"
+      "mod_time": "2026-04-23 16:08:36 +0000"
     },
     "generators.test.Lipsum": {
       "description": "Lorem Ipsum generator, so we can get non-zero outputs that vary",
@@ -9151,7 +9151,9 @@
         "top_k": null,
         "context_len": null,
         "skip_seq_start": null,
-        "skip_seq_end": null
+        "skip_seq_end": null,
+        "unit": "sentence",
+        "count": 1
       },
       "active": true,
       "extra_dependency_names": [],
@@ -9166,7 +9168,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-12-02 11:11:43 +0000"
+      "mod_time": "2026-04-23 16:08:36 +0000"
     },
     "generators.test.Nones": {
       "description": "This generator always returns a None for every generation.",
@@ -9191,7 +9193,38 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-12-02 11:11:43 +0000"
+      "mod_time": "2026-04-23 16:08:36 +0000"
+    },
+    "generators.test.ReasoningLipsum": {
+      "description": "Lorem Ipsum generator with a simulated reasoning trace, for testing",
+      "DEFAULT_PARAMS": {
+        "max_tokens": 150,
+        "temperature": null,
+        "top_k": null,
+        "context_len": null,
+        "skip_seq_start": "<think>",
+        "skip_seq_end": "</think>",
+        "unit": "sentence",
+        "count": 1,
+        "reasoning_length": 2000,
+        "output_length": 500,
+        "variance": 0.1,
+        "respect_max_tokens": false
+      },
+      "active": true,
+      "extra_dependency_names": [],
+      "generator_family_name": "Test",
+      "modality": {
+        "in": [
+          "text"
+        ],
+        "out": [
+          "text"
+        ]
+      },
+      "parallel_capable": true,
+      "supports_multiple_generations": false,
+      "mod_time": "2026-04-23 16:08:36 +0000"
     },
     "generators.test.Repeat": {
       "description": "This generator returns the last message from input that was posed to it.",
@@ -9216,7 +9249,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2025-12-02 11:11:43 +0000"
+      "mod_time": "2026-04-23 16:08:36 +0000"
     },
     "generators.test.Single": {
       "description": "This generator returns the a fixed string and does not support multiple generations.",
@@ -9241,7 +9274,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-12-02 11:11:43 +0000"
+      "mod_time": "2026-04-23 16:08:36 +0000"
     },
     "generators.watsonx.WatsonXGenerator": {
       "description": "This is a generator for watsonx.ai.",
