@@ -86,18 +86,14 @@ def test_parse_report_captures_plugin_cache_entries_and_merges():
                 json.dumps(
                     {
                         "entry_type": "plugin_cache",
-                        "plugin_cache": {
-                            "probes": {"probes.test.Blank": {"tags": []}}
-                        },
+                        "plugin_cache": {"probes": {"probes.test.Blank": {"tags": []}}},
                     }
                 ),
                 json.dumps(
                     {
                         "entry_type": "plugin_cache",
                         "plugin_cache": {
-                            "probes": {
-                                "probes.test.Test": {"tags": ["avid:test"]}
-                            }
+                            "probes": {"probes.test.Test": {"tags": ["avid:test"]}}
                         },
                     }
                 ),
@@ -160,8 +156,7 @@ def test_parse_report_uses_live_cache_for_legacy_reports(mocker):
 
     assert plugin_cache["version"] == garak.__version__
     assert (
-        plugin_cache["probes"]["probes.test.Blank"]["description"]
-        == "Live description"
+        plugin_cache["probes"]["probes.test.Blank"]["description"] == "Live description"
     )
     assert "version" not in live_cache
     cache_instance.assert_called_once()
@@ -178,11 +173,13 @@ def test_build_digest_rejects_missing_plugin_cache_entry(tmp_path):
                     "tags": [],
                     "tier": 1,
                 }
-            }
+            },
         },
     )
 
-    with pytest.raises(ValueError, match="plugin_cache missing metadata"):
+    with pytest.raises(
+        garak.exception.ReportIncompatibleError, match="Report references unknown"
+    ):
         report_digest.build_digest(str(report_path))
 
 
@@ -205,7 +202,9 @@ def test_build_digest_rejects_missing_required_plugin_cache_field(tmp_path):
         },
     )
 
-    with pytest.raises(ValueError, match="missing fields"):
+    with pytest.raises(
+        garak.exception.ReportIncompatibleError, match="Report references unknown"
+    ):
         report_digest.build_digest(str(report_path))
 
 
