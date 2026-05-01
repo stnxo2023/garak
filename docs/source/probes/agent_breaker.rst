@@ -7,4 +7,3 @@ garak.probes.agent_breaker
    :show-inheritance:
 
    .. show-asr::
-1
