@@ -1,5 +1,5 @@
 garak.detectors.sysprompt_extraction
-=================================
+====================================
 
 
 .. automodule:: garak.detectors.sysprompt_extraction

@@ -78,11 +78,16 @@ class AgentBreaker(garak.probes.IterativeProbe):
     """Agent Breaker - Agentic Application Exploitation Probe
 
     A multi-turn probe that attacks agentic LLM applications by:
+
     1. Loading agent purpose and tools from data/agent_breaker/agent.yaml
        (or auto-discovering them by asking the target agent if tools are missing)
+
     2. Analyzing each tool to understand what it does and how it works
+
     3. Identifying specific weaknesses based on each tool's functionality
+
     4. Generating targeted exploits based on the tool-specific analysis
+
     5. Verifying attack success - stops immediately on success
 
     Auto-discovery: If the YAML has no tools (or empty tools), the probe asks the
@@ -91,17 +96,27 @@ class AgentBreaker(garak.probes.IterativeProbe):
     agent_purpose is already set in the YAML, only tools are discovered.
 
     Multi-turn attack strategy:
+
     - Each turn starts a NEW conversation with an improved attack payload
+
     - The red team model analyzes all previous attempts and their responses
+
     - It learns from failures and generates improved attacks that address weaknesses
+
     - The attack stops immediately when successful
 
     The probe uses a red team model to:
+
     - Deeply understand each tool's functionality
+
     - Identify how that specific functionality can be exploited
+
     - Generate attack prompts tailored to each tool's weaknesses
+
     - Analyze previous attempt responses to improve subsequent attacks
+
     - Verify if attacks succeeded
+
     - Parse discovery responses when auto-discovering tools
 
     Configuration: Supply $XDG_DATA_HOME/garak/data/agent_breaker/agent.yaml to describe
