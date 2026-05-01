@@ -77,6 +77,15 @@ authors = [
   { name = "dyrtyData" },
   { name = "Leone Lage Perdigão" },
   { name = "Lucas Wang" },
+  { name = "Ian Miller" },
+  { name = "Edward Kim" },
+  { name = "Raina O'Sullivan" },
+  { name = "Christ Bowel Bouchuen" },
+  { name = "Hayato Fujihara" },
+  { name = "precognitivem0nk" },
+  { name = "Jacob J. lee" },
+  { name = "Eliya Cohen" },
+  { name = "Nathan Maine" },
 ]
 license = "Apache-2.0"
 license-files = ["LICENSE"]
