@@ -88,6 +88,12 @@ def _parse_report(reportfile: IO):
 
 
 def _report_header_content(report_path, init, setup, payloads, config=_config) -> dict:
+    target_type = setup.get(
+        "plugins.target_type", setup.get("plugins.model_type", None)
+    )
+    target_name = setup.get(
+        "plugins.target_name", setup.get("plugins.model_name", None)
+    )
     header_content = {
         "reportfile": report_path.split(os.sep)[-1],
         "garak_version": init["garak_version"],
@@ -95,8 +101,8 @@ def _report_header_content(report_path, init, setup, payloads, config=_config) -
         "run_uuid": init["run_uuid"],
         "setup": setup,
         "probespec": setup["plugins.probe_spec"],
-        "target_type": setup["plugins.target_type"],
-        "target_name": setup["plugins.target_name"],
+        "target_type": target_type,
+        "target_name": target_name,
         "payloads": payloads,
         "group_aggregation_function": config.reporting.group_aggregation_function,
         "report_digest_time": datetime.datetime.now().isoformat(),
@@ -152,7 +158,7 @@ def _init_populate_result_db(evals, taxonomy=None, report_plugin_cache=None):
         pm, pc = eval["probe"].split(".")
         detector = eval["detector"].replace("detector.", "")
         passes = eval["passed"]
-        instances = eval["total_evaluated"]
+        instances = eval.get("total_evaluated", eval.get("total", None))
         score = passes / instances if instances else 0
 
         # Extract CI fields if present
