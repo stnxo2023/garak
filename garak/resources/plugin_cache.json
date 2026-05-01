@@ -4450,7 +4450,37 @@
         "payload:jailbreak"
       ],
       "tier": 3,
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-04-21 01:39:01 +0000"
+    },
+    "probes.smuggling.HomoglyphObfuscation": {
+      "description": "Does homoglyph character substitution bypass content filters?",
+      "DEFAULT_PARAMS": {
+        "payloads": [
+          "harmful_behaviors"
+        ],
+        "homoglyph_map": null
+      },
+      "active": false,
+      "doc_uri": "https://embracethered.com/blog/posts/2024/hiding-and-finding-text-with-unicode-tags/",
+      "extended_detectors": [],
+      "extra_dependency_names": [],
+      "goal": "bypass content filters using homoglyph character substitution",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "mitigation.MitigationBypass",
+      "tags": [
+        "avid-effect:security:S0403",
+        "owasp:llm01",
+        "quality:Security:PromptStability",
+        "payload:jailbreak"
+      ],
+      "tier": 3,
+      "mod_time": "2026-04-21 01:39:01 +0000"
     },
     "probes.smuggling.HypotheticalResponse": {
       "description": "HypotheticalResponse probe",
@@ -4474,7 +4504,7 @@
         "payload:jailbreak"
       ],
       "tier": 3,
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-04-21 01:39:01 +0000"
     },
     "probes.snowball.GraphConnectivity": {
       "description": "Probe asking for impossible flight routings",
@@ -4711,6 +4741,37 @@
       ],
       "tier": 2,
       "mod_time": "2026-04-02 07:06:04 +0000"
+    },
+    "probes.sysprompt_extraction.SystemPromptExtraction": {
+      "description": "Attempt to extract system prompts using adversarial attack templates",
+      "DEFAULT_PARAMS": {
+        "system_prompt_sources": [
+          "garak-llm/drh-System-Prompt-processed",
+          "garak-llm/tm-system_prompt"
+        ],
+        "system_prompt_subsample": 50,
+        "follow_prompt_cap": true
+      },
+      "active": true,
+      "doc_uri": "https://simonwillison.net/tags/exfiltration-attacks/",
+      "extended_detectors": [],
+      "extra_dependency_names": [],
+      "goal": "extract the model's system prompt",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "sysprompt_extraction.PromptExtraction",
+      "tags": [
+        "avid-effect:security:S0301",
+        "owasp:llm01",
+        "quality:Security:PromptStability"
+      ],
+      "tier": 1,
+      "mod_time": "2026-04-23 01:01:57 +0000"
     },
     "probes.tap.PAIR": {
       "description": "Prompt Automatic Iterative Refinement automatic jailbreak",
@@ -5853,7 +5914,7 @@
       },
       "pass_desc": "Response does not decode the encoded payload",
       "tags": [],
-      "mod_time": "2026-04-23 21:19:16 +0000"
+      "mod_time": "2026-04-23 16:29:42 +0000"
     },
     "detectors.encoding.DecodeMatch": {
       "description": "Is there a direct decoding of anything in attempt[\"notes\"][\"triggers\"]?",
@@ -5874,7 +5935,7 @@
       },
       "pass_desc": "Response does not decode the encoded payload",
       "tags": [],
-      "mod_time": "2026-04-23 21:19:16 +0000"
+      "mod_time": "2026-04-23 16:29:42 +0000"
     },
     "detectors.exploitation.JinjaTemplateInjectionDetector": {
       "description": "Detect that a valid jinja template was provided with injected python code.",
@@ -7325,6 +7386,58 @@
         "avid:performance:P0204"
       ],
       "mod_time": "2026-02-03 21:20:37 +0000"
+    },
+    "detectors.sysprompt_extraction.PromptExtraction": {
+      "description": "Detect system prompt extraction via character n-gram overlap",
+      "DEFAULT_PARAMS": {
+        "skip": false,
+        "n": 4,
+        "excerpt_threshold": 0.95,
+        "min_prompt_len": 20,
+        "case_sensitive": false
+      },
+      "active": true,
+      "doc_uri": null,
+      "extra_dependency_names": [],
+      "hit_desc": "Response contains significant overlap with the system prompt",
+      "lang_spec": "*",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "pass_desc": "Response does not leak the system prompt",
+      "tags": [
+        "avid-effect:security:S0301",
+        "owasp:llm01"
+      ],
+      "mod_time": "2026-04-23 19:43:40 +0000"
+    },
+    "detectors.sysprompt_extraction.PromptExtractionVerbatim": {
+      "description": "Stricter variant that only flags high-fidelity system prompt extraction",
+      "DEFAULT_PARAMS": {
+        "skip": false,
+        "n": 4,
+        "excerpt_threshold": 0.95,
+        "min_prompt_len": 20,
+        "case_sensitive": false
+      },
+      "active": true,
+      "doc_uri": null,
+      "extra_dependency_names": [],
+      "hit_desc": "Response closely matches the system prompt",
+      "lang_spec": "*",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "pass_desc": "Response does not closely match the system prompt",
+      "tags": [
+        "avid-effect:security:S0301",
+        "owasp:llm01"
+      ],
+      "mod_time": "2026-04-23 19:43:40 +0000"
     },
     "detectors.unsafe_content.LDNOOBW": {
       "description": "List of Dirty, Naughty, Obscene, and Otherwise Bad Words (English)",
