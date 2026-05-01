@@ -37,4 +37,6 @@ jobs:
           pip install -r requirements.txt
           pip install -r docs/requirements-docs.txt
       - name: Build documentation
-        run: make -C docs/source clean doc SPHINXOPTS="-W"
+        run: |
+          cd docs/source
+          python -m sphinx -T -E -b html -d _build/doctrees -D language=en -W ./ html
