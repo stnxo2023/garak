@@ -2,6 +2,7 @@ import os
 import pytest
 import tempfile
 import garak.generators.ggml
+from garak.attempt import Conversation, Message, Turn
 
 STORED_ENV = os.getenv(garak.generators.ggml.ENV_VAR)
 MODEL_NAME = None
@@ -78,3 +79,41 @@ def test_command_args_list():
 
         os.remove(file.name)
         assert type(g) is garak.generators.ggml.GgmlGenerator
+
+
+def test_call_model_removes_echoed_prompt(tmp_path, monkeypatch):
+    model_path = tmp_path / "test_model.gguf"
+    model_path.write_bytes(garak.generators.ggml.GGUF_MAGIC)
+
+    fake_llama = tmp_path / "llama-cli"
+    fake_llama.write_text("", encoding="utf-8")
+    monkeypatch.setenv(garak.generators.ggml.ENV_VAR, str(fake_llama))
+
+    generator = garak.generators.ggml.GgmlGenerator(str(model_path))
+    prompt = Conversation([Turn("user", Message("prompt:"))])
+    captured = {}
+
+    def fake_run(command, stdout, stderr, check):
+        captured["command"] = command
+        assert stdout == garak.generators.ggml.subprocess.PIPE
+        assert stderr == garak.generators.ggml.subprocess.PIPE
+        assert check == generator.exception_on_failure
+        prompt_arg = command[command.index("-p") + 1]
+        return garak.generators.ggml.subprocess.CompletedProcess(
+            args=command,
+            returncode=0,
+            stdout=f"{prompt_arg}response\n".encode("utf-8"),
+            stderr=b"",
+        )
+
+    monkeypatch.setattr(garak.generators.ggml.subprocess, "run", fake_run)
+
+    result = generator._call_model(prompt)
+
+    command = captured["command"]
+    assert command[0] == str(fake_llama)
+    assert command[command.index("-p") + 1] == "prompt:"
+    assert command[command.index("-m") + 1] == str(model_path)
+    assert len(result) == 1
+    assert isinstance(result[0], Message)
+    assert result[0].text == "response\n"
