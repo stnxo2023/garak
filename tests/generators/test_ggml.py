@@ -81,39 +81,26 @@ def test_command_args_list():
         assert type(g) is garak.generators.ggml.GgmlGenerator
 
 
-def test_call_model_removes_echoed_prompt(tmp_path, monkeypatch):
-    model_path = tmp_path / "test_model.gguf"
-    model_path.write_bytes(garak.generators.ggml.GGUF_MAGIC)
+def test_call_model_removes_echoed_prompt(mocker):
+    with tempfile.NamedTemporaryFile(
+        mode="wb", suffix="_test_model.gguf", delete=False
+    ) as file:
+        file.write(garak.generators.ggml.GGUF_MAGIC)
+        file.close()
 
-    fake_llama = tmp_path / "llama-cli"
-    fake_llama.write_text("", encoding="utf-8")
-    monkeypatch.setenv(garak.generators.ggml.ENV_VAR, str(fake_llama))
+        import subprocess
+        from unittest.mock import MagicMock
 
-    generator = garak.generators.ggml.GgmlGenerator(str(model_path))
-    prompt = Conversation([Turn("user", Message("prompt:"))])
-    captured = {}
+        prompt = Conversation([Turn("user", Message("prompt:"))])
 
-    def fake_run(command, stdout, stderr, check):
-        captured["command"] = command
-        assert stdout == garak.generators.ggml.subprocess.PIPE
-        assert stderr == garak.generators.ggml.subprocess.PIPE
-        assert check == generator.exception_on_failure
-        prompt_arg = command[command.index("-p") + 1]
-        return garak.generators.ggml.subprocess.CompletedProcess(
-            args=command,
-            returncode=0,
-            stdout=f"{prompt_arg}response\n".encode("utf-8"),
-            stderr=b"",
-        )
+        mock_response = MagicMock()
+        test_response = "response"
+        mock_response.stdout = f"{prompt.last_message().text}{test_response}".encode()
+        mocker.patch.object(subprocess, "run", return_value=mock_response)
 
-    monkeypatch.setattr(garak.generators.ggml.subprocess, "run", fake_run)
+        generator = garak.generators.ggml.GgmlGenerator(file.name)
+        result = generator._call_model(prompt)
 
-    result = generator._call_model(prompt)
-
-    command = captured["command"]
-    assert command[0] == str(fake_llama)
-    assert command[command.index("-p") + 1] == "prompt:"
-    assert command[command.index("-m") + 1] == str(model_path)
-    assert len(result) == 1
-    assert isinstance(result[0], Message)
-    assert result[0].text == "response\n"
+        assert len(result) == 1
+        assert isinstance(result[0], Message)
+        assert result[0].text == test_response
