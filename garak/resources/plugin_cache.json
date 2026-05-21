@@ -8856,6 +8856,37 @@
       "supports_multiple_generations": true,
       "mod_time": "2026-05-15 13:37:47 +0000"
     },
+    "generators.llm.LLMGenerator": {
+      "description": "Interface for llm-managed models.",
+      "DEFAULT_PARAMS": {
+        "max_tokens": 150,
+        "temperature": null,
+        "top_k": null,
+        "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
+        "top_p": null,
+        "stop": [],
+        "suppressed_params": [],
+        "extra_params": {}
+      },
+      "active": true,
+      "extra_dependency_names": [
+        "llm"
+      ],
+      "generator_family_name": "llm",
+      "modality": {
+        "in": [
+          "text"
+        ],
+        "out": [
+          "text"
+        ]
+      },
+      "parallel_capable": false,
+      "supports_multiple_generations": false,
+      "mod_time": "2026-05-21 15:13:12 +0000"
+    },
     "generators.mistral.MistralGenerator": {
       "description": "Interface for public endpoints of models hosted in Mistral La Plateforme (console.mistral.ai).",
       "DEFAULT_PARAMS": {
