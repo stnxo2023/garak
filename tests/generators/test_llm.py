@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 
 from garak.attempt import Conversation, Turn, Message
 from garak._config import GarakSubConfig
-from garak.exception import GeneratorBackoffTrigger
+from garak.exception import GeneratorBackoffTrigger, BadGeneratorException
 
 llm = pytest.importorskip("llm")
 
@@ -148,19 +148,21 @@ def test_model_error_triggers_backoff(cfg, monkeypatch):
         gen._call_single.__wrapped__(gen, "ping", None, {})
 
 
-def test_needs_key_exception_returns_none(cfg, monkeypatch):
-    """NeedsKeyException should log and return None — no API key means no recovery."""
+def test_needs_key_exception_raises(cfg, monkeypatch):
+    """NeedsKeyException should raise BadGeneratorException — no API key means no recovery."""
+
+    error_msg = "no API key configured"
 
     class NoKeyModel:
         Options = FakeOptions
 
         def prompt(self, *a, **k):
-            raise llm.NeedsKeyException("no API key configured")
+            raise llm.NeedsKeyException(error_msg)
 
     monkeypatch.setattr(llm, "get_model", lambda *a, **k: NoKeyModel())
     gen = LLMGenerator(name="alias", config_root=cfg)
-    result = gen._call_single.__wrapped__(gen, "ping", None, {})
-    assert result is None
+    with pytest.raises(BadGeneratorException, match=error_msg):
+        gen._call_single.__wrapped__(gen, "ping", None, {})
 
 
 def test_non_model_error_returns_none(cfg, monkeypatch):
@@ -220,10 +222,12 @@ def test_default_model_when_name_empty(cfg, fake_llm, monkeypatch):
 
 def test_system_prompt_passthrough(cfg, fake_llm):
     gen = LLMGenerator(name="alias", config_root=cfg)
-    conv = Conversation([
-        Turn("system", Message(text="You are helpful")),
-        Turn("user", Message(text="hello")),
-    ])
+    conv = Conversation(
+        [
+            Turn("system", Message(text="You are helpful")),
+            Turn("user", Message(text="hello")),
+        ]
+    )
     gen._call_model(conv)
 
     prompt_text, kwargs = fake_llm.calls[0]
@@ -233,10 +237,12 @@ def test_system_prompt_passthrough(cfg, fake_llm):
 
 def test_skips_multiple_user_turns(cfg, fake_llm):
     gen = LLMGenerator(name="alias", config_root=cfg)
-    conv = Conversation([
-        Turn("user", Message(text="first")),
-        Turn("user", Message(text="second")),
-    ])
+    conv = Conversation(
+        [
+            Turn("user", Message(text="first")),
+            Turn("user", Message(text="second")),
+        ]
+    )
     out = gen._call_model(conv)
     assert out == [None]
     assert fake_llm.calls == []
@@ -244,11 +250,13 @@ def test_skips_multiple_user_turns(cfg, fake_llm):
 
 def test_skips_assistant_turns(cfg, fake_llm):
     gen = LLMGenerator(name="alias", config_root=cfg)
-    conv = Conversation([
-        Turn("system", Message(text="system prompt")),
-        Turn("assistant", Message(text="historic reply")),
-        Turn("user", Message(text="question")),
-    ])
+    conv = Conversation(
+        [
+            Turn("system", Message(text="system prompt")),
+            Turn("assistant", Message(text="historic reply")),
+            Turn("user", Message(text="question")),
+        ]
+    )
     out = gen._call_model(conv)
     assert out == [None]
     assert fake_llm.calls == []
@@ -256,11 +264,13 @@ def test_skips_assistant_turns(cfg, fake_llm):
 
 def test_skips_multiple_system_turns(cfg, fake_llm):
     gen = LLMGenerator(name="alias", config_root=cfg)
-    conv = Conversation([
-        Turn("system", Message(text="one")),
-        Turn("system", Message(text="two")),
-        Turn("user", Message(text="ping")),
-    ])
+    conv = Conversation(
+        [
+            Turn("system", Message(text="one")),
+            Turn("system", Message(text="two")),
+            Turn("user", Message(text="ping")),
+        ]
+    )
     out = gen._call_model(conv)
     assert out == [None]
     assert fake_llm.calls == []

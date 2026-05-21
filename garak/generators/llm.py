@@ -24,7 +24,7 @@ from typing import List, Union
 
 from garak import _config
 from garak.attempt import Message, Conversation
-from garak.exception import GeneratorBackoffTrigger
+from garak.exception import GeneratorBackoffTrigger, BadGeneratorException
 from garak.generators.base import Generator
 
 
@@ -63,9 +63,7 @@ class LLMGenerator(Generator):
                 self.llm.get_model(self.name) if self.name else self.llm.get_model()
             )
         except self.llm.UnknownModelError as exc:
-            logging.error(
-                "Failed to resolve llm model '%s': %s", self.name, repr(exc)
-            )
+            logging.error("Failed to resolve llm model '%s': %s", self.name, repr(exc))
             raise
         self._accepted_params = self._enumerate_model_params()
 
@@ -89,8 +87,7 @@ class LLMGenerator(Generator):
             )
             return Message(response.text())
         except self.llm.NeedsKeyException as e:
-            logging.error("llm generation failed: %s", repr(e))
-            return None
+            raise BadGeneratorException(e) from e
         except Exception as e:
             if isinstance(e, self.llm.ModelError):
                 raise GeneratorBackoffTrigger from e
